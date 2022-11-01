@@ -1,0 +1,7 @@
+{
+  "name": "loup-garou-mj",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
