@@ -1,0 +1,21 @@
+<ion-item>
+  <ion-button
+    *ngIf="removable"
+    (click)="onRemove()"
+    slot="start"
+    color="danger"
+    shape="round"
+  >
+    <ion-icon slot="icon-only" name="remove"></ion-icon>
+  </ion-button>
+  <ion-thumbnail slot="start">
+    <img
+      [src]="player.role | playerRoleImage"
+      [alt]="player.role | playerRoleName"
+    />
+  </ion-thumbnail>
+  <ion-label>
+    <h2>{{ player.name }}</h2>
+    <p>{{ player.role | playerRoleName }}</p>
+  </ion-label>
+</ion-item>

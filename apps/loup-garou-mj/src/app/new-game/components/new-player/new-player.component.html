@@ -1,0 +1,19 @@
+<form [formGroup]="playerForm" (ngSubmit)="onSubmit()">
+  <ion-item>
+    <ion-button
+      slot="start"
+      color="success"
+      shape="round"
+      [disabled]="playerForm.invalid"
+      type="submit"
+    >
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+    <ion-input placeholder="Nom" formControlName="name"></ion-input>
+    <ion-select placeholder="Rôle" formControlName="role">
+      <ion-select-option *ngFor="let role of roles" [value]="role">{{
+        role | playerRoleName
+      }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</form>
