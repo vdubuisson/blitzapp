@@ -1,0 +1,10 @@
+export enum PlayerRoleEnum {
+  VILLAGEOIS,
+  LOUP_GAROU,
+  CHASSEUR,
+  CUPIDON,
+  PETITE_FILLE,
+  SORCIERE,
+  VOLEUR,
+  VOYANTE,
+}
