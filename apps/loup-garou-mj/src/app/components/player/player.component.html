@@ -1,4 +1,26 @@
-<ion-item [disabled]="disabled">
+<ion-item
+  [disabled]="player.isDead || disabled"
+  [color]="player.isDead ? 'medium' : ''"
+>
+  <ion-icon
+    *ngIf="player.isDead; else formElement"
+    slot="start"
+    name="skull"
+  ></ion-icon>
+
+  <ion-thumbnail slot="start">
+    <img
+      [src]="player.role | playerRoleImage"
+      [alt]="player.role | playerRoleName"
+    />
+  </ion-thumbnail>
+  <ion-label>
+    <h2>{{ player.name }}</h2>
+    <p>{{ player.role | playerRoleName }}</p>
+  </ion-label>
+</ion-item>
+
+<ng-template #formElement>
   <ng-container [ngSwitch]="displayMode">
     <!-- REMOVE mode -->
     <ion-button
@@ -25,15 +47,4 @@
       [value]="player.id"
     ></ion-radio>
   </ng-container>
-
-  <ion-thumbnail slot="start">
-    <img
-      [src]="player.role | playerRoleImage"
-      [alt]="player.role | playerRoleName"
-    />
-  </ion-thumbnail>
-  <ion-label>
-    <h2>{{ player.name }}</h2>
-    <p>{{ player.role | playerRoleName }}</p>
-  </ion-label>
-</ion-item>
+</ng-template>
