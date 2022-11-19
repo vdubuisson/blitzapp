@@ -18,6 +18,8 @@ export class PlayerComponent {
 
   @Input() displayMode: PlayerDisplayModeEnum = PlayerDisplayModeEnum.DEFAULT;
 
+  @Input() disabled = false;
+
   @Output() remove = new EventEmitter<void>();
 
   @Output() checkedChange = new EventEmitter<boolean>();

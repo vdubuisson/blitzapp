@@ -9,7 +9,7 @@ import { Player } from '../models/player.model';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  playerDisplayMode = PlayerDisplayModeEnum.SELECT_SINGLE;
+  playerDisplayMode = PlayerDisplayModeEnum.SELECT_MULTI;
 
   players: Player[] = [
     {
@@ -41,6 +41,8 @@ export class HomePage {
       isDead: false,
     },
   ];
+
+  selectablePlayers = new Set([0, 2, 3]);
 
   private selectedPlayers = new Set();
   private selectedPlayer?: number;

@@ -12,6 +12,7 @@
           *ngFor="let player of players"
           [player]="player"
           [displayMode]="playerDisplayMode"
+          [disabled]="!selectablePlayers.has(player.id)"
           (checkedChange)="onMultiPlayerChecked(player.id, $event)"
         ></lgmj-player>
       </ion-radio-group>
