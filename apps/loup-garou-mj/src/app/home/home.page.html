@@ -10,7 +10,8 @@
       <lgmj-player
         *ngFor="let player of players"
         [player]="player"
-        [removable]="true"
+        [multiSelectable]="true"
+        (checkedChange)="onPlayerChecked(player.id, $event)"
       ></lgmj-player>
     </ion-list>
   </div>

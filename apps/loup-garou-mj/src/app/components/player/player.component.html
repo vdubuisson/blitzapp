@@ -8,6 +8,11 @@
   >
     <ion-icon slot="icon-only" name="remove"></ion-icon>
   </ion-button>
+  <ion-checkbox
+    *ngIf="multiSelectable"
+    slot="start"
+    (ionChange)="onCheckedChange($event)"
+  ></ion-checkbox>
   <ion-thumbnail slot="start">
     <img
       [src]="player.role | playerRoleImage"

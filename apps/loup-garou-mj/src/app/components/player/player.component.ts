@@ -17,9 +17,19 @@ export class PlayerComponent {
 
   @Input() removable = false;
 
+  @Input() multiSelectable = false;
+
   @Output() remove = new EventEmitter<void>();
 
-  onRemove() {
+  @Output() checkedChange = new EventEmitter<boolean>();
+
+  protected onCheckedChange(event: Event) {
+    this.checkedChange.emit(
+      (event as CustomEvent<{ checked: boolean }>).detail.checked
+    );
+  }
+
+  protected onRemove() {
     this.remove.emit();
   }
 }

@@ -17,25 +17,35 @@ export class HomePage {
       isDead: false,
     },
     {
-      id: 0,
+      id: 1,
       name: 'Jean-Baptiste',
       role: PlayerRoleEnum.LOUP_GAROU,
       statuses: [],
       isDead: false,
     },
     {
-      id: 0,
+      id: 2,
       name: 'Davy',
       role: PlayerRoleEnum.SORCIERE,
       statuses: [],
       isDead: false,
     },
     {
-      id: 0,
+      id: 3,
       name: 'Romain',
       role: PlayerRoleEnum.VILLAGEOIS,
       statuses: [],
       isDead: false,
     },
   ];
+
+  private selectedPlayers = new Set();
+
+  protected onPlayerChecked(id: number, checked: boolean): void {
+    if (checked) {
+      this.selectedPlayers.add(id);
+    } else {
+      this.selectedPlayers.delete(id);
+    }
+  }
 }
