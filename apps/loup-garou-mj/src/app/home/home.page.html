@@ -7,12 +7,14 @@
 <ion-content>
   <div id="container">
     <ion-list>
-      <lgmj-player
-        *ngFor="let player of players"
-        [player]="player"
-        [multiSelectable]="true"
-        (checkedChange)="onPlayerChecked(player.id, $event)"
-      ></lgmj-player>
+      <ion-radio-group (ionChange)="onSinglePlayerChecked($event)">
+        <lgmj-player
+          *ngFor="let player of players"
+          [player]="player"
+          [displayMode]="playerDisplayMode"
+          (checkedChange)="onMultiPlayerChecked(player.id, $event)"
+        ></lgmj-player>
+      </ion-radio-group>
     </ion-list>
   </div>
 </ion-content>

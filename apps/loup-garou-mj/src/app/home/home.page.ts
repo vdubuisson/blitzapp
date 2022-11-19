@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PlayerDisplayModeEnum } from '../enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../enums/player-role.enum';
 import { Player } from '../models/player.model';
 
@@ -8,6 +9,8 @@ import { Player } from '../models/player.model';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  playerDisplayMode = PlayerDisplayModeEnum.SELECT_SINGLE;
+
   players: Player[] = [
     {
       id: 0,
@@ -40,12 +43,19 @@ export class HomePage {
   ];
 
   private selectedPlayers = new Set();
+  private selectedPlayer?: number;
 
-  protected onPlayerChecked(id: number, checked: boolean): void {
+  protected onMultiPlayerChecked(id: number, checked: boolean): void {
     if (checked) {
       this.selectedPlayers.add(id);
     } else {
       this.selectedPlayers.delete(id);
     }
+  }
+
+  protected onSinglePlayerChecked(event: Event) {
+    this.selectedPlayer = (
+      event as CustomEvent<{ value: number }>
+    ).detail.value;
   }
 }

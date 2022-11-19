@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { Player } from '../../models/player.model';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
+import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
 
 @Component({
   selector: 'lgmj-player',
@@ -15,13 +16,13 @@ import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-i
 export class PlayerComponent {
   @Input() player!: Player;
 
-  @Input() removable = false;
-
-  @Input() multiSelectable = false;
+  @Input() displayMode: PlayerDisplayModeEnum = PlayerDisplayModeEnum.DEFAULT;
 
   @Output() remove = new EventEmitter<void>();
 
   @Output() checkedChange = new EventEmitter<boolean>();
+
+  protected playerDisplayModeEnum = PlayerDisplayModeEnum;
 
   protected onCheckedChange(event: Event) {
     this.checkedChange.emit(

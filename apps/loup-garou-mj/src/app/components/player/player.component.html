@@ -1,18 +1,31 @@
 <ion-item>
-  <ion-button
-    *ngIf="removable"
-    (click)="onRemove()"
-    slot="start"
-    color="danger"
-    shape="round"
-  >
-    <ion-icon slot="icon-only" name="remove"></ion-icon>
-  </ion-button>
-  <ion-checkbox
-    *ngIf="multiSelectable"
-    slot="start"
-    (ionChange)="onCheckedChange($event)"
-  ></ion-checkbox>
+  <ng-container [ngSwitch]="displayMode">
+    <!-- REMOVE mode -->
+    <ion-button
+      *ngSwitchCase="playerDisplayModeEnum.REMOVE"
+      (click)="onRemove()"
+      slot="start"
+      color="danger"
+      shape="round"
+    >
+      <ion-icon slot="icon-only" name="remove"></ion-icon>
+    </ion-button>
+
+    <!-- SELECT_MULTI mode -->
+    <ion-checkbox
+      *ngSwitchCase="playerDisplayModeEnum.SELECT_MULTI"
+      slot="start"
+      (ionChange)="onCheckedChange($event)"
+    ></ion-checkbox>
+
+    <!-- SELECT_SINGLE mode -->
+    <ion-radio
+      *ngSwitchCase="playerDisplayModeEnum.SELECT_SINGLE"
+      slot="start"
+      [value]="player.id"
+    ></ion-radio>
+  </ng-container>
+
   <ion-thumbnail slot="start">
     <img
       [src]="player.role | playerRoleImage"
