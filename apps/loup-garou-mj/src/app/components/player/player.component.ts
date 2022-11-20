@@ -5,11 +5,18 @@ import { Player } from '../../models/player.model';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
 import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
+import { PlayerStatusPipe } from '../../pipes/player-status/player-status.pipe';
 
 @Component({
   selector: 'lgmj-player',
   standalone: true,
-  imports: [CommonModule, IonicModule, PlayerRoleNamePipe, PlayerRoleImagePipe],
+  imports: [
+    CommonModule,
+    IonicModule,
+    PlayerRoleNamePipe,
+    PlayerRoleImagePipe,
+    PlayerStatusPipe,
+  ],
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss'],
 })

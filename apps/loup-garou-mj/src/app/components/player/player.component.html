@@ -14,10 +14,17 @@
       [alt]="player.role | playerRoleName"
     />
   </ion-thumbnail>
+
   <ion-label>
     <h2>{{ player.name }}</h2>
     <p>{{ player.role | playerRoleName }}</p>
   </ion-label>
+
+  <div slot="end">
+    <span class="status-icon" *ngFor="let status of player.statuses">{{
+      status | playerStatus
+    }}</span>
+  </div>
 </ion-item>
 
 <ng-template #formElement>

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { PlayerDisplayModeEnum } from '../enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../enums/player-role.enum';
+import { PlayerStatusEnum } from '../enums/player-status.enum';
 import { Player } from '../models/player.model';
 
 @Component({
@@ -16,7 +17,7 @@ export class HomePage {
       id: 0,
       name: 'Valentin',
       role: PlayerRoleEnum.VILLAGEOIS,
-      statuses: [],
+      statuses: [PlayerStatusEnum.WOLF_TARGET, PlayerStatusEnum.LOVER],
       isDead: false,
     },
     {
@@ -30,21 +31,21 @@ export class HomePage {
       id: 2,
       name: 'Davy',
       role: PlayerRoleEnum.SORCIERE,
-      statuses: [],
+      statuses: [PlayerStatusEnum.HEALTH_POTION, PlayerStatusEnum.DEATH_POTION],
       isDead: true,
     },
     {
       id: 3,
       name: 'Romain',
       role: PlayerRoleEnum.VILLAGEOIS,
-      statuses: [],
+      statuses: [PlayerStatusEnum.MAYOR],
       isDead: false,
     },
     {
       id: 4,
       name: 'Anne-Lise',
       role: PlayerRoleEnum.CHASSEUR,
-      statuses: [],
+      statuses: [PlayerStatusEnum.LOVER],
       isDead: false,
     },
   ];
