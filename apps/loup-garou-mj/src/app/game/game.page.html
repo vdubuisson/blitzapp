@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Partie</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+    <ion-list>
+      <lgmj-player
+        *ngFor="let player of players"
+        [player]="player"
+      ></lgmj-player>
+    </ion-list>
+  </div>
+</ion-content>

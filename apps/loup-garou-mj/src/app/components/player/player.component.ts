@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { CheckboxCustomEvent, IonicModule } from '@ionic/angular';
 import { Player } from '../../models/player.model';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
@@ -34,9 +34,7 @@ export class PlayerComponent {
   protected playerDisplayModeEnum = PlayerDisplayModeEnum;
 
   protected onCheckedChange(event: Event) {
-    this.checkedChange.emit(
-      (event as CustomEvent<{ checked: boolean }>).detail.checked
-    );
+    this.checkedChange.emit((event as CheckboxCustomEvent).detail.checked);
   }
 
   protected onRemove() {

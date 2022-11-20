@@ -1,9 +1,32 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>NewGame</ion-title>
+    <ion-title>Nouvelle partie</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <lgmj-new-player></lgmj-new-player>
+  <div id="container">
+    <lgmj-new-player (newPlayer)="addPlayer($event)"></lgmj-new-player>
+
+    <ion-list>
+      <ion-reorder-group
+        (ionItemReorder)="reorderPlayer($event)"
+        [disabled]="false"
+      >
+        <lgmj-player
+          *ngFor="let player of players"
+          [player]="player"
+          [displayMode]="playerDisplayMode"
+          (remove)="removePlayer(player.id)"
+        ></lgmj-player>
+      </ion-reorder-group>
+    </ion-list>
+
+    <ion-button
+      [disabled]="players.length === 0"
+      expand="block"
+      (click)="createGame()"
+      >Démarrer</ion-button
+    >
+  </div>
 </ion-content>

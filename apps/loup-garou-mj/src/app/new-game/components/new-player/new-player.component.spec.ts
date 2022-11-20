@@ -29,6 +29,7 @@ describe('NewPlayerComponent', () => {
         name: 'Name',
         role: PlayerRoleEnum.VILLAGEOIS,
       });
+      expect(component['playerForm'].reset).toBeCalled();
     });
   }));
 });

@@ -6,6 +6,13 @@
 
 <ion-content>
   <div id="container">
+    <ion-button
+      expand="block"
+      class="ion-margin-horizontal"
+      routerLink="/new-game"
+      >Nouvelle partie</ion-button
+    >
+
     <ion-list>
       <ion-radio-group (ionChange)="onSinglePlayerChecked($event)">
         <lgmj-player

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RadioGroupCustomEvent } from '@ionic/angular';
 import { PlayerDisplayModeEnum } from '../enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../enums/player-role.enum';
 import { PlayerStatusEnum } from '../enums/player-status.enum';
@@ -64,8 +65,6 @@ export class HomePage {
   }
 
   protected onSinglePlayerChecked(event: Event) {
-    this.selectedPlayer = (
-      event as CustomEvent<{ value: number }>
-    ).detail.value;
+    this.selectedPlayer = (event as RadioGroupCustomEvent).detail.value;
   }
 }

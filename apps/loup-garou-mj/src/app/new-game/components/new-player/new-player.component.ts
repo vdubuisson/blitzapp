@@ -29,5 +29,6 @@ export class NewPlayerComponent {
       name: this.playerForm.value.name as string,
       role: this.playerForm.value.role as PlayerRoleEnum,
     });
+    this.playerForm.reset();
   }
 }

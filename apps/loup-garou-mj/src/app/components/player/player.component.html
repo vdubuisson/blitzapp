@@ -25,6 +25,11 @@
       status | playerStatus
     }}</span>
   </div>
+
+  <ion-reorder
+    *ngIf="displayMode === playerDisplayModeEnum.REMOVE"
+    slot="end"
+  ></ion-reorder>
 </ion-item>
 
 <ng-template #formElement>
