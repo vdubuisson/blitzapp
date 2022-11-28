@@ -11,7 +11,7 @@
     </ion-button>
     <ion-input placeholder="Nom" formControlName="name"></ion-input>
     <ion-select placeholder="Rôle" formControlName="role">
-      <ion-select-option *ngFor="let role of roles" [value]="role">{{
+      <ion-select-option *ngFor="let role of sortedRoles" [value]="role">{{
         role | playerRoleName
       }}</ion-select-option>
     </ion-select>

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { PlayerRoleEnum } from '../../../enums/player-role.enum';
+import { PlayerRoleNamePipe } from '../../../pipes/player-role-name/player-role-name.pipe';
 
 @Component({
   selector: 'lgmj-new-player',
@@ -8,12 +9,21 @@ import { PlayerRoleEnum } from '../../../enums/player-role.enum';
   styleUrls: ['./new-player.component.scss'],
 })
 export class NewPlayerComponent {
+  @Input() set roles(roleList: PlayerRoleEnum[]) {
+    this.sortedRoles = [...roleList].sort((a, b) =>
+      this.playerRoleNamePipe
+        .transform(a)
+        .localeCompare(this.playerRoleNamePipe.transform(b))
+    );
+  }
+
   @Output() newPlayer = new EventEmitter<{
     name: string;
     role: PlayerRoleEnum;
   }>();
 
-  protected roles = Object.values(PlayerRoleEnum);
+  protected sortedRoles: PlayerRoleEnum[] = [];
+
   protected playerForm = this.formBuilder.group({
     name: ['', Validators.required],
     role: this.formBuilder.control<PlayerRoleEnum | null>(
@@ -22,7 +32,10 @@ export class NewPlayerComponent {
     ),
   });
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private playerRoleNamePipe: PlayerRoleNamePipe
+  ) {}
 
   onSubmit() {
     this.newPlayer.emit({

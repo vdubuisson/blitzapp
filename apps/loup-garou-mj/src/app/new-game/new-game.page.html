@@ -6,9 +6,12 @@
 
 <ion-content>
   <div id="container">
-    <lgmj-new-player (newPlayer)="addPlayer($event)"></lgmj-new-player>
+    <lgmj-new-player
+      [roles]="availableRoles"
+      (newPlayer)="addPlayer($event)"
+    ></lgmj-new-player>
 
-    <ion-list>
+    <ion-list id="player-list">
       <ion-reorder-group
         (ionItemReorder)="reorderPlayer($event)"
         [disabled]="false"
@@ -26,7 +29,9 @@
       [disabled]="players.length === 0"
       expand="block"
       (click)="createGame()"
-      >Démarrer</ion-button
+      id="start-btn"
     >
+      Démarrer
+    </ion-button>
   </div>
 </ion-content>

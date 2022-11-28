@@ -24,7 +24,7 @@ describe('NewGamePage', () => {
       {
         id: 1,
         name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
+        role: PlayerRoleEnum.SORCIERE,
         statuses: [],
         isDead: false,
       },
@@ -90,10 +90,85 @@ describe('NewGamePage', () => {
       {
         id: 0,
         name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
+        role: PlayerRoleEnum.SORCIERE,
         statuses: [],
         isDead: false,
       },
     ]);
+  });
+
+  it('should init with VILLAGEOIS in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS)
+    ).toEqual(true);
+  });
+
+  it('should init with LOUP_GAROU in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.LOUP_GAROU)
+    ).toEqual(true);
+  });
+
+  it('should init with CHASSEUR in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.CHASSEUR)
+    ).toEqual(true);
+  });
+
+  it('should init with CUPIDON in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.CUPIDON)
+    ).toEqual(true);
+  });
+
+  it('should init with PETITE_FILLE in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.PETITE_FILLE)
+    ).toEqual(true);
+  });
+
+  it('should init with SORCIERE in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.SORCIERE)
+    ).toEqual(true);
+  });
+
+  it('should init with VOLEUR in available roles', () => {
+    expect(component['availableRoles'].includes(PlayerRoleEnum.VOLEUR)).toEqual(
+      true
+    );
+  });
+
+  it('should init with VOYANTE in available roles', () => {
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.VOYANTE)
+    ).toEqual(true);
+  });
+
+  it('should remove unique role from available roles on player add', () => {
+    component['addPlayer']({ name: 'Name', role: PlayerRoleEnum.SORCIERE });
+
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.SORCIERE)
+    ).toEqual(false);
+  });
+
+  it('should not remove non unique role from available roles on player add', () => {
+    component['addPlayer']({ name: 'Name', role: PlayerRoleEnum.VILLAGEOIS });
+
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS)
+    ).toEqual(true);
+  });
+
+  it('should add unique role to available roles on player remove', () => {
+    component['availableRoles'] = [];
+    component['players'] = mockPlayers;
+
+    component['removePlayer'](1);
+
+    expect(
+      component['availableRoles'].includes(PlayerRoleEnum.SORCIERE)
+    ).toEqual(true);
   });
 });

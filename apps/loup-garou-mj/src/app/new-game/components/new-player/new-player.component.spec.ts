@@ -2,15 +2,20 @@ import { FormBuilder } from '@angular/forms';
 import { NewPlayerComponent } from './new-player.component';
 import { PlayerRoleEnum } from '../../../enums/player-role.enum';
 import { waitForAsync } from '@angular/core/testing';
+import { PlayerRoleNamePipe } from '../../../pipes/player-role-name/player-role-name.pipe';
+import { MockService } from 'ng-mocks';
+import { when } from 'jest-when';
 
 describe('NewPlayerComponent', () => {
   let component: NewPlayerComponent;
 
   let formBuilder: FormBuilder;
+  let playerRoleNamePipe: PlayerRoleNamePipe;
 
   beforeEach(async () => {
     formBuilder = new FormBuilder();
-    component = new NewPlayerComponent(formBuilder);
+    playerRoleNamePipe = MockService(PlayerRoleNamePipe);
+    component = new NewPlayerComponent(formBuilder, playerRoleNamePipe);
   });
 
   it('should create', () => {
@@ -32,4 +37,21 @@ describe('NewPlayerComponent', () => {
       expect(component['playerForm'].reset).toBeCalled();
     });
   }));
+
+  it('should sort roles alphabetically on set', () => {
+    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.VILLAGEOIS)
+      .mockReturnValue('Villageois');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.LOUP_GAROU)
+      .mockReturnValue('Loup');
+
+    component.roles = [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU];
+
+    expect(component['sortedRoles']).toEqual([
+      PlayerRoleEnum.LOUP_GAROU,
+      PlayerRoleEnum.VILLAGEOIS,
+    ]);
+  });
 });
