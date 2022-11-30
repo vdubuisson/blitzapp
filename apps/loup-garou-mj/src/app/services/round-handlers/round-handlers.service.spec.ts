@@ -4,6 +4,7 @@ import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handle
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
 import { SorciereKillRoundHandler } from '../../handlers/sorciere-kill/sorciere-kill-round.handler';
+import { VillageoisRoundHandler } from '../../handlers/villageois/villageois-round.handler';
 import { RoundHandlersService } from './round-handlers.service';
 
 describe('RoundHandlersService', () => {
@@ -15,6 +16,23 @@ describe('RoundHandlersService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should init VILLAGEOIS round handler', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
+      VillageoisRoundHandler
+    );
+  });
+
+  it('should return handler for VILLAGEOIS round', () => {
+    const roundHandler = new VillageoisRoundHandler();
+    service['roundHandlers'].set(RoundEnum.VILLAGEOIS, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.VILLAGEOIS);
+
+    expect(testHandler).toEqual(roundHandler);
   });
 
   it('should init LOUP_GAROU round handler for LOUP_GAROU role', () => {

@@ -6,6 +6,7 @@ import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-roun
 import { RoundHandler } from '../../handlers/round-handler.interface';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
 import { SorciereKillRoundHandler } from '../../handlers/sorciere-kill/sorciere-kill-round.handler';
+import { VillageoisRoundHandler } from '../../handlers/villageois/villageois-round.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class RoundHandlersService {
   initHandlers(roles: PlayerRoleEnum[]): void {
     this.roundHandlers.clear();
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
+    this.roundHandlers.set(RoundEnum.VILLAGEOIS, new VillageoisRoundHandler());
     rolesSet.forEach((role) => {
       switch (role) {
         case PlayerRoleEnum.LOUP_GAROU:
