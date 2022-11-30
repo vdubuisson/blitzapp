@@ -7,10 +7,23 @@
 <ion-content>
   <div id="container">
     <ion-list>
-      <lgmj-player
-        *ngFor="let player of players"
-        [player]="player"
-      ></lgmj-player>
+      <ion-radio-group (ionChange)="onSinglePlayerChecked($event)">
+        <lgmj-player
+          *ngFor="let player of (players$ | async)"
+          [player]="player"
+          [displayMode]="playerDisplayMode"
+        ></lgmj-player>
+      </ion-radio-group>
     </ion-list>
+
+    <ion-button
+      expand="block"
+      class="ion-margin-horizontal"
+      (click)="wolfAttack()"
+      >Attaque loup-garou</ion-button
+    >
+    <ion-button expand="block" class="ion-margin-horizontal" (click)="health()"
+      >Soin sorciere</ion-button
+    >
   </div>
 </ion-content>

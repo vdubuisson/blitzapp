@@ -5,33 +5,34 @@ import { MockService } from 'ng-mocks';
 import { GamePage } from './game.page';
 import { PlayerRoleEnum } from '../enums/player-role.enum';
 import { Player } from '../models/player.model';
+import { BehaviorSubject } from 'rxjs';
 
 describe('GamePage', () => {
   let component: GamePage;
   let gameService: GameService;
 
-  let mockPlayers: Player[];
+  let mockPlayers$: BehaviorSubject<Player[]>;
 
   beforeEach(waitForAsync(() => {
-    mockPlayers = [
+    const mockPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
     ];
-
+    mockPlayers$ = new BehaviorSubject(mockPlayers);
     gameService = MockService(GameService);
-    jest.spyOn(gameService, 'getPlayers').mockReturnValue(mockPlayers);
+    jest.spyOn(gameService, 'getPlayers').mockReturnValue(mockPlayers$);
     component = new GamePage(gameService);
   }));
 
@@ -40,7 +41,6 @@ describe('GamePage', () => {
   });
 
   it('should get players from GameService', () => {
-    expect(gameService.getPlayers).toBeCalled();
-    expect(component['players']).toEqual(mockPlayers);
+    expect(component['players$']).toEqual(mockPlayers$);
   });
 });

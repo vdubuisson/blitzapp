@@ -1,7 +1,7 @@
-import { RoundRoleEnum } from '../enums/round-role.enum';
+import { RoundEnum } from '../enums/round.enum';
 
 export interface Round {
-  role: RoundRoleEnum;
-  selectablePLayers: number[];
-  isMultiSelect: boolean;
+  role: RoundEnum;
+  selectablePlayers: number[];
+  maxSelectable: number;
 }

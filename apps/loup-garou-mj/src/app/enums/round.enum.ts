@@ -1,10 +1,12 @@
-export enum RoundRoleEnum {
+export enum RoundEnum {
+  VOLEUR,
   CUPIDON,
+  VOYANTE,
+  AMOUREUX,
   LOUP_GAROU,
   SORCIERE_HEALTH,
   SORCIERE_KILL,
-  VOLEUR,
   VILLAGEOIS,
+  CAPITAINE,
   CHASSEUR,
-  VOYANTE,
 }

@@ -18,14 +18,14 @@ describe('NewGamePage', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
     ];
@@ -59,7 +59,7 @@ describe('NewGamePage', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
     ]);
@@ -75,7 +75,7 @@ describe('NewGamePage', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
     ]);
@@ -91,7 +91,7 @@ describe('NewGamePage', () => {
         id: 0,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
-        statuses: [],
+        statuses: new Set(),
         isDead: false,
       },
     ]);

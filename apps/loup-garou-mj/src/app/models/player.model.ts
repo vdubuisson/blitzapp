@@ -5,6 +5,6 @@ export interface Player {
   id: number;
   name: string;
   role: PlayerRoleEnum;
-  statuses: PlayerStatusEnum[];
+  statuses: Set<PlayerStatusEnum>;
   isDead: boolean;
 }

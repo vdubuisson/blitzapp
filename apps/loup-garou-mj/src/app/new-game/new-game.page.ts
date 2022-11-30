@@ -38,7 +38,7 @@ export class NewGamePage {
       id: this.players.length,
       name,
       role,
-      statuses: [],
+      statuses: new Set(),
       isDead: false,
     });
   }

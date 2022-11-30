@@ -14,7 +14,7 @@ export class PlayerStatusPipe implements PipeTransform {
         return '💚';
       case PlayerStatusEnum.DEATH_POTION:
         return '🖤';
-      case PlayerStatusEnum.MAYOR:
+      case PlayerStatusEnum.CAPTAIN:
         return '🎖️';
       case PlayerStatusEnum.LOVER:
         return '💕';

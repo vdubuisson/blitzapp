@@ -2,7 +2,7 @@ export enum PlayerStatusEnum {
   WOLF_TARGET,
   HEALTH_POTION,
   DEATH_POTION,
-  MAYOR,
+  CAPTAIN,
   LOVER,
   FIRST_DEATH,
   PROTECTED,
