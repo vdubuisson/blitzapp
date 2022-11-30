@@ -1,5 +1,6 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
+import { CapitaineRoundHandler } from '../../handlers/capitaine/capitaine-round.handler';
 import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handler';
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
@@ -31,6 +32,23 @@ describe('RoundHandlersService', () => {
     service['roundHandlers'].set(RoundEnum.VILLAGEOIS, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.VILLAGEOIS);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should init CAPITAINE round handler', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].get(RoundEnum.CAPITAINE)).toBeInstanceOf(
+      CapitaineRoundHandler
+    );
+  });
+
+  it('should return handler for CAPITAINE round', () => {
+    const roundHandler = new CapitaineRoundHandler();
+    service['roundHandlers'].set(RoundEnum.CAPITAINE, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.CAPITAINE);
 
     expect(testHandler).toEqual(roundHandler);
   });

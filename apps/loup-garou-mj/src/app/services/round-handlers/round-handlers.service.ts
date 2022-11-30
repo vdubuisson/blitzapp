@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
+import { CapitaineRoundHandler } from '../../handlers/capitaine/capitaine-round.handler';
 import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handler';
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { RoundHandler } from '../../handlers/round-handler.interface';
@@ -16,8 +17,12 @@ export class RoundHandlersService {
 
   initHandlers(roles: PlayerRoleEnum[]): void {
     this.roundHandlers.clear();
+
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
+
     this.roundHandlers.set(RoundEnum.VILLAGEOIS, new VillageoisRoundHandler());
+    this.roundHandlers.set(RoundEnum.CAPITAINE, new CapitaineRoundHandler());
+
     rolesSet.forEach((role) => {
       switch (role) {
         case PlayerRoleEnum.LOUP_GAROU:
