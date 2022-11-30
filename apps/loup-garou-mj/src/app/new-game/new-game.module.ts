@@ -8,8 +8,8 @@ import { NewGamePageRoutingModule } from './new-game-routing.module';
 
 import { NewGamePage } from './new-game.page';
 import { NewPlayerComponent } from './components/new-player/new-player.component';
-import { PlayerRoleNamePipe } from '../pipes/player-role-name/player-role-name.pipe';
-import { PlayerComponent } from '../components/player/player.component';
+import { PlayerRoleNamePipe } from '../core/pipes/player-role-name/player-role-name.pipe';
+import { PlayerComponent } from '../core/components/player/player.component';
 
 @NgModule({
   imports: [

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { PlayerRoleEnum } from '../../../enums/player-role.enum';
-import { PlayerRoleNamePipe } from '../../../pipes/player-role-name/player-role-name.pipe';
+import { PlayerRoleEnum } from '../../../core/enums/player-role.enum';
+import { PlayerRoleNamePipe } from '../../../core/pipes/player-role-name/player-role-name.pipe';
 
 @Component({
   selector: 'lgmj-new-player',

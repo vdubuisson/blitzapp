@@ -4,9 +4,9 @@ import { MockService } from 'ng-mocks';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
-import { RoundHandler } from '../../handlers/round-handler.interface';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
+import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 
 import { GameService } from './game.service';

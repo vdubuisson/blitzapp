@@ -7,8 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { GamePageRoutingModule } from './game-routing.module';
 
 import { GamePage } from './game.page';
-import { PlayerComponent } from '../components/player/player.component';
-import { RoundNamePipe } from '../pipes/round-name/round-name.pipe';
+import { PlayerComponent } from '../core/components/player/player.component';
+import { RoundNamePipe } from '../core/pipes/round-name/round-name.pipe';
 
 @NgModule({
   imports: [

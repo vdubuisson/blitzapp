@@ -1,12 +1,14 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
-import { CapitaineRoundHandler } from '../../handlers/capitaine/capitaine-round.handler';
-import { ChasseurRoundHandler } from '../../handlers/chasseur/chasseur-round.handler';
-import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handler';
-import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
-import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
-import { SorciereKillRoundHandler } from '../../handlers/sorciere-kill/sorciere-kill-round.handler';
-import { VillageoisRoundHandler } from '../../handlers/villageois/villageois-round.handler';
+import {
+  VillageoisRoundHandler,
+  CapitaineRoundHandler,
+  LoupGarouRoundHandler,
+  SorciereHealthRoundHandler,
+  SorciereKillRoundHandler,
+  CupidonRoundHandler,
+  ChasseurRoundHandler,
+} from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
 describe('RoundHandlersService', () => {

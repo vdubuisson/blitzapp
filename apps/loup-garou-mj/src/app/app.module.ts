@@ -6,7 +6,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { PlayerRoleNamePipe } from './pipes/player-role-name/player-role-name.pipe';
+import { PlayerRoleNamePipe } from './core/pipes/player-role-name/player-role-name.pipe';
 
 @NgModule({
   declarations: [AppComponent],

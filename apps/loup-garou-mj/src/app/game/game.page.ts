@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RadioGroupCustomEvent } from '@ionic/angular';
 import { Observable } from 'rxjs';
-import { PlayerDisplayModeEnum } from '../enums/player-display-mode.enum';
-import { Player } from '../models/player.model';
-import { Round } from '../models/round.model';
-import { GameService } from '../services/game/game.service';
+import { PlayerDisplayModeEnum } from '../core/enums/player-display-mode.enum';
+import { Player } from '../core/models/player.model';
+import { Round } from '../core/models/round.model';
+import { GameService } from '../core/services/game/game.service';
 
 @Component({
   selector: 'lgmj-game',

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
-import { PlayerComponent } from '../components/player/player.component';
+import { PlayerComponent } from '../core/components/player/player.component';
 
 @NgModule({
   imports: [

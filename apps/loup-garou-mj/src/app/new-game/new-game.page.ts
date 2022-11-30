@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ItemReorderCustomEvent } from '@ionic/angular';
-import { PlayerDisplayModeEnum } from '../enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { Player } from '../models/player.model';
-import { GameService } from '../services/game/game.service';
+import { PlayerDisplayModeEnum } from '../core/enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '../core/enums/player-role.enum';
+import { Player } from '../core/models/player.model';
+import { GameService } from '../core/services/game/game.service';
 import { NON_UNIQUE_ROLES } from './constants/non-unique-roles';
 
 @Component({

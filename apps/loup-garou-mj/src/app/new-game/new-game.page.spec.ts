@@ -1,8 +1,8 @@
 import { waitForAsync } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { Player } from '../models/player.model';
-import { GameService } from '../services/game/game.service';
+import { PlayerRoleEnum } from '../core/enums/player-role.enum';
+import { Player } from '../core/models/player.model';
+import { GameService } from '../core/services/game/game.service';
 
 import { NewGamePage } from './new-game.page';
 

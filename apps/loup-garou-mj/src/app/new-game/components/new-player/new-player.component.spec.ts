@@ -1,8 +1,8 @@
 import { FormBuilder } from '@angular/forms';
 import { NewPlayerComponent } from './new-player.component';
-import { PlayerRoleEnum } from '../../../enums/player-role.enum';
+import { PlayerRoleEnum } from '../../../core/enums/player-role.enum';
 import { waitForAsync } from '@angular/core/testing';
-import { PlayerRoleNamePipe } from '../../../pipes/player-role-name/player-role-name.pipe';
+import { PlayerRoleNamePipe } from '../../../core/pipes/player-role-name/player-role-name.pipe';
 import { MockService } from 'ng-mocks';
 import { when } from 'jest-when';
 

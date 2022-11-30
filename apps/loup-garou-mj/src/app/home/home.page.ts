@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { RadioGroupCustomEvent } from '@ionic/angular';
-import { PlayerDisplayModeEnum } from '../enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { PlayerStatusEnum } from '../enums/player-status.enum';
-import { Player } from '../models/player.model';
+import { PlayerDisplayModeEnum } from '../core/enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '../core/enums/player-role.enum';
+import { PlayerStatusEnum } from '../core/enums/player-status.enum';
+import { Player } from '../core/models/player.model';
 
 @Component({
   selector: 'lgmj-home',
