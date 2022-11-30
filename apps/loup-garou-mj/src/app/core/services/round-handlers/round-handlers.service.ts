@@ -10,6 +10,7 @@ import {
   CupidonRoundHandler,
   ChasseurRoundHandler,
   VoyanteRoundHandler,
+  AmoureuxRoundHandler,
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 
@@ -47,6 +48,10 @@ export class RoundHandlersService {
           break;
         case PlayerRoleEnum.CUPIDON:
           this.roundHandlers.set(RoundEnum.CUPIDON, new CupidonRoundHandler());
+          this.roundHandlers.set(
+            RoundEnum.AMOUREUX,
+            new AmoureuxRoundHandler()
+          );
           break;
         case PlayerRoleEnum.CHASSEUR:
           this.roundHandlers.set(

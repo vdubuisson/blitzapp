@@ -9,6 +9,7 @@ import {
   CupidonRoundHandler,
   ChasseurRoundHandler,
   VoyanteRoundHandler,
+  AmoureuxRoundHandler,
 } from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
@@ -196,6 +197,29 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.CUPIDON]);
 
     expect(service['roundHandlers'].has(RoundEnum.CUPIDON)).toEqual(false);
+  });
+
+  it('should init AMOUREUX round handler for CUPIDON role', () => {
+    service.initHandlers([PlayerRoleEnum.CUPIDON]);
+
+    expect(service['roundHandlers'].get(RoundEnum.AMOUREUX)).toBeInstanceOf(
+      AmoureuxRoundHandler
+    );
+  });
+
+  it('should not init AMOUREUX round handler when no CUPIDON role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.AMOUREUX)).toEqual(false);
+  });
+
+  it('should return handler for AMOUREUX round', () => {
+    const roundHandler = new AmoureuxRoundHandler();
+    service['roundHandlers'].set(RoundEnum.AMOUREUX, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.AMOUREUX);
+
+    expect(testHandler).toEqual(roundHandler);
   });
 
   it('should init CHASSEUR round handler for CHASSEUR role', () => {

@@ -6,3 +6,4 @@ export * from './sorciere-health/sorciere-health-round.handler';
 export * from './sorciere-kill/sorciere-kill-round.handler';
 export * from './villageois/villageois-round.handler';
 export * from './voyante/voyante-round.handler';
+export * from './amoureux/amoureux-round.handler';
