@@ -1,6 +1,7 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { CapitaineRoundHandler } from '../../handlers/capitaine/capitaine-round.handler';
+import { ChasseurRoundHandler } from '../../handlers/chasseur/chasseur-round.handler';
 import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handler';
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
@@ -145,6 +146,29 @@ describe('RoundHandlersService', () => {
     service['roundHandlers'].set(RoundEnum.CUPIDON, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.CUPIDON);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should init CHASSEUR round handler for CHASSEUR role', () => {
+    service.initHandlers([PlayerRoleEnum.CHASSEUR]);
+
+    expect(service['roundHandlers'].get(RoundEnum.CHASSEUR)).toBeInstanceOf(
+      ChasseurRoundHandler
+    );
+  });
+
+  it('should not init CHASSEUR round handler when no CHASSEUR role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CHASSEUR)).toEqual(false);
+  });
+
+  it('should return handler for CHASSEUR round', () => {
+    const roundHandler = new ChasseurRoundHandler();
+    service['roundHandlers'].set(RoundEnum.CHASSEUR, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.CHASSEUR);
 
     expect(testHandler).toEqual(roundHandler);
   });
