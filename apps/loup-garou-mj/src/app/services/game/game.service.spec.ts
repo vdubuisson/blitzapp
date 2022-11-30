@@ -12,7 +12,7 @@ import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { GameService } from './game.service';
 
 class MockRoundHandler implements RoundHandler {
-  isOnlyFirstNight = false;
+  isOnlyOnce = false;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     throw new Error('Method not implemented.');

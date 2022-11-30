@@ -11,8 +11,8 @@ describe('SorciereKillRoundHandler', () => {
     roundHandler = new SorciereKillRoundHandler();
   });
 
-  it('should not be only first night', () => {
-    expect(roundHandler.isOnlyFirstNight).toEqual(false);
+  it('should not be only once', () => {
+    expect(roundHandler.isOnlyOnce).toEqual(false);
   });
 
   it('should kill selected player', () => {

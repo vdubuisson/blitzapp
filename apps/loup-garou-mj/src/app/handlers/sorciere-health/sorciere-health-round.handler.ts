@@ -6,7 +6,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 
 export class SorciereHealthRoundHandler implements RoundHandler {
-  readonly isOnlyFirstNight = false;
+  readonly isOnlyOnce = false;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];

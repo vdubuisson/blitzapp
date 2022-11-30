@@ -5,7 +5,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 
 export class CupidonRoundHandler implements RoundHandler {
-  readonly isOnlyFirstNight = true;
+  readonly isOnlyOnce = true;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];

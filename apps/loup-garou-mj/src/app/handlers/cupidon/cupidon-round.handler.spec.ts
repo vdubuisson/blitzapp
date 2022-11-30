@@ -11,8 +11,8 @@ describe('CupidonRoundHandler', () => {
     roundHandler = new CupidonRoundHandler();
   });
 
-  it('should be only first night', () => {
-    expect(roundHandler.isOnlyFirstNight).toEqual(true);
+  it('should be only once', () => {
+    expect(roundHandler.isOnlyOnce).toEqual(true);
   });
 
   it('should add LOVER status to selected players', () => {

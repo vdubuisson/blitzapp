@@ -11,8 +11,8 @@ describe('SorciereHealthRoundHandler', () => {
     roundHandler = new SorciereHealthRoundHandler();
   });
 
-  it('should not be only first night', () => {
-    expect(roundHandler.isOnlyFirstNight).toEqual(false);
+  it('should not be only once', () => {
+    expect(roundHandler.isOnlyOnce).toEqual(false);
   });
 
   it('should remove WOLF_TARGET status to selected player', () => {
