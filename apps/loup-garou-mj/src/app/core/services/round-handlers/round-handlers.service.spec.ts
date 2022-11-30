@@ -8,6 +8,7 @@ import {
   SorciereKillRoundHandler,
   CupidonRoundHandler,
   ChasseurRoundHandler,
+  VoyanteRoundHandler,
 } from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
@@ -79,6 +80,17 @@ describe('RoundHandlersService', () => {
     expect(testHandler).toEqual(roundHandler);
   });
 
+  it('should remove handler LOUP_GAROU for LOUP_GAROU role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.LOUP_GAROU,
+      new LoupGarouRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.LOUP_GAROU]);
+
+    expect(service['roundHandlers'].has(RoundEnum.LOUP_GAROU)).toEqual(false);
+  });
+
   it('should init SORCIERE_HEALTH round handler for SORCIERE role', () => {
     service.initHandlers([PlayerRoleEnum.SORCIERE]);
 
@@ -102,6 +114,19 @@ describe('RoundHandlersService', () => {
     const testHandler = service.getHandler(RoundEnum.SORCIERE_HEALTH);
 
     expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler SORCIERE_HEALTH for SORCIERE role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.SORCIERE_HEALTH,
+      new SorciereHealthRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.SORCIERE]);
+
+    expect(service['roundHandlers'].has(RoundEnum.SORCIERE_HEALTH)).toEqual(
+      false
+    );
   });
 
   it('should init SORCIERE_KILL round handler for SORCIERE role', () => {
@@ -129,6 +154,19 @@ describe('RoundHandlersService', () => {
     expect(testHandler).toEqual(roundHandler);
   });
 
+  it('should remove handler SORCIERE_KILL for SORCIERE role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.SORCIERE_KILL,
+      new SorciereKillRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.SORCIERE]);
+
+    expect(service['roundHandlers'].has(RoundEnum.SORCIERE_KILL)).toEqual(
+      false
+    );
+  });
+
   it('should init CUPIDON round handler for CUPIDON role', () => {
     service.initHandlers([PlayerRoleEnum.CUPIDON]);
 
@@ -152,6 +190,14 @@ describe('RoundHandlersService', () => {
     expect(testHandler).toEqual(roundHandler);
   });
 
+  it('should remove handler CUPIDON for CUPIDON role', () => {
+    service['roundHandlers'].set(RoundEnum.CUPIDON, new CupidonRoundHandler());
+
+    service.removeHandlers([PlayerRoleEnum.CUPIDON]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CUPIDON)).toEqual(false);
+  });
+
   it('should init CHASSEUR round handler for CHASSEUR role', () => {
     service.initHandlers([PlayerRoleEnum.CHASSEUR]);
 
@@ -173,5 +219,47 @@ describe('RoundHandlersService', () => {
     const testHandler = service.getHandler(RoundEnum.CHASSEUR);
 
     expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler CHASSEUR for CHASSEUR role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.CHASSEUR,
+      new ChasseurRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.CHASSEUR]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CHASSEUR)).toEqual(false);
+  });
+
+  it('should init VOYANTE round handler for VOYANTE role', () => {
+    service.initHandlers([PlayerRoleEnum.VOYANTE]);
+
+    expect(service['roundHandlers'].get(RoundEnum.VOYANTE)).toBeInstanceOf(
+      VoyanteRoundHandler
+    );
+  });
+
+  it('should not init VOYANTE round handler when no VOYANTE role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.VOYANTE)).toEqual(false);
+  });
+
+  it('should return handler for VOYANTE round', () => {
+    const roundHandler = new VoyanteRoundHandler();
+    service['roundHandlers'].set(RoundEnum.VOYANTE, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.VOYANTE);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler VOYANTE for VOYANTE role', () => {
+    service['roundHandlers'].set(RoundEnum.VOYANTE, new VoyanteRoundHandler());
+
+    service.removeHandlers([PlayerRoleEnum.VOYANTE]);
+
+    expect(service['roundHandlers'].has(RoundEnum.VOYANTE)).toEqual(false);
   });
 });
