@@ -5,6 +5,7 @@ import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handle
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { RoundHandler } from '../../handlers/round-handler.interface';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
+import { SorciereKillRoundHandler } from '../../handlers/sorciere-kill/sorciere-kill-round.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,10 @@ export class RoundHandlersService {
           this.roundHandlers.set(
             RoundEnum.SORCIERE_HEALTH,
             new SorciereHealthRoundHandler()
+          );
+          this.roundHandlers.set(
+            RoundEnum.SORCIERE_KILL,
+            new SorciereKillRoundHandler()
           );
           break;
         case PlayerRoleEnum.CUPIDON:
