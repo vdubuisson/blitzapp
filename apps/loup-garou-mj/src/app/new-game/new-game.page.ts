@@ -12,7 +12,43 @@ import { NON_UNIQUE_ROLES } from './constants/non-unique-roles';
   styleUrls: ['./new-game.page.scss'],
 })
 export class NewGamePage {
-  protected players: Player[] = [];
+  protected players: Player[] = [
+    // {
+    //   id: 0,
+    //   name: 'Valentin',
+    //   role: PlayerRoleEnum.VILLAGEOIS,
+    //   statuses: new Set(),
+    //   isDead: false,
+    // },
+    // {
+    //   id: 1,
+    //   name: 'Jean-Baptiste',
+    //   role: PlayerRoleEnum.LOUP_GAROU,
+    //   statuses: new Set(),
+    //   isDead: false,
+    // },
+    // {
+    //   id: 2,
+    //   name: 'Davy',
+    //   role: PlayerRoleEnum.SORCIERE,
+    //   statuses: new Set(),
+    //   isDead: false,
+    // },
+    // {
+    //   id: 3,
+    //   name: 'Romain',
+    //   role: PlayerRoleEnum.VILLAGEOIS,
+    //   statuses: new Set(),
+    //   isDead: false,
+    // },
+    // {
+    //   id: 4,
+    //   name: 'Anne-Lise',
+    //   role: PlayerRoleEnum.CHASSEUR,
+    //   statuses: new Set(),
+    //   isDead: false,
+    // },
+  ];
 
   protected playerDisplayMode = PlayerDisplayModeEnum.REMOVE;
 

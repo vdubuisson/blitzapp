@@ -6,24 +6,38 @@
 
 <ion-content>
   <div id="container">
-    <ion-list>
-      <ion-radio-group (ionChange)="onSinglePlayerChecked($event)">
-        <lgmj-player
-          *ngFor="let player of (players$ | async)"
-          [player]="player"
-          [displayMode]="playerDisplayMode"
-        ></lgmj-player>
-      </ion-radio-group>
-    </ion-list>
+    <ng-container *ngIf="round$ | async as round">
+      <ion-note class="ion-text-center"
+        ><h2 id="round-subtitle">Tour actuel</h2></ion-note
+      >
+      <hr />
+      <ion-text class="ion-text-center"
+        ><h1 id="round-title">{{ round.role | roundName }}</h1></ion-text
+      >
 
-    <ion-button
-      expand="block"
-      class="ion-margin-horizontal"
-      (click)="wolfAttack()"
-      >Attaque loup-garou</ion-button
-    >
-    <ion-button expand="block" class="ion-margin-horizontal" (click)="health()"
-      >Soin sorciere</ion-button
-    >
+      <ion-list>
+        <ion-radio-group
+          (ionChange)="onSinglePlayerChecked($event)"
+          [allowEmptySelection]="round.minSelectable === 0"
+          [value]="selectedPlayer"
+        >
+          <lgmj-player
+            *ngFor="let player of (players$ | async)"
+            [player]="player"
+            [displayMode]="round.maxSelectable > 1 ? playerDisplayModeEnum.SELECT_MULTI : playerDisplayModeEnum.SELECT_SINGLE"
+            [disabled]="!round.selectablePlayers.includes(player.id)"
+          ></lgmj-player>
+        </ion-radio-group>
+      </ion-list>
+
+      <ion-button
+        expand="block"
+        class="ion-margin-horizontal"
+        color="success"
+        (click)="onSubmit()"
+      >
+        Valider
+      </ion-button>
+    </ng-container>
   </div>
 </ion-content>
