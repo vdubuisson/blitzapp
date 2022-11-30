@@ -20,7 +20,10 @@ export class LoupGarouRoundHandler implements RoundHandler {
     return {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: players
-        .filter((player) => player.role !== PlayerRoleEnum.LOUP_GAROU)
+        .filter(
+          (player) =>
+            player.role !== PlayerRoleEnum.LOUP_GAROU && !player.isDead
+        )
         .map((player) => player.id),
       maxSelectable: 1,
       minSelectable: 1,

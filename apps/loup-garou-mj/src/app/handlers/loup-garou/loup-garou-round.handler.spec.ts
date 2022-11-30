@@ -40,14 +40,14 @@ describe('LoupGarouRoundHandler', () => {
     );
   });
 
-  it('should return non-LOUP_GAROU players as selectable', () => {
+  it('should return non-LOUP_GAROU and alive players as selectable', () => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
-        isDead: false,
+        isDead: true,
       },
       {
         id: 1,
@@ -67,7 +67,7 @@ describe('LoupGarouRoundHandler', () => {
 
     const round = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([0, 2]);
+    expect(round.selectablePlayers).toEqual([2]);
   });
 
   it('should return LOUP_GAROU as role round', () => {
