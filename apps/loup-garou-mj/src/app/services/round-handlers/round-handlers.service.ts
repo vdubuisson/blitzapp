@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
+import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handler';
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { RoundHandler } from '../../handlers/round-handler.interface';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
@@ -27,6 +28,9 @@ export class RoundHandlersService {
             RoundEnum.SORCIERE_HEALTH,
             new SorciereHealthRoundHandler()
           );
+          break;
+        case PlayerRoleEnum.CUPIDON:
+          this.roundHandlers.set(RoundEnum.CUPIDON, new CupidonRoundHandler());
           break;
         default:
           break;

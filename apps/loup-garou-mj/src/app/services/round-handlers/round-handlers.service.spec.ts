@@ -1,5 +1,6 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
+import { CupidonRoundHandler } from '../../handlers/cupidon/cupidon-round.handler';
 import { LoupGarouRoundHandler } from '../../handlers/loup-garou/loup-garou-round.handler';
 import { SorciereHealthRoundHandler } from '../../handlers/sorciere-health/sorciere-health-round.handler';
 import { RoundHandlersService } from './round-handlers.service';
@@ -59,6 +60,29 @@ describe('RoundHandlersService', () => {
     service['roundHandlers'].set(RoundEnum.SORCIERE_HEALTH, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.SORCIERE_HEALTH);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should init CUPIDON round handler for CUPIDON role', () => {
+    service.initHandlers([PlayerRoleEnum.CUPIDON]);
+
+    expect(service['roundHandlers'].get(RoundEnum.CUPIDON)).toBeInstanceOf(
+      CupidonRoundHandler
+    );
+  });
+
+  it('should not init CUPIDON round handler when no CUPIDON role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CUPIDON)).toEqual(false);
+  });
+
+  it('should return handler for CUPIDON round', () => {
+    const roundHandler = new CupidonRoundHandler();
+    service['roundHandlers'].set(RoundEnum.CUPIDON, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.CUPIDON);
 
     expect(testHandler).toEqual(roundHandler);
   });

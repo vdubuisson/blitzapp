@@ -52,7 +52,9 @@ export class NewGamePage {
 
   protected playerDisplayMode = PlayerDisplayModeEnum.REMOVE;
 
-  protected availableRoles: PlayerRoleEnum[] = Object.values(PlayerRoleEnum);
+  protected availableRoles: PlayerRoleEnum[] = Object.values(PlayerRoleEnum)
+    // TODO Handle VOLEUR role
+    .filter((role) => role !== PlayerRoleEnum.VOLEUR);
 
   constructor(private gameService: GameService) {}
 
