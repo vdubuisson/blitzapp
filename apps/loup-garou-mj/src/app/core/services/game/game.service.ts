@@ -83,6 +83,4 @@ export class GameService {
       this.round.next(roundConfig);
     }
   }
-
-  // TODO Gérer les morts en fin de nuit et pendant la journée
 }

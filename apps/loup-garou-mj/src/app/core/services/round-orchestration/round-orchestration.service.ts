@@ -28,6 +28,7 @@ export class RoundOrchestrationService {
   }
 
   getNextRound(currentRound: RoundEnum): RoundEnum {
+    // TODO next round = premier round de DeathService.afterDeathRoundQueue si pas vide
     const currentHandler = this.roundHandlersService.getHandler(currentRound);
     if (currentHandler?.isOnlyOnce) {
       this.uniqueRoundsPassed.add(currentRound);
@@ -57,6 +58,8 @@ export class RoundOrchestrationService {
     }
     return nextRound;
   }
+
+  // TODO En fin de nuit, appeler DeathService.handleNewDeaths
 
   getFirstRound(): RoundEnum {
     let nextHandler: RoundHandler | undefined;
