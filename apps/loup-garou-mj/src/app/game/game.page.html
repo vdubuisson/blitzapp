@@ -24,8 +24,9 @@
           <lgmj-player
             *ngFor="let player of (players$ | async)"
             [player]="player"
-            [displayMode]="round.maxSelectable > 1 ? playerDisplayModeEnum.SELECT_MULTI : playerDisplayModeEnum.SELECT_SINGLE"
+            [displayMode]="playerDisplayMode"
             [disabled]="!round.selectablePlayers.includes(player.id)"
+            (checkedChange)="onMultiPlayerChecked(player.id, $event)"
           ></lgmj-player>
         </ion-radio-group>
       </ion-list>
@@ -34,6 +35,7 @@
         expand="block"
         class="ion-margin-horizontal"
         color="success"
+        [disabled]="submitDisabled"
         (click)="onSubmit()"
       >
         Valider

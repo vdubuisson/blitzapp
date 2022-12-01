@@ -7,6 +7,7 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,8 @@ export class GameService {
 
   constructor(
     private router: Router,
-    private roundHandlersService: RoundHandlersService
+    private roundHandlersService: RoundHandlersService,
+    private roundOrchestrationService: RoundOrchestrationService
   ) {}
 
   getPlayers(): Observable<Player[]> {
@@ -60,15 +62,18 @@ export class GameService {
   }
 
   private setFirstRound(): void {
-    this.setRound(RoundEnum.LOUP_GAROU);
+    const firstRound = this.roundOrchestrationService.getFirstRound();
+    this.setRound(firstRound);
   }
 
   private nextRound(): void {
     const currentRoundRole = this.round.value?.role;
-    if (currentRoundRole === RoundEnum.LOUP_GAROU) {
-      const nextRoundRole = RoundEnum.SORCIERE_HEALTH;
-      this.setRound(nextRoundRole);
+    if (currentRoundRole === undefined) {
+      throw new Error('No current round');
     }
+    const nextRound =
+      this.roundOrchestrationService.getNextRound(currentRoundRole);
+    this.setRound(nextRound);
   }
 
   private setRound(role: RoundEnum): void {
@@ -78,4 +83,6 @@ export class GameService {
       this.round.next(roundConfig);
     }
   }
+
+  // TODO Gérer les morts en fin de nuit et pendant la journée
 }

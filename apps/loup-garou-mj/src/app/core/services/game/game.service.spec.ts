@@ -8,6 +8,7 @@ import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
 
 import { GameService } from './game.service';
 
@@ -27,6 +28,7 @@ describe('GameService', () => {
   let service: GameService;
   let router: Router;
   let roundHandlersService: RoundHandlersService;
+  let roundOrchestrationService: RoundOrchestrationService;
   let roundHandler: RoundHandler;
 
   let mockPlayers: Player[];
@@ -57,12 +59,17 @@ describe('GameService', () => {
     ];
     router = MockService(Router);
     roundHandlersService = MockService(RoundHandlersService);
+    roundOrchestrationService = MockService(RoundOrchestrationService);
     roundHandler = MockService(MockRoundHandler);
     jest
       .spyOn(roundHandlersService, 'getHandler')
       .mockReturnValue(roundHandler);
 
-    service = new GameService(router, roundHandlersService);
+    service = new GameService(
+      router,
+      roundHandlersService,
+      roundOrchestrationService
+    );
   });
 
   it('should be created', () => {
@@ -125,6 +132,9 @@ describe('GameService', () => {
       minSelectable: 1,
     };
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockRound);
+    jest
+      .spyOn(roundOrchestrationService, 'getFirstRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
 
     service.createGame(mockPlayers);
 
@@ -180,6 +190,9 @@ describe('GameService', () => {
     };
     service['round'].next(mockRound);
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockNextRound);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
 
     expect(service['round'].value).toEqual(mockRound);
 
