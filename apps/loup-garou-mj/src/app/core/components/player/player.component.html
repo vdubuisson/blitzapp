@@ -49,6 +49,7 @@
     <ion-checkbox
       *ngSwitchCase="playerDisplayModeEnum.SELECT_MULTI"
       slot="start"
+      [checked]="checked"
       (ionChange)="onCheckedChange($event)"
     ></ion-checkbox>
 

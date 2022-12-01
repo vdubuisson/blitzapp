@@ -27,6 +27,8 @@ export class PlayerComponent {
 
   @Input() disabled = false;
 
+  @Input() checked = false;
+
   @Output() remove = new EventEmitter<void>();
 
   @Output() checkedChange = new EventEmitter<boolean>();

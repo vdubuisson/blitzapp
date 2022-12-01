@@ -26,6 +26,7 @@
             [player]="player"
             [displayMode]="playerDisplayMode"
             [disabled]="!round.selectablePlayers.includes(player.id)"
+            [checked]="selectedPlayers.has(player.id)"
             (checkedChange)="onMultiPlayerChecked(player.id, $event)"
           ></lgmj-player>
         </ion-radio-group>
