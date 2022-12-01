@@ -10,12 +10,16 @@ export class SorciereKillRoundHandler implements RoundHandler {
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];
-    (
-      newPlayers.find((player) => player.id === selectedPlayerIds[0]) as Player
-    ).isDead = true;
-    newPlayers
-      .find((player) => player.role === PlayerRoleEnum.SORCIERE)
-      ?.statuses.delete(PlayerStatusEnum.DEATH_POTION);
+    if (selectedPlayerIds.length > 0) {
+      (
+        newPlayers.find(
+          (player) => player.id === selectedPlayerIds[0]
+        ) as Player
+      ).isDead = true;
+      newPlayers
+        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
+        ?.statuses.delete(PlayerStatusEnum.DEATH_POTION);
+    }
     return newPlayers;
   }
 

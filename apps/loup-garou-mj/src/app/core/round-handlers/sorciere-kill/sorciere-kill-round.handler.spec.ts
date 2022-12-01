@@ -63,6 +63,31 @@ describe('SorciereKillRoundHandler', () => {
     );
   });
 
+  it('should not remove DEATH_POTION status to SORCIERE player if no player selected', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = roundHandler.handleAction(players, []);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)).toEqual(
+      true
+    );
+  });
+
   it('should return all players alive except SORCIERE as selectable players if SORCIERE has DEATH_POTION', () => {
     const players: Player[] = [
       {

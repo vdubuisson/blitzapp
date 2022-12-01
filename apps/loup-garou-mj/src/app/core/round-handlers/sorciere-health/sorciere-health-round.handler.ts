@@ -10,12 +10,14 @@ export class SorciereHealthRoundHandler implements RoundHandler {
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];
-    newPlayers
-      .find((player) => player.id === selectedPlayerIds[0])
-      ?.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
-    newPlayers
-      .find((player) => player.role === PlayerRoleEnum.SORCIERE)
-      ?.statuses.delete(PlayerStatusEnum.HEALTH_POTION);
+    if (selectedPlayerIds.length > 0) {
+      newPlayers
+        .find((player) => player.id === selectedPlayerIds[0])
+        ?.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+      newPlayers
+        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
+        ?.statuses.delete(PlayerStatusEnum.HEALTH_POTION);
+    }
     return newPlayers;
   }
 
