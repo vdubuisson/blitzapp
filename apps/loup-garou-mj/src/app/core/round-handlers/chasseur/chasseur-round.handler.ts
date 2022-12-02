@@ -6,6 +6,7 @@ import { RoundHandler } from '../round-handler.interface';
 
 export class ChasseurRoundHandler implements RoundHandler {
   readonly isOnlyOnce = true;
+  readonly isDuringDay = true;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];

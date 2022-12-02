@@ -14,6 +14,10 @@ describe('ChasseurRoundHandler', () => {
     expect(roundHandler.isOnlyOnce).toEqual(true);
   });
 
+  it('should be during day', () => {
+    expect(roundHandler.isDuringDay).toEqual(true);
+  });
+
   it('should kill selected player', () => {
     const players: Player[] = [
       {

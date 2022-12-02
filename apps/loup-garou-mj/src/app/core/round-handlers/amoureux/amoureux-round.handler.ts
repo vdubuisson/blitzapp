@@ -3,6 +3,6 @@ import { DefaultRoundHandler } from '../default-round.handler';
 
 export class AmoureuxRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(RoundEnum.AMOUREUX, true);
+    super(RoundEnum.AMOUREUX, true, false);
   }
 }

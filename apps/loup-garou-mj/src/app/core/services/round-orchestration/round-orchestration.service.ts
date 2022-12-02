@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RoundEnum } from '../../enums/round.enum';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
+import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 
 @Injectable({
@@ -20,18 +21,31 @@ export class RoundOrchestrationService {
   ];
 
   private uniqueRoundsPassed: Set<RoundEnum> = new Set();
+  private beforeDeathRound: RoundEnum | undefined;
 
-  constructor(private roundHandlersService: RoundHandlersService) {}
+  constructor(
+    private roundHandlersService: RoundHandlersService,
+    private deathService: DeathService
+  ) {}
 
   resetRounds(): void {
     this.uniqueRoundsPassed.clear();
   }
 
   getNextRound(currentRound: RoundEnum): RoundEnum {
-    // TODO next round = premier round de DeathService.afterDeathRoundQueue si pas vide
     const currentHandler = this.roundHandlersService.getHandler(currentRound);
     if (currentHandler?.isOnlyOnce) {
       this.uniqueRoundsPassed.add(currentRound);
+    }
+
+    const firstAfterDeathRound = this.deathService.getNextAfterDeathRound();
+    if (firstAfterDeathRound !== undefined) {
+      this.beforeDeathRound = currentRound;
+      return firstAfterDeathRound;
+    }
+    if (this.beforeDeathRound) {
+      currentRound = this.beforeDeathRound;
+      this.beforeDeathRound = undefined;
     }
 
     const currentIndex = this.sortedRounds.indexOf(currentRound);
@@ -56,10 +70,9 @@ export class RoundOrchestrationService {
     if (nextHandler === undefined || this.uniqueRoundsPassed.has(nextRound)) {
       throw new Error('No next round found');
     }
+
     return nextRound;
   }
-
-  // TODO En fin de nuit, appeler DeathService.handleNewDeaths
 
   getFirstRound(): RoundEnum {
     let nextHandler: RoundHandler | undefined;

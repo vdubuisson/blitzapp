@@ -7,6 +7,7 @@ import { RoundHandler } from '../round-handler.interface';
 
 export class SorciereKillRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
+  readonly isDuringDay = false;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];

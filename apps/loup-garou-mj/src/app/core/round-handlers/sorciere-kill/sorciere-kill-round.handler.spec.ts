@@ -15,6 +15,10 @@ describe('SorciereKillRoundHandler', () => {
     expect(roundHandler.isOnlyOnce).toEqual(false);
   });
 
+  it('should not be during day', () => {
+    expect(roundHandler.isDuringDay).toEqual(false);
+  });
+
   it('should kill selected player', () => {
     const players: Player[] = [
       {

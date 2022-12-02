@@ -14,6 +14,10 @@ describe('VoyanteRoundHandler', () => {
     expect(roundHandler.isOnlyOnce).toEqual(false);
   });
 
+  it('should not be during day', () => {
+    expect(roundHandler.isDuringDay).toEqual(false);
+  });
+
   it('should return players without change', () => {
     const players: Player[] = [
       {

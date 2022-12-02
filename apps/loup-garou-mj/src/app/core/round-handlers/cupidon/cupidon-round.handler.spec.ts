@@ -15,6 +15,10 @@ describe('CupidonRoundHandler', () => {
     expect(roundHandler.isOnlyOnce).toEqual(true);
   });
 
+  it('should not be during day', () => {
+    expect(roundHandler.isDuringDay).toEqual(false);
+  });
+
   it('should add LOVER status to selected players', () => {
     const players: Player[] = [
       {

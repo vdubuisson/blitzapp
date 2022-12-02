@@ -6,6 +6,7 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
+import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
 
@@ -19,7 +20,8 @@ export class GameService {
   constructor(
     private router: Router,
     private roundHandlersService: RoundHandlersService,
-    private roundOrchestrationService: RoundOrchestrationService
+    private roundOrchestrationService: RoundOrchestrationService,
+    private deathService: DeathService
   ) {}
 
   getPlayers(): Observable<Player[]> {
@@ -71,8 +73,23 @@ export class GameService {
     if (currentRoundRole === undefined) {
       throw new Error('No current round');
     }
-    const nextRound =
+    let nextRound =
       this.roundOrchestrationService.getNextRound(currentRoundRole);
+
+    const nextHandler = this.roundHandlersService.getHandler(nextRound);
+    const currentHandler =
+      this.roundHandlersService.getHandler(currentRoundRole);
+    if (
+      nextHandler !== undefined &&
+      (nextHandler.isDuringDay || currentHandler?.isDuringDay)
+    ) {
+      const playersAfterDeath = this.deathService.handleNewDeaths(
+        this.players.value
+      );
+      this.players.next(playersAfterDeath);
+      nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
+    }
+
     this.setRound(nextRound);
   }
 

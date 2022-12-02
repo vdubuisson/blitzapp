@@ -14,6 +14,10 @@ describe('AmoureuxRoundHandler', () => {
     expect(roundHandler.isOnlyOnce).toEqual(true);
   });
 
+  it('should not be during day', () => {
+    expect(roundHandler.isDuringDay).toEqual(false);
+  });
+
   it('should return players without change', () => {
     const players: Player[] = [
       {

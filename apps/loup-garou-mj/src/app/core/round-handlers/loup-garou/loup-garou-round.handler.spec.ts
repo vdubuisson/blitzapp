@@ -15,6 +15,10 @@ describe('LoupGarouRoundHandler', () => {
     expect(roundHandler.isOnlyOnce).toEqual(false);
   });
 
+  it('should not be during day', () => {
+    expect(roundHandler.isDuringDay).toEqual(false);
+  });
+
   it('should add WOLF_TARGET status to selected player', () => {
     const players: Player[] = [
       {

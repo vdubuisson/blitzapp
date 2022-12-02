@@ -4,7 +4,11 @@ import { Round } from '../models/round.model';
 import { RoundHandler } from './round-handler.interface';
 
 export abstract class DefaultRoundHandler implements RoundHandler {
-  constructor(private roundRole: RoundEnum, public isOnlyOnce: boolean) {}
+  constructor(
+    private roundRole: RoundEnum,
+    public isOnlyOnce: boolean,
+    public isDuringDay: boolean
+  ) {}
 
   handleAction(players: Player[], _: number[]): Player[] {
     return [...players];

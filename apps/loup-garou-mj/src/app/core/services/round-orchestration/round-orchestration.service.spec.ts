@@ -4,12 +4,14 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
+import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 
 import { RoundOrchestrationService } from './round-orchestration.service';
 
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
+  isDuringDay = false;
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     throw new Error('Method not implemented.');
   }
@@ -21,10 +23,12 @@ class MockRoundHandler implements RoundHandler {
 describe('RoundOrchestrationService', () => {
   let service: RoundOrchestrationService;
   let roundHandlersService: RoundHandlersService;
+  let deathService: DeathService;
 
   beforeEach(() => {
     roundHandlersService = MockService(RoundHandlersService);
-    service = new RoundOrchestrationService(roundHandlersService);
+    deathService = MockService(DeathService);
+    service = new RoundOrchestrationService(roundHandlersService, deathService);
   });
 
   it('should be created', () => {
@@ -59,6 +63,55 @@ describe('RoundOrchestrationService', () => {
     const nextRound = service.getNextRound(RoundEnum.VILLAGEOIS);
 
     expect(nextRound).toEqual(RoundEnum.VOYANTE);
+  });
+
+  it('should return next after-death round when there is one', () => {
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(new MockRoundHandler());
+    jest
+      .spyOn(deathService, 'getNextAfterDeathRound')
+      .mockReturnValue(RoundEnum.CHASSEUR);
+
+    const nextRound = service.getNextRound(RoundEnum.SORCIERE_KILL);
+
+    expect(nextRound).toEqual(RoundEnum.CHASSEUR);
+  });
+
+  it('should use round before after-death round as current after after-death rounds', () => {
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(new MockRoundHandler());
+    jest
+      .spyOn(deathService, 'getNextAfterDeathRound')
+      .mockReturnValueOnce(RoundEnum.CHASSEUR);
+
+    const nextRound1 = service.getNextRound(RoundEnum.SORCIERE_KILL);
+    expect(nextRound1).toEqual(RoundEnum.CHASSEUR);
+    const nextRound2 = service.getNextRound(RoundEnum.CHASSEUR);
+    expect(nextRound2).toEqual(RoundEnum.VILLAGEOIS);
+  });
+
+  it('should continue round chain correctly after after-death rounds', () => {
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(new MockRoundHandler());
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(new MockRoundHandler());
+    jest
+      .spyOn(deathService, 'getNextAfterDeathRound')
+      .mockReturnValueOnce(RoundEnum.CHASSEUR);
+
+    const nextRound1 = service.getNextRound(RoundEnum.SORCIERE_KILL);
+    expect(nextRound1).toEqual(RoundEnum.CHASSEUR);
+    const nextRound2 = service.getNextRound(RoundEnum.CHASSEUR);
+    expect(nextRound2).toEqual(RoundEnum.VILLAGEOIS);
+    const nextRound3 = service.getNextRound(RoundEnum.VILLAGEOIS);
+    expect(nextRound3).toEqual(RoundEnum.LOUP_GAROU);
   });
 
   it('should add current round to unique list if onlyOnce', () => {
