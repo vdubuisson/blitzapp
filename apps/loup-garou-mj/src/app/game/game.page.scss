@@ -1,18 +1,33 @@
-hr {
-  width: 15%;
+#round-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ion-background-color, #fff);
+  display: flow-root;
 
-  @media (prefers-color-scheme: dark) {
-    background-color: white;
+  #round-subtitle {
+    text-transform: uppercase;
+    font-size: 15px;
+  }
+
+  #round-title {
+    text-transform: uppercase;
+    font-size: 20px;
+    margin-top: 10px;
+  }
+
+  hr {
+    width: 15%;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: white;
+    }
   }
 }
 
-#round-subtitle {
-  text-transform: uppercase;
-  font-size: 15px;
-}
-
-#round-title {
-  text-transform: uppercase;
-  font-size: 20px;
-  margin-top: 10px;
+#submit-block {
+  position: sticky;
+  bottom: 0;
+  background: var(--ion-background-color, #fff);
+  display: flow-root;
 }

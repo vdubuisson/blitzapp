@@ -7,13 +7,15 @@
 <ion-content>
   <div id="container">
     <ng-container *ngIf="round$ | async as round">
-      <ion-note class="ion-text-center"
-        ><h2 id="round-subtitle">Tour actuel</h2></ion-note
-      >
-      <hr />
-      <ion-text class="ion-text-center"
-        ><h1 id="round-title">{{ round.role | roundName }}</h1></ion-text
-      >
+      <div id="round-header">
+        <ion-note class="ion-text-center"
+          ><h2 id="round-subtitle">Tour actuel</h2></ion-note
+        >
+        <hr />
+        <ion-text class="ion-text-center"
+          ><h1 id="round-title">{{ round.role | roundName }}</h1></ion-text
+        >
+      </div>
 
       <ion-list>
         <ion-radio-group
@@ -32,15 +34,17 @@
         </ion-radio-group>
       </ion-list>
 
-      <ion-button
-        expand="block"
-        class="ion-margin-horizontal"
-        color="success"
-        [disabled]="submitDisabled"
-        (click)="onSubmit()"
-      >
-        Valider
-      </ion-button>
+      <div id="submit-block">
+        <ion-button
+          expand="block"
+          class="ion-margin-horizontal"
+          color="success"
+          [disabled]="submitDisabled"
+          (click)="onSubmit()"
+        >
+          Valider
+        </ion-button>
+      </div>
     </ng-container>
   </div>
 </ion-content>
