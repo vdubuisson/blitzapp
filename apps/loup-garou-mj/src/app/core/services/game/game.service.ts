@@ -73,16 +73,25 @@ export class GameService {
     if (currentRoundRole === undefined) {
       throw new Error('No current round');
     }
+    const currentHandler =
+      this.roundHandlersService.getHandler(currentRoundRole);
+    if (currentHandler?.isDuringDay) {
+      // Handle daytime deaths
+      const playersAfterDeath = this.deathService.handleNewDeaths(
+        this.players.value
+      );
+      this.players.next(playersAfterDeath);
+    }
     let nextRound =
       this.roundOrchestrationService.getNextRound(currentRoundRole);
 
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
-    const currentHandler =
-      this.roundHandlersService.getHandler(currentRoundRole);
     if (
       nextHandler !== undefined &&
-      (nextHandler.isDuringDay || currentHandler?.isDuringDay)
+      nextHandler.isDuringDay &&
+      !currentHandler?.isDuringDay
     ) {
+      // Handle after-night deaths
       const playersAfterDeath = this.deathService.handleNewDeaths(
         this.players.value
       );
