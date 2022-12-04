@@ -18,7 +18,7 @@ import { RoundHandler } from '../../round-handlers/round-handler.interface';
   providedIn: 'root',
 })
 export class RoundHandlersService {
-  roundHandlers: Map<RoundEnum, RoundHandler> = new Map();
+  private readonly roundHandlers: Map<RoundEnum, RoundHandler> = new Map();
 
   initHandlers(roles: PlayerRoleEnum[]): void {
     this.roundHandlers.clear();
@@ -28,44 +28,33 @@ export class RoundHandlersService {
     this.roundHandlers.set(RoundEnum.VILLAGEOIS, new VillageoisRoundHandler());
     this.roundHandlers.set(RoundEnum.CAPITAINE, new CapitaineRoundHandler());
 
-    rolesSet.forEach((role) => {
-      switch (role) {
-        case PlayerRoleEnum.LOUP_GAROU:
-          this.roundHandlers.set(
-            RoundEnum.LOUP_GAROU,
-            new LoupGarouRoundHandler()
-          );
-          break;
-        case PlayerRoleEnum.SORCIERE:
-          this.roundHandlers.set(
-            RoundEnum.SORCIERE_HEALTH,
-            new SorciereHealthRoundHandler()
-          );
-          this.roundHandlers.set(
-            RoundEnum.SORCIERE_KILL,
-            new SorciereKillRoundHandler()
-          );
-          break;
-        case PlayerRoleEnum.CUPIDON:
-          this.roundHandlers.set(RoundEnum.CUPIDON, new CupidonRoundHandler());
-          this.roundHandlers.set(
-            RoundEnum.AMOUREUX,
-            new AmoureuxRoundHandler()
-          );
-          break;
-        case PlayerRoleEnum.CHASSEUR:
-          this.roundHandlers.set(
-            RoundEnum.CHASSEUR,
-            new ChasseurRoundHandler()
-          );
-          break;
-        case PlayerRoleEnum.VOYANTE:
-          this.roundHandlers.set(RoundEnum.VOYANTE, new VoyanteRoundHandler());
-          break;
-        default:
-          break;
-      }
-    });
+    if (rolesSet.has(PlayerRoleEnum.LOUP_GAROU)) {
+      this.roundHandlers.set(RoundEnum.LOUP_GAROU, new LoupGarouRoundHandler());
+    }
+
+    if (rolesSet.has(PlayerRoleEnum.SORCIERE)) {
+      this.roundHandlers.set(
+        RoundEnum.SORCIERE_HEALTH,
+        new SorciereHealthRoundHandler()
+      );
+      this.roundHandlers.set(
+        RoundEnum.SORCIERE_KILL,
+        new SorciereKillRoundHandler()
+      );
+    }
+
+    if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
+      this.roundHandlers.set(RoundEnum.CUPIDON, new CupidonRoundHandler());
+      this.roundHandlers.set(RoundEnum.AMOUREUX, new AmoureuxRoundHandler());
+    }
+
+    if (rolesSet.has(PlayerRoleEnum.CHASSEUR)) {
+      this.roundHandlers.set(RoundEnum.CHASSEUR, new ChasseurRoundHandler());
+    }
+
+    if (rolesSet.has(PlayerRoleEnum.VOYANTE)) {
+      this.roundHandlers.set(RoundEnum.VOYANTE, new VoyanteRoundHandler());
+    }
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -74,27 +63,21 @@ export class RoundHandlersService {
 
   removeHandlers(roles: PlayerRoleEnum[]): void {
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
-    rolesSet.forEach((role) => {
-      switch (role) {
-        case PlayerRoleEnum.LOUP_GAROU:
-          this.roundHandlers.delete(RoundEnum.LOUP_GAROU);
-          break;
-        case PlayerRoleEnum.SORCIERE:
-          this.roundHandlers.delete(RoundEnum.SORCIERE_HEALTH);
-          this.roundHandlers.delete(RoundEnum.SORCIERE_KILL);
-          break;
-        case PlayerRoleEnum.CUPIDON:
-          this.roundHandlers.delete(RoundEnum.CUPIDON);
-          break;
-        case PlayerRoleEnum.CHASSEUR:
-          this.roundHandlers.delete(RoundEnum.CHASSEUR);
-          break;
-        case PlayerRoleEnum.VOYANTE:
-          this.roundHandlers.delete(RoundEnum.VOYANTE);
-          break;
-        default:
-          break;
-      }
-    });
+    if (rolesSet.has(PlayerRoleEnum.LOUP_GAROU)) {
+      this.roundHandlers.delete(RoundEnum.LOUP_GAROU);
+    }
+    if (rolesSet.has(PlayerRoleEnum.SORCIERE)) {
+      this.roundHandlers.delete(RoundEnum.SORCIERE_HEALTH);
+      this.roundHandlers.delete(RoundEnum.SORCIERE_KILL);
+    }
+    if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
+      this.roundHandlers.delete(RoundEnum.CUPIDON);
+    }
+    if (rolesSet.has(PlayerRoleEnum.CHASSEUR)) {
+      this.roundHandlers.delete(RoundEnum.CHASSEUR);
+    }
+    if (rolesSet.has(PlayerRoleEnum.VOYANTE)) {
+      this.roundHandlers.delete(RoundEnum.VOYANTE);
+    }
   }
 }
