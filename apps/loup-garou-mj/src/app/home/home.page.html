@@ -13,16 +13,12 @@
       >Nouvelle partie</ion-button
     >
 
-    <ion-list>
-      <ion-radio-group (ionChange)="onSinglePlayerChecked($event)">
-        <lgmj-player
-          *ngFor="let player of players"
-          [player]="player"
-          [displayMode]="playerDisplayMode"
-          [disabled]="!selectablePlayers.has(player.id)"
-          (checkedChange)="onMultiPlayerChecked(player.id, $event)"
-        ></lgmj-player>
-      </ion-radio-group>
-    </ion-list>
+    <ion-button
+      expand="block"
+      class="ion-margin-horizontal"
+      routerLink="/victory"
+      [queryParams]="{victory: victoryEnum}"
+      >Victoire</ion-button
+    >
   </div>
 </ion-content>

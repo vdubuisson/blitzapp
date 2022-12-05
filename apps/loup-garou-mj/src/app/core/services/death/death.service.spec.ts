@@ -4,15 +4,18 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { DeathService } from './death.service';
 
 describe('DeathService', () => {
   let service: DeathService;
   let roundHandlersService: RoundHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
 
   beforeEach(() => {
     roundHandlersService = MockService(RoundHandlersService);
-    service = new DeathService(roundHandlersService);
+    victoryHandlersService = MockService(VictoryHandlersService);
+    service = new DeathService(roundHandlersService, victoryHandlersService);
   });
 
   it('should return next after-death round', () => {
@@ -346,5 +349,31 @@ describe('DeathService', () => {
     expect(roundHandlersService.removeHandlers).toBeCalledWith([
       PlayerRoleEnum.VOYANTE,
     ]);
+  });
+
+  it('should remove useless victory handlers on deaths handle', () => {
+    jest.spyOn(victoryHandlersService, 'removeUselessHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VOYANTE,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(victoryHandlersService.removeUselessHandlers).toBeCalledWith(
+      mockPlayers
+    );
   });
 });

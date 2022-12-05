@@ -9,6 +9,7 @@ import { Round } from '../../models/round.model';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
+import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,7 @@ export class GameService {
   constructor(
     private router: Router,
     private roundHandlersService: RoundHandlersService,
+    private victoryHandlersService: VictoryHandlersService,
     private roundOrchestrationService: RoundOrchestrationService,
     private deathService: DeathService
   ) {}
@@ -33,9 +35,9 @@ export class GameService {
   }
 
   createGame(players: Player[]): void {
-    this.roundHandlersService.initHandlers(
-      players.map((player) => player.role)
-    );
+    const roles = players.map((player) => player.role);
+    this.roundHandlersService.initHandlers(roles);
+    this.victoryHandlersService.initHandlers(roles);
     const sorciere = players.find(
       (player) => player.role === PlayerRoleEnum.SORCIERE
     );
@@ -97,6 +99,19 @@ export class GameService {
       );
       this.players.next(playersAfterDeath);
       nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
+    }
+
+    if (
+      (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
+      nextRound !== RoundEnum.CHASSEUR
+    ) {
+      const victory = this.victoryHandlersService.getVictory(
+        this.players.value
+      );
+      if (victory !== undefined) {
+        this.router.navigate(['victory'], { queryParams: { victory } });
+        return;
+      }
     }
 
     this.setRound(nextRound);

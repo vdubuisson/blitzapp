@@ -4,6 +4,7 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,10 @@ export class DeathService {
   private afterDeathRoundQueue: RoundEnum[] = [];
   private rolesToRemove: PlayerRoleEnum[] = [];
 
-  constructor(private roundHandlersService: RoundHandlersService) {}
+  constructor(
+    private roundHandlersService: RoundHandlersService,
+    private victoryHandlersService: VictoryHandlersService
+  ) {}
 
   getNextAfterDeathRound(): RoundEnum | undefined {
     return this.afterDeathRoundQueue.shift();
@@ -34,6 +38,7 @@ export class DeathService {
       .forEach((player) => this.handlePlayerDeath(newPlayers, player));
 
     this.roundHandlersService.removeHandlers(this.rolesToRemove);
+    this.victoryHandlersService.removeUselessHandlers(players);
 
     // TODO Annonce des nouveaux morts avec service d'annonce
     return newPlayers;
