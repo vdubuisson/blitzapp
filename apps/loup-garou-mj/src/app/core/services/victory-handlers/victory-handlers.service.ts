@@ -5,6 +5,7 @@ import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
 import { AmoureuxVictoryHandler } from '../../victory-handlers/amoureux/amoureux-victory.handler';
 import { LoupGarouVictoryHandler } from '../../victory-handlers/loup-garou/loup-garou-victory.handler';
+import { NoneVictoryHandler } from '../../victory-handlers/none/none-victory.handler';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { VillageoisVictoryHandler } from '../../victory-handlers/villageois/villageois-victory.handler';
 
@@ -15,6 +16,7 @@ export class VictoryHandlersService {
   private readonly victoryHandlers = new Map<VictoryEnum, VictoryHandler>();
 
   private readonly victoryPriorities: VictoryEnum[] = [
+    VictoryEnum.NONE,
     VictoryEnum.AMOUREUX,
     VictoryEnum.LOUP_GAROU,
     VictoryEnum.VILLAGEOIS,
@@ -25,6 +27,7 @@ export class VictoryHandlersService {
 
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
 
+    this.victoryHandlers.set(VictoryEnum.NONE, new NoneVictoryHandler());
     this.victoryHandlers.set(
       VictoryEnum.VILLAGEOIS,
       new VillageoisVictoryHandler()

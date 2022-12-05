@@ -4,6 +4,7 @@ import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
 import { AmoureuxVictoryHandler } from '../../victory-handlers/amoureux/amoureux-victory.handler';
 import { LoupGarouVictoryHandler } from '../../victory-handlers/loup-garou/loup-garou-victory.handler';
+import { NoneVictoryHandler } from '../../victory-handlers/none/none-victory.handler';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { VillageoisVictoryHandler } from '../../victory-handlers/villageois/villageois-victory.handler';
 
@@ -28,6 +29,14 @@ describe('VictoryHandlersService', () => {
     expect(
       service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS)
     ).toBeInstanceOf(VillageoisVictoryHandler);
+  });
+
+  it('should init NONE victory handler', () => {
+    service.initHandlers([]);
+
+    expect(service['victoryHandlers'].get(VictoryEnum.NONE)).toBeInstanceOf(
+      NoneVictoryHandler
+    );
   });
 
   it('should init LOUP_GAROU victory handler if there are LOUP_GAROU', () => {
