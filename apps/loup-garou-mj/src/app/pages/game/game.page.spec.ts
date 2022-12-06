@@ -1,15 +1,14 @@
 import { waitForAsync } from '@angular/core/testing';
-import { GameService } from '../core/services/game/game.service';
+import { GameService } from '../../core/services/game/game.service';
 import { MockService } from 'ng-mocks';
-
 import { GamePage } from './game.page';
-import { PlayerRoleEnum } from '../core/enums/player-role.enum';
-import { Player } from '../core/models/player.model';
+import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { Player } from '../../core/models/player.model';
 import { BehaviorSubject } from 'rxjs';
-import { Round } from '../core/models/round.model';
-import { RoundEnum } from '../core/enums/round.enum';
+import { Round } from '../../core/models/round.model';
+import { RoundEnum } from '../../core/enums/round.enum';
 import { RadioGroupCustomEvent } from '@ionic/angular';
-import { PlayerDisplayModeEnum } from '../core/enums/player-display-mode.enum';
+import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 
 describe('GamePage', () => {
   let component: GamePage;

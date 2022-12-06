@@ -1,13 +1,18 @@
 import { Component } from '@angular/core';
-import { ItemReorderCustomEvent } from '@ionic/angular';
-import { PlayerDisplayModeEnum } from '../core/enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../core/enums/player-role.enum';
-import { Player } from '../core/models/player.model';
-import { GameService } from '../core/services/game/game.service';
-import { NON_UNIQUE_ROLES } from './constants/non-unique-roles';
+import { CommonModule } from '@angular/common';
+import { IonicModule, ItemReorderCustomEvent } from '@ionic/angular';
+import { NON_UNIQUE_ROLES } from '../../core/constants/non-unique-roles';
+import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { Player } from '../../core/models/player.model';
+import { GameService } from '../../core/services/game/game.service';
+import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
+import { PlayerComponent } from '../../core/components/player/player.component';
 
 @Component({
   selector: 'lgmj-new-game',
+  standalone: true,
+  imports: [CommonModule, IonicModule, NewPlayerComponent, PlayerComponent],
   templateUrl: './new-game.page.html',
   styleUrls: ['./new-game.page.scss'],
 })

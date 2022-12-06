@@ -1,13 +1,18 @@
 import { Component } from '@angular/core';
-import { RadioGroupCustomEvent } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { IonicModule, RadioGroupCustomEvent } from '@ionic/angular';
 import { Observable, tap } from 'rxjs';
-import { PlayerDisplayModeEnum } from '../core/enums/player-display-mode.enum';
-import { Player } from '../core/models/player.model';
-import { Round } from '../core/models/round.model';
-import { GameService } from '../core/services/game/game.service';
+import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
+import { Player } from '../../core/models/player.model';
+import { Round } from '../../core/models/round.model';
+import { GameService } from '../../core/services/game/game.service';
+import { RoundNamePipe } from '../../core/pipes/round-name/round-name.pipe';
+import { PlayerComponent } from '../../core/components/player/player.component';
 
 @Component({
   selector: 'lgmj-game',
+  standalone: true,
+  imports: [CommonModule, IonicModule, RoundNamePipe, PlayerComponent],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
 })

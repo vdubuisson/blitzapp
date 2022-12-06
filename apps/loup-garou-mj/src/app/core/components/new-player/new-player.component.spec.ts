@@ -1,10 +1,11 @@
-import { FormBuilder } from '@angular/forms';
-import { NewPlayerComponent } from './new-player.component';
-import { PlayerRoleEnum } from '../../../core/enums/player-role.enum';
 import { waitForAsync } from '@angular/core/testing';
-import { PlayerRoleNamePipe } from '../../../core/pipes/player-role-name/player-role-name.pipe';
-import { MockService } from 'ng-mocks';
+import { FormBuilder } from '@angular/forms';
 import { when } from 'jest-when';
+import { MockService } from 'ng-mocks';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
+
+import { NewPlayerComponent } from './new-player.component';
 
 describe('NewPlayerComponent', () => {
   let component: NewPlayerComponent;

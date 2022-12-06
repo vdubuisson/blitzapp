@@ -12,10 +12,10 @@ import { RoundOrchestrationService } from './round-orchestration.service';
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
   isDuringDay = false;
-  handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
+  handleAction(_: Player[], __: number[]): Player[] {
     throw new Error('Method not implemented.');
   }
-  getRoundConfig(players: Player[]): Round {
+  getRoundConfig(_: Player[]): Round {
     throw new Error('Method not implemented.');
   }
 }

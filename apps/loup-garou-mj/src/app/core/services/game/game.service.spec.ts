@@ -20,11 +20,11 @@ class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
   isDuringDay = false;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
+  handleAction(players: Player[], _: number[]): Player[] {
     return players;
   }
 
-  getRoundConfig(players: Player[]): Round {
+  getRoundConfig(_: Player[]): Round {
     throw new Error('Method not implemented.');
   }
 }
