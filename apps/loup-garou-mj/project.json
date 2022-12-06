@@ -93,7 +93,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/loup-garou-mj"],
+      "outputs": ["{workspaceRoot}/coverage/apps/loup-garou-mj"],
       "options": {
         "jestConfig": "apps/loup-garou-mj/jest.config.ts",
         "passWithNoTests": true
