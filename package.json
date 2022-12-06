@@ -27,7 +27,7 @@
     "@nrwl/jest": "14.8.6",
     "@nrwl/linter": "14.8.6",
     "@nrwl/workspace": "14.8.6",
-    "@nxext/ionic-angular": "^14.0.0",
+    "@nxext/capacitor": "^14.0.0",
     "@types/jest": "28.1.1",
     "@types/jest-when": "^3.5.2",
     "@types/node": "16.11.7",
