@@ -3,6 +3,7 @@ import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
+import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
@@ -11,12 +12,14 @@ import { VictoryHandlersService } from '../victory-handlers/victory-handlers.ser
 })
 export class DeathService {
   private knownDeaths = new Set<number>();
+  private deathsToAnnounce: Player[] = [];
   private afterDeathRoundQueue: RoundEnum[] = [];
   private rolesToRemove: PlayerRoleEnum[] = [];
 
   constructor(
     private roundHandlersService: RoundHandlersService,
-    private victoryHandlersService: VictoryHandlersService
+    private victoryHandlersService: VictoryHandlersService,
+    private announcementService: AnnouncementService
   ) {}
 
   getNextAfterDeathRound(): RoundEnum | undefined {
@@ -44,6 +47,13 @@ export class DeathService {
     return newPlayers;
   }
 
+  announceDeaths(): void {
+    if (this.deathsToAnnounce.length > 0) {
+      this.announcementService.announceDeaths(this.deathsToAnnounce);
+      this.deathsToAnnounce = [];
+    }
+  }
+
   private handleWolfTarget(players: Player[]): void {
     players
       .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
@@ -55,6 +65,7 @@ export class DeathService {
 
   private handlePlayerDeath(players: Player[], deadPlayer: Player): void {
     this.knownDeaths.add(deadPlayer.id);
+    this.deathsToAnnounce.push(deadPlayer);
     this.handlePlayerDeathStatuses(players, deadPlayer);
     this.handlePlayerDeathRole(players, deadPlayer);
   }

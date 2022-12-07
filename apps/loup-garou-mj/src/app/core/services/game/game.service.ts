@@ -112,6 +112,7 @@ export class GameService {
         this.router.navigate(['victory'], { queryParams: { victory } });
         return;
       }
+      this.deathService.announceDeaths();
     }
 
     this.setRound(nextRound);

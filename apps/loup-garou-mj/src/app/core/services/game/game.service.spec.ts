@@ -474,4 +474,115 @@ describe('GameService', () => {
 
     expect(victoryHandlersService.getVictory).toBeCalledTimes(0);
   });
+
+  it('should announce deaths after night if no victory', () => {
+    jest.spyOn(deathService, 'announceDeaths');
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.SORCIERE_KILL,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+    };
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = false;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = true;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+
+    jest.spyOn(deathService, 'handleNewDeaths').mockReturnValue([]);
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.SORCIERE_KILL)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.VILLAGEOIS);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].next(mockCurrentRoundConfig);
+
+    service.submitRoundAction([]);
+
+    expect(deathService.announceDeaths).toBeCalled();
+  });
+
+  it('should announce deaths during day if no victory', () => {
+    jest.spyOn(deathService, 'announceDeaths');
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.CAPITAINE,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+    };
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = true;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+
+    jest.spyOn(deathService, 'handleNewDeaths').mockReturnValue([]);
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.CAPITAINE)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.VILLAGEOIS);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].next(mockCurrentRoundConfig);
+
+    service.submitRoundAction([]);
+
+    expect(deathService.announceDeaths).toBeCalled();
+  });
+
+  it('should not announce deaths if next round is CHASSEUR', () => {
+    jest.spyOn(deathService, 'announceDeaths');
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.SORCIERE_KILL,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+    };
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = false;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = true;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+
+    jest.spyOn(deathService, 'handleNewDeaths').mockReturnValue([]);
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.SORCIERE_KILL)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.CHASSEUR)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.CHASSEUR);
+
+    jest.spyOn(victoryHandlersService, 'getVictory');
+
+    service['round'].next(mockCurrentRoundConfig);
+
+    service.submitRoundAction([]);
+
+    expect(deathService.announceDeaths).toBeCalledTimes(0);
+  });
 });
