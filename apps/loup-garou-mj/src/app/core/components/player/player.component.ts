@@ -38,7 +38,10 @@ export class PlayerComponent {
 
   @Input() set selectableRoles(roleList: PlayerRoleEnum[]) {
     const roles = [...roleList];
-    if (this.player.role !== undefined && !roles.includes(this.player.role)) {
+    if (
+      this.player.role !== PlayerRoleEnum.NOT_SELECTED &&
+      !roles.includes(this.player.role)
+    ) {
       roles.push(this.player.role);
     }
     this.sortedRoles = roles.sort((a, b) =>
@@ -55,6 +58,7 @@ export class PlayerComponent {
   @Output() roleChange = new EventEmitter<PlayerRoleEnum>();
 
   protected playerDisplayModeEnum = PlayerDisplayModeEnum;
+  protected playerRoleEnum = PlayerRoleEnum;
   protected sortedRoles: PlayerRoleEnum[] = [];
   protected customInterfaceOptions: ActionSheetOptions = {
     header: 'CHOISIR UN RÔLE',

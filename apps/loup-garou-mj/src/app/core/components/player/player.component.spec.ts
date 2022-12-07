@@ -73,4 +73,31 @@ describe('PlayerComponent', () => {
       true
     );
   });
+
+  it('should not add current role NOT_SELECTED to selectable roles on set', () => {
+    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.VILLAGEOIS)
+      .mockReturnValue('Villageois');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.LOUP_GAROU)
+      .mockReturnValue('Loup');
+
+    component.player = {
+      id: 0,
+      name: 'player',
+      role: PlayerRoleEnum.NOT_SELECTED,
+      statuses: new Set(),
+      isDead: false,
+    };
+
+    component.selectableRoles = [
+      PlayerRoleEnum.VILLAGEOIS,
+      PlayerRoleEnum.LOUP_GAROU,
+    ];
+
+    expect(
+      component['sortedRoles'].includes(PlayerRoleEnum.NOT_SELECTED)
+    ).toEqual(false);
+  });
 });

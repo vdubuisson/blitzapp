@@ -8,7 +8,10 @@
     name="skull"
   ></ion-icon>
 
-  <ion-thumbnail slot="start">
+  <ion-thumbnail
+    slot="start"
+    *ngIf="player.role !== playerRoleEnum.NOT_SELECTED"
+  >
     <img
       [src]="player.role | playerRoleImage"
       [alt]="player.role | playerRoleName"
@@ -25,9 +28,9 @@
 
 <ng-template #formElement>
   <ng-container [ngSwitch]="displayMode">
-    <!-- REMOVE mode -->
+    <!-- CREATE mode -->
     <ion-button
-      *ngSwitchCase="playerDisplayModeEnum.REMOVE"
+      *ngSwitchCase="playerDisplayModeEnum.CREATE"
       (click)="onRemove()"
       slot="start"
       color="danger"
@@ -56,7 +59,7 @@
 <ng-template #endElement>
   <ng-container [ngSwitch]="displayMode">
     <ion-reorder
-      *ngSwitchCase="playerDisplayModeEnum.REMOVE"
+      *ngSwitchCase="playerDisplayModeEnum.CREATE"
       slot="end"
     ></ion-reorder>
 

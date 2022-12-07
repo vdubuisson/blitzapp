@@ -1,6 +1,6 @@
 export enum PlayerDisplayModeEnum {
   DEFAULT,
-  REMOVE,
+  CREATE,
   SELECT_SINGLE,
   SELECT_MULTI,
   EDIT_ROLE,

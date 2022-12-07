@@ -55,43 +55,49 @@ export class NewGamePage {
     // },
   ];
 
-  protected playerDisplayMode = PlayerDisplayModeEnum.REMOVE;
+  protected playerDisplayMode = PlayerDisplayModeEnum.CREATE;
+  protected playerDisplayModeEnum = PlayerDisplayModeEnum;
 
-  protected availableRoles: PlayerRoleEnum[] = Object.values(PlayerRoleEnum)
-    // TODO Handle VOLEUR role
-    .filter((role) => role !== PlayerRoleEnum.VOLEUR);
+  protected pageSubtitle = 'Joueurs';
+
+  protected availableRoles: PlayerRoleEnum[] = this.getAvailableRoles();
+
+  protected get cannotCreate(): boolean {
+    return this.players.some(
+      (player) => player.role === PlayerRoleEnum.NOT_SELECTED
+    );
+  }
 
   constructor(private gameService: GameService) {}
+
+  protected validatePlayers(): void {
+    this.playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
+    this.pageSubtitle = 'Rôles';
+  }
 
   protected createGame(): void {
     this.gameService.createGame(this.players);
   }
 
-  protected addPlayer({
-    name,
-    role,
-  }: {
-    name: string;
-    role: PlayerRoleEnum;
-  }): void {
-    if (!NON_UNIQUE_ROLES.includes(role)) {
-      this.availableRoles = this.availableRoles.filter((r) => r !== role);
-    }
+  protected backToCreation(): void {
+    this.playerDisplayMode = PlayerDisplayModeEnum.CREATE;
+    this.pageSubtitle = 'Joueurs';
+  }
+
+  protected addPlayer(name: string): void {
     this.players.push({
       id: this.players.length,
       name,
-      role,
+      role: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set(),
       isDead: false,
     });
   }
 
   protected removePlayer(id: number): void {
-    const removedPlayer = this.players.splice(id, 1)[0];
+    this.players.splice(id, 1);
     this.reindexPlayers();
-    if (!NON_UNIQUE_ROLES.includes(removedPlayer.role)) {
-      this.availableRoles = [...this.availableRoles, removedPlayer.role];
-    }
+    this.availableRoles = this.getAvailableRoles();
   }
 
   protected reorderPlayer(event: Event): void {
@@ -101,7 +107,29 @@ export class NewGamePage {
     this.reindexPlayers();
   }
 
+  protected changeRole(id: number, role: PlayerRoleEnum): void {
+    const player = this.players.find((player) => player.id === id);
+    if (player !== undefined) {
+      player.role = role;
+      this.availableRoles = this.getAvailableRoles();
+    }
+  }
+
   private reindexPlayers(): void {
     this.players.forEach((player, index) => (player.id = index));
+  }
+
+  private getAvailableRoles(): PlayerRoleEnum[] {
+    const usedRoles = new Set(this.players.map((player) => player.role));
+    return (
+      Object.values(PlayerRoleEnum)
+        .filter(
+          (role) =>
+            role !== PlayerRoleEnum.NOT_SELECTED &&
+            (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
+        )
+        // TODO Handle VOLEUR role
+        .filter((role) => role !== PlayerRoleEnum.VOLEUR)
+    );
   }
 }

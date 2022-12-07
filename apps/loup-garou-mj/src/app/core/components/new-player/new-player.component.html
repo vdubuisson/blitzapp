@@ -10,10 +10,5 @@
       <ion-icon slot="icon-only" name="add"></ion-icon>
     </ion-button>
     <ion-input placeholder="Nom" formControlName="name"></ion-input>
-    <ion-select placeholder="Rôle" formControlName="role">
-      <ion-select-option *ngFor="let role of sortedRoles" [value]="role">{{
-        role | playerRoleName
-      }}</ion-select-option>
-    </ion-select>
   </ion-item>
 </form>

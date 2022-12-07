@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Nouvelle partie</ion-title>
+    <ion-title>Nouvelle partie - {{ pageSubtitle }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <div id="container">
     <lgmj-new-player
-      [roles]="availableRoles"
+      *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE"
       (newPlayer)="addPlayer($event)"
     ></lgmj-new-player>
 
@@ -20,18 +20,42 @@
           *ngFor="let player of players"
           [player]="player"
           [displayMode]="playerDisplayMode"
+          [selectableRoles]="availableRoles"
           (remove)="removePlayer(player.id)"
+          (roleChange)="changeRole(player.id, $event)"
         ></lgmj-player>
       </ion-reorder-group>
     </ion-list>
 
-    <ion-button
-      [disabled]="players.length === 0"
-      expand="block"
-      (click)="createGame()"
-      id="start-btn"
-    >
-      Démarrer
-    </ion-button>
+    <div id="submit-block">
+      <ion-button
+        *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE; else startButtons"
+        [disabled]="players.length === 0"
+        expand="block"
+        (click)="validatePlayers()"
+        class="ion-margin-horizontal"
+      >
+        Valider
+      </ion-button>
+    </div>
+
+    <ng-template #startButtons>
+      <ion-button
+        [disabled]="cannotCreate"
+        expand="block"
+        (click)="createGame()"
+        class="ion-margin-horizontal"
+      >
+        Démarrer
+      </ion-button>
+      <ion-button
+        expand="block"
+        (click)="backToCreation()"
+        class="ion-margin-horizontal"
+        color="danger"
+      >
+        Retour
+      </ion-button>
+    </ng-template>
   </div>
 </ion-content>
