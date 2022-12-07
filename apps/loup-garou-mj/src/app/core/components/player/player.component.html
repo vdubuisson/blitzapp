@@ -20,16 +20,7 @@
     <p>{{ player.role | playerRoleName }}</p>
   </ion-label>
 
-  <div slot="end">
-    <span class="status-icon" *ngFor="let status of player.statuses">{{
-      status | playerStatus
-    }}</span>
-  </div>
-
-  <ion-reorder
-    *ngIf="displayMode === playerDisplayModeEnum.REMOVE"
-    slot="end"
-  ></ion-reorder>
+  <ng-container *ngTemplateOutlet="endElement"></ng-container>
 </ion-item>
 
 <ng-template #formElement>
@@ -59,5 +50,34 @@
       slot="start"
       [value]="player.id"
     ></ion-radio>
+  </ng-container>
+</ng-template>
+
+<ng-template #endElement>
+  <ng-container [ngSwitch]="displayMode">
+    <ion-reorder
+      *ngSwitchCase="playerDisplayModeEnum.REMOVE"
+      slot="end"
+    ></ion-reorder>
+
+    <ion-select
+      *ngSwitchCase="playerDisplayModeEnum.EDIT_ROLE"
+      placeholder="Rôle"
+      interface="action-sheet"
+      [interfaceOptions]="customInterfaceOptions"
+      cancelText="Annuler"
+      [value]="player.role"
+      (ionChange)="onRoleChange($event)"
+    >
+      <ion-select-option *ngFor="let role of sortedRoles" [value]="role">{{
+        role | playerRoleName
+      }}</ion-select-option>
+    </ion-select>
+
+    <div slot="end" *ngSwitchDefault>
+      <span class="status-icon" *ngFor="let status of player.statuses">{{
+        status | playerStatus
+      }}</span>
+    </div>
   </ng-container>
 </ng-template>

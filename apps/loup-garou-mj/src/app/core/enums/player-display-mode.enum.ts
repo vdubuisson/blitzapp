@@ -3,4 +3,5 @@ export enum PlayerDisplayModeEnum {
   REMOVE,
   SELECT_SINGLE,
   SELECT_MULTI,
+  EDIT_ROLE,
 }
