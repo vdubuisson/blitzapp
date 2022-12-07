@@ -101,6 +101,7 @@ describe('GameService', () => {
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     service['round'].next(mockRound);
 
@@ -153,6 +154,7 @@ describe('GameService', () => {
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockRound);
     jest
@@ -187,6 +189,7 @@ describe('GameService', () => {
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     service['round'].next(mockRound);
 
@@ -204,12 +207,14 @@ describe('GameService', () => {
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     const mockNextRound: Round = {
       role: RoundEnum.SORCIERE_HEALTH,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
     service['round'].next(mockRound);
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockNextRound);
@@ -238,6 +243,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
 
     const mockSorciereKillHandler = new MockRoundHandler();
@@ -259,6 +265,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     mockChasseurHandler.getRoundConfig = () => mockChasseurRound;
     when(getHandlerSpy)
@@ -290,6 +297,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
 
     const mockSorciereKillHandler = new MockRoundHandler();
@@ -305,6 +313,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     mockVillageoisHandler.getRoundConfig = () => mockVillageoisRound;
     when(getHandlerSpy)
@@ -329,6 +338,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -363,6 +373,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -404,6 +415,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -445,6 +457,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -482,6 +495,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -519,6 +533,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -556,6 +571,7 @@ describe('GameService', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;

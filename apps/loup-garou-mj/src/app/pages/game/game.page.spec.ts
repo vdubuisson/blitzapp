@@ -42,6 +42,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     };
     mockRound$ = new BehaviorSubject(mockRound);
     gameService = MockService(GameService);
@@ -72,6 +73,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
@@ -86,6 +88,7 @@ describe('GamePage', () => {
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
+      isDuringDay: false,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
@@ -100,6 +103,7 @@ describe('GamePage', () => {
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
+      isDuringDay: false,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
@@ -114,6 +118,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     });
     component['selectedPlayer'] = undefined;
     component['round$'].subscribe(() => {
@@ -127,6 +132,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 1,
+      isDuringDay: false,
     });
     component['selectedPlayers'] = new Set([0, 1, 2]);
     component['round$'].subscribe(() => {
@@ -140,6 +146,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 2,
+      isDuringDay: false,
     });
     component['selectedPlayers'] = new Set([0]);
     component['round$'].subscribe(() => {
@@ -153,6 +160,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: false,
     });
     component['selectedPlayer'] = 0;
     component['round$'].subscribe(() => {
@@ -166,6 +174,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: false,
     });
     component['selectedPlayer'] = undefined;
     component['round$'].subscribe(() => {
@@ -179,6 +188,7 @@ describe('GamePage', () => {
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 1,
+      isDuringDay: false,
     });
     component['selectedPlayers'] = new Set([0]);
     component['round$'].subscribe(() => {
@@ -192,6 +202,7 @@ describe('GamePage', () => {
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
+      isDuringDay: false,
     });
     component['round$'].subscribe(() => {
       expect(component['submitDisabled']).toEqual(false);

@@ -22,6 +22,7 @@ export class CapitaineRoundHandler implements RoundHandler {
       selectablePlayers: this.getSelectablePlayers(players),
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: this.isDuringDay,
     };
   }
 

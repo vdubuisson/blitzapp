@@ -28,6 +28,7 @@ export class LoupGarouRoundHandler implements RoundHandler {
         .map((player) => player.id),
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: this.isDuringDay,
     };
   }
 }

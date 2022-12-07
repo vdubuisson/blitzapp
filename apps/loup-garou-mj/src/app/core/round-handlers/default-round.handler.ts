@@ -20,6 +20,7 @@ export abstract class DefaultRoundHandler implements RoundHandler {
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
+      isDuringDay: this.isDuringDay,
     };
   }
 }

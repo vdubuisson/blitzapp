@@ -18,6 +18,12 @@ describe('VillageoisRoundHandler', () => {
     expect(roundHandler.isDuringDay).toEqual(true);
   });
 
+  it('should return during day', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.isDuringDay).toEqual(true);
+  });
+
   it('should kill selected player', () => {
     const players: Player[] = [
       {

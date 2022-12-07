@@ -8,9 +8,12 @@
   <div id="container">
     <ng-container *ngIf="round$ | async as round">
       <div id="round-header">
-        <ion-note class="ion-text-center"
-          ><h2 id="round-subtitle">Tour actuel</h2></ion-note
-        >
+        <ion-note class="ion-text-center">
+          <h2 id="round-subtitle">
+            {{ round.isDuringDay ? '☀️' : '🌙' }} Tour actuel {{
+            round.isDuringDay ? '☀️' : '🌙' }}
+          </h2>
+        </ion-note>
         <hr />
         <ion-text class="ion-text-center"
           ><h1 id="round-title">{{ round.role | roundName }}</h1></ion-text

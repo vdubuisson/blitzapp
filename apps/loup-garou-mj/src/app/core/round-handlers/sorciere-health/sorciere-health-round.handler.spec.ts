@@ -19,6 +19,12 @@ describe('SorciereHealthRoundHandler', () => {
     expect(roundHandler.isDuringDay).toEqual(false);
   });
 
+  it('should return not during day', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.isDuringDay).toEqual(false);
+  });
+
   it('should remove WOLF_TARGET status to selected player', () => {
     const players: Player[] = [
       {

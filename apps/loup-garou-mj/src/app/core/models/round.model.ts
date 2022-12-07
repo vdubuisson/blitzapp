@@ -5,4 +5,5 @@ export interface Round {
   selectablePlayers: number[];
   maxSelectable: number;
   minSelectable: number;
+  isDuringDay: boolean;
 }

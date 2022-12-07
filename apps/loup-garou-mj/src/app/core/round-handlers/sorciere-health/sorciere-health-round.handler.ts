@@ -30,6 +30,7 @@ export class SorciereHealthRoundHandler implements RoundHandler {
         : [],
       maxSelectable: 1,
       minSelectable: 0,
+      isDuringDay: this.isDuringDay,
     };
   }
 

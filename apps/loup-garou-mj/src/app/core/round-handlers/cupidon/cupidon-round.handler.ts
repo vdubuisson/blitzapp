@@ -22,6 +22,7 @@ export class CupidonRoundHandler implements RoundHandler {
       selectablePlayers: players.map((player) => player.id),
       maxSelectable: 2,
       minSelectable: 2,
+      isDuringDay: this.isDuringDay,
     };
   }
 }

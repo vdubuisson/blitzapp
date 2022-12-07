@@ -19,6 +19,12 @@ describe('LoupGarouRoundHandler', () => {
     expect(roundHandler.isDuringDay).toEqual(false);
   });
 
+  it('should return not during day', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.isDuringDay).toEqual(false);
+  });
+
   it('should add WOLF_TARGET status to selected player', () => {
     const players: Player[] = [
       {

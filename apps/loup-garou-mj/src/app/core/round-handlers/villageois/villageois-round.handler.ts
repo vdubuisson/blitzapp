@@ -21,6 +21,7 @@ export class VillageoisRoundHandler implements RoundHandler {
       selectablePlayers: this.getKillablePlayers(players),
       maxSelectable: 1,
       minSelectable: 1,
+      isDuringDay: this.isDuringDay,
     };
   }
 

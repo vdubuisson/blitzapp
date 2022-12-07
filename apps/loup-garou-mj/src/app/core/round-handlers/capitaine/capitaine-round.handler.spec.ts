@@ -19,6 +19,12 @@ describe('CapitaineRoundHandler', () => {
     expect(roundHandler.isDuringDay).toEqual(true);
   });
 
+  it('should return during day', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.isDuringDay).toEqual(true);
+  });
+
   it('should add CAPTAIN status to selected player', () => {
     const players: Player[] = [
       {
