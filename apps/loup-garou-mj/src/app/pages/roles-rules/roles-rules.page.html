@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Règles des rôles</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-accordion-group>
+    <ion-accordion *ngFor="let role of roles">
+      <ion-item slot="header">
+        <ion-thumbnail slot="start">
+          <img [src]="role | playerRoleImage" [alt]="role | playerRoleName" />
+        </ion-thumbnail>
+        <ion-label>{{ role | playerRoleName }}</ion-label>
+      </ion-item>
+      <div
+        class="ion-padding rule"
+        slot="content"
+        [innerText]="rules[role]"
+      ></div>
+    </ion-accordion>
+  </ion-accordion-group>
+</ion-content>

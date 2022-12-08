@@ -22,6 +22,13 @@ export const appRoutes: Routes = [
       import('./pages/new-game/new-game.page').then((m) => m.NewGamePage),
   },
   {
+    path: 'roles-rules',
+    loadComponent: () =>
+      import('./pages/roles-rules/roles-rules.page').then(
+        (m) => m.RolesRulesPage
+      ),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
