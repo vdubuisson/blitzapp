@@ -8,11 +8,18 @@ import { Round } from '../../core/models/round.model';
 import { GameService } from '../../core/services/game/game.service';
 import { RoundNamePipe } from '../../core/pipes/round-name/round-name.pipe';
 import { PlayerComponent } from '../../core/components/player/player.component';
+import { HeaderComponent } from '../../core/components/header/header.component';
 
 @Component({
   selector: 'lgmj-game',
   standalone: true,
-  imports: [CommonModule, IonicModule, RoundNamePipe, PlayerComponent],
+  imports: [
+    CommonModule,
+    IonicModule,
+    RoundNamePipe,
+    PlayerComponent,
+    HeaderComponent,
+  ],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
 })

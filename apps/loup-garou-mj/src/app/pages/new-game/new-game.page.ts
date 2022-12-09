@@ -8,11 +8,18 @@ import { Player } from '../../core/models/player.model';
 import { GameService } from '../../core/services/game/game.service';
 import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
 import { PlayerComponent } from '../../core/components/player/player.component';
+import { HeaderComponent } from '../../core/components/header/header.component';
 
 @Component({
   selector: 'lgmj-new-game',
   standalone: true,
-  imports: [CommonModule, IonicModule, NewPlayerComponent, PlayerComponent],
+  imports: [
+    CommonModule,
+    IonicModule,
+    NewPlayerComponent,
+    PlayerComponent,
+    HeaderComponent,
+  ],
   templateUrl: './new-game.page.html',
   styleUrls: ['./new-game.page.scss'],
 })

@@ -4,11 +4,18 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { VictoryEnum } from '../../core/enums/victory.enum';
 import { IonicModule } from '@ionic/angular';
 import { VictoryNamePipe } from '../../core/pipes/victory-name/victory-name.pipe';
+import { HeaderComponent } from '../../core/components/header/header.component';
 
 @Component({
   selector: 'lgmj-victory',
   standalone: true,
-  imports: [CommonModule, RouterModule, IonicModule, VictoryNamePipe],
+  imports: [
+    CommonModule,
+    RouterModule,
+    IonicModule,
+    VictoryNamePipe,
+    HeaderComponent,
+  ],
   templateUrl: './victory.page.html',
   styleUrls: ['./victory.page.scss'],
 })
