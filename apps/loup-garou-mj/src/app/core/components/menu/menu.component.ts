@@ -7,7 +7,8 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { filter, Observable, Subject, takeUntil } from 'rxjs';
+import { GameService } from '../../services/game/game.service';
 
 @Component({
   selector: 'lgmj-menu',
@@ -17,11 +18,15 @@ import { filter, Subject, takeUntil } from 'rxjs';
   styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements AfterViewInit, OnDestroy {
+  protected isGameInProgress$: Observable<boolean>;
+
   @ViewChild('menu') private menu: IonMenu | undefined;
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private gameService: GameService) {
+    this.isGameInProgress$ = this.gameService.isGameInProgress();
+  }
 
   ngAfterViewInit(): void {
     this.router.events
