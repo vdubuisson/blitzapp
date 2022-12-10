@@ -63,6 +63,7 @@
         },
         "pages": {
           "outputPath": "docs",
+          "baseHref": "/blitzapp/",
           "fileReplacements": [
             {
               "replace": "apps/loup-garou-mj/src/environments/environment.ts",
