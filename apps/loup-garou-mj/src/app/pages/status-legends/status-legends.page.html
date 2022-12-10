@@ -1,0 +1,19 @@
+<lgmj-header title="Légende des statuts"></lgmj-header>
+
+<ion-content>
+  <ion-accordion-group>
+    <ion-accordion *ngFor="let status of statuses; trackBy: statusTrackBy">
+      <ion-item slot="header">
+        <span slot="start" class="status-icon"
+          >{{ status | playerStatus }}</span
+        >
+        <ion-label>{{ status | playerStatusName }}</ion-label>
+      </ion-item>
+      <div
+        class="ion-padding legend"
+        slot="content"
+        [innerText]="legends[status]"
+      ></div>
+    </ion-accordion>
+  </ion-accordion-group>
+</ion-content>

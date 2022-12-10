@@ -6,6 +6,7 @@ import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-rol
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
 import { HeaderComponent } from '../../core/components/header/header.component';
+import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
 
 @Component({
   selector: 'lgmj-roles-rules',
@@ -30,6 +31,8 @@ export class RolesRulesPage {
         .transform(a)
         .localeCompare(this.playerRoleNamePipe.transform(b))
     );
+
+  protected roleTrackBy = ROLE_TRACK_BY;
 
   constructor(private playerRoleNamePipe: PlayerRoleNamePipe) {}
 }

@@ -12,6 +12,8 @@ import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-i
 import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
 import { PlayerStatusPipe } from '../../pipes/player-status/player-status.pipe';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { ROLE_TRACK_BY } from '../../utils/role.track-by';
+import { STATUS_TRACK_BY } from '../../utils/status.track-by';
 
 @Component({
   selector: 'lgmj-player',
@@ -56,6 +58,9 @@ export class PlayerComponent {
   @Output() checkedChange = new EventEmitter<boolean>();
 
   @Output() roleChange = new EventEmitter<PlayerRoleEnum>();
+
+  protected roleTrackBy = ROLE_TRACK_BY;
+  protected statusTrackBy = STATUS_TRACK_BY;
 
   protected playerDisplayModeEnum = PlayerDisplayModeEnum;
   protected playerRoleEnum = PlayerRoleEnum;

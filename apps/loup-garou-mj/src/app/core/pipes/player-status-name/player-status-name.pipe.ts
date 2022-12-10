@@ -2,40 +2,40 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 
 @Pipe({
-  name: 'playerStatus',
+  name: 'playerStatusName',
   standalone: true,
 })
-export class PlayerStatusPipe implements PipeTransform {
+export class PlayerStatusNamePipe implements PipeTransform {
   transform(status: PlayerStatusEnum): string {
     switch (status) {
       case PlayerStatusEnum.WOLF_TARGET:
-        return '🐺';
+        return 'Cible loups-garous';
       case PlayerStatusEnum.HEALTH_POTION:
-        return '💚';
+        return 'Potion de vie';
       case PlayerStatusEnum.DEATH_POTION:
-        return '🖤';
+        return 'Potion de mort';
       case PlayerStatusEnum.CAPTAIN:
-        return '🎖️';
+        return 'Capitaine';
       case PlayerStatusEnum.LOVER:
-        return '💕';
+        return 'Amoureux';
       // case PlayerStatusEnum.FIRST_DEATH:
-      //   return '☠️';
+      //   return 'Mort une fois';
       // case PlayerStatusEnum.PROTECTED:
-      //   return '🛡️';
+      //   return 'Protégé';
       // case PlayerStatusEnum.NO_POWER:
-      //   return '❌';
+      //   return 'Plus de pouvoir';
       // case PlayerStatusEnum.CHARMED:
-      //   return '🎶';
+      //   return 'Charmé';
       // case PlayerStatusEnum.CHILD_MODEL:
-      //   return '🧒';
+      //   return 'Modèle';
       // case PlayerStatusEnum.RAVEN:
-      //   return '🪶';
+      //   return 'Cible du corbeau';
       // case PlayerStatusEnum.RUSTY_SWORD:
-      //   return '🗡️';
+      //   return 'Touché par l'épée rouillée';
       // case PlayerStatusEnum.COMEDIAN:
-      //   return '🎭';
+      //   return 'Comédien';
       // case PlayerStatusEnum.INFECTED:
-      //   return '🩸';
+      //   return 'Infecté';
       default:
         return '';
     }

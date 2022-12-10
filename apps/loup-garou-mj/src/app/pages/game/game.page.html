@@ -23,7 +23,7 @@
           [value]="selectedPlayer"
         >
           <lgmj-player
-            *ngFor="let player of (players$ | async)"
+            *ngFor="let player of (players$ | async); trackBy: playerTrackBy"
             [player]="player"
             [displayMode]="playerDisplayMode"
             [disabled]="!round.selectablePlayers.includes(player.id)"

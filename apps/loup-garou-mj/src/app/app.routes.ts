@@ -28,6 +28,14 @@ export const appRoutes: Routes = [
       ),
   },
   {
+    path: 'status-legends',
+    title: 'LG Assistant MJ | Légende des statuts',
+    loadComponent: () =>
+      import('./pages/status-legends/status-legends.page').then(
+        (m) => m.StatusLegendsPage
+      ),
+  },
+  {
     path: '',
     pathMatch: 'full',
     title: 'LG Assistant MJ | Accueil',

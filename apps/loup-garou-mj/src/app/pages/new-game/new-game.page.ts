@@ -9,6 +9,7 @@ import { GameService } from '../../core/services/game/game.service';
 import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
 import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
+import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 
 @Component({
   selector: 'lgmj-new-game',
@@ -64,6 +65,8 @@ export class NewGamePage {
 
   protected playerDisplayMode = PlayerDisplayModeEnum.CREATE;
   protected playerDisplayModeEnum = PlayerDisplayModeEnum;
+
+  protected playerTrackBy = PLAYER_TRACK_BY;
 
   protected pageSubtitle = 'Joueurs';
 
