@@ -13,7 +13,7 @@
         [disabled]="false"
       >
         <lgmj-player
-          *ngFor="let player of players"
+          *ngFor="let player of players; trackBy: playerTrackBy"
           [player]="player"
           [displayMode]="playerDisplayMode"
           [selectableRoles]="availableRoles"

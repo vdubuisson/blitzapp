@@ -72,15 +72,19 @@
       [value]="player.role"
       (ionChange)="onRoleChange($event)"
     >
-      <ion-select-option *ngFor="let role of sortedRoles" [value]="role">{{
-        role | playerRoleName
-      }}</ion-select-option>
+      <ion-select-option
+        *ngFor="let role of sortedRoles; trackBy: roleTrackBy"
+        [value]="role"
+        >{{ role | playerRoleName }}</ion-select-option
+      >
     </ion-select>
 
     <div slot="end" *ngSwitchDefault>
-      <span class="status-icon" *ngFor="let status of player.statuses">{{
-        status | playerStatus
-      }}</span>
+      <span
+        class="status-icon"
+        *ngFor="let status of player.statuses; trackBy: statusTrackBy"
+        >{{ status | playerStatus }}</span
+      >
     </div>
   </ng-container>
 </ng-template>

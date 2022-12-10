@@ -9,6 +9,7 @@ import { GameService } from '../../core/services/game/game.service';
 import { RoundNamePipe } from '../../core/pipes/round-name/round-name.pipe';
 import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
+import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 
 @Component({
   selector: 'lgmj-game',
@@ -29,6 +30,8 @@ export class GamePage {
 
   protected playerDisplayMode: PlayerDisplayModeEnum =
     PlayerDisplayModeEnum.DEFAULT;
+
+  protected playerTrackBy = PLAYER_TRACK_BY;
 
   protected selectedPlayer?: number;
   protected selectedPlayers = new Set<number>();

@@ -2,7 +2,7 @@
 
 <ion-content>
   <ion-accordion-group>
-    <ion-accordion *ngFor="let role of roles">
+    <ion-accordion *ngFor="let role of roles; trackBy: roleTrackBy">
       <ion-item slot="header">
         <ion-thumbnail slot="start">
           <img [src]="role | playerRoleImage" [alt]="role | playerRoleName" />
