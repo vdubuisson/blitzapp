@@ -5,7 +5,12 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <ion-item routerLink="/home" routerLinkActive="active">Accueil</ion-item>
+    <ion-item
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Accueil</ion-item
+    >
     <ion-item
       *ngIf="isGameInProgress$ | async"
       routerLink="/game"
