@@ -2,12 +2,6 @@ import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
   {
-    path: 'home',
-    title: 'LG Assistant MJ | Accueil',
-    loadComponent: () =>
-      import('./pages/home/home.page').then((m) => m.HomePage),
-  },
-  {
     path: 'victory',
     title: 'LG Assistant MJ | Victoire',
     loadComponent: () =>
@@ -35,7 +29,9 @@ export const appRoutes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
     pathMatch: 'full',
+    title: 'LG Assistant MJ | Accueil',
+    loadComponent: () =>
+      import('./pages/home/home.page').then((m) => m.HomePage),
   },
 ];
