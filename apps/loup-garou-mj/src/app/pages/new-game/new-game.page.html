@@ -2,6 +2,18 @@
 
 <ion-content>
   <div id="container">
+    <ion-item
+      *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE"
+      lines="full"
+    >
+      <ion-icon
+        slot="start"
+        name="warning"
+        size="large"
+        color="warning"
+      ></ion-icon>
+      <em>Respectez la position réelle des joueurs</em>
+    </ion-item>
     <lgmj-new-player
       *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE"
       (newPlayer)="addPlayer($event)"
