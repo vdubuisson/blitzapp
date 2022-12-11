@@ -87,6 +87,8 @@ export class NewGamePage {
 
   protected createGame(): void {
     this.gameService.createGame(this.players);
+    this.players = [];
+    this.backToCreation();
   }
 
   protected backToCreation(): void {

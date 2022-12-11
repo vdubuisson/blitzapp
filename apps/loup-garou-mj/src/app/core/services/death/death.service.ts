@@ -28,6 +28,8 @@ export class DeathService {
 
   reset(): void {
     this.knownDeaths.clear();
+    this.deathsToAnnounce = [];
+    this.rolesToRemove = [];
     this.afterDeathRoundQueue = [];
   }
 
@@ -43,7 +45,6 @@ export class DeathService {
     this.roundHandlersService.removeHandlers(this.rolesToRemove);
     this.victoryHandlersService.removeUselessHandlers(players);
 
-    // TODO Annonce des nouveaux morts avec service d'annonce
     return newPlayers;
   }
 

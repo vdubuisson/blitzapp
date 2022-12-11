@@ -50,6 +50,22 @@ describe('DeathService', () => {
     expect(service['afterDeathRoundQueue'].length).toEqual(0);
   });
 
+  it('should empty deathsToAnnounce on reset', () => {
+    service['deathsToAnnounce'] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+
+    service.reset();
+
+    expect(service['deathsToAnnounce'].length).toEqual(0);
+  });
+
   it('should kill players with WOLF_TARGET status', () => {
     const mockPlayers: Player[] = [
       {

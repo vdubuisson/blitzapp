@@ -243,4 +243,24 @@ describe('NewGamePage', () => {
 
     expect(component['cannotCreate']).toEqual(false);
   });
+
+  it('should reset after game creation', () => {
+    component['players'] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    component['playerDisplayMode'] = PlayerDisplayModeEnum.EDIT_ROLE;
+
+    component['createGame']();
+
+    expect(component['players'].length).toEqual(0);
+    expect(component['playerDisplayMode']).toEqual(
+      PlayerDisplayModeEnum.CREATE
+    );
+  });
 });

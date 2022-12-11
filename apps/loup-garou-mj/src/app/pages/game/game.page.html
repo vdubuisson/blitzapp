@@ -6,8 +6,9 @@
       <div id="round-header">
         <ion-note class="ion-text-center">
           <h2 id="round-subtitle">
-            {{ round.isDuringDay ? '☀️' : '🌙' }} Tour actuel {{
-            round.isDuringDay ? '☀️' : '🌙' }}
+            <span class="day-icon">{{ round.isDuringDay ? '☀️' : '🌙' }}</span>
+            Tour actuel
+            <span class="day-icon">{{ round.isDuringDay ? '☀️' : '🌙' }}</span>
           </h2>
         </ion-note>
         <hr />
