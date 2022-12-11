@@ -8,6 +8,10 @@
   #round-subtitle {
     text-transform: uppercase;
     font-size: 15px;
+
+    .day-icon {
+      font-size: 25px;
+    }
   }
 
   #round-title {
@@ -18,6 +22,7 @@
 
   hr {
     width: 15%;
+    background-color: grey;
 
     @media (prefers-color-scheme: dark) {
       background-color: white;

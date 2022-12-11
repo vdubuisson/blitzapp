@@ -26,8 +26,4 @@ export class StatusLegendsPage {
   protected statuses = Object.values(PlayerStatusEnum);
 
   protected statusTrackBy = STATUS_TRACK_BY;
-
-  constructor() {
-    console.log(Object.values(PlayerStatusEnum));
-  }
 }
