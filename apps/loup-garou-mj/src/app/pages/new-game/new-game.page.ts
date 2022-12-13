@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ItemReorderCustomEvent } from '@ionic/angular';
+import {
+  IonicModule,
+  ItemReorderCustomEvent,
+  ViewWillEnter,
+} from '@ionic/angular';
 import { NON_UNIQUE_ROLES } from '../../core/constants/non-unique-roles';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
@@ -10,6 +14,8 @@ import { NewPlayerComponent } from '../../core/components/new-player/new-player.
 import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
+import { map, take } from 'rxjs/operators';
+import { PlayerStatusEnum } from '../../core/enums/player-status.enum';
 
 @Component({
   selector: 'lgmj-new-game',
@@ -24,7 +30,7 @@ import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
   templateUrl: './new-game.page.html',
   styleUrls: ['./new-game.page.scss'],
 })
-export class NewGamePage {
+export class NewGamePage implements ViewWillEnter {
   protected players: Player[] = [
     // {
     //   id: 0,
@@ -80,6 +86,25 @@ export class NewGamePage {
 
   constructor(private gameService: GameService) {}
 
+  ionViewWillEnter(): void {
+    if (this.players.length === 0) {
+      this.gameService
+        .getPlayers()
+        .pipe(
+          take(1),
+          map((players) =>
+            players.map((player) => ({
+              ...player,
+              role: PlayerRoleEnum.NOT_SELECTED,
+              statuses: new Set<PlayerStatusEnum>(),
+              isDead: false,
+            }))
+          )
+        )
+        .subscribe((players) => (this.players = players));
+    }
+  }
+
   protected validatePlayers(): void {
     this.playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
     this.pageSubtitle = 'Rôles';
@@ -101,7 +126,7 @@ export class NewGamePage {
       id: this.players.length,
       name,
       role: PlayerRoleEnum.NOT_SELECTED,
-      statuses: new Set(),
+      statuses: new Set<PlayerStatusEnum>(),
       isDead: false,
     });
   }

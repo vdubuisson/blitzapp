@@ -1,5 +1,6 @@
 import { waitForAsync } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
+import { of } from 'rxjs';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { Player } from '../../core/models/player.model';
@@ -262,5 +263,30 @@ describe('NewGamePage', () => {
     expect(component['playerDisplayMode']).toEqual(
       PlayerDisplayModeEnum.CREATE
     );
+  });
+
+  it('should take previous players to replay on view enter', () => {
+    jest.spyOn(gameService, 'getPlayers').mockReturnValue(of(mockPlayers));
+
+    component['players'] = [];
+
+    component.ionViewWillEnter();
+
+    expect(component['players']).toEqual([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
   });
 });
