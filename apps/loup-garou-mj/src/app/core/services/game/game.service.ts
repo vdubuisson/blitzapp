@@ -40,6 +40,8 @@ export class GameService {
   }
 
   createGame(players: Player[]): void {
+    this.roundOrchestrationService.resetRounds();
+    this.deathService.reset();
     const roles = players.map((player) => player.role);
     this.roundHandlersService.initHandlers(roles);
     this.victoryHandlersService.initHandlers(roles);
