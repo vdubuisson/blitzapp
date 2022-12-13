@@ -122,6 +122,22 @@ describe('GameService', () => {
     ]);
   });
 
+  it('should reset rounds on game creation', () => {
+    jest.spyOn(roundOrchestrationService, 'resetRounds');
+
+    service.createGame(mockPlayers);
+
+    expect(roundOrchestrationService.resetRounds).toBeCalled();
+  });
+
+  it('should reset deaths on game creation', () => {
+    jest.spyOn(deathService, 'reset');
+
+    service.createGame(mockPlayers);
+
+    expect(deathService.reset).toBeCalled();
+  });
+
   it('should init victory handlers on game creation', () => {
     jest.spyOn(victoryHandlersService, 'initHandlers');
 
