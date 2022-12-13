@@ -92,8 +92,21 @@ export class GameService {
       );
       this.players.next(playersAfterDeath);
     }
-    let nextRound =
-      this.roundOrchestrationService.getNextRound(currentRoundRole);
+
+    let nextRound;
+    try {
+      nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
+    } catch (error) {
+      const victory = this.victoryHandlersService.getVictory(
+        this.players.value
+      );
+      if (victory !== undefined) {
+        this.gameInProgess.next(false);
+        this.router.navigate(['victory'], { queryParams: { victory } });
+        return;
+      }
+      throw error;
+    }
 
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
     if (
