@@ -9,4 +9,5 @@ export enum PlayerRoleEnum {
   VOLEUR = 'VOLEUR',
   VOYANTE = 'VOYANTE',
   JOUEUR_FLUTE = 'JOUEUR_FLUTE',
+  CORBEAU = 'CORBEAU',
 }
