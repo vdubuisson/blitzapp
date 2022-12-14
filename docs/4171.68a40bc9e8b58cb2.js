@@ -25,6 +25,8 @@
               return 'Amoureux';
             case t.M.CHARMED:
               return 'Charm\xe9';
+            case t.M.RAVEN:
+              return 'Cible du corbeau';
             default:
               return '';
           }
@@ -49,6 +51,8 @@
         [t.M.LOVER]: "Ce joueur fait partie du couple d'amoureux.",
         [t.M.CHARMED]:
           'Ce joueur a \xe9t\xe9 charm\xe9 par le joueur de fl\xfbte.',
+        [t.M.RAVEN]:
+          'Ce joueur est actuellement accus\xe9 par le corbeau, il a 2 votes contre lui en plus.',
       };
       var m = s(100);
       function T(n, a) {

@@ -3,18 +3,18 @@
   [8592],
   {
     7543: (O, g, i) => {
-      i.d(g, { c: () => u });
+      i.d(g, { c: () => d });
       var e = i(1308),
         l = i(7864),
         n = i(1911);
-      const u = (a, s) => {
+      const d = (a, s) => {
         let o, t;
         const c = (_, w, E) => {
             if (typeof document > 'u') return;
             const y = document.elementFromPoint(_, w);
-            y && s(y) ? y !== o && (m(), d(y, E)) : m();
+            y && s(y) ? y !== o && (m(), u(y, E)) : m();
           },
-          d = (_, w) => {
+          u = (_, w) => {
             (o = _), t || (t = o);
             const E = o;
             (0, e.c)(() => E.classList.add('ion-activated')), w();
@@ -40,14 +40,14 @@
     },
     2225: (O, g, i) => {
       i.d(g, { g: () => e });
-      const e = (s, o, t, c, d) =>
-          n(s[1], o[1], t[1], c[1], d).map((m) => l(s[0], o[0], t[0], c[0], m)),
-        l = (s, o, t, c, d) =>
-          d * (3 * o * Math.pow(d - 1, 2) + d * (-3 * t * d + 3 * t + c * d)) -
-          s * Math.pow(d - 1, 3),
-        n = (s, o, t, c, d) =>
+      const e = (s, o, t, c, u) =>
+          n(s[1], o[1], t[1], c[1], u).map((m) => l(s[0], o[0], t[0], c[0], m)),
+        l = (s, o, t, c, u) =>
+          u * (3 * o * Math.pow(u - 1, 2) + u * (-3 * t * u + 3 * t + c * u)) -
+          s * Math.pow(u - 1, 3),
+        n = (s, o, t, c, u) =>
           a(
-            (c -= d) - 3 * (t -= d) + 3 * (o -= d) - (s -= d),
+            (c -= u) - 3 * (t -= u) + 3 * (o -= u) - (s -= u),
             3 * t - 6 * o + 3 * s,
             3 * o - 3 * s,
             s
@@ -63,11 +63,11 @@
                     (-o - Math.sqrt(c)) / (2 * s),
                   ];
             })(o, t, c);
-          const d = (3 * (t /= s) - (o /= s) * o) / 3,
+          const u = (3 * (t /= s) - (o /= s) * o) / 3,
             m = (2 * o * o * o - 9 * o * t + 27 * (c /= s)) / 27;
-          if (0 === d) return [Math.pow(-m, 1 / 3)];
-          if (0 === m) return [Math.sqrt(-d), -Math.sqrt(-d)];
-          const _ = Math.pow(m / 2, 2) + Math.pow(d / 3, 3);
+          if (0 === u) return [Math.pow(-m, 1 / 3)];
+          if (0 === m) return [Math.sqrt(-u), -Math.sqrt(-u)];
+          const _ = Math.pow(m / 2, 2) + Math.pow(u / 3, 3);
           if (0 === _) return [Math.pow(m / 2, 0.5) - o / 3];
           if (_ > 0)
             return [
@@ -75,8 +75,8 @@
                 Math.pow(m / 2 + Math.sqrt(_), 1 / 3) -
                 o / 3,
             ];
-          const w = Math.sqrt(Math.pow(-d / 3, 3)),
-            E = Math.acos(-m / (2 * Math.sqrt(Math.pow(-d / 3, 3)))),
+          const w = Math.sqrt(Math.pow(-u / 3, 3)),
+            E = Math.acos(-m / (2 * Math.sqrt(Math.pow(-u / 3, 3)))),
             y = 2 * Math.pow(w, 1 / 3);
           return [
             y * Math.cos(E / 3) - o / 3,
@@ -93,7 +93,7 @@
           : 'rtl' === document?.dir.toLowerCase();
     },
     5106: (O, g, i) => {
-      i.r(g), i.d(g, { startFocusVisible: () => u });
+      i.r(g), i.d(g, { startFocusVisible: () => d });
       const e = 'ion-focused',
         n = [
           'Tab',
@@ -109,32 +109,32 @@
           'Home',
           'End',
         ],
-        u = (a) => {
+        d = (a) => {
           let s = [],
             o = !0;
           const t = a ? a.shadowRoot : document,
             c = a || document.body,
-            d = (T) => {
+            u = (T) => {
               s.forEach((h) => h.classList.remove(e)),
                 T.forEach((h) => h.classList.add(e)),
                 (s = T);
             },
             m = () => {
-              (o = !1), d([]);
+              (o = !1), u([]);
             },
             _ = (T) => {
-              (o = n.includes(T.key)), o || d([]);
+              (o = n.includes(T.key)), o || u([]);
             },
             w = (T) => {
               if (o && void 0 !== T.composedPath) {
                 const h = T.composedPath().filter(
                   (f) => !!f.classList && f.classList.contains('ion-focusable')
                 );
-                d(h);
+                u(h);
               }
             },
             E = () => {
-              t.activeElement === c && d([]);
+              t.activeElement === c && u([]);
             };
           return (
             t.addEventListener('keydown', _),
@@ -150,19 +150,19 @@
                   t.removeEventListener('touchstart', m),
                   t.removeEventListener('mousedown', m);
               },
-              setFocus: d,
+              setFocus: u,
             }
           );
         };
     },
     7040: (O, g, i) => {
-      i.d(g, { C: () => a, a: () => n, d: () => u });
+      i.d(g, { C: () => a, a: () => n, d: () => d });
       var e = i(5861),
         l = i(5730);
       const n = (function () {
-          var s = (0, e.Z)(function* (o, t, c, d, m, _) {
+          var s = (0, e.Z)(function* (o, t, c, u, m, _) {
             var w;
-            if (o) return o.attachViewToDom(t, c, m, d);
+            if (o) return o.attachViewToDom(t, c, m, u);
             if (!(_ || 'string' == typeof c || c instanceof HTMLElement))
               throw new Error('framework delegate is missing');
             const E =
@@ -172,18 +172,18 @@
                   : w.createElement(c)
                 : c;
             return (
-              d && d.forEach((y) => E.classList.add(y)),
+              u && u.forEach((y) => E.classList.add(y)),
               m && Object.assign(E, m),
               t.appendChild(E),
               yield new Promise((y) => (0, l.c)(E, y)),
               E
             );
           });
-          return function (t, c, d, m, _, w) {
+          return function (t, c, u, m, _, w) {
             return s.apply(this, arguments);
           };
         })(),
-        u = (s, o) => {
+        d = (s, o) => {
           if (o) {
             if (s) return s.removeViewFromDom(o.parentElement, o);
             o.remove();
@@ -194,7 +194,7 @@
           let s, o;
           return {
             attachViewToDom: (function () {
-              var d = (0, e.Z)(function* (m, _, w = {}, E = []) {
+              var u = (0, e.Z)(function* (m, _, w = {}, E = []) {
                 var y, T;
                 if (((s = m), _)) {
                   const f =
@@ -229,7 +229,7 @@
                 );
               });
               return function (_, w) {
-                return d.apply(this, arguments);
+                return u.apply(this, arguments);
               };
             })(),
             removeViewFromDom: () => (
@@ -240,7 +240,7 @@
         };
     },
     7864: (O, g, i) => {
-      i.d(g, { a: () => u, b: () => a, c: () => n, d: () => o, h: () => s });
+      i.d(g, { a: () => d, b: () => a, c: () => n, d: () => o, h: () => s });
       const e = {
           getEngine() {
             var t;
@@ -270,14 +270,14 @@
           impact(t) {
             const c = this.getEngine();
             if (!c) return;
-            const d = this.isCapacitor() ? t.style.toUpperCase() : t.style;
-            c.impact({ style: d });
+            const u = this.isCapacitor() ? t.style.toUpperCase() : t.style;
+            c.impact({ style: u });
           },
           notification(t) {
             const c = this.getEngine();
             if (!c) return;
-            const d = this.isCapacitor() ? t.style.toUpperCase() : t.style;
-            c.notification({ style: d });
+            const u = this.isCapacitor() ? t.style.toUpperCase() : t.style;
+            c.notification({ style: u });
           },
           selection() {
             this.impact({ style: 'light' });
@@ -306,7 +306,7 @@
         n = () => {
           l() && e.selection();
         },
-        u = () => {
+        d = () => {
           l() && e.selectionStart();
         },
         a = () => {
@@ -322,7 +322,7 @@
     6642: (O, g, i) => {
       i.d(g, {
         I: () => a,
-        a: () => d,
+        a: () => u,
         b: () => s,
         c: () => w,
         d: () => y,
@@ -350,7 +350,7 @@
             return h.apply(this, arguments);
           };
         })(),
-        d = (h) => h.querySelector(s) || h.querySelector(o),
+        u = (h) => h.querySelector(s) || h.querySelector(o),
         m = (h) => h.closest(o),
         _ = (h, f) =>
           t(h)
@@ -398,11 +398,11 @@
         j: () => r,
         k: () => M,
         l: () => t,
-        m: () => d,
+        m: () => u,
         n: () => y,
         o: () => c,
         p: () => a,
-        q: () => u,
+        q: () => d,
         r: () => f,
         s: () => L,
         t: () => m,
@@ -415,7 +415,7 @@
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Arrow Down</title><path stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M112 268l144 144 144-144M256 392V100' class='ionicon-fill-none'/></svg>",
         n =
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Caret Back</title><path d='M368 64L144 256l224 192V64z'/></svg>",
-        u =
+        d =
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Caret Down</title><path d='M64 144l192 224 192-224H64z'/></svg>",
         a =
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Caret Up</title><path d='M448 368L256 144 64 368h384z'/></svg>",
@@ -427,7 +427,7 @@
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Down</title><path stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M112 184l144 144 144-144' class='ionicon-fill-none'/></svg>",
         c =
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Forward</title><path stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M184 112l144 144-144 144' class='ionicon-fill-none'/></svg>",
-        d =
+        u =
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Forward</title><path stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M184 112l144 144-144 144' class='ionicon-fill-none'/></svg>",
         m =
           "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Close</title><path d='M289.94 256l95-95A24 24 0 00351 127l-95 95-95-95a24 24 0 00-34 34l95 95-95 95a24 24 0 1034 34l95-95 95 95a24 24 0 0034-34z'/></svg>",
@@ -459,11 +459,11 @@
       const e = (t) => {
           try {
             if (t instanceof o) return t.value;
-            if (!u() || 'string' != typeof t || '' === t) return t;
+            if (!d() || 'string' != typeof t || '' === t) return t;
             const c = document.createDocumentFragment(),
-              d = document.createElement('div');
-            c.appendChild(d),
-              (d.innerHTML = t),
+              u = document.createElement('div');
+            c.appendChild(u),
+              (u.innerHTML = t),
               s.forEach((E) => {
                 const y = c.querySelectorAll(E);
                 for (let T = y.length - 1; T >= 0; T--) {
@@ -485,8 +485,8 @@
         },
         l = (t) => {
           if (t.nodeType && 1 !== t.nodeType) return;
-          for (let d = t.attributes.length - 1; d >= 0; d--) {
-            const m = t.attributes.item(d),
+          for (let u = t.attributes.length - 1; u >= 0; u--) {
+            const m = t.attributes.item(u),
               _ = m.name;
             if (!a.includes(_.toLowerCase())) {
               t.removeAttribute(_);
@@ -498,18 +498,18 @@
               t.removeAttribute(_);
           }
           const c = n(t);
-          for (let d = 0; d < c.length; d++) l(c[d]);
+          for (let u = 0; u < c.length; u++) l(c[u]);
         },
         n = (t) => (null != t.children ? t.children : t.childNodes),
-        u = () => {
+        d = () => {
           var t;
-          const d =
+          const u =
             null === (t = window?.Ionic) || void 0 === t ? void 0 : t.config;
           return (
-            !d ||
-            (d.get
-              ? d.get('sanitizerEnabled', !0)
-              : !0 === d.sanitizerEnabled || void 0 === d.sanitizerEnabled)
+            !u ||
+            (u.get
+              ? u.get('sanitizerEnabled', !0)
+              : !0 === u.sanitizerEnabled || void 0 === u.sanitizerEnabled)
           );
         },
         a = ['class', 'id', 'href', 'src', 'name', 'slot'],
@@ -531,38 +531,38 @@
           keyboardDidResize: () => w,
           resetKeyboardAssist: () => o,
           setKeyboardClose: () => m,
-          setKeyboardOpen: () => d,
+          setKeyboardOpen: () => u,
           startKeyboardAssist: () => t,
           trackViewportChanges: () => h,
         });
       const e = 'ionKeyboardDidShow',
         l = 'ionKeyboardDidHide';
-      let u = {},
+      let d = {},
         a = {},
         s = !1;
       const o = () => {
-          (u = {}), (a = {}), (s = !1);
+          (d = {}), (a = {}), (s = !1);
         },
         t = (r) => {
           c(r),
             r.visualViewport &&
               ((a = f(r.visualViewport)),
               (r.visualViewport.onresize = () => {
-                h(r), _() || w(r) ? d(r) : E(r) && m(r);
+                h(r), _() || w(r) ? u(r) : E(r) && m(r);
               }));
         },
         c = (r) => {
-          r.addEventListener('keyboardDidShow', (M) => d(r, M)),
+          r.addEventListener('keyboardDidShow', (M) => u(r, M)),
             r.addEventListener('keyboardDidHide', () => m(r));
         },
-        d = (r, M) => {
+        u = (r, M) => {
           y(r, M), (s = !0);
         },
         m = (r) => {
           T(r), (s = !1);
         },
         _ = () =>
-          !s && u.width === a.width && (u.height - a.height) * a.scale > 150,
+          !s && d.width === a.width && (d.height - a.height) * a.scale > 150,
         w = (r) => s && !E(r),
         E = (r) => s && a.height === r.innerHeight,
         y = (r, M) => {
@@ -578,7 +578,7 @@
           r.dispatchEvent(M);
         },
         h = (r) => {
-          (u = Object.assign({}, a)), (a = f(r.visualViewport));
+          (d = Object.assign({}, a)), (a = f(r.visualViewport));
         },
         f = (r) => ({
           width: Math.round(r.width),
@@ -594,15 +594,15 @@
       i.d(g, { c: () => l });
       var e = i(3457);
       const l = (n) => {
-        let u, a, s;
+        let d, a, s;
         const o = () => {
-          (u = () => {
+          (d = () => {
             (s = !0), n && n(!0);
           }),
             (a = () => {
               (s = !1), n && n(!1);
             }),
-            null == e.w || e.w.addEventListener('keyboardWillShow', u),
+            null == e.w || e.w.addEventListener('keyboardWillShow', d),
             null == e.w || e.w.addEventListener('keyboardWillHide', a);
         };
         return (
@@ -610,9 +610,9 @@
           {
             init: o,
             destroy: () => {
-              null == e.w || e.w.removeEventListener('keyboardWillShow', u),
+              null == e.w || e.w.removeEventListener('keyboardWillShow', d),
                 null == e.w || e.w.removeEventListener('keyboardWillHide', a),
-                (u = a = void 0);
+                (d = a = void 0);
             },
             isKeyboardVisible: () => s,
           }
@@ -625,9 +625,9 @@
         bubbles: {
           dur: 1e3,
           circles: 9,
-          fn: (n, u, a) => {
-            const s = (n * u) / a - n + 'ms',
-              o = (2 * Math.PI * u) / a;
+          fn: (n, d, a) => {
+            const s = (n * d) / a - n + 'ms',
+              o = (2 * Math.PI * d) / a;
             return {
               r: 5,
               style: {
@@ -641,8 +641,8 @@
         circles: {
           dur: 1e3,
           circles: 8,
-          fn: (n, u, a) => {
-            const s = u / a,
+          fn: (n, d, a) => {
+            const s = d / a,
               o = n * s - n + 'ms',
               t = 2 * Math.PI * s;
             return {
@@ -673,63 +673,63 @@
         dots: {
           dur: 750,
           circles: 3,
-          fn: (n, u) => ({
+          fn: (n, d) => ({
             r: 6,
             style: {
-              left: 9 - 9 * u + 'px',
-              'animation-delay': -110 * u + 'ms',
+              left: 9 - 9 * d + 'px',
+              'animation-delay': -110 * d + 'ms',
             },
           }),
         },
         lines: {
           dur: 1e3,
           lines: 8,
-          fn: (n, u, a) => ({
+          fn: (n, d, a) => ({
             y1: 14,
             y2: 26,
             style: {
               transform: `rotate(${
-                (360 / a) * u + (u < a / 2 ? 180 : -180)
+                (360 / a) * d + (d < a / 2 ? 180 : -180)
               }deg)`,
-              'animation-delay': (n * u) / a - n + 'ms',
+              'animation-delay': (n * d) / a - n + 'ms',
             },
           }),
         },
         'lines-small': {
           dur: 1e3,
           lines: 8,
-          fn: (n, u, a) => ({
+          fn: (n, d, a) => ({
             y1: 12,
             y2: 20,
             style: {
               transform: `rotate(${
-                (360 / a) * u + (u < a / 2 ? 180 : -180)
+                (360 / a) * d + (d < a / 2 ? 180 : -180)
               }deg)`,
-              'animation-delay': (n * u) / a - n + 'ms',
+              'animation-delay': (n * d) / a - n + 'ms',
             },
           }),
         },
         'lines-sharp': {
           dur: 1e3,
           lines: 12,
-          fn: (n, u, a) => ({
+          fn: (n, d, a) => ({
             y1: 17,
             y2: 29,
             style: {
-              transform: `rotate(${30 * u + (u < 6 ? 180 : -180)}deg)`,
-              'animation-delay': (n * u) / a - n + 'ms',
+              transform: `rotate(${30 * d + (d < 6 ? 180 : -180)}deg)`,
+              'animation-delay': (n * d) / a - n + 'ms',
             },
           }),
         },
         'lines-sharp-small': {
           dur: 1e3,
           lines: 12,
-          fn: (n, u, a) => ({
+          fn: (n, d, a) => ({
             y1: 12,
             y2: 20,
             style: {
-              transform: `rotate(${30 * u + (u < 6 ? 180 : -180)}deg)`,
-              'animation-delay': (n * u) / a - n + 'ms',
+              transform: `rotate(${30 * d + (d < 6 ? 180 : -180)}deg)`,
+              'animation-delay': (n * d) / a - n + 'ms',
             },
           }),
         },
@@ -741,7 +741,7 @@
         l = i(5062),
         n = i(1911);
       i(4349);
-      const a = (s, o, t, c, d) => {
+      const a = (s, o, t, c, u) => {
         const m = s.ownerDocument.defaultView,
           _ = (0, l.i)(s),
           E = (r) => (_ ? -r.deltaX : r.deltaX);
@@ -772,22 +772,22 @@
               const D = p / Math.abs(P);
               x = Math.min(D, 540);
             }
-            d(v, A <= 0 ? 0.01 : (0, e.l)(0, A, 0.9999), x);
+            u(v, A <= 0 ? 0.01 : (0, e.l)(0, A, 0.9999), x);
           },
         });
       };
     },
     4664: (O, g, i) => {
-      i.d(g, { G: () => u });
+      i.d(g, { G: () => d });
       var e = i(6895),
         l = i(5035),
         n = i(8256);
-      class u {}
-      (u.ɵfac = function (s) {
-        return new (s || u)();
+      class d {}
+      (d.ɵfac = function (s) {
+        return new (s || d)();
       }),
-        (u.ɵcmp = n.Xpm({
-          type: u,
+        (d.ɵcmp = n.Xpm({
+          type: d,
           selectors: [['lgmj-header']],
           inputs: { title: 'title' },
           standalone: !0,
@@ -813,13 +813,13 @@
       var e = i(8256),
         l = i(6895),
         n = i(5035),
-        u = i(9297),
+        d = i(9297),
         a = i(6215),
         s = i(4253),
         o = i(7517),
         t = i(6146),
         c = i(7409),
-        d = i(100);
+        u = i(100);
       function m(v, C) {
         1 & v && e._UZ(0, 'ion-icon', 6);
       }
@@ -990,7 +990,7 @@
             (this.checkedChange = new e.vpe()),
             (this.roleChange = new e.vpe()),
             (this.roleTrackBy = c.A),
-            (this.statusTrackBy = d.V),
+            (this.statusTrackBy = u.V),
             (this.playerDisplayModeEnum = s.d),
             (this.playerRoleEnum = t.k),
             (this.sortedRoles = []),
@@ -1021,7 +1021,7 @@
         }
       }
       (k.ɵfac = function (C) {
-        return new (C || k)(e.Y36(u.L));
+        return new (C || k)(e.Y36(d.L));
       }),
         (k.ɵcmp = e.Xpm({
           type: k,
@@ -1039,7 +1039,7 @@
             roleChange: 'roleChange',
           },
           standalone: !0,
-          features: [e._Bn([u.L]), e.jDz],
+          features: [e._Bn([d.L]), e.jDz],
           decls: 14,
           vars: 10,
           consts: [
@@ -1164,7 +1164,7 @@
             n.w,
             n.U5,
             n.QI,
-            u.L,
+            d.L,
             a.$,
             o.E,
           ],
@@ -1210,6 +1210,8 @@
               return `${n.IMAGES_PATH}voyante.webp`;
             case e.k.JOUEUR_FLUTE:
               return `${n.IMAGES_PATH}joueur_flute.webp`;
+            case e.k.CORBEAU:
+              return `${n.IMAGES_PATH}corbeau.webp`;
             default:
               return '';
           }
@@ -1251,6 +1253,8 @@
               return 'Voyante';
             case e.k.JOUEUR_FLUTE:
               return 'Joueur de fl\xfbte';
+            case e.k.CORBEAU:
+              return 'Corbeau';
             default:
               return '';
           }
@@ -1285,6 +1289,8 @@
               return '\u{1f495}';
             case e.M.CHARMED:
               return '\u{1f3b6}';
+            case e.M.RAVEN:
+              return '\u{1fab6}';
             default:
               return '';
           }

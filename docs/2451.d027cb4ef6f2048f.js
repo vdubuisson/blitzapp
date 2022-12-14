@@ -2,12 +2,12 @@
 (self.webpackChunkloup_garou_mj = self.webpackChunkloup_garou_mj || []).push([
   [2451],
   {
-    2451: (j, d, r) => {
-      r.r(d), r.d(d, { RolesRulesPage: () => t });
-      var m = r(6895),
+    2451: (f, d, r) => {
+      r.r(d), r.d(d, { RolesRulesPage: () => u });
+      var c = r(6895),
         n = r(5035),
         o = r(6146);
-      const c = {
+      const m = {
         [o.k.NOT_SELECTED]: '',
         [o.k.VILLAGEOIS]:
           "Son objectif est d'\xe9liminer tous les loups-garous.\n\n  Il n'a aucun pouvoir particulier. Pendant le jour il vote pour \xe9liminer quelqu'un du village.",
@@ -27,15 +27,17 @@
           "Son objectif est d'\xe9liminer tous les loup-garous.\n  \n  Chaque nuit, elle peut regarder le r\xf4le d'un joueur de son choix.",
         [o.k.JOUEUR_FLUTE]:
           'Son objectif est de charmer tous les autres joueurs.\n  \n  Chaque nuit, il charme 2 joueurs de son choix.\n  \n  Apr\xe8s son tour, les joueurs charm\xe9s sont appel\xe9s pour se d\xe9couvrir.',
+        [o.k.CORBEAU]:
+          "Son objectif est d'\xe9liminer tous les loup-garous.\n  \n  Chaque nuit, il accuse un joueur de son choix.\n  \n  Le joueur accus\xe9 aura automatiquement 2 votes contre lui de plus pendant le vote du jour.",
       };
       var i = r(9297),
         p = r(6215),
         g = r(4664),
         h = r(7409),
         e = r(8256);
-      function f(u, l) {
+      function j(t, l) {
         if (
-          (1 & u &&
+          (1 & t &&
             (e.TgZ(0, 'ion-accordion')(1, 'ion-item', 2)(2, 'ion-thumbnail', 3),
             e._UZ(3, 'img', 4),
             e.ALo(4, 'playerRoleImage'),
@@ -47,7 +49,7 @@
             e.qZA()(),
             e._UZ(9, 'div', 5),
             e.qZA()),
-          2 & u)
+          2 & t)
         ) {
           const s = l.$implicit,
             a = e.oxw();
@@ -59,10 +61,10 @@
             e.Q6J('innerText', a.rules[s]);
         }
       }
-      class t {
+      class u {
         constructor(l) {
           (this.playerRoleNamePipe = l),
-            (this.rules = c),
+            (this.rules = m),
             (this.roles = Object.values(o.k)
               .filter((s) => s !== o.k.NOT_SELECTED)
               .sort((s, a) =>
@@ -73,11 +75,11 @@
             (this.roleTrackBy = h.A);
         }
       }
-      (t.ɵfac = function (l) {
-        return new (l || t)(e.Y36(i.L));
+      (u.ɵfac = function (l) {
+        return new (l || u)(e.Y36(i.L));
       }),
-        (t.ɵcmp = e.Xpm({
-          type: t,
+        (u.ɵcmp = e.Xpm({
+          type: u,
           selectors: [['lgmj-roles-rules']],
           standalone: !0,
           features: [e._Bn([i.L]), e.jDz],
@@ -95,15 +97,15 @@
             1 & l &&
               (e._UZ(0, 'lgmj-header', 0),
               e.TgZ(1, 'ion-content')(2, 'ion-accordion-group'),
-              e.YNc(3, f, 10, 10, 'ion-accordion', 1),
+              e.YNc(3, j, 10, 10, 'ion-accordion', 1),
               e.qZA()()),
               2 & l &&
                 (e.xp6(3),
                 e.Q6J('ngForOf', s.roles)('ngForTrackBy', s.roleTrackBy));
           },
           dependencies: [
-            m.ez,
-            m.sg,
+            c.ez,
+            c.sg,
             n.Pc,
             n.We,
             n.eh,

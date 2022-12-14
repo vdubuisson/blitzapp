@@ -9,7 +9,7 @@
         p = n(6146);
       const f = [p.k.VILLAGEOIS, p.k.LOUP_GAROU];
       var d = n(4253),
-        h = n(7510),
+        h = n(3996),
         e = n(8256),
         s = n(433),
         T = n(9297);

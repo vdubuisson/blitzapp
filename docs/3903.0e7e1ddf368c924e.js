@@ -2,42 +2,44 @@
 (self.webpackChunkloup_garou_mj = self.webpackChunkloup_garou_mj || []).push([
   [3903],
   {
-    3903: (b, g, a) => {
-      a.r(g), a.d(g, { GamePage: () => u });
-      var h = a(6895),
-        i = a(5035),
-        y = a(8505),
-        s = a(4253),
-        m = a(7510),
-        r = a(1022),
-        e = a(8256);
+    3903: (b, g, r) => {
+      r.r(g), r.d(g, { GamePage: () => u });
+      var h = r(6895),
+        i = r(5035),
+        y = r(8505),
+        s = r(4253),
+        m = r(3996),
+        a = r(1022),
+        e = r(8256);
       class d {
         transform(n) {
           switch (n) {
-            case r.h.VOLEUR:
+            case a.h.VOLEUR:
               return 'Choix du voleur';
-            case r.h.CUPIDON:
+            case a.h.CUPIDON:
               return 'Tir de Cupidon';
-            case r.h.VOYANTE:
+            case a.h.VOYANTE:
               return 'Vision de la voyante';
-            case r.h.AMOUREUX:
+            case a.h.AMOUREUX:
               return 'D\xe9couverte des amoureux';
-            case r.h.LOUP_GAROU:
+            case a.h.LOUP_GAROU:
               return 'Attaque des loups-garous';
-            case r.h.SORCIERE_HEALTH:
+            case a.h.SORCIERE_HEALTH:
               return 'Soin de la sorci\xe8re';
-            case r.h.SORCIERE_KILL:
+            case a.h.SORCIERE_KILL:
               return 'Potion de mort de la sorci\xe8re';
-            case r.h.VILLAGEOIS:
+            case a.h.VILLAGEOIS:
               return 'Vote des villageois';
-            case r.h.CAPITAINE:
+            case a.h.CAPITAINE:
               return 'Election du capitaine';
-            case r.h.CHASSEUR:
+            case a.h.CHASSEUR:
               return 'Tir du chasseur';
-            case r.h.JOUEUR_FLUTE:
+            case a.h.JOUEUR_FLUTE:
               return 'Charme du joueur de fl\xfbte';
-            case r.h.CHARMED:
+            case a.h.CHARMED:
               return 'D\xe9couverte des charm\xe9s';
+            case a.h.CORBEAU:
+              return 'Accusation du corbeau';
             default:
               return '';
           }
@@ -52,17 +54,17 @@
           pure: !0,
           standalone: !0,
         }));
-      var f = a(6519),
-        P = a(4664),
-        C = a(4518);
+      var f = r(6519),
+        P = r(4664),
+        C = r(4518);
       function _(o, n) {
         if (1 & o) {
           const t = e.EpF();
           e.TgZ(0, 'lgmj-player', 12),
             e.NdJ('checkedChange', function (c) {
-              const E = e.CHM(t).$implicit,
+              const x = e.CHM(t).$implicit,
                 S = e.oxw(2);
-              return e.KtG(S.onMultiPlayerChecked(E.id, c));
+              return e.KtG(S.onMultiPlayerChecked(x.id, c));
             }),
             e.qZA();
         }
@@ -76,7 +78,7 @@
           )('checked', c.selectedPlayers.has(t.id));
         }
       }
-      function x(o, n) {
+      function E(o, n) {
         if (1 & o) {
           const t = e.EpF();
           e.ynx(0),
@@ -245,7 +247,7 @@
             1 & n &&
               (e._UZ(0, 'lgmj-header', 0),
               e.TgZ(1, 'ion-content')(2, 'div', 1),
-              e.YNc(3, x, 21, 12, 'ng-container', 2),
+              e.YNc(3, E, 21, 12, 'ng-container', 2),
               e.ALo(4, 'async'),
               e.qZA()()),
               2 & n && (e.xp6(3), e.Q6J('ngIf', e.lcZ(4, 1, t.round$)));
