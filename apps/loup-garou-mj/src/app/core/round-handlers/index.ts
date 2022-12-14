@@ -7,3 +7,5 @@ export * from './sorciere-kill/sorciere-kill-round.handler';
 export * from './villageois/villageois-round.handler';
 export * from './voyante/voyante-round.handler';
 export * from './amoureux/amoureux-round.handler';
+export * from './joueur-flute/joueur-flute-round.handler';
+export * from './charmed/charmed-round.handler';

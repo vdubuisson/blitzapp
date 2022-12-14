@@ -50,4 +50,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.VOYANTE);
     expect(path).toEqual('assets/images/roles/voyante.webp');
   });
+
+  it('should return image path for JOUEUR_FLUTE', () => {
+    const path = pipe.transform(PlayerRoleEnum.JOUEUR_FLUTE);
+    expect(path).toEqual('assets/images/roles/joueur_flute.webp');
+  });
 });

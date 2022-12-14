@@ -10,6 +10,8 @@ import {
   ChasseurRoundHandler,
   VoyanteRoundHandler,
   AmoureuxRoundHandler,
+  JoueurFluteRoundHandler,
+  CharmedRoundHandler,
 } from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
@@ -285,5 +287,70 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.VOYANTE]);
 
     expect(service['roundHandlers'].has(RoundEnum.VOYANTE)).toEqual(false);
+  });
+
+  it('should init JOUEUR_FLUTE round handler for JOUEUR_FLUTE role', () => {
+    service.initHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+
+    expect(service['roundHandlers'].get(RoundEnum.JOUEUR_FLUTE)).toBeInstanceOf(
+      JoueurFluteRoundHandler
+    );
+  });
+
+  it('should not init JOUEUR_FLUTE round handler when no JOUEUR_FLUTE role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.JOUEUR_FLUTE)).toEqual(false);
+  });
+
+  it('should return handler for JOUEUR_FLUTE round', () => {
+    const roundHandler = new JoueurFluteRoundHandler();
+    service['roundHandlers'].set(RoundEnum.JOUEUR_FLUTE, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.JOUEUR_FLUTE);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler JOUEUR_FLUTE for JOUEUR_FLUTE role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.JOUEUR_FLUTE,
+      new JoueurFluteRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+
+    expect(service['roundHandlers'].has(RoundEnum.JOUEUR_FLUTE)).toEqual(false);
+  });
+
+  it('should init CHARMED round handler for JOUEUR_FLUTE role', () => {
+    service.initHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+
+    expect(service['roundHandlers'].get(RoundEnum.CHARMED)).toBeInstanceOf(
+      CharmedRoundHandler
+    );
+  });
+
+  it('should not init CHARMED round handler when no JOUEUR_FLUTE role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CHARMED)).toEqual(false);
+  });
+
+  it('should return handler for CHARMED round', () => {
+    const roundHandler = new CharmedRoundHandler();
+    service['roundHandlers'].set(RoundEnum.CHARMED, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.CHARMED);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler CHARMED for JOUEUR_FLUTE role', () => {
+    service['roundHandlers'].set(RoundEnum.CHARMED, new CharmedRoundHandler());
+
+    service.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CHARMED)).toEqual(false);
   });
 });

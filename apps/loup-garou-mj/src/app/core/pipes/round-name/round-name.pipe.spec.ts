@@ -61,4 +61,14 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.CHASSEUR);
     expect(name).toEqual('Tir du chasseur');
   });
+
+  it('should display "Charme du joueur de flûte" for JOUEUR_FLUTE', () => {
+    const name = pipe.transform(RoundEnum.JOUEUR_FLUTE);
+    expect(name).toEqual('Charme du joueur de flûte');
+  });
+
+  it('should display "Découverte des charmés" for CHARMED', () => {
+    const name = pipe.transform(RoundEnum.CHARMED);
+    expect(name).toEqual('Découverte des charmés');
+  });
 });

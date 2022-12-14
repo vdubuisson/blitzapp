@@ -8,4 +8,5 @@ export enum PlayerRoleEnum {
   SORCIERE = 'SORCIERE',
   VOLEUR = 'VOLEUR',
   VOYANTE = 'VOYANTE',
+  JOUEUR_FLUTE = 'JOUEUR_FLUTE',
 }

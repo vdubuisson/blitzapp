@@ -16,6 +16,8 @@ export class VictoryNamePipe implements PipeTransform {
         return 'Loups-garous';
       case VictoryEnum.VILLAGEOIS:
         return 'Villageois';
+      case VictoryEnum.JOUEUR_FLUTE:
+        return 'Joueur de flûte';
       default:
         return '';
     }

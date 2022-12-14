@@ -2,11 +2,14 @@ import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
-import { AmoureuxVictoryHandler } from '../../victory-handlers/amoureux/amoureux-victory.handler';
-import { LoupGarouVictoryHandler } from '../../victory-handlers/loup-garou/loup-garou-victory.handler';
-import { NoneVictoryHandler } from '../../victory-handlers/none/none-victory.handler';
+import {
+  VillageoisVictoryHandler,
+  NoneVictoryHandler,
+  LoupGarouVictoryHandler,
+  AmoureuxVictoryHandler,
+  JoueurFluteVictoryHandler,
+} from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
-import { VillageoisVictoryHandler } from '../../victory-handlers/villageois/villageois-victory.handler';
 
 import { VictoryHandlersService } from './victory-handlers.service';
 
@@ -101,6 +104,44 @@ describe('VictoryHandlersService', () => {
     service.removeUselessHandlers(players);
 
     expect(service['victoryHandlers'].has(VictoryEnum.AMOUREUX)).toEqual(false);
+  });
+
+  it('should init JOUEUR_FLUTE victory handler if there is JOUEUR_FLUTE', () => {
+    service.initHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+
+    expect(
+      service['victoryHandlers'].get(VictoryEnum.JOUEUR_FLUTE)
+    ).toBeInstanceOf(JoueurFluteVictoryHandler);
+  });
+
+  it('should not init JOUEUR_FLUTE victory handler if there is no JOUEUR_FLUTE', () => {
+    service.initHandlers([]);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
+      false
+    );
+  });
+
+  it('should remove JOUEUR_FLUTE victory handler if JOUEUR_FLUTE is dead', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.JOUEUR_FLUTE,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+    service['victoryHandlers'].set(
+      VictoryEnum.JOUEUR_FLUTE,
+      new JoueurFluteVictoryHandler()
+    );
+
+    service.removeUselessHandlers(players);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
+      false
+    );
   });
 
   it('should return victory based on victorious Handler', () => {

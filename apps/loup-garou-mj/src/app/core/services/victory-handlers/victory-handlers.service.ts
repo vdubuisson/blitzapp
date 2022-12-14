@@ -3,11 +3,14 @@ import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
-import { AmoureuxVictoryHandler } from '../../victory-handlers/amoureux/amoureux-victory.handler';
-import { LoupGarouVictoryHandler } from '../../victory-handlers/loup-garou/loup-garou-victory.handler';
-import { NoneVictoryHandler } from '../../victory-handlers/none/none-victory.handler';
+import {
+  NoneVictoryHandler,
+  VillageoisVictoryHandler,
+  LoupGarouVictoryHandler,
+  AmoureuxVictoryHandler,
+  JoueurFluteVictoryHandler,
+} from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
-import { VillageoisVictoryHandler } from '../../victory-handlers/villageois/villageois-victory.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +21,7 @@ export class VictoryHandlersService {
   private readonly victoryPriorities: VictoryEnum[] = [
     VictoryEnum.NONE,
     VictoryEnum.AMOUREUX,
+    VictoryEnum.JOUEUR_FLUTE,
     VictoryEnum.LOUP_GAROU,
     VictoryEnum.VILLAGEOIS,
   ];
@@ -45,6 +49,12 @@ export class VictoryHandlersService {
         new AmoureuxVictoryHandler()
       );
     }
+    if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
+      this.victoryHandlers.set(
+        VictoryEnum.JOUEUR_FLUTE,
+        new JoueurFluteVictoryHandler()
+      );
+    }
   }
 
   removeUselessHandlers(players: Player[]): void {
@@ -55,6 +65,13 @@ export class VictoryHandlersService {
         .some((player) => player.isDead)
     ) {
       this.victoryHandlers.delete(VictoryEnum.AMOUREUX);
+    }
+    if (
+      this.victoryHandlers.has(VictoryEnum.JOUEUR_FLUTE) &&
+      players.find((player) => player.role === PlayerRoleEnum.JOUEUR_FLUTE)
+        ?.isDead
+    ) {
+      this.victoryHandlers.delete(VictoryEnum.JOUEUR_FLUTE);
     }
   }
 

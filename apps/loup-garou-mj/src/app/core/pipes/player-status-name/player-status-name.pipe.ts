@@ -24,8 +24,8 @@ export class PlayerStatusNamePipe implements PipeTransform {
       //   return 'Protégé';
       // case PlayerStatusEnum.NO_POWER:
       //   return 'Plus de pouvoir';
-      // case PlayerStatusEnum.CHARMED:
-      //   return 'Charmé';
+      case PlayerStatusEnum.CHARMED:
+        return 'Charmé';
       // case PlayerStatusEnum.CHILD_MODEL:
       //   return 'Modèle';
       // case PlayerStatusEnum.RAVEN:

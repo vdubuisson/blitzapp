@@ -38,4 +38,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.VOYANTE]: `Son objectif est d'éliminer tous les loup-garous.
   
   Chaque nuit, elle peut regarder le rôle d'un joueur de son choix.`,
+  [PlayerRoleEnum.JOUEUR_FLUTE]: `Son objectif est de charmer tous les autres joueurs.
+  
+  Chaque nuit, il charme 2 joueurs de son choix.
+  
+  Après son tour, les joueurs charmés sont appelés pour se découvrir.`,
 };
