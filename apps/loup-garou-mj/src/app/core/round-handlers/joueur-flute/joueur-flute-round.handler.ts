@@ -24,6 +24,7 @@ export class JoueurFluteRoundHandler implements RoundHandler {
         .filter(
           (player) =>
             player.role !== PlayerRoleEnum.JOUEUR_FLUTE &&
+            !player.isDead &&
             !player.statuses.has(PlayerStatusEnum.CHARMED)
         )
         .map((player) => player.id),
