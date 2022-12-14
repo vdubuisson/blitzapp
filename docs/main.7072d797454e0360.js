@@ -7505,6 +7505,9 @@
               break;
             case P.k.VOYANTE:
               this.rolesToRemove.push(P.k.VOYANTE);
+              break;
+            case P.k.JOUEUR_FLUTE:
+              this.rolesToRemove.push(P.k.JOUEUR_FLUTE);
           }
         }
       }
