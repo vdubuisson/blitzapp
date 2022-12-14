@@ -117,6 +117,9 @@ export class DeathService {
       case PlayerRoleEnum.VOYANTE:
         this.rolesToRemove.push(PlayerRoleEnum.VOYANTE);
         break;
+      case PlayerRoleEnum.JOUEUR_FLUTE:
+        this.rolesToRemove.push(PlayerRoleEnum.JOUEUR_FLUTE);
+        break;
       default:
         break;
     }
