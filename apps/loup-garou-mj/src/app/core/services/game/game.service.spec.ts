@@ -12,6 +12,7 @@ import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
+import { StatusesService } from '../statuses/statuses.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 import { GameService } from './game.service';
@@ -36,6 +37,7 @@ describe('GameService', () => {
   let victoryHandlersService: VictoryHandlersService;
   let roundOrchestrationService: RoundOrchestrationService;
   let deathService: DeathService;
+  let statusesService: StatusesService;
   let roundHandler: RoundHandler;
 
   let mockPlayers: Player[];
@@ -69,6 +71,7 @@ describe('GameService', () => {
     victoryHandlersService = MockService(VictoryHandlersService);
     roundOrchestrationService = MockService(RoundOrchestrationService);
     deathService = MockService(DeathService);
+    statusesService = MockService(StatusesService);
     roundHandler = MockService(MockRoundHandler);
     jest
       .spyOn(roundHandlersService, 'getHandler')
@@ -79,7 +82,8 @@ describe('GameService', () => {
       roundHandlersService,
       victoryHandlersService,
       roundOrchestrationService,
-      deathService
+      deathService,
+      statusesService
     );
   });
 
@@ -616,5 +620,42 @@ describe('GameService', () => {
     service.submitRoundAction([]);
 
     expect(deathService.announceDeaths).toBeCalledTimes(0);
+  });
+
+  it('should clean statuses after day', () => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: true,
+    };
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+
+    jest.spyOn(statusesService, 'cleanStatusesAfterDay').mockReturnValue([]);
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].next(mockCurrentRoundConfig);
+
+    service.submitRoundAction([]);
+
+    expect(statusesService.cleanStatusesAfterDay).toBeCalled();
   });
 });

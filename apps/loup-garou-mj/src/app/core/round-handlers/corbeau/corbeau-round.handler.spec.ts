@@ -25,13 +25,13 @@ describe('CorbeauRoundHandler', () => {
     expect(round.isDuringDay).toEqual(false);
   });
 
-  it('should move RAVEN status to selected player', () => {
+  it('should add RAVEN status to selected player', () => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.RAVEN]),
+        statuses: new Set(),
         isDead: false,
       },
       {

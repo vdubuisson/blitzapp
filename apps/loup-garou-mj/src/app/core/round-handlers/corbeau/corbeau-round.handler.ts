@@ -12,9 +12,6 @@ export class CorbeauRoundHandler implements RoundHandler {
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];
     newPlayers
-      .find((player) => player.statuses.has(PlayerStatusEnum.RAVEN))
-      ?.statuses.delete(PlayerStatusEnum.RAVEN);
-    newPlayers
       .find((player) => player.id === selectedPlayerIds[0])
       ?.statuses.add(PlayerStatusEnum.RAVEN);
     return newPlayers;
