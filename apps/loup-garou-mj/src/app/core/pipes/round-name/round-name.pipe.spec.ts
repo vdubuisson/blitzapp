@@ -71,4 +71,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.CHARMED);
     expect(name).toEqual('Découverte des charmés');
   });
+
+  it('should display "Accusation du corbeau" for CORBEAU', () => {
+    const name = pipe.transform(RoundEnum.CORBEAU);
+    expect(name).toEqual('Accusation du corbeau');
+  });
 });

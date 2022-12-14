@@ -13,6 +13,7 @@ import {
   AmoureuxRoundHandler,
   JoueurFluteRoundHandler,
   CharmedRoundHandler,
+  CorbeauRoundHandler,
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 
@@ -65,6 +66,10 @@ export class RoundHandlersService {
       );
       this.roundHandlers.set(RoundEnum.CHARMED, new CharmedRoundHandler());
     }
+
+    if (rolesSet.has(PlayerRoleEnum.CORBEAU)) {
+      this.roundHandlers.set(RoundEnum.CORBEAU, new CorbeauRoundHandler());
+    }
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -92,6 +97,9 @@ export class RoundHandlersService {
     if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
       this.roundHandlers.delete(RoundEnum.JOUEUR_FLUTE);
       this.roundHandlers.delete(RoundEnum.CHARMED);
+    }
+    if (rolesSet.has(PlayerRoleEnum.CORBEAU)) {
+      this.roundHandlers.delete(RoundEnum.CORBEAU);
     }
   }
 }

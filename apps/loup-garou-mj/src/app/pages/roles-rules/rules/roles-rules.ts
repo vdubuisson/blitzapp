@@ -43,4 +43,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Chaque nuit, il charme 2 joueurs de son choix.
   
   Après son tour, les joueurs charmés sont appelés pour se découvrir.`,
+  [PlayerRoleEnum.CORBEAU]: `Son objectif est d'éliminer tous les loup-garous.
+  
+  Chaque nuit, il accuse un joueur de son choix.
+  
+  Le joueur accusé aura automatiquement 2 votes contre lui de plus pendant le vote du jour.`,
 };

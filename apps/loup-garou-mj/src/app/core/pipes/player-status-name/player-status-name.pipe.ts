@@ -28,8 +28,8 @@ export class PlayerStatusNamePipe implements PipeTransform {
         return 'Charmé';
       // case PlayerStatusEnum.CHILD_MODEL:
       //   return 'Modèle';
-      // case PlayerStatusEnum.RAVEN:
-      //   return 'Cible du corbeau';
+      case PlayerStatusEnum.RAVEN:
+        return 'Cible du corbeau';
       // case PlayerStatusEnum.RUSTY_SWORD:
       //   return 'Touché par l'épée rouillée';
       // case PlayerStatusEnum.COMEDIAN:

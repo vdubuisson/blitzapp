@@ -7,4 +7,5 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.CAPTAIN]: `Ce joueur est actuellement le capitaine, son vote pendant le jour compte double.`,
   [PlayerStatusEnum.LOVER]: `Ce joueur fait partie du couple d'amoureux.`,
   [PlayerStatusEnum.CHARMED]: `Ce joueur a été charmé par le joueur de flûte.`,
+  [PlayerStatusEnum.RAVEN]: `Ce joueur est actuellement accusé par le corbeau, il a 2 votes contre lui en plus.`,
 };

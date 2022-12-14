@@ -12,6 +12,7 @@ import {
   AmoureuxRoundHandler,
   JoueurFluteRoundHandler,
   CharmedRoundHandler,
+  CorbeauRoundHandler,
 } from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
@@ -352,5 +353,36 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
 
     expect(service['roundHandlers'].has(RoundEnum.CHARMED)).toEqual(false);
+  });
+
+  it('should init CORBEAU round handler for CORBEAU role', () => {
+    service.initHandlers([PlayerRoleEnum.CORBEAU]);
+
+    expect(service['roundHandlers'].get(RoundEnum.CORBEAU)).toBeInstanceOf(
+      CorbeauRoundHandler
+    );
+  });
+
+  it('should not init CORBEAU round handler when no CORBEAU role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CORBEAU)).toEqual(false);
+  });
+
+  it('should return handler for CORBEAU round', () => {
+    const roundHandler = new CorbeauRoundHandler();
+    service['roundHandlers'].set(RoundEnum.CORBEAU, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.CORBEAU);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler CORBEAU for CORBEAU role', () => {
+    service['roundHandlers'].set(RoundEnum.CORBEAU, new CorbeauRoundHandler());
+
+    service.removeHandlers([PlayerRoleEnum.CORBEAU]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CORBEAU)).toEqual(false);
   });
 });

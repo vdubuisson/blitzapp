@@ -55,4 +55,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.JOUEUR_FLUTE);
     expect(path).toEqual('assets/images/roles/joueur_flute.webp');
   });
+
+  it('should return image path for CORBEAU', () => {
+    const path = pipe.transform(PlayerRoleEnum.CORBEAU);
+    expect(path).toEqual('assets/images/roles/corbeau.webp');
+  });
 });

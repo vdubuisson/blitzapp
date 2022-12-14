@@ -9,6 +9,7 @@ import { Round } from '../../models/round.model';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
+import { StatusesService } from '../statuses/statuses.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 @Injectable({
@@ -24,7 +25,8 @@ export class GameService {
     private roundHandlersService: RoundHandlersService,
     private victoryHandlersService: VictoryHandlersService,
     private roundOrchestrationService: RoundOrchestrationService,
-    private deathService: DeathService
+    private deathService: DeathService,
+    private statusesService: StatusesService
   ) {}
 
   getPlayers(): Observable<Player[]> {
@@ -135,6 +137,18 @@ export class GameService {
         return;
       }
       this.deathService.announceDeaths();
+    }
+
+    if (
+      nextHandler !== undefined &&
+      !nextHandler.isDuringDay &&
+      currentHandler?.isDuringDay
+    ) {
+      // Handle after-day events
+      const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
+        this.players.value
+      );
+      this.players.next(playersAfterDay);
     }
 
     this.setRound(nextRound);

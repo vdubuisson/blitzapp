@@ -120,6 +120,9 @@ export class DeathService {
       case PlayerRoleEnum.JOUEUR_FLUTE:
         this.rolesToRemove.push(PlayerRoleEnum.JOUEUR_FLUTE);
         break;
+      case PlayerRoleEnum.CORBEAU:
+        this.rolesToRemove.push(PlayerRoleEnum.CORBEAU);
+        break;
       default:
         break;
     }
