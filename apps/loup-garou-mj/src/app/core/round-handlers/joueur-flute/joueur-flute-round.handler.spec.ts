@@ -79,7 +79,7 @@ describe('JoueurFluteRoundHandler', () => {
     expect(newPlayers).toEqual(testPlayers);
   });
 
-  it('should return all players except JOUEUR_FLUTE and CHARMED as selectable', () => {
+  it('should return all alive players except JOUEUR_FLUTE and CHARMED as selectable', () => {
     const players: Player[] = [
       {
         id: 0,
@@ -98,6 +98,13 @@ describe('JoueurFluteRoundHandler', () => {
       {
         id: 2,
         name: 'player2',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 3,
+        name: 'player3',
         role: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
