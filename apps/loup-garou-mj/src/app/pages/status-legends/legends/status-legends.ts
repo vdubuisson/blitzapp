@@ -6,4 +6,5 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.DEATH_POTION]: `La sorcière a toujours sa potion de mort.`,
   [PlayerStatusEnum.CAPTAIN]: `Ce joueur est actuellement le capitaine, son vote pendant le jour compte double.`,
   [PlayerStatusEnum.LOVER]: `Ce joueur fait partie du couple d'amoureux.`,
+  [PlayerStatusEnum.CHARMED]: `Ce joueur a été charmé par le joueur de flûte.`,
 };

@@ -9,4 +9,6 @@ export enum RoundEnum {
   VILLAGEOIS,
   CAPITAINE,
   CHASSEUR,
+  JOUEUR_FLUTE,
+  CHARMED,
 }

@@ -26,6 +26,8 @@ export class PlayerRoleImagePipe implements PipeTransform {
         return `${PlayerRoleImagePipe.IMAGES_PATH}voleur.webp`;
       case PlayerRoleEnum.VOYANTE:
         return `${PlayerRoleImagePipe.IMAGES_PATH}voyante.webp`;
+      case PlayerRoleEnum.JOUEUR_FLUTE:
+        return `${PlayerRoleImagePipe.IMAGES_PATH}joueur_flute.webp`;
       default:
         return '';
     }

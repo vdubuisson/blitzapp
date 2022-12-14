@@ -24,6 +24,8 @@ export class PlayerRoleNamePipe implements PipeTransform {
         return 'Voleur';
       case PlayerRoleEnum.VOYANTE:
         return 'Voyante';
+      case PlayerRoleEnum.JOUEUR_FLUTE:
+        return 'Joueur de flûte';
       default:
         return '';
     }

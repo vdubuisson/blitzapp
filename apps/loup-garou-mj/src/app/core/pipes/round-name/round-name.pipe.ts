@@ -28,6 +28,10 @@ export class RoundNamePipe implements PipeTransform {
         return 'Election du capitaine';
       case RoundEnum.CHASSEUR:
         return 'Tir du chasseur';
+      case RoundEnum.JOUEUR_FLUTE:
+        return 'Charme du joueur de flûte';
+      case RoundEnum.CHARMED:
+        return 'Découverte des charmés';
       default:
         return '';
     }
