@@ -7279,7 +7279,10 @@
           return {
             role: j.h.JOUEUR_FLUTE,
             selectablePlayers: X.filter(
-              (L) => L.role !== P.k.JOUEUR_FLUTE && !L.statuses.has(U.M.CHARMED)
+              (L) =>
+                L.role !== P.k.JOUEUR_FLUTE &&
+                !L.isDead &&
+                !L.statuses.has(U.M.CHARMED)
             ).map((L) => L.id),
             maxSelectable: 2,
             minSelectable: 0,
