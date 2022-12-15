@@ -76,7 +76,7 @@ export class NewGamePage implements ViewWillEnter {
 
   protected pageSubtitle = 'Joueurs';
 
-  protected availableRoles: PlayerRoleEnum[] = this.getAvailableRoles();
+  protected availableRoles: PlayerRoleEnum[] = [];
 
   protected get cannotCreate(): boolean {
     return this.players.some(
@@ -101,7 +101,12 @@ export class NewGamePage implements ViewWillEnter {
             }))
           )
         )
-        .subscribe((players) => (this.players = players));
+        .subscribe((players) => {
+          this.players = players;
+          this.availableRoles = this.getAvailableRoles();
+        });
+    } else {
+      this.availableRoles = this.getAvailableRoles();
     }
   }
 

@@ -120,55 +120,6 @@ describe('NewGamePage', () => {
     ]);
   });
 
-  it('should init with VILLAGEOIS in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS)
-    ).toEqual(true);
-  });
-
-  it('should init with LOUP_GAROU in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.LOUP_GAROU)
-    ).toEqual(true);
-  });
-
-  it('should init with CHASSEUR in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.CHASSEUR)
-    ).toEqual(true);
-  });
-
-  it('should init with CUPIDON in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.CUPIDON)
-    ).toEqual(true);
-  });
-
-  it('should init with PETITE_FILLE in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.PETITE_FILLE)
-    ).toEqual(true);
-  });
-
-  it('should init with SORCIERE in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.SORCIERE)
-    ).toEqual(true);
-  });
-
-  // TODO Handle VOLEUR role
-  // it('should init with VOLEUR in available roles', () => {
-  //   expect(component['availableRoles'].includes(PlayerRoleEnum.VOLEUR)).toEqual(
-  //     true
-  //   );
-  // });
-
-  it('should init with VOYANTE in available roles', () => {
-    expect(
-      component['availableRoles'].includes(PlayerRoleEnum.VOYANTE)
-    ).toEqual(true);
-  });
-
   it('should add unique role to available roles on player remove', () => {
     component['availableRoles'] = [];
     component['players'] = mockPlayers;
