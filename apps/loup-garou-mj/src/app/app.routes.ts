@@ -20,6 +20,14 @@ export const appRoutes: Routes = [
       import('./pages/new-game/new-game.page').then((m) => m.NewGamePage),
   },
   {
+    path: 'new-game/roles',
+    title: 'LG Assistant MJ | Nouvelle partie | Roles',
+    loadComponent: () =>
+      import('./pages/new-game-roles/new-game-roles.page').then(
+        (m) => m.NewGameRolesPage
+      ),
+  },
+  {
     path: 'roles-rules',
     title: 'LG Assistant MJ | Règles des rôles',
     loadComponent: () =>

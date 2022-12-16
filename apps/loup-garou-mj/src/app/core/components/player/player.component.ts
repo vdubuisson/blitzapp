@@ -39,21 +39,20 @@ export class PlayerComponent {
   @Input() checked = false;
 
   @Input() set selectableRoles(roleList: PlayerRoleEnum[]) {
-    const roles = [...roleList];
+    const sortedRoles = [...roleList];
     if (
       this.player.role !== PlayerRoleEnum.NOT_SELECTED &&
-      !roles.includes(this.player.role)
+      !sortedRoles.includes(this.player.role)
     ) {
-      roles.push(this.player.role);
+      sortedRoles.push(this.player.role);
     }
-    this.sortedRoles = roles.sort((a, b) =>
+    sortedRoles.sort((a, b) =>
       this.playerRoleNamePipe
         .transform(a)
         .localeCompare(this.playerRoleNamePipe.transform(b))
     );
+    this.sortedRoles = sortedRoles;
   }
-
-  @Output() remove = new EventEmitter<void>();
 
   @Output() checkedChange = new EventEmitter<boolean>();
 
@@ -74,10 +73,6 @@ export class PlayerComponent {
 
   protected onCheckedChange(event: Event) {
     this.checkedChange.emit((event as CheckboxCustomEvent).detail.checked);
-  }
-
-  protected onRemove() {
-    this.remove.emit();
   }
 
   protected onRoleChange(event: Event) {

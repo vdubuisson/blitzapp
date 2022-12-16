@@ -28,17 +28,6 @@
 
 <ng-template #formElement>
   <ng-container [ngSwitch]="displayMode">
-    <!-- CREATE mode -->
-    <ion-button
-      *ngSwitchCase="playerDisplayModeEnum.CREATE"
-      (click)="onRemove()"
-      slot="start"
-      color="danger"
-      shape="round"
-    >
-      <ion-icon slot="icon-only" name="remove"></ion-icon>
-    </ion-button>
-
     <!-- SELECT_MULTI mode -->
     <ion-checkbox
       *ngSwitchCase="playerDisplayModeEnum.SELECT_MULTI"
@@ -58,11 +47,6 @@
 
 <ng-template #endElement>
   <ng-container [ngSwitch]="displayMode">
-    <ion-reorder
-      *ngSwitchCase="playerDisplayModeEnum.CREATE"
-      slot="end"
-    ></ion-reorder>
-
     <ion-select
       *ngSwitchCase="playerDisplayModeEnum.EDIT_ROLE"
       placeholder="Rôle"
