@@ -1,21 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  IonicModule,
-  ItemReorderCustomEvent,
-  ViewWillEnter,
-} from '@ionic/angular';
-import { NON_UNIQUE_ROLES } from '../../core/constants/non-unique-roles';
-import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { IonicModule, ItemReorderCustomEvent } from '@ionic/angular';
 import { Player } from '../../core/models/player.model';
-import { GameService } from '../../core/services/game/game.service';
 import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
-import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { map, take } from 'rxjs/operators';
-import { PlayerStatusEnum } from '../../core/enums/player-status.enum';
+import { tap } from 'rxjs/operators';
+import { NewGameService } from '../../core/services/new-game/new-game.service';
+import { Observable } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'lgmj-new-game',
@@ -24,154 +17,39 @@ import { PlayerStatusEnum } from '../../core/enums/player-status.enum';
     CommonModule,
     IonicModule,
     NewPlayerComponent,
-    PlayerComponent,
     HeaderComponent,
+    RouterLink,
   ],
   templateUrl: './new-game.page.html',
   styleUrls: ['./new-game.page.scss'],
 })
-export class NewGamePage implements ViewWillEnter {
-  protected players: Player[] = [
-    // {
-    //   id: 0,
-    //   name: 'Valentin',
-    //   role: PlayerRoleEnum.VILLAGEOIS,
-    //   statuses: new Set(),
-    //   isDead: false,
-    // },
-    // {
-    //   id: 1,
-    //   name: 'Jean-Baptiste',
-    //   role: PlayerRoleEnum.LOUP_GAROU,
-    //   statuses: new Set(),
-    //   isDead: false,
-    // },
-    // {
-    //   id: 2,
-    //   name: 'Davy',
-    //   role: PlayerRoleEnum.SORCIERE,
-    //   statuses: new Set(),
-    //   isDead: false,
-    // },
-    // {
-    //   id: 3,
-    //   name: 'Romain',
-    //   role: PlayerRoleEnum.VILLAGEOIS,
-    //   statuses: new Set(),
-    //   isDead: false,
-    // },
-    // {
-    //   id: 4,
-    //   name: 'Anne-Lise',
-    //   role: PlayerRoleEnum.CHASSEUR,
-    //   statuses: new Set(),
-    //   isDead: false,
-    // },
-  ];
-
-  protected playerDisplayMode = PlayerDisplayModeEnum.CREATE;
-  protected playerDisplayModeEnum = PlayerDisplayModeEnum;
+export class NewGamePage {
+  protected players$: Observable<Player[]>;
 
   protected playerTrackBy = PLAYER_TRACK_BY;
 
-  protected pageSubtitle = 'Joueurs';
+  protected canValidate = false;
 
-  protected availableRoles: PlayerRoleEnum[] = [];
-
-  protected get cannotCreate(): boolean {
-    return this.players.some(
-      (player) => player.role === PlayerRoleEnum.NOT_SELECTED
-    );
-  }
-
-  constructor(private gameService: GameService) {}
-
-  ionViewWillEnter(): void {
-    if (this.players.length === 0) {
-      this.gameService
-        .getPlayers()
-        .pipe(
-          take(1),
-          map((players) =>
-            players.map((player) => ({
-              ...player,
-              role: PlayerRoleEnum.NOT_SELECTED,
-              statuses: new Set<PlayerStatusEnum>(),
-              isDead: false,
-            }))
-          )
-        )
-        .subscribe((players) => {
-          this.players = players;
-          this.availableRoles = this.getAvailableRoles();
-        });
-    } else {
-      this.availableRoles = this.getAvailableRoles();
-    }
-  }
-
-  protected validatePlayers(): void {
-    this.playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
-    this.pageSubtitle = 'Rôles';
-  }
-
-  protected createGame(): void {
-    this.gameService.createGame(this.players);
-    this.players = [];
-    this.backToCreation();
-  }
-
-  protected backToCreation(): void {
-    this.playerDisplayMode = PlayerDisplayModeEnum.CREATE;
-    this.pageSubtitle = 'Joueurs';
+  constructor(private newGameService: NewGameService) {
+    this.players$ = this.newGameService
+      .getPlayers()
+      .pipe(tap((players) => (this.canValidate = players.length > 1)));
   }
 
   protected addPlayer(name: string): void {
-    this.players.push({
-      id: this.players.length,
-      name,
-      role: PlayerRoleEnum.NOT_SELECTED,
-      statuses: new Set<PlayerStatusEnum>(),
-      isDead: false,
-    });
-  }
-
-  protected removePlayer(id: number): void {
-    this.players.splice(id, 1);
-    this.reindexPlayers();
-    this.availableRoles = this.getAvailableRoles();
+    this.newGameService.addPlayer(name);
   }
 
   protected reorderPlayer(event: Event): void {
-    this.players = (event as ItemReorderCustomEvent).detail.complete(
-      this.players
+    const reorderEvent = event as ItemReorderCustomEvent;
+    this.newGameService.reorderPlayers(
+      reorderEvent.detail.from,
+      reorderEvent.detail.to
     );
-    this.reindexPlayers();
+    reorderEvent.detail.complete(false);
   }
 
-  protected changeRole(id: number, role: PlayerRoleEnum): void {
-    const player = this.players.find((player) => player.id === id);
-    if (player !== undefined) {
-      player.role = role;
-      this.availableRoles = this.getAvailableRoles();
-    }
-  }
-
-  private reindexPlayers(): void {
-    this.players.forEach((player, index) => (player.id = index));
-  }
-
-  private getAvailableRoles(): PlayerRoleEnum[] {
-    const usedRoles = new Set(this.players.map((player) => player.role));
-    return (
-      Object.values(PlayerRoleEnum)
-        .filter(
-          (role) =>
-            role !== PlayerRoleEnum.NOT_SELECTED &&
-            (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
-        )
-        // TODO Handle VOLEUR role
-        .filter((role) => role !== PlayerRoleEnum.VOLEUR)
-    );
+  protected removePlayer(id: number): void {
+    this.newGameService.removePlayer(id);
   }
 }

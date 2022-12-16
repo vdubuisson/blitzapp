@@ -1,11 +1,8 @@
-<lgmj-header [title]="'Nouvelle partie - ' + pageSubtitle"></lgmj-header>
+<lgmj-header title="Nouvelle partie - Joueurs"></lgmj-header>
 
 <ion-content>
   <div id="container">
-    <ion-item
-      *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE"
-      lines="full"
-    >
+    <ion-item lines="full">
       <ion-icon
         slot="start"
         name="warning"
@@ -14,56 +11,41 @@
       ></ion-icon>
       <em>Respectez la position réelle des joueurs</em>
     </ion-item>
-    <lgmj-new-player
-      *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE"
-      (newPlayer)="addPlayer($event)"
-    ></lgmj-new-player>
+    <lgmj-new-player (newPlayer)="addPlayer($event)"></lgmj-new-player>
 
     <ion-list id="player-list">
       <ion-reorder-group
         (ionItemReorder)="reorderPlayer($event)"
         [disabled]="false"
       >
-        <lgmj-player
-          *ngFor="let player of players; trackBy: playerTrackBy"
-          [player]="player"
-          [displayMode]="playerDisplayMode"
-          [selectableRoles]="availableRoles"
-          (remove)="removePlayer(player.id)"
-          (roleChange)="changeRole(player.id, $event)"
-        ></lgmj-player>
+        <ion-item
+          *ngFor="let player of players$ | async; trackBy: playerTrackBy"
+        >
+          <ion-button
+            (click)="removePlayer(player.id)"
+            slot="start"
+            color="danger"
+            shape="round"
+          >
+            <ion-icon slot="icon-only" name="remove"></ion-icon>
+          </ion-button>
+          <ion-label>
+            <h2>{{ player.name }}</h2>
+          </ion-label>
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
       </ion-reorder-group>
     </ion-list>
 
     <div id="submit-block">
       <ion-button
-        *ngIf="playerDisplayMode === playerDisplayModeEnum.CREATE; else startButtons"
-        [disabled]="players.length === 0"
+        [disabled]="!canValidate"
         expand="block"
-        (click)="validatePlayers()"
+        routerLink="/new-game/roles"
         class="ion-margin-horizontal"
       >
         Valider
       </ion-button>
     </div>
-
-    <ng-template #startButtons>
-      <ion-button
-        [disabled]="cannotCreate"
-        expand="block"
-        (click)="createGame()"
-        class="ion-margin-horizontal"
-      >
-        Démarrer
-      </ion-button>
-      <ion-button
-        expand="block"
-        (click)="backToCreation()"
-        class="ion-margin-horizontal"
-        color="danger"
-      >
-        Retour
-      </ion-button>
-    </ng-template>
   </div>
 </ion-content>
