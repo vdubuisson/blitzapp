@@ -65,4 +65,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.ENFANT_SAUVAGE);
     expect(path).toEqual('assets/images/roles/enfant_sauvage.webp');
   });
+
+  it('should return image path for SALVATEUR', () => {
+    const path = pipe.transform(PlayerRoleEnum.SALVATEUR);
+    expect(path).toEqual('assets/images/roles/salvateur.webp');
+  });
 });

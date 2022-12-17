@@ -13,4 +13,5 @@ export enum RoundEnum {
   CHARMED,
   CORBEAU,
   ENFANT_SAUVAGE,
+  SALVATEUR,
 }

@@ -20,8 +20,8 @@ export class PlayerStatusNamePipe implements PipeTransform {
         return 'Amoureux';
       // case PlayerStatusEnum.FIRST_DEATH:
       //   return 'Mort une fois';
-      // case PlayerStatusEnum.PROTECTED:
-      //   return 'Protégé';
+      case PlayerStatusEnum.PROTECTED:
+        return 'Protégé';
       // case PlayerStatusEnum.NO_POWER:
       //   return 'Plus de pouvoir';
       case PlayerStatusEnum.CHARMED:

@@ -5,7 +5,7 @@ export enum PlayerStatusEnum {
   CAPTAIN = 'CAPTAIN',
   LOVER = 'LOVER',
   // FIRST_DEATH = 'FIRST_DEATH',
-  // PROTECTED = 'PROTECTED',
+  PROTECTED = 'PROTECTED',
   // NO_POWER = 'NO_POWER',
   CHARMED = 'CHARMED',
   CHILD_MODEL = 'CHILD_MODEL',

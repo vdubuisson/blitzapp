@@ -32,6 +32,8 @@ export class PlayerRoleImagePipe implements PipeTransform {
         return `${PlayerRoleImagePipe.IMAGES_PATH}corbeau.webp`;
       case PlayerRoleEnum.ENFANT_SAUVAGE:
         return `${PlayerRoleImagePipe.IMAGES_PATH}enfant_sauvage.webp`;
+      case PlayerRoleEnum.SALVATEUR:
+        return `${PlayerRoleImagePipe.IMAGES_PATH}salvateur.webp`;
       default:
         return '';
     }

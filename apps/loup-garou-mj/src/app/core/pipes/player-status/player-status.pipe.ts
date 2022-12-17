@@ -20,8 +20,8 @@ export class PlayerStatusPipe implements PipeTransform {
         return '💕';
       // case PlayerStatusEnum.FIRST_DEATH:
       //   return '☠️';
-      // case PlayerStatusEnum.PROTECTED:
-      //   return '🛡️';
+      case PlayerStatusEnum.PROTECTED:
+        return '🛡️';
       // case PlayerStatusEnum.NO_POWER:
       //   return '❌';
       case PlayerStatusEnum.CHARMED:

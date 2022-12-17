@@ -55,4 +55,11 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Tant que son modèle est en vie, son objectif est d'éliminer tous les loups-garous avec les autres villageois.
   
   Si son modèle meurt, il devient alors un loup-garou, et son objectif devient d'éliminer tous les innocents avec les autres loups-garous.`,
+  [PlayerRoleEnum.SALVATEUR]: `Son objectif est d'éliminer tous les loup-garous.
+  
+  Chaque nuit, il choisit un joueur qui sera protégé des loups-garous pour cette nuit. Il peut se choisir lui-même. Il ne peut pas choisir le même joueur 2 nuits de suite.
+  
+  La protection du Salvateur est inefficace sur la Petite fille.
+
+  La sorcière ne peut pas soigner la victime des loups-garous si celle-ci est déjà protégée par le Salvateur.`,
 };

@@ -60,7 +60,12 @@ export class DeathService {
       .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
       .forEach((player) => {
         player.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
-        player.isDead = true;
+        if (
+          !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
+          player.role === PlayerRoleEnum.PETITE_FILLE
+        ) {
+          player.isDead = true;
+        }
       });
   }
 

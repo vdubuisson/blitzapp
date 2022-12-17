@@ -9,4 +9,5 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.CHARMED]: `Ce joueur a été charmé par le joueur de flûte.`,
   [PlayerStatusEnum.RAVEN]: `Ce joueur est actuellement accusé par le corbeau, il a 2 votes contre lui en plus.`,
   [PlayerStatusEnum.CHILD_MODEL]: `Ce joueur est le modèle de l'enfant sauvage. S'il meurt alors l'enfant sauvage devient un loup-garou.`,
+  [PlayerStatusEnum.PROTECTED]: `Ce joueur est actuellement protégé par le Salvateur.`,
 };

@@ -44,7 +44,12 @@ export class SorciereHealthRoundHandler implements RoundHandler {
 
   private getHealablePlayers(players: Player[]): number[] {
     return players
-      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
+      .filter(
+        (player) =>
+          player.statuses.has(PlayerStatusEnum.WOLF_TARGET) &&
+          (!player.statuses.has(PlayerStatusEnum.PROTECTED) ||
+            player.role === PlayerRoleEnum.PETITE_FILLE)
+      )
       .map((player) => player.id);
   }
 }
