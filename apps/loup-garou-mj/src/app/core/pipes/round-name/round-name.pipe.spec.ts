@@ -81,4 +81,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.ENFANT_SAUVAGE);
     expect(name).toEqual("Modèle de l'enfant sauvage");
   });
+
+  it('should display "Protection du salvateur" for SALVATEUR', () => {
+    const name = pipe.transform(RoundEnum.SALVATEUR);
+    expect(name).toEqual('Protection du salvateur');
+  });
 });

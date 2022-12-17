@@ -32,4 +32,54 @@ describe('StatusesService', () => {
 
     expect(newPlayers[1].statuses.has(PlayerStatusEnum.RAVEN)).toEqual(false);
   });
+
+  it('should remove PROTECTED status on after-day cleaning if SALVATEUR is dead', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SALVATEUR,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.PROTECTED]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
+      false
+    );
+  });
+
+  it('should not remove PROTECTED status on after-day cleaning if SALVATEUR is alive', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SALVATEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.PROTECTED]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
+      true
+    );
+  });
 });

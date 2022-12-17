@@ -89,6 +89,58 @@ describe('DeathService', () => {
     expect(newPlayers[1].isDead).toEqual(true);
   });
 
+  it('should not kill players with WOLF_TARGET status and PROTECTED status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].isDead).toEqual(false);
+  });
+
+  it('should kill PETITE_FILLE with WOLF_TARGET status and PROTECTED status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.PETITE_FILLE,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].isDead).toEqual(true);
+  });
+
   it('should remove WOLF_TARGET status to players with WOLF_TARGET status', () => {
     const mockPlayers: Player[] = [
       {

@@ -17,6 +17,15 @@ export class StatusesService {
         ?.statuses.delete(PlayerStatusEnum.RAVEN);
     }
 
+    if (
+      roles.has(PlayerRoleEnum.SALVATEUR) &&
+      players.find((player) => player.role === PlayerRoleEnum.SALVATEUR)?.isDead
+    ) {
+      newPlayers
+        .find((player) => player.statuses.has(PlayerStatusEnum.PROTECTED))
+        ?.statuses.delete(PlayerStatusEnum.PROTECTED);
+    }
+
     return newPlayers;
   }
 }

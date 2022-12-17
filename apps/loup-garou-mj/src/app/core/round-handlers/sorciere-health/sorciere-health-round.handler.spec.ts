@@ -123,6 +123,58 @@ describe('SorciereHealthRoundHandler', () => {
     expect(round.selectablePlayers).toEqual([0]);
   });
 
+  it('should not return player with WOLF_TARGET and PROTECTED status as selectable players', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.selectablePlayers).toEqual([]);
+  });
+
+  it('should return PETITE_FILLE with WOLF_TARGET and PROTECTED status as selectable players', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.PETITE_FILLE,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.selectablePlayers).toEqual([0]);
+  });
+
   it('should return empty array as selectable players if SORCIERE has not HEALTH_POTION', () => {
     const players: Player[] = [
       {

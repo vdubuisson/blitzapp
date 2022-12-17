@@ -14,6 +14,7 @@ import {
   CharmedRoundHandler,
   CorbeauRoundHandler,
   EnfantSauvageRoundHandler,
+  SalvateurRoundHandler,
 } from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
@@ -423,5 +424,39 @@ describe('RoundHandlersService', () => {
     expect(service['roundHandlers'].has(RoundEnum.ENFANT_SAUVAGE)).toEqual(
       false
     );
+  });
+
+  it('should init SALVATEUR round handler for SALVATEUR role', () => {
+    service.initHandlers([PlayerRoleEnum.SALVATEUR]);
+
+    expect(service['roundHandlers'].get(RoundEnum.SALVATEUR)).toBeInstanceOf(
+      SalvateurRoundHandler
+    );
+  });
+
+  it('should not init SALVATEUR round handler when no SALVATEUR role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.SALVATEUR)).toEqual(false);
+  });
+
+  it('should return handler for SALVATEUR round', () => {
+    const roundHandler = new SalvateurRoundHandler();
+    service['roundHandlers'].set(RoundEnum.SALVATEUR, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.SALVATEUR);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler SALVATEUR for SALVATEUR role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.SALVATEUR,
+      new SalvateurRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.SALVATEUR]);
+
+    expect(service['roundHandlers'].has(RoundEnum.SALVATEUR)).toEqual(false);
   });
 });
