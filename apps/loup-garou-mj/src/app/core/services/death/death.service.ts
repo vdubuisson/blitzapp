@@ -91,6 +91,14 @@ export class DeathService {
         this.handlePlayerDeath(players, otherLivingLover);
       }
     }
+    if (deadPlayer.statuses.has(PlayerStatusEnum.CHILD_MODEL)) {
+      const enfantSauvage = players.find(
+        (player) => player.role === PlayerRoleEnum.ENFANT_SAUVAGE
+      );
+      if (enfantSauvage !== undefined && !enfantSauvage.isDead) {
+        enfantSauvage.role = PlayerRoleEnum.LOUP_GAROU;
+      }
+    }
   }
 
   private handlePlayerDeathRole(players: Player[], deadPlayer: Player): void {
@@ -122,6 +130,9 @@ export class DeathService {
         break;
       case PlayerRoleEnum.CORBEAU:
         this.rolesToRemove.push(PlayerRoleEnum.CORBEAU);
+        break;
+      case PlayerRoleEnum.ENFANT_SAUVAGE:
+        this.rolesToRemove.push(PlayerRoleEnum.ENFANT_SAUVAGE);
         break;
       default:
         break;

@@ -34,6 +34,8 @@ export class RoundNamePipe implements PipeTransform {
         return 'Découverte des charmés';
       case RoundEnum.CORBEAU:
         return 'Accusation du corbeau';
+      case RoundEnum.ENFANT_SAUVAGE:
+        return "Modèle de l'enfant sauvage";
       default:
         return '';
     }

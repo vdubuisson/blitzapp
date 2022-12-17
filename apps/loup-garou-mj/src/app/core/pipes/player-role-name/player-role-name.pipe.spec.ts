@@ -61,4 +61,9 @@ describe('PlayerRoleNamePipe', () => {
     const name = pipe.transform(PlayerRoleEnum.CORBEAU);
     expect(name).toEqual('Corbeau');
   });
+
+  it('should display "Enfant sauvage" for ENFANT_SAUVAGE', () => {
+    const name = pipe.transform(PlayerRoleEnum.ENFANT_SAUVAGE);
+    expect(name).toEqual('Enfant sauvage');
+  });
 });

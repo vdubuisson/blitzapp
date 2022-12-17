@@ -13,6 +13,7 @@ import {
   JoueurFluteRoundHandler,
   CharmedRoundHandler,
   CorbeauRoundHandler,
+  EnfantSauvageRoundHandler,
 } from '../../round-handlers';
 import { RoundHandlersService } from './round-handlers.service';
 
@@ -384,5 +385,43 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.CORBEAU]);
 
     expect(service['roundHandlers'].has(RoundEnum.CORBEAU)).toEqual(false);
+  });
+
+  it('should init ENFANT_SAUVAGE round handler for ENFANT_SAUVAGE role', () => {
+    service.initHandlers([PlayerRoleEnum.ENFANT_SAUVAGE]);
+
+    expect(
+      service['roundHandlers'].get(RoundEnum.ENFANT_SAUVAGE)
+    ).toBeInstanceOf(EnfantSauvageRoundHandler);
+  });
+
+  it('should not init ENFANT_SAUVAGE round handler when no ENFANT_SAUVAGE role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.ENFANT_SAUVAGE)).toEqual(
+      false
+    );
+  });
+
+  it('should return handler for ENFANT_SAUVAGE round', () => {
+    const roundHandler = new EnfantSauvageRoundHandler();
+    service['roundHandlers'].set(RoundEnum.ENFANT_SAUVAGE, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.ENFANT_SAUVAGE);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler ENFANT_SAUVAGE for ENFANT_SAUVAGE role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.ENFANT_SAUVAGE,
+      new EnfantSauvageRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.ENFANT_SAUVAGE]);
+
+    expect(service['roundHandlers'].has(RoundEnum.ENFANT_SAUVAGE)).toEqual(
+      false
+    );
   });
 });
