@@ -12,4 +12,5 @@ export enum RoundEnum {
   JOUEUR_FLUTE,
   CHARMED,
   CORBEAU,
+  ENFANT_SAUVAGE,
 }

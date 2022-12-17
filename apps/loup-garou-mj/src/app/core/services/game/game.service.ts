@@ -18,7 +18,7 @@ import { VictoryHandlersService } from '../victory-handlers/victory-handlers.ser
 export class GameService {
   private players = new BehaviorSubject<Player[]>([]);
   private round = new BehaviorSubject<Round | undefined>(undefined);
-  private gameInProgess = new BehaviorSubject<boolean>(false);
+  private gameInProgress = new BehaviorSubject<boolean>(false);
 
   constructor(
     private router: Router,
@@ -38,7 +38,7 @@ export class GameService {
   }
 
   isGameInProgress(): Observable<boolean> {
-    return this.gameInProgess.asObservable();
+    return this.gameInProgress.asObservable();
   }
 
   createGame(players: Player[]): void {
@@ -56,7 +56,7 @@ export class GameService {
     }
     this.players.next(players);
     this.setFirstRound();
-    this.gameInProgess.next(true);
+    this.gameInProgress.next(true);
     this.router.navigate(['game']);
   }
 
@@ -103,7 +103,7 @@ export class GameService {
         this.players.value
       );
       if (victory !== undefined) {
-        this.gameInProgess.next(false);
+        this.gameInProgress.next(false);
         this.router.navigate(['victory'], { queryParams: { victory } });
         return;
       }
@@ -132,7 +132,7 @@ export class GameService {
         this.players.value
       );
       if (victory !== undefined) {
-        this.gameInProgess.next(false);
+        this.gameInProgress.next(false);
         this.router.navigate(['victory'], { queryParams: { victory } });
         return;
       }

@@ -48,4 +48,11 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Chaque nuit, il accuse un joueur de son choix.
   
   Le joueur accusé aura automatiquement 2 votes contre lui de plus pendant le vote du jour.`,
+  [PlayerRoleEnum.ENFANT_SAUVAGE]: `Son objectif peut changer en cours de partie.
+  
+  Lors de la première nuit, il choisit un joueur qui sera son modèle.
+  
+  Tant que son modèle est en vie, son objectif est d'éliminer tous les loups-garous avec les autres villageois.
+  
+  Si son modèle meurt, il devient alors un loup-garou, et son objectif devient d'éliminer tous les innocents avec les autres loups-garous.`,
 };

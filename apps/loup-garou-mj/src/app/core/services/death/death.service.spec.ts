@@ -276,6 +276,66 @@ describe('DeathService', () => {
     expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.CHASSEUR);
   });
 
+  it('should change alive ENFANT_SAUVAGE to LOUP_GAROU on CHILD_MODEL death', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.CHILD_MODEL]),
+        isDead: true,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
+  });
+
+  it('should not change dead ENFANT_SAUVAGE to LOUP_GAROU on CHILD_MODEL death', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.CHILD_MODEL]),
+        isDead: true,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].role).toEqual(PlayerRoleEnum.ENFANT_SAUVAGE);
+  });
+
   it('should remove LOUP_GAROU handlers if no more LOUP_GAROU', () => {
     jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
@@ -454,6 +514,32 @@ describe('DeathService', () => {
 
     expect(roundHandlersService.removeHandlers).toBeCalledWith([
       PlayerRoleEnum.CORBEAU,
+    ]);
+  });
+
+  it('should remove ENFANT_SAUVAGE handlers if ENFANT_SAUVAGE is dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.ENFANT_SAUVAGE,
     ]);
   });
 

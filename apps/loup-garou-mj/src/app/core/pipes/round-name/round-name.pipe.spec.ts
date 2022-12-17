@@ -76,4 +76,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.CORBEAU);
     expect(name).toEqual('Accusation du corbeau');
   });
+
+  it('should display "Modèle de l\'enfant sauvage" for ENFANT_SAUVAGE', () => {
+    const name = pipe.transform(RoundEnum.ENFANT_SAUVAGE);
+    expect(name).toEqual("Modèle de l'enfant sauvage");
+  });
 });

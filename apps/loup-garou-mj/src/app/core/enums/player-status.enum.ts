@@ -8,7 +8,7 @@ export enum PlayerStatusEnum {
   // PROTECTED = 'PROTECTED',
   // NO_POWER = 'NO_POWER',
   CHARMED = 'CHARMED',
-  // CHILD_MODEL = 'CHILD_MODEL',
+  CHILD_MODEL = 'CHILD_MODEL',
   RAVEN = 'RAVEN',
   // RUSTY_SWORD = 'RUSTY_SWORD',
   // COMEDIAN = 'COMEDIAN',

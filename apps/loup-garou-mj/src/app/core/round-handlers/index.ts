@@ -10,3 +10,4 @@ export * from './amoureux/amoureux-round.handler';
 export * from './joueur-flute/joueur-flute-round.handler';
 export * from './charmed/charmed-round.handler';
 export * from './corbeau/corbeau-round.handler';
+export * from './enfant-sauvage/enfant-sauvage-round.handler';

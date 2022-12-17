@@ -14,6 +14,7 @@ import {
   JoueurFluteRoundHandler,
   CharmedRoundHandler,
   CorbeauRoundHandler,
+  EnfantSauvageRoundHandler,
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 
@@ -70,6 +71,13 @@ export class RoundHandlersService {
     if (rolesSet.has(PlayerRoleEnum.CORBEAU)) {
       this.roundHandlers.set(RoundEnum.CORBEAU, new CorbeauRoundHandler());
     }
+
+    if (rolesSet.has(PlayerRoleEnum.ENFANT_SAUVAGE)) {
+      this.roundHandlers.set(
+        RoundEnum.ENFANT_SAUVAGE,
+        new EnfantSauvageRoundHandler()
+      );
+    }
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -100,6 +108,9 @@ export class RoundHandlersService {
     }
     if (rolesSet.has(PlayerRoleEnum.CORBEAU)) {
       this.roundHandlers.delete(RoundEnum.CORBEAU);
+    }
+    if (rolesSet.has(PlayerRoleEnum.ENFANT_SAUVAGE)) {
+      this.roundHandlers.delete(RoundEnum.ENFANT_SAUVAGE);
     }
   }
 }
