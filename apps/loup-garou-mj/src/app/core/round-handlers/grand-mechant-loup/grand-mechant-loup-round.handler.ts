@@ -5,7 +5,7 @@ import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 
-export class LoupGarouRoundHandler implements RoundHandler {
+export class GrandMechantLoupRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
 
@@ -19,15 +19,17 @@ export class LoupGarouRoundHandler implements RoundHandler {
 
   getRoundConfig(players: Player[]): Round {
     return {
-      role: RoundEnum.LOUP_GAROU,
+      role: RoundEnum.GRAND_MECHANT_LOUP,
       selectablePlayers: players
         .filter(
           (player) =>
-            !LOUPS_GAROUS_ROLES.includes(player.role) && !player.isDead
+            !LOUPS_GAROUS_ROLES.includes(player.role) &&
+            !player.isDead &&
+            !player.statuses.has(PlayerStatusEnum.WOLF_TARGET)
         )
         .map((player) => player.id),
       maxSelectable: 1,
-      minSelectable: 1,
+      minSelectable: 0,
       isDuringDay: this.isDuringDay,
     };
   }

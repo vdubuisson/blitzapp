@@ -16,6 +16,7 @@ import {
   CorbeauRoundHandler,
   EnfantSauvageRoundHandler,
   SalvateurRoundHandler,
+  GrandMechantLoupRoundHandler,
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 
@@ -83,6 +84,13 @@ export class RoundHandlersService {
     if (rolesSet.has(PlayerRoleEnum.SALVATEUR)) {
       this.roundHandlers.set(RoundEnum.SALVATEUR, new SalvateurRoundHandler());
     }
+
+    if (rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)) {
+      this.roundHandlers.set(
+        RoundEnum.GRAND_MECHANT_LOUP,
+        new GrandMechantLoupRoundHandler()
+      );
+    }
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -119,6 +127,9 @@ export class RoundHandlersService {
     }
     if (rolesSet.has(PlayerRoleEnum.SALVATEUR)) {
       this.roundHandlers.delete(RoundEnum.SALVATEUR);
+    }
+    if (rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)) {
+      this.roundHandlers.delete(RoundEnum.GRAND_MECHANT_LOUP);
     }
   }
 }

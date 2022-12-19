@@ -71,4 +71,9 @@ describe('PlayerRoleNamePipe', () => {
     const name = pipe.transform(PlayerRoleEnum.SALVATEUR);
     expect(name).toEqual('Salvateur');
   });
+
+  it('should display "Grand méchant loup" for GRAND_MECHANT_LOUP', () => {
+    const name = pipe.transform(PlayerRoleEnum.GRAND_MECHANT_LOUP);
+    expect(name).toEqual('Grand méchant loup');
+  });
 });

@@ -409,8 +409,107 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    expect(roundHandlersService.removeHandlers).toBeCalledWith(
+      expect.arrayContaining([PlayerRoleEnum.LOUP_GAROU])
+    );
+  });
+
+  it('should not remove LOUP_GAROU handlers if no more LOUP_GAROU but GRAND_MECHANT_LOUP still alive', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
     expect(roundHandlersService.removeHandlers).toBeCalledWith([
-      PlayerRoleEnum.LOUP_GAROU,
+      PlayerRoleEnum.GRAND_MECHANT_LOUP,
+    ]);
+  });
+
+  it('should remove GRAND_MECHANT_LOUP handlers if some LOUP_GAROU is dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.GRAND_MECHANT_LOUP,
+    ]);
+  });
+
+  it('should remove GRAND_MECHANT_LOUP handlers if GRAND_MECHANT_LOUP is dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
 

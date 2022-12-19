@@ -61,5 +61,10 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   
   La protection du Salvateur est inefficace sur la Petite fille.
 
-  La sorcière ne peut pas soigner la victime des loups-garous si celle-ci est déjà protégée par le Salvateur.`,
+  La Sorcière ne peut pas soigner la victime des loups-garous si celle-ci est déjà protégée par le Salvateur.`,
+  [PlayerRoleEnum.GRAND_MECHANT_LOUP]: `Son objectif est d'éliminer tous les innocents.
+
+  Chaque nuit, il se réveille avec les autres loups-garous pour attaquer un innocent.
+
+  Tant qu'aucun loup-garou n'est éliminé, il se réveille une 2e fois juste après les loups-garous pour attaquer un 2e innocent.`,
 };
