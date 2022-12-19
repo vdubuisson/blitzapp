@@ -17,6 +17,7 @@ export class RoundOrchestrationService {
     RoundEnum.CORBEAU,
     RoundEnum.SALVATEUR,
     RoundEnum.LOUP_GAROU,
+    RoundEnum.GRAND_MECHANT_LOUP,
     RoundEnum.SORCIERE_HEALTH,
     RoundEnum.SORCIERE_KILL,
     RoundEnum.JOUEUR_FLUTE,

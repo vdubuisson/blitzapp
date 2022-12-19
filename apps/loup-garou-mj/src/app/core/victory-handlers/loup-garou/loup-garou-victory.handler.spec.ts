@@ -28,7 +28,7 @@ describe('LoupGarouVictoryHandler', () => {
       {
         id: 2,
         name: 'player2',
-        role: PlayerRoleEnum.LOUP_GAROU,
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
         statuses: new Set(),
         isDead: false,
       },

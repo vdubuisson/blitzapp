@@ -86,4 +86,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.SALVATEUR);
     expect(name).toEqual('Protection du salvateur');
   });
+
+  it('should display "Attaque du grand méchant loup" for GRAND_MECHANT_LOUP', () => {
+    const name = pipe.transform(RoundEnum.GRAND_MECHANT_LOUP);
+    expect(name).toEqual('Attaque du grand méchant loup');
+  });
 });

@@ -32,6 +32,8 @@ export class PlayerRoleNamePipe implements PipeTransform {
         return 'Enfant sauvage';
       case PlayerRoleEnum.SALVATEUR:
         return 'Salvateur';
+      case PlayerRoleEnum.GRAND_MECHANT_LOUP:
+        return 'Grand méchant loup';
       default:
         return '';
     }

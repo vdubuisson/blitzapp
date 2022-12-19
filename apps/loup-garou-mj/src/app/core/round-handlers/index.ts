@@ -12,3 +12,4 @@ export * from './charmed/charmed-round.handler';
 export * from './corbeau/corbeau-round.handler';
 export * from './enfant-sauvage/enfant-sauvage-round.handler';
 export * from './salvateur/salvateur-round.handler';
+export * from './grand-mechant-loup/grand-mechant-loup-round.handler';

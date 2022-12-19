@@ -112,11 +112,18 @@ export class DeathService {
         if (
           players.filter(
             (player) =>
-              player.role === PlayerRoleEnum.LOUP_GAROU && !player.isDead
+              [
+                PlayerRoleEnum.LOUP_GAROU,
+                PlayerRoleEnum.GRAND_MECHANT_LOUP,
+              ].includes(player.role) && !player.isDead
           ).length === 0
         ) {
           this.rolesToRemove.push(PlayerRoleEnum.LOUP_GAROU);
         }
+        this.rolesToRemove.push(PlayerRoleEnum.GRAND_MECHANT_LOUP);
+        break;
+      case PlayerRoleEnum.GRAND_MECHANT_LOUP:
+        this.rolesToRemove.push(PlayerRoleEnum.GRAND_MECHANT_LOUP);
         break;
       case PlayerRoleEnum.CHASSEUR:
         this.afterDeathRoundQueue.unshift(RoundEnum.CHASSEUR);
