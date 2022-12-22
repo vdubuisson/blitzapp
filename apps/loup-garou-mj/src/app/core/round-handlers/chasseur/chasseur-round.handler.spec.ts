@@ -1,4 +1,5 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { ChasseurRoundHandler } from './chasseur-round.handler';
@@ -22,6 +23,10 @@ describe('ChasseurRoundHandler', () => {
     const round = roundHandler.getRoundConfig([]);
 
     expect(round.isDuringDay).toEqual(true);
+  });
+
+  it('should be PLAYERS type', () => {
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should kill selected player', () => {

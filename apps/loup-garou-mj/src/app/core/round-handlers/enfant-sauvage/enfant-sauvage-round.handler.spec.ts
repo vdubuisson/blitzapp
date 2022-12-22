@@ -1,5 +1,6 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { EnfantSauvageRoundHandler } from './enfant-sauvage-round.handler';
@@ -23,6 +24,10 @@ describe('EnfantSauvageRoundHandler', () => {
     const round = roundHandler.getRoundConfig([]);
 
     expect(round.isDuringDay).toEqual(false);
+  });
+
+  it('should be PLAYERS type', () => {
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add CHILD_MODEL status to selected player', () => {

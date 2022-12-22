@@ -1,4 +1,5 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
@@ -7,6 +8,7 @@ import { RoundHandler } from '../round-handler.interface';
 export class ChasseurRoundHandler implements RoundHandler {
   readonly isOnlyOnce = true;
   readonly isDuringDay = true;
+  readonly type = RoundTypeEnum.PLAYERS;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];

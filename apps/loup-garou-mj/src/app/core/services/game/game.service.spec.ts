@@ -4,6 +4,7 @@ import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
@@ -20,6 +21,7 @@ import { GameService } from './game.service';
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
   isDuringDay = false;
+  type = RoundTypeEnum.DEFAULT;
 
   handleAction(players: Player[], _: number[]): Player[] {
     return players;

@@ -1,4 +1,5 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { AmoureuxRoundHandler } from './amoureux-round.handler';
@@ -22,6 +23,10 @@ describe('AmoureuxRoundHandler', () => {
     const round = roundHandler.getRoundConfig([]);
 
     expect(round.isDuringDay).toEqual(false);
+  });
+
+  it('should be DEFAULT type', () => {
+    expect(roundHandler.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
   it('should return players without change', () => {

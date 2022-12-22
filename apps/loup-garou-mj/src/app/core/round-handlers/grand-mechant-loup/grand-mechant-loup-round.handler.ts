@@ -1,5 +1,6 @@
 import { LOUPS_GAROUS_ROLES } from '../../constants/loups-garous-roles';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
@@ -8,6 +9,7 @@ import { RoundHandler } from '../round-handler.interface';
 export class GrandMechantLoupRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
+  readonly type = RoundTypeEnum.PLAYERS;
 
   handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
     const newPlayers = [...players];
