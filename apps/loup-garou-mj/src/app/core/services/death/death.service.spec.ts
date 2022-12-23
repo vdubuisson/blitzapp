@@ -694,6 +694,58 @@ describe('DeathService', () => {
     ]);
   });
 
+  it('should remove SALVATEUR handlers if SALVATEUR is dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SALVATEUR,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.SALVATEUR,
+    ]);
+  });
+
+  it('should remove SALVATEUR handlers if MONTREUR_OURS is dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.MONTREUR_OURS,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.MONTREUR_OURS,
+    ]);
+  });
+
   it('should remove useless victory handlers on deaths handle', () => {
     jest.spyOn(victoryHandlersService, 'removeUselessHandlers');
     const mockPlayers: Player[] = [
