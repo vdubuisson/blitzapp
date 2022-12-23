@@ -122,31 +122,11 @@ export class DeathService {
         }
         this.rolesToRemove.push(PlayerRoleEnum.GRAND_MECHANT_LOUP);
         break;
-      case PlayerRoleEnum.GRAND_MECHANT_LOUP:
-        this.rolesToRemove.push(PlayerRoleEnum.GRAND_MECHANT_LOUP);
-        break;
       case PlayerRoleEnum.CHASSEUR:
         this.afterDeathRoundQueue.unshift(RoundEnum.CHASSEUR);
         break;
-      case PlayerRoleEnum.CUPIDON:
-        this.rolesToRemove.push(PlayerRoleEnum.CUPIDON);
-        break;
-      case PlayerRoleEnum.SORCIERE:
-        this.rolesToRemove.push(PlayerRoleEnum.SORCIERE);
-        break;
-      case PlayerRoleEnum.VOYANTE:
-        this.rolesToRemove.push(PlayerRoleEnum.VOYANTE);
-        break;
-      case PlayerRoleEnum.JOUEUR_FLUTE:
-        this.rolesToRemove.push(PlayerRoleEnum.JOUEUR_FLUTE);
-        break;
-      case PlayerRoleEnum.CORBEAU:
-        this.rolesToRemove.push(PlayerRoleEnum.CORBEAU);
-        break;
-      case PlayerRoleEnum.ENFANT_SAUVAGE:
-        this.rolesToRemove.push(PlayerRoleEnum.ENFANT_SAUVAGE);
-        break;
       default:
+        this.rolesToRemove.push(deadPlayer.role);
         break;
     }
   }
