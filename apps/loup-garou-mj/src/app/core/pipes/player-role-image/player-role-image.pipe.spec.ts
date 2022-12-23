@@ -75,4 +75,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.GRAND_MECHANT_LOUP);
     expect(path).toEqual('assets/images/roles/grand_mechant_loup.webp');
   });
+
+  it('should return image path for MONTREUR_OURS', () => {
+    const path = pipe.transform(PlayerRoleEnum.MONTREUR_OURS);
+    expect(path).toEqual('assets/images/roles/montreur_ours.webp');
+  });
 });

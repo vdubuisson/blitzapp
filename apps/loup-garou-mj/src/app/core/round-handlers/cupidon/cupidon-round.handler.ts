@@ -25,6 +25,7 @@ export class CupidonRoundHandler implements RoundHandler {
       maxSelectable: 2,
       minSelectable: 2,
       isDuringDay: this.isDuringDay,
+      type: this.type,
     };
   }
 }

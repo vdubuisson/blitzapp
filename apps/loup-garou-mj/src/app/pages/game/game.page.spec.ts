@@ -9,6 +9,7 @@ import { Round } from '../../core/models/round.model';
 import { RoundEnum } from '../../core/enums/round.enum';
 import { RadioGroupCustomEvent } from '@ionic/angular';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
+import { RoundTypeEnum } from '../../core/enums/round-type.enum';
 
 describe('GamePage', () => {
   let component: GamePage;
@@ -43,6 +44,7 @@ describe('GamePage', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     mockRound$ = new BehaviorSubject(mockRound);
     gameService = MockService(GameService);
@@ -74,6 +76,7 @@ describe('GamePage', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
@@ -89,6 +92,7 @@ describe('GamePage', () => {
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
@@ -104,6 +108,7 @@ describe('GamePage', () => {
       maxSelectable: 0,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
@@ -119,6 +124,7 @@ describe('GamePage', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'] = undefined;
     component['round$'].subscribe(() => {
@@ -133,6 +139,7 @@ describe('GamePage', () => {
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayers'] = new Set([0, 1, 2]);
     component['round$'].subscribe(() => {
@@ -147,6 +154,7 @@ describe('GamePage', () => {
       maxSelectable: 2,
       minSelectable: 2,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayers'] = new Set([0]);
     component['round$'].subscribe(() => {
@@ -161,6 +169,7 @@ describe('GamePage', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'] = 0;
     component['round$'].subscribe(() => {
@@ -175,6 +184,7 @@ describe('GamePage', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'] = undefined;
     component['round$'].subscribe(() => {
@@ -189,6 +199,7 @@ describe('GamePage', () => {
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayers'] = new Set([0]);
     component['round$'].subscribe(() => {
@@ -203,6 +214,7 @@ describe('GamePage', () => {
       maxSelectable: 0,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['round$'].subscribe(() => {
       expect(component['submitDisabled']).toEqual(false);

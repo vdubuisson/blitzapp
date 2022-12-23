@@ -29,6 +29,12 @@ describe('AmoureuxRoundHandler', () => {
     expect(roundHandler.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
+  it('should return DEFAULT type', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.type).toEqual(RoundTypeEnum.DEFAULT);
+  });
+
   it('should return players without change', () => {
     const players: Player[] = [
       {

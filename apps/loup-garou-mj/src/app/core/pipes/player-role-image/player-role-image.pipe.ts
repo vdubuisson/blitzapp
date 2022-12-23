@@ -36,6 +36,8 @@ export class PlayerRoleImagePipe implements PipeTransform {
         return `${PlayerRoleImagePipe.IMAGES_PATH}salvateur.webp`;
       case PlayerRoleEnum.GRAND_MECHANT_LOUP:
         return `${PlayerRoleImagePipe.IMAGES_PATH}grand_mechant_loup.webp`;
+      case PlayerRoleEnum.MONTREUR_OURS:
+        return `${PlayerRoleImagePipe.IMAGES_PATH}montreur_ours.webp`;
       default:
         return '';
     }

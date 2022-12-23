@@ -30,6 +30,12 @@ describe('SalvateurRoundHandler', () => {
     expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
+  it('should return PLAYERS type', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+  });
+
   it('should move PROTECTED status to selected player', () => {
     const players: Player[] = [
       {

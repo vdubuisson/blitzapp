@@ -1,3 +1,4 @@
+import { MockService } from 'ng-mocks';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import {
@@ -16,14 +17,18 @@ import {
   EnfantSauvageRoundHandler,
   SalvateurRoundHandler,
   GrandMechantLoupRoundHandler,
+  MontreurOursRoundHandler,
 } from '../../round-handlers';
+import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from './round-handlers.service';
 
 describe('RoundHandlersService', () => {
   let service: RoundHandlersService;
+  let announcementService: AnnouncementService;
 
   beforeEach(() => {
-    service = new RoundHandlersService();
+    announcementService = MockService(AnnouncementService);
+    service = new RoundHandlersService(announcementService);
   });
 
   it('should be created', () => {
@@ -495,6 +500,44 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.GRAND_MECHANT_LOUP]);
 
     expect(service['roundHandlers'].has(RoundEnum.GRAND_MECHANT_LOUP)).toEqual(
+      false
+    );
+  });
+
+  it('should init MONTREUR_OURS round handler for MONTREUR_OURS role', () => {
+    service.initHandlers([PlayerRoleEnum.MONTREUR_OURS]);
+
+    expect(
+      service['roundHandlers'].get(RoundEnum.MONTREUR_OURS)
+    ).toBeInstanceOf(MontreurOursRoundHandler);
+  });
+
+  it('should not init MONTREUR_OURS round handler when no MONTREUR_OURS role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.MONTREUR_OURS)).toEqual(
+      false
+    );
+  });
+
+  it('should return handler for MONTREUR_OURS round', () => {
+    const roundHandler = new MontreurOursRoundHandler(announcementService);
+    service['roundHandlers'].set(RoundEnum.MONTREUR_OURS, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.MONTREUR_OURS);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler MONTREUR_OURS for MONTREUR_OURS role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.MONTREUR_OURS,
+      new MontreurOursRoundHandler(announcementService)
+    );
+
+    service.removeHandlers([PlayerRoleEnum.MONTREUR_OURS]);
+
+    expect(service['roundHandlers'].has(RoundEnum.MONTREUR_OURS)).toEqual(
       false
     );
   });

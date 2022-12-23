@@ -67,4 +67,7 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Chaque nuit, il se réveille avec les autres loups-garous pour attaquer un innocent.
 
   Tant qu'aucun loup-garou n'est éliminé, il se réveille une 2e fois juste après les loups-garous pour attaquer un 2e innocent.`,
+  [PlayerRoleEnum.MONTREUR_OURS]: `Son objectif est d'éliminer tous les loups-garous.
+
+  Tous les matins, si l'un de ses voisins est un loup-garou, alors son ours grogne.`,
 };

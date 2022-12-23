@@ -30,6 +30,12 @@ describe('JoueurFluteRoundHandler', () => {
     expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
+  it('should return PLAYERS type', () => {
+    const round = roundHandler.getRoundConfig([]);
+
+    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+  });
+
   it('should add CHARMED status to selected players', () => {
     const players: Player[] = [
       {

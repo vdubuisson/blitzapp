@@ -91,4 +91,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.GRAND_MECHANT_LOUP);
     expect(name).toEqual('Attaque du grand méchant loup');
   });
+
+  it('should display "Grognement de l\'ours" for MONTREUR_OURS', () => {
+    const name = pipe.transform(RoundEnum.MONTREUR_OURS);
+    expect(name).toEqual("Grognement de l'ours");
+  });
 });

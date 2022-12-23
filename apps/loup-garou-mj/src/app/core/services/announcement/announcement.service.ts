@@ -20,6 +20,14 @@ export class AnnouncementService {
     this.addAnnouncementToQueue(announcement);
   }
 
+  announceBearGrowl(): void {
+    const announcement: AlertOptions = {
+      header: "Grognement de l'ours",
+      message: "L'ours du montreur d'ours grogne",
+    };
+    this.addAnnouncementToQueue(announcement);
+  }
+
   private addAnnouncementToQueue(announcement: AlertOptions): void {
     this.announcementsQueue.push({
       ...announcement,

@@ -33,6 +33,7 @@ export class JoueurFluteRoundHandler implements RoundHandler {
       maxSelectable: 2,
       minSelectable: 0,
       isDuringDay: this.isDuringDay,
+      type: this.type,
     };
   }
 }

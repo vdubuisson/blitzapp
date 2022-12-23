@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
@@ -159,6 +160,9 @@ export class GameService {
     if (handler !== undefined) {
       const roundConfig = handler.getRoundConfig(this.players.value);
       this.round.next(roundConfig);
+      if (handler.type === RoundTypeEnum.AUTO) {
+        this.submitRoundAction([]);
+      }
     }
   }
 }

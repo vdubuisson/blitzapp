@@ -33,6 +33,7 @@ export class SalvateurRoundHandler implements RoundHandler {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: this.isDuringDay,
+      type: this.type,
     };
   }
 }

@@ -33,6 +33,7 @@ export class GrandMechantLoupRoundHandler implements RoundHandler {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: this.isDuringDay,
+      type: this.type,
     };
   }
 }
