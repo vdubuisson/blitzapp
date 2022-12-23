@@ -5,6 +5,7 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { AnnouncementService } from '../../services/announcement/announcement.service';
 import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
+import * as neighborUtils from '../../utils/neighbor.utils';
 
 describe('MontreurOursRoundHandler', () => {
   let roundHandler: MontreurOursRoundHandler;
@@ -135,6 +136,13 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
     jest.spyOn(announcementService, 'announceBearGrowl');
+    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+      id: 2,
+      name: 'player2',
+      role: PlayerRoleEnum.LOUP_GAROU,
+      statuses: new Set(),
+      isDead: false,
+    });
 
     roundHandler.handleAction(mockPlayers, []);
 
@@ -166,6 +174,20 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
     jest.spyOn(announcementService, 'announceBearGrowl');
+    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+      id: 2,
+      name: 'player2',
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set(),
+      isDead: false,
+    });
+    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+      id: 0,
+      name: 'player0',
+      role: PlayerRoleEnum.LOUP_GAROU,
+      statuses: new Set(),
+      isDead: false,
+    });
 
     roundHandler.handleAction(mockPlayers, []);
 
@@ -197,147 +219,23 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
     jest.spyOn(announcementService, 'announceBearGrowl');
+    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+      id: 2,
+      name: 'player2',
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set(),
+      isDead: false,
+    });
+    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+      id: 0,
+      name: 'player0',
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set(),
+      isDead: false,
+    });
 
     roundHandler.handleAction(mockPlayers, []);
 
     expect(announcementService.announceBearGrowl).toBeCalledTimes(0);
-  });
-
-  it('should find right neighbor at the end of list', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.MONTREUR_OURS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
-
-    roundHandler.handleAction(mockPlayers, []);
-
-    expect(announcementService.announceBearGrowl).toBeCalled();
-  });
-
-  it('should find left neighbor at the beginning of list', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.MONTREUR_OURS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
-
-    roundHandler.handleAction(mockPlayers, []);
-
-    expect(announcementService.announceBearGrowl).toBeCalled();
-  });
-
-  it('should ignore dead players to find left neighbor', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.MONTREUR_OURS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 3,
-        name: 'player3',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
-
-    roundHandler.handleAction(mockPlayers, []);
-
-    expect(announcementService.announceBearGrowl).toBeCalled();
-  });
-
-  it('should ignore dead players to find right neighbor', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.MONTREUR_OURS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 3,
-        name: 'player3',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
-
-    roundHandler.handleAction(mockPlayers, []);
-
-    expect(announcementService.announceBearGrowl).toBeCalled();
   });
 });
