@@ -85,4 +85,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.RENARD);
     expect(path).toEqual('assets/images/roles/renard.webp');
   });
+
+  it('should return image path for CHIEN_LOUP', () => {
+    const path = pipe.transform(PlayerRoleEnum.CHIEN_LOUP);
+    expect(path).toEqual('assets/images/roles/chien_loup.webp');
+  });
 });

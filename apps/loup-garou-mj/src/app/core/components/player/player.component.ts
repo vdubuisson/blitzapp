@@ -38,9 +38,12 @@ export class PlayerComponent {
 
   @Input() checked = false;
 
+  @Input() noSelfRole = false;
+
   @Input() set selectableRoles(roleList: PlayerRoleEnum[]) {
     const sortedRoles = [...roleList];
     if (
+      !this.noSelfRole &&
       this.player.role !== PlayerRoleEnum.NOT_SELECTED &&
       !sortedRoles.includes(this.player.role)
     ) {

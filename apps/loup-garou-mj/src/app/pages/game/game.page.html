@@ -26,10 +26,13 @@
           <lgmj-player
             *ngFor="let player of (players$ | async); trackBy: playerTrackBy"
             [player]="player"
-            [displayMode]="playerDisplayMode"
+            [displayMode]="playerDisplayMode === PlayerDisplayModeEnum.EDIT_ROLE && !round.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode"
             [disabled]="!round.selectablePlayers.includes(player.id)"
             [checked]="selectedPlayers.has(player.id)"
+            [noSelfRole]="true"
+            [selectableRoles]="round.selectableRoles || []"
             (checkedChange)="onMultiPlayerChecked(player.id, $event)"
+            (roleChange)="onRoleSelect($event)"
           ></lgmj-player>
         </ion-radio-group>
       </ion-list>

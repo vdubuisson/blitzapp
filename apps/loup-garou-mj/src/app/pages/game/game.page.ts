@@ -10,6 +10,8 @@ import { RoundNamePipe } from '../../core/pipes/round-name/round-name.pipe';
 import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
+import { RoundTypeEnum } from '../../core/enums/round-type.enum';
+import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 
 @Component({
   selector: 'lgmj-game',
@@ -30,11 +32,13 @@ export class GamePage {
 
   protected playerDisplayMode: PlayerDisplayModeEnum =
     PlayerDisplayModeEnum.DEFAULT;
+  protected PlayerDisplayModeEnum = PlayerDisplayModeEnum;
 
   protected playerTrackBy = PLAYER_TRACK_BY;
 
   protected selectedPlayer?: number;
   protected selectedPlayers = new Set<number>();
+  protected selectedRole?: PlayerRoleEnum;
 
   private maxSelectable = 0;
   private minSelectable = 0;
@@ -48,6 +52,8 @@ export class GamePage {
           this.selectedPlayers.size > this.maxSelectable ||
           this.selectedPlayers.size < this.minSelectable
         );
+      case PlayerDisplayModeEnum.EDIT_ROLE:
+        return this.minSelectable > 0 && this.selectedRole === undefined;
       default:
         return false;
     }
@@ -59,7 +65,9 @@ export class GamePage {
         if (round !== undefined) {
           this.maxSelectable = round.maxSelectable;
           this.minSelectable = round.minSelectable;
-          if (round.maxSelectable > 1) {
+          if (round.type === RoundTypeEnum.ROLES) {
+            this.playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
+          } else if (round.maxSelectable > 1) {
             this.playerDisplayMode = PlayerDisplayModeEnum.SELECT_MULTI;
           } else if (round.maxSelectable === 1) {
             this.playerDisplayMode = PlayerDisplayModeEnum.SELECT_SINGLE;
@@ -88,13 +96,18 @@ export class GamePage {
     }
   }
 
+  protected onRoleSelect(role: PlayerRoleEnum): void {
+    this.selectedRole = role;
+  }
+
   protected onSubmit(): void {
     const selectedPlayers =
       this.selectedPlayer !== undefined
         ? [this.selectedPlayer]
         : Array.from(this.selectedPlayers);
-    this.gameService.submitRoundAction(selectedPlayers);
+    this.gameService.submitRoundAction(selectedPlayers, this.selectedRole);
     this.selectedPlayer = undefined;
     this.selectedPlayers.clear();
+    this.selectedRole = undefined;
   }
 }

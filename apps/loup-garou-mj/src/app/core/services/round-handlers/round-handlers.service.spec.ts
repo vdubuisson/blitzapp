@@ -19,6 +19,7 @@ import {
   GrandMechantLoupRoundHandler,
   MontreurOursRoundHandler,
   RenardRoundHandler,
+  ChienLoupRoundHandler,
 } from '../../round-handlers';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from './round-handlers.service';
@@ -575,5 +576,39 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.RENARD]);
 
     expect(service['roundHandlers'].has(RoundEnum.RENARD)).toEqual(false);
+  });
+
+  it('should init CHIEN_LOUP round handler for CHIEN_LOUP role', () => {
+    service.initHandlers([PlayerRoleEnum.CHIEN_LOUP]);
+
+    expect(service['roundHandlers'].get(RoundEnum.CHIEN_LOUP)).toBeInstanceOf(
+      ChienLoupRoundHandler
+    );
+  });
+
+  it('should not init CHIEN_LOUP round handler when no CHIEN_LOUP role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CHIEN_LOUP)).toEqual(false);
+  });
+
+  it('should return handler for CHIEN_LOUP round', () => {
+    const roundHandler = new ChienLoupRoundHandler();
+    service['roundHandlers'].set(RoundEnum.CHIEN_LOUP, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.CHIEN_LOUP);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler CHIEN_LOUP for CHIEN_LOUP role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.CHIEN_LOUP,
+      new ChienLoupRoundHandler()
+    );
+
+    service.removeHandlers([PlayerRoleEnum.CHIEN_LOUP]);
+
+    expect(service['roundHandlers'].has(RoundEnum.CHIEN_LOUP)).toEqual(false);
   });
 });

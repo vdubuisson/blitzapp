@@ -61,14 +61,18 @@ export class GameService {
     this.router.navigate(['game']);
   }
 
-  submitRoundAction(selectedPlayers: number[]): void {
+  submitRoundAction(
+    selectedPlayers: number[],
+    selectedRole?: PlayerRoleEnum
+  ): void {
     const currentRoundRole = this.round.value?.role;
     if (currentRoundRole !== undefined) {
       const handler = this.roundHandlersService.getHandler(currentRoundRole);
       if (handler !== undefined) {
         const newPlayers = handler.handleAction(
           this.players.value,
-          selectedPlayers
+          selectedPlayers,
+          selectedRole
         );
         this.players.next(newPlayers);
         this.nextRound();

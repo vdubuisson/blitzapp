@@ -101,4 +101,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.RENARD);
     expect(name).toEqual('Reniflement du renard');
   });
+
+  it('should display "Choix du chien-loup" for CHIEN_LOUP', () => {
+    const name = pipe.transform(RoundEnum.CHIEN_LOUP);
+    expect(name).toEqual('Choix du chien-loup');
+  });
 });
