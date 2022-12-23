@@ -12,6 +12,7 @@ export class RoundOrchestrationService {
     RoundEnum.VOLEUR,
     RoundEnum.CUPIDON,
     RoundEnum.VOYANTE,
+    RoundEnum.RENARD,
     RoundEnum.AMOUREUX,
     RoundEnum.ENFANT_SAUVAGE,
     RoundEnum.CORBEAU,

@@ -720,7 +720,7 @@ describe('DeathService', () => {
     ]);
   });
 
-  it('should remove SALVATEUR handlers if MONTREUR_OURS is dead', () => {
+  it('should remove MONTREUR_OURS handlers if MONTREUR_OURS is dead', () => {
     jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
@@ -743,6 +743,32 @@ describe('DeathService', () => {
 
     expect(roundHandlersService.removeHandlers).toBeCalledWith([
       PlayerRoleEnum.MONTREUR_OURS,
+    ]);
+  });
+
+  it('should remove RENARD handlers if RENARD is dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.RENARD,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.RENARD,
     ]);
   });
 

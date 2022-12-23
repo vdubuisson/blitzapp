@@ -28,6 +28,24 @@ export class AnnouncementService {
     this.addAnnouncementToQueue(announcement);
   }
 
+  announceFoxSuccess(): void {
+    const announcement: AlertOptions = {
+      header: 'Reniflement du renard',
+      message:
+        '<p>Oui, ce groupe contient un loup-garou.</p><p>Le renard garde son pouvoir.</p>',
+    };
+    this.addAnnouncementToQueue(announcement);
+  }
+
+  announceFoxFail(): void {
+    const announcement: AlertOptions = {
+      header: 'Reniflement du renard',
+      message:
+        '<p>Non, ce groupe ne contient aucun loup-garou.</p><p>Le renard perd son pouvoir.</p>',
+    };
+    this.addAnnouncementToQueue(announcement);
+  }
+
   private addAnnouncementToQueue(announcement: AlertOptions): void {
     this.announcementsQueue.push({
       ...announcement,

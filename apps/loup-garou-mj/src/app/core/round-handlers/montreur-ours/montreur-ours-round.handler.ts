@@ -4,6 +4,10 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { AnnouncementService } from '../../services/announcement/announcement.service';
+import {
+  findLeftNeighbor,
+  findRightNeighbor,
+} from '../../utils/neighbor.utils';
 import { DefaultRoundHandler } from '../default-round.handler';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
@@ -22,57 +26,19 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
       // const montreurOurs = players[montreurOursIndex];
       // TODO If INFECTED then announce and return
 
-      const leftPlayer = this.findLeftNeighbor(players, montreurOursIndex);
+      const leftPlayer = findLeftNeighbor(players, montreurOursIndex);
       // TODO handle INFECTED player
       if (LOUPS_GAROUS_ROLES.includes(leftPlayer.role)) {
         this.announcementService.announceBearGrowl();
         return super.handleAction(players, selectedPlayers);
       }
 
-      const rightPlayer = this.findRightNeighbor(players, montreurOursIndex);
+      const rightPlayer = findRightNeighbor(players, montreurOursIndex);
       // TODO handle INFECTED player
       if (LOUPS_GAROUS_ROLES.includes(rightPlayer.role)) {
         this.announcementService.announceBearGrowl();
       }
     }
     return super.handleAction(players, selectedPlayers);
-  }
-
-  private findLeftNeighbor(
-    players: Player[],
-    montreurOursIndex: number
-  ): Player {
-    let leftIndex = montreurOursIndex + 1;
-    if (leftIndex > players.length - 1) {
-      leftIndex = 0;
-    }
-    let leftPlayer: Player;
-    do {
-      leftPlayer = players[leftIndex];
-      leftIndex++;
-      if (leftIndex > players.length - 1) {
-        leftIndex = 0;
-      }
-    } while (leftPlayer.isDead && leftIndex !== montreurOursIndex);
-    return leftPlayer;
-  }
-
-  private findRightNeighbor(
-    players: Player[],
-    montreurOursIndex: number
-  ): Player {
-    let rightIndex = montreurOursIndex - 1;
-    if (rightIndex < 0) {
-      rightIndex = players.length - 1;
-    }
-    let rightPlayer: Player;
-    do {
-      rightPlayer = players[rightIndex];
-      rightIndex--;
-      if (rightIndex < 0) {
-        rightIndex = players.length - 1;
-      }
-    } while (rightPlayer.isDead && rightIndex !== montreurOursIndex);
-    return rightPlayer;
   }
 }

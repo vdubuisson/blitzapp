@@ -36,6 +36,8 @@ export class PlayerRoleNamePipe implements PipeTransform {
         return 'Grand méchant loup';
       case PlayerRoleEnum.MONTREUR_OURS:
         return "Montreur d'ours";
+      case PlayerRoleEnum.RENARD:
+        return 'Renard';
       default:
         return '';
     }
