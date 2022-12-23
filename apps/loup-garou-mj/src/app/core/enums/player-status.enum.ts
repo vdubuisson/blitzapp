@@ -6,7 +6,7 @@ export enum PlayerStatusEnum {
   LOVER = 'LOVER',
   // FIRST_DEATH = 'FIRST_DEATH',
   PROTECTED = 'PROTECTED',
-  // NO_POWER = 'NO_POWER',
+  NO_POWER = 'NO_POWER',
   CHARMED = 'CHARMED',
   CHILD_MODEL = 'CHILD_MODEL',
   RAVEN = 'RAVEN',

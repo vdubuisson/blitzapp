@@ -14,3 +14,4 @@ export * from './enfant-sauvage/enfant-sauvage-round.handler';
 export * from './salvateur/salvateur-round.handler';
 export * from './grand-mechant-loup/grand-mechant-loup-round.handler';
 export * from './montreur-ours/montreur-ours-round.handler';
+export * from './renard/renard-round.handler';

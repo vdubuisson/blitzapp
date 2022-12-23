@@ -18,6 +18,7 @@ import {
   SalvateurRoundHandler,
   GrandMechantLoupRoundHandler,
   MontreurOursRoundHandler,
+  RenardRoundHandler,
 } from '../../round-handlers';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from './round-handlers.service';
@@ -540,5 +541,39 @@ describe('RoundHandlersService', () => {
     expect(service['roundHandlers'].has(RoundEnum.MONTREUR_OURS)).toEqual(
       false
     );
+  });
+
+  it('should init RENARD round handler for RENARD role', () => {
+    service.initHandlers([PlayerRoleEnum.RENARD]);
+
+    expect(service['roundHandlers'].get(RoundEnum.RENARD)).toBeInstanceOf(
+      RenardRoundHandler
+    );
+  });
+
+  it('should not init RENARD round handler when no RENARD role', () => {
+    service.initHandlers([]);
+
+    expect(service['roundHandlers'].has(RoundEnum.RENARD)).toEqual(false);
+  });
+
+  it('should return handler for RENARD round', () => {
+    const roundHandler = new RenardRoundHandler(announcementService);
+    service['roundHandlers'].set(RoundEnum.RENARD, roundHandler);
+
+    const testHandler = service.getHandler(RoundEnum.RENARD);
+
+    expect(testHandler).toEqual(roundHandler);
+  });
+
+  it('should remove handler RENARD for RENARD role', () => {
+    service['roundHandlers'].set(
+      RoundEnum.RENARD,
+      new RenardRoundHandler(announcementService)
+    );
+
+    service.removeHandlers([PlayerRoleEnum.RENARD]);
+
+    expect(service['roundHandlers'].has(RoundEnum.RENARD)).toEqual(false);
   });
 });

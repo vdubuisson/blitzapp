@@ -16,4 +16,5 @@ export enum RoundEnum {
   SALVATEUR,
   GRAND_MECHANT_LOUP,
   MONTREUR_OURS,
+  RENARD,
 }

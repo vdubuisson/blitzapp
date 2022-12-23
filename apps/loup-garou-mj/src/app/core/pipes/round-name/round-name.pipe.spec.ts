@@ -96,4 +96,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.MONTREUR_OURS);
     expect(name).toEqual("Grognement de l'ours");
   });
+
+  it('should display "Reniflement du renard" for RENARD', () => {
+    const name = pipe.transform(RoundEnum.RENARD);
+    expect(name).toEqual('Reniflement du renard');
+  });
 });

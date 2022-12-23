@@ -70,4 +70,13 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.MONTREUR_OURS]: `Son objectif est d'éliminer tous les loups-garous.
 
   Tous les matins, si l'un de ses voisins est un loup-garou, alors son ours grogne.`,
+  [PlayerRoleEnum.RENARD]: `Son objectif est d'éliminer tous les loups-garous.
+
+  Chaque nuit, il peut renifler un groupe de 3 joueurs en désignant le joueur du milieu.
+  
+  Si ce joueur ou l'un de ses voisins est un loup-garou, alors le Renard garde son pouvoir. Sinon, le Renard perd son pouvoir pour le reste de la partie.
+  
+  Le Renard n'est pas obligé de renifler des joueurs pendant la nuit.
+  
+  Si le Renard perd son pouvoir, le meneur continue de l'appeler chaque nuit pour ne pas indiquer aux autres joueurs la perte de ce pouvoir.`,
 };

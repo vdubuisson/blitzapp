@@ -80,4 +80,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.MONTREUR_OURS);
     expect(path).toEqual('assets/images/roles/montreur_ours.webp');
   });
+
+  it('should return image path for RENARD', () => {
+    const path = pipe.transform(PlayerRoleEnum.RENARD);
+    expect(path).toEqual('assets/images/roles/renard.webp');
+  });
 });
