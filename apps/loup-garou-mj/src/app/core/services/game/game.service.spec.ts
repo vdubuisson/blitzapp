@@ -4,6 +4,7 @@ import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
@@ -20,6 +21,7 @@ import { GameService } from './game.service';
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
   isDuringDay = false;
+  type = RoundTypeEnum.DEFAULT;
 
   handleAction(players: Player[], _: number[]): Player[] {
     return players;
@@ -106,6 +108,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     service['round'].next(mockRound);
 
@@ -175,6 +178,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockRound);
     jest
@@ -210,6 +214,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     service['round'].next(mockRound);
 
@@ -228,6 +233,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockNextRound: Round = {
       role: RoundEnum.SORCIERE_HEALTH,
@@ -235,6 +241,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     service['round'].next(mockRound);
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockNextRound);
@@ -264,6 +271,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
 
     const mockSorciereKillHandler = new MockRoundHandler();
@@ -286,6 +294,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     mockChasseurHandler.getRoundConfig = () => mockChasseurRound;
     when(getHandlerSpy)
@@ -318,6 +327,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
 
     const mockSorciereKillHandler = new MockRoundHandler();
@@ -334,6 +344,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     mockVillageoisHandler.getRoundConfig = () => mockVillageoisRound;
     when(getHandlerSpy)
@@ -359,6 +370,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -394,6 +406,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -436,6 +449,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -478,6 +492,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -516,6 +531,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -554,6 +570,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -592,6 +609,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -629,6 +647,7 @@ describe('GameService', () => {
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;

@@ -17,14 +17,18 @@ import {
   EnfantSauvageRoundHandler,
   SalvateurRoundHandler,
   GrandMechantLoupRoundHandler,
+  MontreurOursRoundHandler,
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
+import { AnnouncementService } from '../announcement/announcement.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoundHandlersService {
   private readonly roundHandlers: Map<RoundEnum, RoundHandler> = new Map();
+
+  constructor(private announcementService: AnnouncementService) {}
 
   initHandlers(roles: PlayerRoleEnum[]): void {
     this.roundHandlers.clear();
@@ -91,6 +95,13 @@ export class RoundHandlersService {
         new GrandMechantLoupRoundHandler()
       );
     }
+
+    if (rolesSet.has(PlayerRoleEnum.MONTREUR_OURS)) {
+      this.roundHandlers.set(
+        RoundEnum.MONTREUR_OURS,
+        new MontreurOursRoundHandler(this.announcementService)
+      );
+    }
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -130,6 +141,9 @@ export class RoundHandlersService {
     }
     if (rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)) {
       this.roundHandlers.delete(RoundEnum.GRAND_MECHANT_LOUP);
+    }
+    if (rolesSet.has(PlayerRoleEnum.MONTREUR_OURS)) {
+      this.roundHandlers.delete(RoundEnum.MONTREUR_OURS);
     }
   }
 }

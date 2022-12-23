@@ -76,4 +76,9 @@ describe('PlayerRoleNamePipe', () => {
     const name = pipe.transform(PlayerRoleEnum.GRAND_MECHANT_LOUP);
     expect(name).toEqual('Grand méchant loup');
   });
+
+  it('should display "Montreur d\'ours" for MONTREUR_OURS', () => {
+    const name = pipe.transform(PlayerRoleEnum.MONTREUR_OURS);
+    expect(name).toEqual("Montreur d'ours");
+  });
 });

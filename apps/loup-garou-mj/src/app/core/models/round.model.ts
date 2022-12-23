@@ -1,3 +1,4 @@
+import { RoundTypeEnum } from '../enums/round-type.enum';
 import { RoundEnum } from '../enums/round.enum';
 
 export interface Round {
@@ -6,4 +7,5 @@ export interface Round {
   maxSelectable: number;
   minSelectable: number;
   isDuringDay: boolean;
+  type: RoundTypeEnum;
 }
