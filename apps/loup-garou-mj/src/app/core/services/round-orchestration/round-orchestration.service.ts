@@ -17,6 +17,7 @@ export class RoundOrchestrationService {
     RoundEnum.ENFANT_SAUVAGE,
     RoundEnum.CORBEAU,
     RoundEnum.SALVATEUR,
+    RoundEnum.CHIEN_LOUP,
     RoundEnum.LOUP_GAROU,
     RoundEnum.GRAND_MECHANT_LOUP,
     RoundEnum.SORCIERE_HEALTH,

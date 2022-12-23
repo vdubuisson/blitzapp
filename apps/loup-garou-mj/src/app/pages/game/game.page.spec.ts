@@ -69,6 +69,22 @@ describe('GamePage', () => {
     });
   }));
 
+  it('should set playerDisplayMode as EDIT_ROLE if round type ROLES', waitForAsync(() => {
+    mockRound$.next({
+      role: RoundEnum.CHIEN_LOUP,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.ROLES,
+    });
+    component['round$'].subscribe(() => {
+      expect(component['playerDisplayMode']).toEqual(
+        PlayerDisplayModeEnum.EDIT_ROLE
+      );
+    });
+  }));
+
   it('should set playerDisplayMode as SELECT_SINGLE if only one selectable', waitForAsync(() => {
     mockRound$.next({
       role: RoundEnum.LOUP_GAROU,
@@ -117,6 +133,21 @@ describe('GamePage', () => {
     });
   }));
 
+  it('should have submit disabled if should select one role and no selection', waitForAsync(() => {
+    mockRound$.next({
+      role: RoundEnum.CHIEN_LOUP,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.ROLES,
+    });
+    component['selectedRole'] = undefined;
+    component['round$'].subscribe(() => {
+      expect(component['submitDisabled']).toEqual(true);
+    });
+  }));
+
   it('should have submit disabled if should select one and no selection', waitForAsync(() => {
     mockRound$.next({
       role: RoundEnum.LOUP_GAROU,
@@ -162,6 +193,21 @@ describe('GamePage', () => {
     });
   }));
 
+  it('should have submit enabled if should select one role and one selected', waitForAsync(() => {
+    mockRound$.next({
+      role: RoundEnum.CHIEN_LOUP,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.ROLES,
+    });
+    component['selectedRole'] = PlayerRoleEnum.LOUP_GAROU;
+    component['round$'].subscribe(() => {
+      expect(component['submitDisabled']).toEqual(false);
+    });
+  }));
+
   it('should have submit enabled if should select one and one selected', waitForAsync(() => {
     mockRound$.next({
       role: RoundEnum.LOUP_GAROU,
@@ -172,6 +218,21 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'] = 0;
+    component['round$'].subscribe(() => {
+      expect(component['submitDisabled']).toEqual(false);
+    });
+  }));
+
+  it('should have submit enabled if can select one and none selected', waitForAsync(() => {
+    mockRound$.next({
+      role: RoundEnum.CHIEN_LOUP,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: false,
+      type: RoundTypeEnum.ROLES,
+    });
+    component['selectedRole'] = undefined;
     component['round$'].subscribe(() => {
       expect(component['submitDisabled']).toEqual(false);
     });
@@ -221,6 +282,13 @@ describe('GamePage', () => {
     });
   }));
 
+  it('should select role', () => {
+    component['playerDisplayMode'] = PlayerDisplayModeEnum.EDIT_ROLE;
+    component['onRoleSelect'](PlayerRoleEnum.LOUP_GAROU);
+
+    expect(component['selectedRole']).toEqual(PlayerRoleEnum.LOUP_GAROU);
+  });
+
   it('should single select player', () => {
     component['playerDisplayMode'] = PlayerDisplayModeEnum.SELECT_SINGLE;
     component['onSinglePlayerChecked']({
@@ -245,13 +313,25 @@ describe('GamePage', () => {
     expect(component['selectedPlayers'].has(0)).toEqual(false);
   });
 
+  it('should submit selectedRole to GameService on submit', () => {
+    jest.spyOn(gameService, 'submitRoundAction');
+    component['selectedRole'] = PlayerRoleEnum.LOUP_GAROU;
+
+    component['onSubmit']();
+
+    expect(gameService.submitRoundAction).toBeCalledWith(
+      [],
+      PlayerRoleEnum.LOUP_GAROU
+    );
+  });
+
   it('should submit selectedPlayer to GameService on submit if SELECT_SINGLE', () => {
     jest.spyOn(gameService, 'submitRoundAction');
     component['selectedPlayer'] = 0;
 
     component['onSubmit']();
 
-    expect(gameService.submitRoundAction).toBeCalledWith([0]);
+    expect(gameService.submitRoundAction).toBeCalledWith([0], undefined);
   });
 
   it('should submit selectedPlayers to GameService on submit if SELECT_MULTI', () => {
@@ -260,7 +340,16 @@ describe('GamePage', () => {
 
     component['onSubmit']();
 
-    expect(gameService.submitRoundAction).toBeCalledWith([0, 1]);
+    expect(gameService.submitRoundAction).toBeCalledWith([0, 1], undefined);
+  });
+
+  it('should reset selectedRole after submit', () => {
+    jest.spyOn(gameService, 'submitRoundAction');
+    component['selectedRole'] = PlayerRoleEnum.LOUP_GAROU;
+
+    component['onSubmit']();
+
+    expect(component['selectedRole']).toEqual(undefined);
   });
 
   it('should reset selectedPlayer after submit', () => {

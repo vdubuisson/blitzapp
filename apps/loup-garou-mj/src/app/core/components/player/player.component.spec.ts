@@ -74,6 +74,38 @@ describe('PlayerComponent', () => {
     );
   });
 
+  it('should not add current role to selectable roles on set if noSelfRole', () => {
+    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.VILLAGEOIS)
+      .mockReturnValue('Villageois');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.LOUP_GAROU)
+      .mockReturnValue('Loup');
+    when(pipeTransform)
+      .calledWith(PlayerRoleEnum.CUPIDON)
+      .mockReturnValue('Cupidon');
+
+    component.player = {
+      id: 0,
+      name: 'player',
+      role: PlayerRoleEnum.CUPIDON,
+      statuses: new Set(),
+      isDead: false,
+    };
+
+    component.noSelfRole = true;
+
+    component.selectableRoles = [
+      PlayerRoleEnum.VILLAGEOIS,
+      PlayerRoleEnum.LOUP_GAROU,
+    ];
+
+    expect(component['sortedRoles'].includes(PlayerRoleEnum.CUPIDON)).toEqual(
+      false
+    );
+  });
+
   it('should not add current role NOT_SELECTED to selectable roles on set', () => {
     const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
     when(pipeTransform)

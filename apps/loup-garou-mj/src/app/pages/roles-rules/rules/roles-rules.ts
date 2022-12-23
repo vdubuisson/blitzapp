@@ -79,4 +79,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Le Renard n'est pas obligé de renifler des joueurs pendant la nuit.
   
   Si le Renard perd son pouvoir, le meneur continue de l'appeler chaque nuit pour ne pas indiquer aux autres joueurs la perte de ce pouvoir.`,
+  [PlayerRoleEnum.CHIEN_LOUP]: `Lors de la première nuit, il choisit s'il veut être un Villageois ou un Loup-Garou.
+  
+  S'il choisit d'être un Villageois, alors son objectif sera d'éliminer tous les loups-garous.
+  
+  S'il choisit d'être un Loup-Garou, alors son objectif sera d'éliminer tous les innocents, et il se réveillera chaque nuit avec les loups-garous pour dévorer un innocent.`,
 };
