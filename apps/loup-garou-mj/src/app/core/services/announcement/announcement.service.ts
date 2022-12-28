@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AlertController, AlertOptions } from '@ionic/angular';
 import { Player } from '../../models/player.model';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,21 @@ export class AnnouncementService {
   private announcementsQueue: AlertOptions[] = [];
   private isPresenting = false;
 
-  constructor(private alertController: AlertController) {}
+  private readonly QUEUE_KEY = 'AnnouncementService_announcementsQueue';
+
+  constructor(
+    private alertController: AlertController,
+    private storageService: StorageService
+  ) {
+    this.storageService
+      .get<AlertOptions[]>(this.QUEUE_KEY)
+      .subscribe((queue) => {
+        if (queue !== null && queue.length > 0) {
+          this.announcementsQueue = queue;
+          this.showNextAnnouncement();
+        }
+      });
+  }
 
   announceDeaths(players: Player[]): void {
     const message = players.map((player) => `<p>${player.name}</p>`).join('');
@@ -52,6 +67,8 @@ export class AnnouncementService {
       buttons: ['OK'],
     });
 
+    this.storageService.set(this.QUEUE_KEY, this.announcementsQueue);
+
     if (!this.isPresenting) {
       this.showNextAnnouncement();
     }
@@ -70,5 +87,6 @@ export class AnnouncementService {
       }
     });
     await alert.present();
+    this.storageService.set(this.QUEUE_KEY, this.announcementsQueue);
   }
 }

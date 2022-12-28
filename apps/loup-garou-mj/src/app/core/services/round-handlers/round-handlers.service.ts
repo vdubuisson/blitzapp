@@ -23,6 +23,7 @@ import {
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../announcement/announcement.service';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,17 +31,27 @@ import { AnnouncementService } from '../announcement/announcement.service';
 export class RoundHandlersService {
   private readonly roundHandlers: Map<RoundEnum, RoundHandler> = new Map();
 
-  constructor(private announcementService: AnnouncementService) {}
+  private readonly HANDLERS_KEY = 'RoundHandlersService_handlers';
+
+  constructor(
+    private announcementService: AnnouncementService,
+    private storageService: StorageService
+  ) {
+    this.initFromStorage();
+  }
 
   initHandlers(roles: PlayerRoleEnum[]): void {
-    this.roundHandlers.clear();
+    this.storageService.set(this.HANDLERS_KEY, roles);
 
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
 
     this.roundHandlers.set(RoundEnum.VILLAGEOIS, new VillageoisRoundHandler());
     this.roundHandlers.set(RoundEnum.CAPITAINE, new CapitaineRoundHandler());
 
-    if (rolesSet.has(PlayerRoleEnum.LOUP_GAROU)) {
+    if (
+      rolesSet.has(PlayerRoleEnum.LOUP_GAROU) ||
+      rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)
+    ) {
       this.roundHandlers.set(RoundEnum.LOUP_GAROU, new LoupGarouRoundHandler());
     }
 
@@ -122,6 +133,15 @@ export class RoundHandlersService {
   }
 
   removeHandlers(roles: PlayerRoleEnum[]): void {
+    this.storageService
+      .get<PlayerRoleEnum[]>(this.HANDLERS_KEY)
+      .subscribe((storedRoles) => {
+        if (storedRoles !== null) {
+          const newRoles = storedRoles.filter((role) => !roles.includes(role));
+          this.storageService.set(this.HANDLERS_KEY, newRoles);
+        }
+      });
+
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
     if (rolesSet.has(PlayerRoleEnum.LOUP_GAROU)) {
       this.roundHandlers.delete(RoundEnum.LOUP_GAROU);
@@ -164,5 +184,20 @@ export class RoundHandlersService {
     if (rolesSet.has(PlayerRoleEnum.CHIEN_LOUP)) {
       this.roundHandlers.delete(RoundEnum.CHIEN_LOUP);
     }
+  }
+
+  clearHandlers(): void {
+    this.roundHandlers.clear();
+    this.storageService.remove(this.HANDLERS_KEY);
+  }
+
+  private initFromStorage(): void {
+    this.storageService
+      .get<PlayerRoleEnum[]>(this.HANDLERS_KEY)
+      .subscribe((roles) => {
+        if (roles !== null) {
+          this.initHandlers(roles);
+        }
+      });
   }
 }

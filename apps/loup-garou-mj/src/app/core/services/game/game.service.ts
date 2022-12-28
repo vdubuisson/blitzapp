@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
+import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
 import { StatusesService } from '../statuses/statuses.service';
+import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 @Injectable({
@@ -21,14 +23,20 @@ export class GameService {
   private round = new BehaviorSubject<Round | undefined>(undefined);
   private gameInProgress = new BehaviorSubject<boolean>(false);
 
+  private readonly PLAYERS_KEY = 'GameService_currentPlayers';
+  private readonly ROUND_KEY = 'GameService_currentRound';
+
   constructor(
     private router: Router,
     private roundHandlersService: RoundHandlersService,
     private victoryHandlersService: VictoryHandlersService,
     private roundOrchestrationService: RoundOrchestrationService,
     private deathService: DeathService,
-    private statusesService: StatusesService
-  ) {}
+    private statusesService: StatusesService,
+    private storageService: StorageService
+  ) {
+    this.initFromStorage();
+  }
 
   getPlayers(): Observable<Player[]> {
     return this.players.asObservable();
@@ -43,8 +51,6 @@ export class GameService {
   }
 
   createGame(players: Player[]): void {
-    this.roundOrchestrationService.resetRounds();
-    this.deathService.reset();
     const roles = players.map((player) => player.role);
     this.roundHandlersService.initHandlers(roles);
     this.victoryHandlersService.initHandlers(roles);
@@ -55,7 +61,7 @@ export class GameService {
       sorciere.statuses.add(PlayerStatusEnum.HEALTH_POTION);
       sorciere.statuses.add(PlayerStatusEnum.DEATH_POTION);
     }
-    this.players.next(players);
+    this.setPlayers(players);
     this.setFirstRound();
     this.gameInProgress.next(true);
     this.router.navigate(['game']);
@@ -74,7 +80,7 @@ export class GameService {
           selectedPlayers,
           selectedRole
         );
-        this.players.next(newPlayers);
+        this.setPlayers(newPlayers);
         this.nextRound();
       }
     }
@@ -97,7 +103,7 @@ export class GameService {
       const playersAfterDeath = this.deathService.handleNewDeaths(
         this.players.value
       );
-      this.players.next(playersAfterDeath);
+      this.setPlayers(playersAfterDeath);
     }
 
     let nextRound;
@@ -108,8 +114,7 @@ export class GameService {
         this.players.value
       );
       if (victory !== undefined) {
-        this.gameInProgress.next(false);
-        this.router.navigate(['victory'], { queryParams: { victory } });
+        this.handleVictory(victory);
         return;
       }
       throw error;
@@ -125,7 +130,7 @@ export class GameService {
       const playersAfterDeath = this.deathService.handleNewDeaths(
         this.players.value
       );
-      this.players.next(playersAfterDeath);
+      this.setPlayers(playersAfterDeath);
       nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
     }
 
@@ -137,8 +142,7 @@ export class GameService {
         this.players.value
       );
       if (victory !== undefined) {
-        this.gameInProgress.next(false);
-        this.router.navigate(['victory'], { queryParams: { victory } });
+        this.handleVictory(victory);
         return;
       }
       this.deathService.announceDeaths();
@@ -153,7 +157,7 @@ export class GameService {
       const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
         this.players.value
       );
-      this.players.next(playersAfterDay);
+      this.setPlayers(playersAfterDay);
     }
 
     this.setRound(nextRound);
@@ -164,9 +168,43 @@ export class GameService {
     if (handler !== undefined) {
       const roundConfig = handler.getRoundConfig(this.players.value);
       this.round.next(roundConfig);
+      this.storageService.set(this.ROUND_KEY, roundConfig);
       if (handler.type === RoundTypeEnum.AUTO) {
         this.submitRoundAction([]);
       }
     }
+  }
+
+  private setPlayers(players: Player[]): void {
+    this.players.next(players);
+    this.storageService.set(this.PLAYERS_KEY, players);
+  }
+
+  private initFromStorage(): void {
+    combineLatest([
+      this.storageService.get<Player[]>(this.PLAYERS_KEY),
+      this.storageService.get<Round>(this.ROUND_KEY),
+    ]).subscribe(([storedPlayers, storedRound]) => {
+      if (storedPlayers !== null && storedRound !== null) {
+        this.players.next(storedPlayers);
+        this.round.next(storedRound);
+        this.gameInProgress.next(true);
+      }
+    });
+  }
+
+  private clearStorage(): void {
+    this.storageService.remove(this.PLAYERS_KEY);
+    this.storageService.remove(this.ROUND_KEY);
+  }
+
+  private handleVictory(victory: VictoryEnum): void {
+    this.gameInProgress.next(false);
+    this.clearStorage();
+    this.roundOrchestrationService.resetRounds();
+    this.deathService.reset();
+    this.roundHandlersService.clearHandlers();
+    this.victoryHandlersService.clearHandlers();
+    this.router.navigate(['victory'], { queryParams: { victory } });
   }
 }

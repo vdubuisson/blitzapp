@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
+import { combineLatest } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 @Injectable({
@@ -16,14 +18,23 @@ export class DeathService {
   private afterDeathRoundQueue: RoundEnum[] = [];
   private rolesToRemove: PlayerRoleEnum[] = [];
 
+  private readonly KNOWN_DEATHS_KEY = 'DeathService_knownDeaths';
+  private readonly ANNOUNCE_KEY = 'DeathService_deathsToAnnounce';
+  private readonly QUEUE_KEY = 'DeathService_afterDeathRoundQueue';
+
   constructor(
     private roundHandlersService: RoundHandlersService,
     private victoryHandlersService: VictoryHandlersService,
-    private announcementService: AnnouncementService
-  ) {}
+    private announcementService: AnnouncementService,
+    private storageService: StorageService
+  ) {
+    this.initFromStorage();
+  }
 
   getNextAfterDeathRound(): RoundEnum | undefined {
-    return this.afterDeathRoundQueue.shift();
+    const afterDeathRound = this.afterDeathRoundQueue.shift();
+    this.storageService.set(this.QUEUE_KEY, this.afterDeathRoundQueue);
+    return afterDeathRound;
   }
 
   reset(): void {
@@ -31,6 +42,9 @@ export class DeathService {
     this.deathsToAnnounce = [];
     this.rolesToRemove = [];
     this.afterDeathRoundQueue = [];
+    this.storageService.remove(this.KNOWN_DEATHS_KEY);
+    this.storageService.remove(this.ANNOUNCE_KEY);
+    this.storageService.remove(this.QUEUE_KEY);
   }
 
   handleNewDeaths(players: Player[]): Player[] {
@@ -52,6 +66,7 @@ export class DeathService {
     if (this.deathsToAnnounce.length > 0) {
       this.announcementService.announceDeaths(this.deathsToAnnounce);
       this.deathsToAnnounce = [];
+      this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
     }
   }
 
@@ -74,6 +89,13 @@ export class DeathService {
     this.deathsToAnnounce.push(deadPlayer);
     this.handlePlayerDeathStatuses(players, deadPlayer);
     this.handlePlayerDeathRole(players, deadPlayer);
+
+    this.storageService.set(
+      this.KNOWN_DEATHS_KEY,
+      Array.from(this.knownDeaths)
+    );
+    this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
+    this.storageService.set(this.QUEUE_KEY, this.afterDeathRoundQueue);
   }
 
   private handlePlayerDeathStatuses(
@@ -129,5 +151,23 @@ export class DeathService {
         this.rolesToRemove.push(deadPlayer.role);
         break;
     }
+  }
+
+  private initFromStorage(): void {
+    combineLatest([
+      this.storageService.get<number[]>(this.KNOWN_DEATHS_KEY),
+      this.storageService.get<Player[]>(this.ANNOUNCE_KEY),
+      this.storageService.get<RoundEnum[]>(this.QUEUE_KEY),
+    ]).subscribe(([knownDeaths, announce, queue]) => {
+      if (knownDeaths !== null) {
+        this.knownDeaths = new Set(knownDeaths);
+      }
+      if (announce !== null) {
+        this.deathsToAnnounce = announce;
+      }
+      if (queue !== null) {
+        this.afterDeathRoundQueue = queue;
+      }
+    });
   }
 }

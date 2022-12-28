@@ -1,5 +1,6 @@
 import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
+import { of } from 'rxjs';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
@@ -7,6 +8,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { StorageService } from '../storage/storage.service';
 
 import { RoundOrchestrationService } from './round-orchestration.service';
 
@@ -22,15 +24,64 @@ class MockRoundHandler implements RoundHandler {
   }
 }
 
-describe('RoundOrchestrationService', () => {
+describe('RoundOrchestrationService with storage init', () => {
   let service: RoundOrchestrationService;
   let roundHandlersService: RoundHandlersService;
   let deathService: DeathService;
+  let storageService: StorageService;
+
+  const mockStoredUniqueRoundsPassed: RoundEnum[] = [RoundEnum.CUPIDON];
+  const mockStoredBeforeDeathRound: RoundEnum = RoundEnum.SORCIERE_KILL;
 
   beforeEach(() => {
     roundHandlersService = MockService(RoundHandlersService);
     deathService = MockService(DeathService);
-    service = new RoundOrchestrationService(roundHandlersService, deathService);
+    storageService = MockService(StorageService);
+
+    const storageGetSpy = jest.spyOn(storageService, 'get');
+    when(storageGetSpy)
+      .calledWith('RoundOrchestrationService_uniqueRoundsPassed')
+      .mockReturnValue(of(mockStoredUniqueRoundsPassed));
+    when(storageGetSpy)
+      .calledWith('RoundOrchestrationService_beforeDeathRound')
+      .mockReturnValue(of(mockStoredBeforeDeathRound));
+
+    service = new RoundOrchestrationService(
+      roundHandlersService,
+      deathService,
+      storageService
+    );
+  });
+
+  it('should init unique rounds passed from storage', () => {
+    expect(service['uniqueRoundsPassed']).toEqual(
+      new Set(mockStoredUniqueRoundsPassed)
+    );
+  });
+
+  it('should init before-death round from storage', () => {
+    expect(service['beforeDeathRound']).toEqual(mockStoredBeforeDeathRound);
+  });
+});
+
+describe('RoundOrchestrationService', () => {
+  let service: RoundOrchestrationService;
+  let roundHandlersService: RoundHandlersService;
+  let deathService: DeathService;
+  let storageService: StorageService;
+
+  beforeEach(() => {
+    roundHandlersService = MockService(RoundHandlersService);
+    deathService = MockService(DeathService);
+    storageService = MockService(StorageService);
+
+    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
+
+    service = new RoundOrchestrationService(
+      roundHandlersService,
+      deathService,
+      storageService
+    );
   });
 
   it('should be created', () => {
@@ -43,6 +94,14 @@ describe('RoundOrchestrationService', () => {
     service.resetRounds();
 
     expect(service['uniqueRoundsPassed'].size).toEqual(0);
+  });
+
+  it('should remove unique rounds passed from storage on reset', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.resetRounds();
+
+    expect(storageService.remove).toBeCalledWith(service['UNIQUE_ROUNDS_KEY']);
   });
 
   it('should return next available round', () => {
@@ -131,6 +190,26 @@ describe('RoundOrchestrationService', () => {
     service.getNextRound(RoundEnum.CUPIDON);
 
     expect(service['uniqueRoundsPassed'].has(RoundEnum.CUPIDON)).toEqual(true);
+  });
+
+  it('should add current round to unique list on storage if onlyOnce', () => {
+    jest.spyOn(storageService, 'set');
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    const mockCupidonHandler = new MockRoundHandler();
+    mockCupidonHandler.isOnlyOnce = true;
+
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VOYANTE)
+      .mockReturnValue(new MockRoundHandler());
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.CUPIDON)
+      .mockReturnValue(mockCupidonHandler);
+
+    service.getNextRound(RoundEnum.CUPIDON);
+
+    expect(storageService.set).toBeCalledWith(service['UNIQUE_ROUNDS_KEY'], [
+      RoundEnum.CUPIDON,
+    ]);
   });
 
   it('should not add current round to unique list if not onlyOnce', () => {
