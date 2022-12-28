@@ -11,6 +11,7 @@ import {
   JoueurFluteVictoryHandler,
 } from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,8 +27,14 @@ export class VictoryHandlersService {
     VictoryEnum.VILLAGEOIS,
   ];
 
+  private readonly HANDLERS_KEY = 'VictoryHandlersService_handlers';
+
+  constructor(private storageService: StorageService) {
+    this.initFromStorage();
+  }
+
   initHandlers(roles: PlayerRoleEnum[]): void {
-    this.victoryHandlers.clear();
+    this.storageService.set(this.HANDLERS_KEY, roles);
 
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
 
@@ -88,5 +95,20 @@ export class VictoryHandlersService {
       }
     }
     return resultVictory;
+  }
+
+  clearHandlers(): void {
+    this.victoryHandlers.clear();
+    this.storageService.remove(this.HANDLERS_KEY);
+  }
+
+  private initFromStorage(): void {
+    this.storageService
+      .get<PlayerRoleEnum[]>(this.HANDLERS_KEY)
+      .subscribe((storedRoles) => {
+        if (storedRoles !== null) {
+          this.initHandlers(storedRoles);
+        }
+      });
   }
 }

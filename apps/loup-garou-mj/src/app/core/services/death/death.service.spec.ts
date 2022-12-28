@@ -1,27 +1,93 @@
+import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
+import { of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
+import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { DeathService } from './death.service';
+
+describe('DeathService with storage init', () => {
+  let service: DeathService;
+  let roundHandlersService: RoundHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
+  let announcementService: AnnouncementService;
+  let storageService: StorageService;
+
+  const mockStoredKnownDeaths: number[] = [0, 1, 2];
+  const mockStoredAnnounce: Player[] = [
+    {
+      id: 0,
+      name: 'player0',
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set(),
+      isDead: true,
+    },
+  ];
+  const mockStoredQueue: RoundEnum[] = [RoundEnum.CHASSEUR];
+
+  beforeEach(() => {
+    roundHandlersService = MockService(RoundHandlersService);
+    victoryHandlersService = MockService(VictoryHandlersService);
+    announcementService = MockService(AnnouncementService);
+    storageService = MockService(StorageService);
+
+    const storageGetSpy = jest.spyOn(storageService, 'get');
+    when(storageGetSpy)
+      .calledWith('DeathService_knownDeaths')
+      .mockReturnValue(of(mockStoredKnownDeaths));
+    when(storageGetSpy)
+      .calledWith('DeathService_deathsToAnnounce')
+      .mockReturnValue(of(mockStoredAnnounce));
+    when(storageGetSpy)
+      .calledWith('DeathService_afterDeathRoundQueue')
+      .mockReturnValue(of(mockStoredQueue));
+
+    service = new DeathService(
+      roundHandlersService,
+      victoryHandlersService,
+      announcementService,
+      storageService
+    );
+  });
+
+  it('should init known deaths from storage', () => {
+    expect(service['knownDeaths']).toEqual(new Set(mockStoredKnownDeaths));
+  });
+
+  it('should init deaths to announce from storage', () => {
+    expect(service['deathsToAnnounce']).toEqual(mockStoredAnnounce);
+  });
+
+  it('should init after death queue from storage', () => {
+    expect(service['afterDeathRoundQueue']).toEqual(mockStoredQueue);
+  });
+});
 
 describe('DeathService', () => {
   let service: DeathService;
   let roundHandlersService: RoundHandlersService;
   let victoryHandlersService: VictoryHandlersService;
   let announcementService: AnnouncementService;
+  let storageService: StorageService;
 
   beforeEach(() => {
     roundHandlersService = MockService(RoundHandlersService);
     victoryHandlersService = MockService(VictoryHandlersService);
     announcementService = MockService(AnnouncementService);
+    storageService = MockService(StorageService);
+
+    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
+
     service = new DeathService(
       roundHandlersService,
       victoryHandlersService,
-      announcementService
+      announcementService,
+      storageService
     );
   });
 
@@ -34,6 +100,17 @@ describe('DeathService', () => {
     expect(service['afterDeathRoundQueue']).toEqual([RoundEnum.CAPITAINE]);
   });
 
+  it('should save after-death round', () => {
+    jest.spyOn(storageService, 'set');
+    service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR, RoundEnum.CAPITAINE];
+
+    service.getNextAfterDeathRound();
+
+    expect(storageService.set).toBeCalledWith(service['QUEUE_KEY'], [
+      RoundEnum.CAPITAINE,
+    ]);
+  });
+
   it('should clear known deaths on reset', () => {
     service['knownDeaths'] = new Set([0, 1]);
 
@@ -42,12 +119,28 @@ describe('DeathService', () => {
     expect(service['knownDeaths'].size).toEqual(0);
   });
 
+  it('should remove known deaths from storage on reset', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.reset();
+
+    expect(storageService.remove).toBeCalledWith(service['KNOWN_DEATHS_KEY']);
+  });
+
   it('should empty afterDeathRoundQueue on reset', () => {
     service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR];
 
     service.reset();
 
     expect(service['afterDeathRoundQueue'].length).toEqual(0);
+  });
+
+  it('should remove afterDeathRoundQueue from storage on reset', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.reset();
+
+    expect(storageService.remove).toBeCalledWith(service['QUEUE_KEY']);
   });
 
   it('should empty deathsToAnnounce on reset', () => {
@@ -64,6 +157,14 @@ describe('DeathService', () => {
     service.reset();
 
     expect(service['deathsToAnnounce'].length).toEqual(0);
+  });
+
+  it('should remove deathsToAnnounce from storage on reset', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.reset();
+
+    expect(storageService.remove).toBeCalledWith(service['ANNOUNCE_KEY']);
   });
 
   it('should kill players with WOLF_TARGET status', () => {
@@ -189,6 +290,30 @@ describe('DeathService', () => {
     expect(service['knownDeaths'].has(0)).toEqual(true);
   });
 
+  it('should add dead player id to known deaths on storage', () => {
+    jest.spyOn(storageService, 'set');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(storageService.set).toBeCalledWith(service['KNOWN_DEATHS_KEY'], [0]);
+  });
+
   it('should add dead player to deaths to announce', () => {
     const mockPlayers: Player[] = [
       {
@@ -210,6 +335,38 @@ describe('DeathService', () => {
     service.handleNewDeaths(mockPlayers);
 
     expect(service['deathsToAnnounce']).toEqual([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ]);
+  });
+
+  it('should add dead player to deaths to announce on storage', () => {
+    jest.spyOn(storageService, 'set');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(storageService.set).toBeCalledWith(service['ANNOUNCE_KEY'], [
       {
         id: 0,
         name: 'player0',
@@ -244,6 +401,7 @@ describe('DeathService', () => {
   });
 
   it('should add CAPITAINE round to after-death rounds', () => {
+    jest.spyOn(storageService, 'set');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -266,6 +424,9 @@ describe('DeathService', () => {
     expect(
       service['afterDeathRoundQueue'].includes(RoundEnum.CAPITAINE)
     ).toEqual(true);
+    expect(storageService.set).toBeCalledWith(service['QUEUE_KEY'], [
+      RoundEnum.CAPITAINE,
+    ]);
   });
 
   it('should kill the other LOVER', () => {
@@ -514,6 +675,7 @@ describe('DeathService', () => {
   });
 
   it('should add CHASSEUR round to the beginning of after-death rounds', () => {
+    jest.spyOn(storageService, 'set');
     service['afterDeathRoundQueue'] = [RoundEnum.CAPITAINE];
 
     const mockPlayers: Player[] = [
@@ -536,6 +698,10 @@ describe('DeathService', () => {
     service.handleNewDeaths(mockPlayers);
 
     expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.CHASSEUR);
+    expect(storageService.set).toBeCalledWith(service['QUEUE_KEY'], [
+      RoundEnum.CHASSEUR,
+      RoundEnum.CAPITAINE,
+    ]);
   });
 
   it('should remove CUPIDON handlers if CUPIDON is dead', () => {
@@ -867,5 +1033,22 @@ describe('DeathService', () => {
     service.announceDeaths();
 
     expect(service['deathsToAnnounce'].length).toEqual(0);
+  });
+
+  it('should clear deaths to announce from storage after announce', () => {
+    jest.spyOn(storageService, 'set');
+    service['deathsToAnnounce'] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VOYANTE,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+
+    service.announceDeaths();
+
+    expect(storageService.set).toBeCalledWith(service['ANNOUNCE_KEY'], []);
   });
 });

@@ -1,4 +1,5 @@
 import { MockService } from 'ng-mocks';
+import { of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import {
@@ -22,15 +23,21 @@ import {
   ChienLoupRoundHandler,
 } from '../../round-handlers';
 import { AnnouncementService } from '../announcement/announcement.service';
+import { StorageService } from '../storage/storage.service';
 import { RoundHandlersService } from './round-handlers.service';
 
 describe('RoundHandlersService', () => {
   let service: RoundHandlersService;
   let announcementService: AnnouncementService;
+  let storageService: StorageService;
 
   beforeEach(() => {
     announcementService = MockService(AnnouncementService);
-    service = new RoundHandlersService(announcementService);
+    storageService = MockService(StorageService);
+
+    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
+
+    service = new RoundHandlersService(announcementService, storageService);
   });
 
   it('should be created', () => {
@@ -466,6 +473,14 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.SALVATEUR]);
 
     expect(service['roundHandlers'].has(RoundEnum.SALVATEUR)).toEqual(false);
+  });
+
+  it('should init LOUP_GAROU round handler for GRAND_MECHANT_LOUP role', () => {
+    service.initHandlers([PlayerRoleEnum.GRAND_MECHANT_LOUP]);
+
+    expect(service['roundHandlers'].get(RoundEnum.LOUP_GAROU)).toBeInstanceOf(
+      LoupGarouRoundHandler
+    );
   });
 
   it('should init GRAND_MECHANT_LOUP round handler for GRAND_MECHANT_LOUP role', () => {
