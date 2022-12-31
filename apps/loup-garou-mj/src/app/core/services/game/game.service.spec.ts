@@ -76,6 +76,7 @@ describe('GameService with storage init', () => {
     isDuringDay: true,
     type: RoundTypeEnum.DEFAULT,
   };
+  const mockStoredDayCount = 3;
 
   beforeEach(() => {
     router = MockService(Router);
@@ -94,6 +95,9 @@ describe('GameService with storage init', () => {
     when(storageGetSpy)
       .calledWith('GameService_currentRound')
       .mockReturnValue(of(mockStoredRound));
+    when(storageGetSpy)
+      .calledWith('GameService_dayCount')
+      .mockReturnValue(of(mockStoredDayCount));
 
     jest
       .spyOn(roundHandlersService, 'getHandler')
@@ -120,6 +124,10 @@ describe('GameService with storage init', () => {
 
   it('should init game in progress from storage', () => {
     expect(service['gameInProgress'].value).toEqual(true);
+  });
+
+  it('should init day count from storage', () => {
+    expect(service['dayCount'].value).toEqual(mockStoredDayCount);
   });
 });
 
@@ -244,6 +252,14 @@ describe('GameService on victory', () => {
 
     expect(storageService.remove).toBeCalledWith(service['ROUND_KEY']);
   });
+
+  it('should remove day count from storage on victory', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.submitRoundAction([]);
+
+    expect(storageService.remove).toBeCalledWith(service['DAY_COUNT_KEY']);
+  });
 });
 
 describe('GameService', () => {
@@ -337,6 +353,14 @@ describe('GameService', () => {
     });
   }));
 
+  it('should return day count', waitForAsync(() => {
+    service['dayCount'].next(2);
+
+    service.getDayCount().subscribe((dayCount) => {
+      expect(dayCount).toEqual(2);
+    });
+  }));
+
   it('should init round handlers on game creation', () => {
     jest.spyOn(roundHandlersService, 'initHandlers');
 
@@ -365,6 +389,14 @@ describe('GameService', () => {
     service.createGame(mockPlayers);
 
     expect(service['players'].value).toEqual(mockPlayers);
+  });
+
+  it('should set day count to 1 on game creation', () => {
+    service['dayCount'].next(2);
+
+    service.createGame(mockPlayers);
+
+    expect(service['dayCount'].value).toEqual(1);
   });
 
   it('should navigate to /game on game creation', () => {
@@ -880,5 +912,83 @@ describe('GameService', () => {
     service.submitRoundAction([]);
 
     expect(statusesService.cleanStatusesAfterDay).toBeCalled();
+  });
+
+  it('should increment day count after day', () => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+
+    jest.spyOn(statusesService, 'cleanStatusesAfterDay').mockReturnValue([]);
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].next(mockCurrentRoundConfig);
+
+    service.submitRoundAction([]);
+
+    expect(service['dayCount'].value).toEqual(2);
+  });
+
+  it('should save new day count to storage after day', () => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+
+    jest.spyOn(statusesService, 'cleanStatusesAfterDay').mockReturnValue([]);
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    jest.spyOn(storageService, 'set');
+
+    service['round'].next(mockCurrentRoundConfig);
+
+    service.submitRoundAction([]);
+
+    expect(storageService.set).toBeCalledWith(service['DAY_COUNT_KEY'], 2);
   });
 });

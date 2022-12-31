@@ -29,6 +29,7 @@ import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 export class GamePage {
   protected players$: Observable<Player[]>;
   protected round$: Observable<Round | undefined>;
+  protected dayCount$: Observable<number>;
 
   protected playerDisplayMode: PlayerDisplayModeEnum =
     PlayerDisplayModeEnum.DEFAULT;
@@ -78,6 +79,7 @@ export class GamePage {
       })
     );
     this.players$ = this.gameService.getPlayers();
+    this.dayCount$ = this.gameService.getDayCount();
   }
 
   protected onSinglePlayerChecked(event: Event) {

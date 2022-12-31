@@ -22,9 +22,11 @@ export class GameService {
   private players = new BehaviorSubject<Player[]>([]);
   private round = new BehaviorSubject<Round | undefined>(undefined);
   private gameInProgress = new BehaviorSubject<boolean>(false);
+  private dayCount = new BehaviorSubject<number>(1);
 
   private readonly PLAYERS_KEY = 'GameService_currentPlayers';
   private readonly ROUND_KEY = 'GameService_currentRound';
+  private readonly DAY_COUNT_KEY = 'GameService_dayCount';
 
   constructor(
     private router: Router,
@@ -50,6 +52,10 @@ export class GameService {
     return this.gameInProgress.asObservable();
   }
 
+  getDayCount(): Observable<number> {
+    return this.dayCount.asObservable();
+  }
+
   createGame(players: Player[]): void {
     const roles = players.map((player) => player.role);
     this.roundHandlersService.initHandlers(roles);
@@ -63,6 +69,7 @@ export class GameService {
     }
     this.setPlayers(players);
     this.setFirstRound();
+    this.nextDayCount(0);
     this.gameInProgress.next(true);
     this.router.navigate(['game']);
   }
@@ -158,6 +165,7 @@ export class GameService {
         this.players.value
       );
       this.setPlayers(playersAfterDay);
+      this.nextDayCount();
     }
 
     this.setRound(nextRound);
@@ -180,14 +188,26 @@ export class GameService {
     this.storageService.set(this.PLAYERS_KEY, players);
   }
 
+  private nextDayCount(currentDay?: number): void {
+    const nextDay = (currentDay ?? this.dayCount.value) + 1;
+    this.dayCount.next(nextDay);
+    this.storageService.set(this.DAY_COUNT_KEY, nextDay);
+  }
+
   private initFromStorage(): void {
     combineLatest([
       this.storageService.get<Player[]>(this.PLAYERS_KEY),
       this.storageService.get<Round>(this.ROUND_KEY),
-    ]).subscribe(([storedPlayers, storedRound]) => {
-      if (storedPlayers !== null && storedRound !== null) {
+      this.storageService.get<number>(this.DAY_COUNT_KEY),
+    ]).subscribe(([storedPlayers, storedRound, storedDayCount]) => {
+      if (
+        storedPlayers !== null &&
+        storedRound !== null &&
+        storedDayCount !== null
+      ) {
         this.players.next(storedPlayers);
         this.round.next(storedRound);
+        this.dayCount.next(storedDayCount);
         this.gameInProgress.next(true);
       }
     });
@@ -196,6 +216,7 @@ export class GameService {
   private clearStorage(): void {
     this.storageService.remove(this.PLAYERS_KEY);
     this.storageService.remove(this.ROUND_KEY);
+    this.storageService.remove(this.DAY_COUNT_KEY);
   }
 
   private handleVictory(victory: VictoryEnum): void {
