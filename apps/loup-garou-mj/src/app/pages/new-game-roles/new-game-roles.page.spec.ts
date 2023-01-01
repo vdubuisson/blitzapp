@@ -80,7 +80,79 @@ describe('NewGamePage', () => {
     );
   }));
 
+  it('should not be able to create if there is only 1 SOEUR', waitForAsync(() => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    mockPlayers$.next(mockPlayers);
+
+    component['players$'].subscribe(() =>
+      expect(component['cannotCreate']).toEqual(true)
+    );
+  }));
+
+  it('should not be able to create if there is more than 2 SOEUR', waitForAsync(() => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    mockPlayers$.next(mockPlayers);
+
+    component['players$'].subscribe(() =>
+      expect(component['cannotCreate']).toEqual(true)
+    );
+  }));
+
   it('should be able to create if there is no NOT_SELECTED role', waitForAsync(() => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    mockPlayers$.next(mockPlayers);
+
+    component['players$'].subscribe(() =>
+      expect(component['cannotCreate']).toEqual(false)
+    );
+  }));
+
+  it('should be able to create if there is 2 SOEUR', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -122,6 +194,51 @@ describe('NewGamePage', () => {
     component['players$'].subscribe(() =>
       expect(
         component['availableRoles'].includes(PlayerRoleEnum.CUPIDON)
+      ).toEqual(false)
+    );
+  }));
+
+  it('should have SOEUR as available if less than 2 SOEUR', waitForAsync(() => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    mockPlayers$.next(mockPlayers);
+
+    component['players$'].subscribe(() =>
+      expect(
+        component['availableRoles'].includes(PlayerRoleEnum.SOEUR)
+      ).toEqual(true)
+    );
+  }));
+
+  it('should not have SOEUR as available if 2 SOEUR', waitForAsync(() => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SOEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    mockPlayers$.next(mockPlayers);
+
+    component['players$'].subscribe(() =>
+      expect(
+        component['availableRoles'].includes(PlayerRoleEnum.SOEUR)
       ).toEqual(false)
     );
   }));

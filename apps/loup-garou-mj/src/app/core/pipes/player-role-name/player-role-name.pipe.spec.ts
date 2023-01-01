@@ -91,4 +91,9 @@ describe('PlayerRoleNamePipe', () => {
     const name = pipe.transform(PlayerRoleEnum.CHIEN_LOUP);
     expect(name).toEqual('Chien-Loup');
   });
+
+  it('should display "Sœur" for SOEUR', () => {
+    const name = pipe.transform(PlayerRoleEnum.SOEUR);
+    expect(name).toEqual('Sœur');
+  });
 });

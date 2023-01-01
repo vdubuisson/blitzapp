@@ -16,3 +16,4 @@ export * from './grand-mechant-loup/grand-mechant-loup-round.handler';
 export * from './montreur-ours/montreur-ours-round.handler';
 export * from './renard/renard-round.handler';
 export * from './chien-loup/chien-loup-round.handler';
+export * from './soeurs/soeurs-round.handler';
