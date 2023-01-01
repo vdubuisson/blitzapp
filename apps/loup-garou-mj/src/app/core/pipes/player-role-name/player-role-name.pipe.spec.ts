@@ -42,10 +42,10 @@ describe('PlayerRoleNamePipe', () => {
     expect(name).toEqual('Sorcière');
   });
 
-  it('should display "Voleur" for VOLEUR', () => {
-    const name = pipe.transform(PlayerRoleEnum.VOLEUR);
-    expect(name).toEqual('Voleur');
-  });
+  // it('should display "Voleur" for VOLEUR', () => {
+  //   const name = pipe.transform(PlayerRoleEnum.VOLEUR);
+  //   expect(name).toEqual('Voleur');
+  // });
 
   it('should display "Voyante" for VOYANTE', () => {
     const name = pipe.transform(PlayerRoleEnum.VOYANTE);

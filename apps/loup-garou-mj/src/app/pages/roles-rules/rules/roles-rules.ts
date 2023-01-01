@@ -30,11 +30,11 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Elle dispose d'une potion de vie permettant de soigner la victime des loups-garous, et d'une potion de mort permettant de tuer immédiatement un joueur de son choix.
 
   Elle ne peut utiliser chaque potion qu'une seule fois dans la partie.`,
-  [PlayerRoleEnum.VOLEUR]: `En début de partie, il peut échanger son rôle avec 2 rôles non distribués et garder ce rôle jusqu'à la fin de la partie.
+  // [PlayerRoleEnum.VOLEUR]: `En début de partie, il peut échanger son rôle avec 2 rôles non distribués et garder ce rôle jusqu'à la fin de la partie.
 
-  S'il décide de ne pas échanger son rôle, il restera un villageois et son objectif sera d'éliminer tous les loups-garous.
+  // S'il décide de ne pas échanger son rôle, il restera un villageois et son objectif sera d'éliminer tous les loups-garous.
 
-  Si les 2 rôles non distribués sont des loups-garous, il est obligé d'échanger son rôle et de devenir un loup-garou, son objectif sera alors d'éliminer tous les innocents.`,
+  // Si les 2 rôles non distribués sont des loups-garous, il est obligé d'échanger son rôle et de devenir un loup-garou, son objectif sera alors d'éliminer tous les innocents.`,
   [PlayerRoleEnum.VOYANTE]: `Son objectif est d'éliminer tous les loup-garous.
   
   Chaque nuit, elle peut regarder le rôle d'un joueur de son choix.`,

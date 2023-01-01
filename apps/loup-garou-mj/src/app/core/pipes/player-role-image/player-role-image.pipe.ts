@@ -22,8 +22,8 @@ export class PlayerRoleImagePipe implements PipeTransform {
         return `${PlayerRoleImagePipe.IMAGES_PATH}petite_fille.webp`;
       case PlayerRoleEnum.SORCIERE:
         return `${PlayerRoleImagePipe.IMAGES_PATH}sorciere.webp`;
-      case PlayerRoleEnum.VOLEUR:
-        return `${PlayerRoleImagePipe.IMAGES_PATH}voleur.webp`;
+      // case PlayerRoleEnum.VOLEUR:
+      //   return `${PlayerRoleImagePipe.IMAGES_PATH}voleur.webp`;
       case PlayerRoleEnum.VOYANTE:
         return `${PlayerRoleImagePipe.IMAGES_PATH}voyante.webp`;
       case PlayerRoleEnum.JOUEUR_FLUTE:
