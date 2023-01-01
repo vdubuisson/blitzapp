@@ -20,8 +20,8 @@ export class PlayerRoleNamePipe implements PipeTransform {
         return 'Petite fille';
       case PlayerRoleEnum.SORCIERE:
         return 'Sorcière';
-      case PlayerRoleEnum.VOLEUR:
-        return 'Voleur';
+      // case PlayerRoleEnum.VOLEUR:
+      //   return 'Voleur';
       case PlayerRoleEnum.VOYANTE:
         return 'Voyante';
       case PlayerRoleEnum.JOUEUR_FLUTE:

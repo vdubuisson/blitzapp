@@ -56,14 +56,11 @@ export class NewGameRolesPage {
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
     const usedRoles = new Set(players.map((player) => player.role));
-    let availableRoles = Object.values(PlayerRoleEnum)
-      .filter(
-        (role) =>
-          role !== PlayerRoleEnum.NOT_SELECTED &&
-          (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
-      )
-      // TODO Handle VOLEUR role
-      .filter((role) => role !== PlayerRoleEnum.VOLEUR);
+    let availableRoles = Object.values(PlayerRoleEnum).filter(
+      (role) =>
+        role !== PlayerRoleEnum.NOT_SELECTED &&
+        (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
+    );
 
     if (
       usedRoles.has(PlayerRoleEnum.SOEUR) &&

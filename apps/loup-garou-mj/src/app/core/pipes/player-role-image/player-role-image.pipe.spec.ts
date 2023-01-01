@@ -41,10 +41,10 @@ describe('PlayerRoleImagePipe', () => {
     expect(path).toEqual('assets/images/roles/sorciere.webp');
   });
 
-  it('should return image path for VOLEUR', () => {
-    const path = pipe.transform(PlayerRoleEnum.VOLEUR);
-    expect(path).toEqual('assets/images/roles/voleur.webp');
-  });
+  // it('should return image path for VOLEUR', () => {
+  //   const path = pipe.transform(PlayerRoleEnum.VOLEUR);
+  //   expect(path).toEqual('assets/images/roles/voleur.webp');
+  // });
 
   it('should return image path for VOYANTE', () => {
     const path = pipe.transform(PlayerRoleEnum.VOYANTE);
