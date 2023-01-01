@@ -40,9 +40,7 @@ export class NewGameRolesPage {
   constructor(private newGameService: NewGameService) {
     this.players$ = this.newGameService.getPlayers().pipe(
       tap((players) => {
-        this.cannotCreate = players.some(
-          (player) => player.role === PlayerRoleEnum.NOT_SELECTED
-        );
+        this.cannotCreate = !this.canCreateGame(players);
         this.availableRoles = this.getAvailableRoles(players);
       })
     );
@@ -58,15 +56,40 @@ export class NewGameRolesPage {
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
     const usedRoles = new Set(players.map((player) => player.role));
-    return (
-      Object.values(PlayerRoleEnum)
-        .filter(
-          (role) =>
-            role !== PlayerRoleEnum.NOT_SELECTED &&
-            (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
-        )
-        // TODO Handle VOLEUR role
-        .filter((role) => role !== PlayerRoleEnum.VOLEUR)
+    let availableRoles = Object.values(PlayerRoleEnum)
+      .filter(
+        (role) =>
+          role !== PlayerRoleEnum.NOT_SELECTED &&
+          (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
+      )
+      // TODO Handle VOLEUR role
+      .filter((role) => role !== PlayerRoleEnum.VOLEUR);
+
+    if (
+      usedRoles.has(PlayerRoleEnum.SOEUR) &&
+      players.filter((player) => player.role === PlayerRoleEnum.SOEUR)
+        .length === 2
+    ) {
+      availableRoles = availableRoles.filter(
+        (role) => role !== PlayerRoleEnum.SOEUR
+      );
+    }
+
+    return availableRoles;
+  }
+
+  private canCreateGame(players: Player[]): boolean {
+    let canCreate = players.every(
+      (player) => player.role !== PlayerRoleEnum.NOT_SELECTED
     );
+    if (
+      canCreate &&
+      players.some((player) => player.role === PlayerRoleEnum.SOEUR)
+    ) {
+      canCreate =
+        players.filter((player) => player.role === PlayerRoleEnum.SOEUR)
+          .length === 2;
+    }
+    return canCreate;
   }
 }

@@ -46,6 +46,8 @@ export class RoundNamePipe implements PipeTransform {
         return 'Reniflement du renard';
       case RoundEnum.CHIEN_LOUP:
         return 'Choix du chien-loup';
+      case RoundEnum.SOEURS:
+        return 'Découverte des 2 sœurs';
       default:
         return '';
     }

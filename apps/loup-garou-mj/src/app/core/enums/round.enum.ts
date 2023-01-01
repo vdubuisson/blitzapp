@@ -18,4 +18,5 @@ export enum RoundEnum {
   MONTREUR_OURS,
   RENARD,
   CHIEN_LOUP,
+  SOEURS,
 }

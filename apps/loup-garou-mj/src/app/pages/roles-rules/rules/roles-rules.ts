@@ -84,4 +84,7 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   S'il choisit d'être un Villageois, alors son objectif sera d'éliminer tous les loups-garous.
   
   S'il choisit d'être un Loup-Garou, alors son objectif sera d'éliminer tous les innocents, et il se réveillera chaque nuit avec les loups-garous pour dévorer un innocent.`,
+  [PlayerRoleEnum.SOEUR]: `Son objectif est d'éliminer tous les loups-garous.
+
+  Lors de la première nuit, les deux Sœurs se découvrent. Elles peuvent donc se faire confiance lors des votes du village.`,
 };

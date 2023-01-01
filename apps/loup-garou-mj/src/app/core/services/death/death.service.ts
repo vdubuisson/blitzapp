@@ -56,7 +56,9 @@ export class DeathService {
       .filter((player) => player.isDead && !this.knownDeaths.has(player.id))
       .forEach((player) => this.handlePlayerDeath(newPlayers, player));
 
-    this.roundHandlersService.removeHandlers(this.rolesToRemove);
+    if (this.rolesToRemove.length > 0) {
+      this.roundHandlersService.removeHandlers(this.rolesToRemove);
+    }
     this.victoryHandlersService.removeUselessHandlers(players);
 
     return newPlayers;
@@ -146,6 +148,15 @@ export class DeathService {
         break;
       case PlayerRoleEnum.CHASSEUR:
         this.afterDeathRoundQueue.unshift(RoundEnum.CHASSEUR);
+        break;
+      case PlayerRoleEnum.SOEUR:
+        if (
+          players
+            .filter((player) => player.role === PlayerRoleEnum.SOEUR)
+            .every((player) => player.isDead)
+        ) {
+          this.rolesToRemove.push(PlayerRoleEnum.SOEUR);
+        }
         break;
       default:
         this.rolesToRemove.push(deadPlayer.role);

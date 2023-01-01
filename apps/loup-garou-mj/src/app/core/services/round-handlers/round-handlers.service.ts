@@ -20,6 +20,7 @@ import {
   MontreurOursRoundHandler,
   RenardRoundHandler,
   ChienLoupRoundHandler,
+  SoeursRoundHandler,
 } from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../announcement/announcement.service';
@@ -126,6 +127,10 @@ export class RoundHandlersService {
     if (rolesSet.has(PlayerRoleEnum.CHIEN_LOUP)) {
       this.roundHandlers.set(RoundEnum.CHIEN_LOUP, new ChienLoupRoundHandler());
     }
+
+    if (rolesSet.has(PlayerRoleEnum.SOEUR)) {
+      this.roundHandlers.set(RoundEnum.SOEURS, new SoeursRoundHandler());
+    }
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -183,6 +188,9 @@ export class RoundHandlersService {
     }
     if (rolesSet.has(PlayerRoleEnum.CHIEN_LOUP)) {
       this.roundHandlers.delete(RoundEnum.CHIEN_LOUP);
+    }
+    if (rolesSet.has(PlayerRoleEnum.SOEUR)) {
+      this.roundHandlers.delete(RoundEnum.SOEURS);
     }
   }
 
