@@ -44,6 +44,12 @@ export const appRoutes: Routes = [
       ),
   },
   {
+    path: 'options',
+    title: 'LG Assistant MJ | Options',
+    loadComponent: () =>
+      import('./pages/options/options.page').then((m) => m.OptionsPage),
+  },
+  {
     path: '',
     pathMatch: 'full',
     title: 'LG Assistant MJ | Accueil',

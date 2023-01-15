@@ -45,4 +45,12 @@ describe('StorageService', () => {
       expect(value).toEqual('mockValue');
     });
   }));
+
+  it('should clear storage', waitForAsync(() => {
+    when(jest.spyOn(mockStorage, 'clear')).mockResolvedValue(undefined);
+
+    service.clear().subscribe(() => {
+      expect(mockStorage.clear).toBeCalled();
+    });
+  }));
 });

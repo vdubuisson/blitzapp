@@ -57,6 +57,10 @@ export class StorageService {
     }
   }
 
+  clear(): Observable<void> {
+    return from((this._storage as Storage).clear());
+  }
+
   private async init() {
     this._storage = await this.storage.create();
     this.isInitialized.next(true);
@@ -67,10 +71,8 @@ export class StorageService {
     const action = this.actionQueue.shift();
     if (action !== undefined) {
       if (action.type === StorageActionEnum.SET) {
-        console.log('SET', action.key);
         await this._storage?.set(action.key, action.value);
       } else {
-        console.log('REMOVE', action.key);
         await this._storage?.remove(action.key);
       }
     }
