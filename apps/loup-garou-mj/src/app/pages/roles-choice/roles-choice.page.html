@@ -1,0 +1,48 @@
+<lgmj-header title="Choix des rôles à jouer" />
+
+<ion-content>
+  <ion-accordion-group [multiple]="true">
+    <ion-accordion *ngFor="let box of boxes" [value]="box">
+      <ion-item slot="header" color="light">
+        <ion-label
+          ><strong>{{ box | gameBoxName | uppercase }}</strong></ion-label
+        >
+      </ion-item>
+      <ion-list slot="content">
+        <ion-item *ngFor="let role of boxContents[box]" lines="full">
+          <ion-checkbox
+            slot="start"
+            [value]="role"
+            [checked]="selectedRoles.has(role)"
+            (ionChange)="onRoleCheckChange($event)"
+          />
+          <ion-thumbnail slot="start">
+            <img [src]="role | playerRoleImage" [alt]="role | playerRoleName" />
+          </ion-thumbnail>
+          <ion-label>{{ role | playerRoleName }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <div id="submit-block">
+    <ion-button
+      [disabled]="selectedRoles.size === 0"
+      expand="block"
+      (click)="validateRoles()"
+      class="ion-margin-horizontal"
+      color="success"
+    >
+      Valider ({{selectedRoles.size}})
+    </ion-button>
+    <ion-button
+      [disabled]="selectedRoles.size === 0"
+      expand="block"
+      (click)="deselectAll()"
+      class="ion-margin-horizontal"
+      color="danger"
+    >
+      Désélectionner tout
+    </ion-button>
+  </div>
+</ion-content>

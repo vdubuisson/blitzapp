@@ -200,13 +200,13 @@ describe('NewGameService', () => {
     ]);
   });
 
-  it('should navigate to /new-game on replay', () => {
+  it('should navigate to /roles-choice on replay', () => {
     jest.spyOn(gameService, 'getPlayers').mockReturnValue(of([]));
     jest.spyOn(router, 'navigate');
 
     service.replay();
 
-    expect(router.navigate).toBeCalledWith(['new-game']);
+    expect(router.navigate).toBeCalledWith(['roles-choice']);
   });
 
   it('should change role', () => {

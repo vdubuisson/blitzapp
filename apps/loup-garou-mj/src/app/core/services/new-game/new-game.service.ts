@@ -97,7 +97,7 @@ export class NewGameService {
       )
       .subscribe((players) => {
         this.players.next(players);
-        this.router.navigate(['new-game']);
+        this.router.navigate(['roles-choice']);
       });
   }
 
