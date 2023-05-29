@@ -50,6 +50,7 @@
     <ion-select
       *ngSwitchCase="playerDisplayModeEnum.EDIT_ROLE"
       placeholder="Rôle"
+      [legacy]="true"
       interface="action-sheet"
       [interfaceOptions]="customInterfaceOptions"
       cancelText="Annuler"

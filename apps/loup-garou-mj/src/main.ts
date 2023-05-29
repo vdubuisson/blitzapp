@@ -21,7 +21,9 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(appRoutes, withPreloading(PreloadAllModules)),
     importProvidersFrom(
-      IonicModule.forRoot(),
+      IonicModule.forRoot({
+        innerHTMLTemplatesEnabled: true,
+      }),
       IonicStorageModule.forRoot({ name: '_lgmj-db' })
     ),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

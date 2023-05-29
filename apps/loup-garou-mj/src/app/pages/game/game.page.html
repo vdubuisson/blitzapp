@@ -25,23 +25,28 @@
 
       <ion-list>
         <ion-radio-group
+          *ngIf="playerDisplayMode === PlayerDisplayModeEnum.SELECT_SINGLE; else playerElement"
           (ionChange)="onSinglePlayerChecked($event)"
           [allowEmptySelection]="round.minSelectable === 0"
           [value]="selectedPlayer"
         >
-          <lgmj-player
-            *ngFor="let player of (players$ | async); trackBy: playerTrackBy"
-            [player]="player"
-            [displayMode]="playerDisplayMode === PlayerDisplayModeEnum.EDIT_ROLE && !round.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode"
-            [disabled]="!round.selectablePlayers.includes(player.id)"
-            [checked]="selectedPlayers.has(player.id)"
-            [noSelfRole]="true"
-            [selectableRoles]="round.selectableRoles || []"
-            (checkedChange)="onMultiPlayerChecked(player.id, $event)"
-            (roleChange)="onRoleSelect($event)"
-          ></lgmj-player>
+          <ng-container [ngTemplateOutlet]="playerElement"></ng-container>
         </ion-radio-group>
       </ion-list>
+
+      <ng-template #playerElement>
+        <lgmj-player
+          *ngFor="let player of (players$ | async); trackBy: playerTrackBy"
+          [player]="player"
+          [displayMode]="playerDisplayMode === PlayerDisplayModeEnum.EDIT_ROLE && !round.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode"
+          [disabled]="!round.selectablePlayers.includes(player.id)"
+          [checked]="selectedPlayers.has(player.id)"
+          [noSelfRole]="true"
+          [selectableRoles]="round.selectableRoles || []"
+          (checkedChange)="onMultiPlayerChecked(player.id, $event)"
+          (roleChange)="onRoleSelect($event)"
+        ></lgmj-player>
+      </ng-template>
 
       <div id="submit-block">
         <ion-button

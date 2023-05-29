@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { MenuComponent } from './core/components/menu/menu.component';
@@ -10,6 +10,4 @@ import { MenuComponent } from './core/components/menu/menu.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  constructor(public environmentInjector: EnvironmentInjector) {}
-}
+export class AppComponent {}
