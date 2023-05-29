@@ -30,7 +30,7 @@ import { STATUS_TRACK_BY } from '../../utils/status.track-by';
   styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent {
-  @Input() player!: Player;
+  @Input({ required: true }) player!: Player;
 
   @Input() displayMode: PlayerDisplayModeEnum = PlayerDisplayModeEnum.DEFAULT;
 

@@ -84,7 +84,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/loup-garou-mj/**/*.ts",
@@ -93,7 +93,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/loup-garou-mj"],
       "options": {
         "jestConfig": "apps/loup-garou-mj/jest.config.ts",

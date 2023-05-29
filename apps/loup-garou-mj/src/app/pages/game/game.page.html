@@ -1,4 +1,4 @@
-<lgmj-header title="Partie en cours"></lgmj-header>
+<lgmj-header title="Partie en cours" />
 
 <ion-content>
   <div id="container">
@@ -30,7 +30,7 @@
           [allowEmptySelection]="round.minSelectable === 0"
           [value]="selectedPlayer"
         >
-          <ng-container [ngTemplateOutlet]="playerElement"></ng-container>
+          <ng-container [ngTemplateOutlet]="playerElement" />
         </ion-radio-group>
       </ion-list>
 
@@ -45,7 +45,7 @@
           [selectableRoles]="round.selectableRoles || []"
           (checkedChange)="onMultiPlayerChecked(player.id, $event)"
           (roleChange)="onRoleSelect($event)"
-        ></lgmj-player>
+        />
       </ng-template>
 
       <div id="submit-block">

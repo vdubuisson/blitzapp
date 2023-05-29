@@ -2,11 +2,7 @@
   [disabled]="player.isDead || disabled"
   [color]="player.isDead ? 'medium' : ''"
 >
-  <ion-icon
-    *ngIf="player.isDead; else formElement"
-    slot="start"
-    name="skull"
-  ></ion-icon>
+  <ion-icon *ngIf="player.isDead; else formElement" slot="start" name="skull" />
 
   <ion-thumbnail
     slot="start"
@@ -23,7 +19,7 @@
     <p>{{ player.role | playerRoleName }}</p>
   </ion-label>
 
-  <ng-container *ngTemplateOutlet="endElement"></ng-container>
+  <ng-container *ngTemplateOutlet="endElement" />
 </ion-item>
 
 <ng-template #formElement>
@@ -34,14 +30,14 @@
       slot="start"
       [checked]="checked"
       (ionChange)="onCheckedChange($event)"
-    ></ion-checkbox>
+    />
 
     <!-- SELECT_SINGLE mode -->
     <ion-radio
       *ngSwitchCase="playerDisplayModeEnum.SELECT_SINGLE"
       slot="start"
       [value]="player.id"
-    ></ion-radio>
+    />
   </ng-container>
 </ng-template>
 
