@@ -1,17 +1,12 @@
-<lgmj-header title="Nouvelle partie - Joueurs"></lgmj-header>
+<lgmj-header title="Nouvelle partie - Joueurs" />
 
 <ion-content>
   <div id="container">
     <ion-item lines="full">
-      <ion-icon
-        slot="start"
-        name="warning"
-        size="large"
-        color="warning"
-      ></ion-icon>
+      <ion-icon slot="start" name="warning" size="large" color="warning" />
       <em>Respectez la position réelle des joueurs</em>
     </ion-item>
-    <lgmj-new-player (newPlayer)="addPlayer($event)"></lgmj-new-player>
+    <lgmj-new-player (newPlayer)="addPlayer($event)" />
 
     <ion-list id="player-list">
       <ion-reorder-group
@@ -27,12 +22,12 @@
             color="danger"
             shape="round"
           >
-            <ion-icon slot="icon-only" name="remove"></ion-icon>
+            <ion-icon slot="icon-only" name="remove" />
           </ion-button>
           <ion-label>
             <h2>{{ player.name }}</h2>
           </ion-label>
-          <ion-reorder slot="end"></ion-reorder>
+          <ion-reorder slot="end" />
         </ion-item>
       </ion-reorder-group>
     </ion-list>

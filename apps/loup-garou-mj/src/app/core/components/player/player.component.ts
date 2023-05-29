@@ -30,7 +30,7 @@ import { STATUS_TRACK_BY } from '../../utils/status.track-by';
   styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent {
-  @Input() player!: Player;
+  @Input({ required: true }) player!: Player;
 
   @Input() displayMode: PlayerDisplayModeEnum = PlayerDisplayModeEnum.DEFAULT;
 
@@ -75,6 +75,7 @@ export class PlayerComponent {
   constructor(private playerRoleNamePipe: PlayerRoleNamePipe) {}
 
   protected onCheckedChange(event: Event) {
+    console.log('onCheckedChange', event);
     this.checkedChange.emit((event as CheckboxCustomEvent).detail.checked);
   }
 
