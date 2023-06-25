@@ -75,7 +75,6 @@ export class PlayerComponent {
   constructor(private playerRoleNamePipe: PlayerRoleNamePipe) {}
 
   protected onCheckedChange(event: Event) {
-    console.log('onCheckedChange', event);
     this.checkedChange.emit((event as CheckboxCustomEvent).detail.checked);
   }
 
