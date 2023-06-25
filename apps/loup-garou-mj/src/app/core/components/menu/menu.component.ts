@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, IonMenu } from '@ionic/angular';
 import {
@@ -7,8 +7,9 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
-import { filter, Observable, Subject, takeUntil } from 'rxjs';
+import { filter, Observable } from 'rxjs';
 import { GameService } from '../../services/game/game.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'lgmj-menu',
@@ -17,28 +18,19 @@ import { GameService } from '../../services/game/game.service';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
 })
-export class MenuComponent implements AfterViewInit, OnDestroy {
+export class MenuComponent {
   protected isGameInProgress$: Observable<boolean>;
 
   @ViewChild('menu') private menu: IonMenu | undefined;
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor(private router: Router, private gameService: GameService) {
     this.isGameInProgress$ = this.gameService.isGameInProgress();
-  }
 
-  ngAfterViewInit(): void {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed()
       )
       .subscribe(() => this.menu?.close());
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

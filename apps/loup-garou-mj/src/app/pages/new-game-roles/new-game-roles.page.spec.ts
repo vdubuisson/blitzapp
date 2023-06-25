@@ -6,18 +6,40 @@ import { Player } from '../../core/models/player.model';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 
 import { NewGameRolesPage } from './new-game-roles.page';
+import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
 
 describe('NewGamePage', () => {
   let component: NewGameRolesPage;
   let newGameService: NewGameService;
+  let roleChoiceService: RoleChoiceService;
+
   let mockPlayers$: BehaviorSubject<Player[]>;
+  let mockRoles$: BehaviorSubject<Set<PlayerRoleEnum>>;
 
   beforeEach(waitForAsync(() => {
     mockPlayers$ = new BehaviorSubject<Player[]>([]);
+    mockRoles$ = new BehaviorSubject<Set<PlayerRoleEnum>>(new Set());
     newGameService = MockService(NewGameService);
-    jest.spyOn(newGameService, 'getPlayers').mockReturnValue(mockPlayers$);
+    roleChoiceService = MockService(RoleChoiceService);
 
-    component = new NewGameRolesPage(newGameService);
+    jest.spyOn(newGameService, 'getPlayers').mockReturnValue(mockPlayers$);
+    jest
+      .spyOn(roleChoiceService, 'getCurrentChosenRoles')
+      .mockReturnValue(mockRoles$);
+
+    component = new NewGameRolesPage(newGameService, roleChoiceService);
+  }));
+
+  it('should get roles from RoleChoiceService', waitForAsync(() => {
+    const roles = new Set([
+      PlayerRoleEnum.VILLAGEOIS,
+      PlayerRoleEnum.LOUP_GAROU,
+    ]);
+    mockRoles$.next(roles);
+
+    component['players$'].subscribe(() => {
+      expect(component['rolesToPlay']).toEqual(roles);
+    });
   }));
 
   it('should get players from NewGameService', waitForAsync(() => {
@@ -169,17 +191,8 @@ describe('NewGamePage', () => {
     );
   }));
 
-  it('should not have NOT_SELECTED role as available', waitForAsync(() => {
-    mockPlayers$.next([]);
-
-    component['players$'].subscribe(() =>
-      expect(
-        component['availableRoles'].includes(PlayerRoleEnum.NOT_SELECTED)
-      ).toEqual(false)
-    );
-  }));
-
   it('should not have already used unique role as available', waitForAsync(() => {
+    mockRoles$.next(new Set([PlayerRoleEnum.CUPIDON]));
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -199,6 +212,7 @@ describe('NewGamePage', () => {
   }));
 
   it('should have SOEUR as available if less than 2 SOEUR', waitForAsync(() => {
+    mockRoles$.next(new Set([PlayerRoleEnum.SOEUR]));
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -218,6 +232,7 @@ describe('NewGamePage', () => {
   }));
 
   it('should not have SOEUR as available if 2 SOEUR', waitForAsync(() => {
+    mockRoles$.next(new Set([PlayerRoleEnum.SOEUR]));
     const mockPlayers: Player[] = [
       {
         id: 0,

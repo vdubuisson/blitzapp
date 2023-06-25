@@ -28,6 +28,14 @@ export const appRoutes: Routes = [
       ),
   },
   {
+    path: 'roles-choice',
+    title: 'LG Assistant MJ | Choix des rôles à jouer',
+    loadComponent: () =>
+      import('./pages/roles-choice/roles-choice.page').then(
+        (m) => m.RolesChoicePage
+      ),
+  },
+  {
     path: 'roles-rules',
     title: 'LG Assistant MJ | Règles des rôles',
     loadComponent: () =>

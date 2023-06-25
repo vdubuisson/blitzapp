@@ -8,10 +8,11 @@ import { Player } from '../../core/models/player.model';
 import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
 
 @Component({
   selector: 'lgmj-new-game-roles',
@@ -37,8 +38,15 @@ export class NewGameRolesPage {
 
   protected availableRoles: PlayerRoleEnum[] = [];
 
-  constructor(private newGameService: NewGameService) {
-    this.players$ = this.newGameService.getPlayers().pipe(
+  private rolesToPlay = new Set<PlayerRoleEnum>();
+
+  constructor(
+    private newGameService: NewGameService,
+    private roleChoiceService: RoleChoiceService
+  ) {
+    this.players$ = this.roleChoiceService.getCurrentChosenRoles().pipe(
+      tap((selectedRoles) => (this.rolesToPlay = selectedRoles)),
+      switchMap(() => this.newGameService.getPlayers()),
       tap((players) => {
         this.cannotCreate = !this.canCreateGame(players);
         this.availableRoles = this.getAvailableRoles(players);
@@ -56,10 +64,8 @@ export class NewGameRolesPage {
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
     const usedRoles = new Set(players.map((player) => player.role));
-    let availableRoles = Object.values(PlayerRoleEnum).filter(
-      (role) =>
-        role !== PlayerRoleEnum.NOT_SELECTED &&
-        (NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role))
+    let availableRoles = Array.from(this.rolesToPlay).filter(
+      (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role)
     );
 
     if (
