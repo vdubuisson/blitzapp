@@ -1,6 +1,10 @@
 import { GameBoxEnum } from '../../enums/game-box.enum';
 import { GameBoxNamePipe } from './game-box-name.pipe';
 
+jest.mock('../../values/game-box-names', () => ({
+  GAME_BOX_NAMES: { [GameBoxEnum.CORE]: 'Test' },
+}));
+
 describe('GameBoxNamePipe', () => {
   let pipe: GameBoxNamePipe;
 
@@ -12,28 +16,8 @@ describe('GameBoxNamePipe', () => {
     expect(pipe).toBeTruthy();
   });
 
-  it('should display "Boite de base" for CORE', () => {
+  it('should display value for requested enum', () => {
     const name = pipe.transform(GameBoxEnum.CORE);
-    expect(name).toEqual('Boite de base');
-  });
-
-  it('should display "Extension - Nouvelle lune" for LUNE', () => {
-    const name = pipe.transform(GameBoxEnum.LUNE);
-    expect(name).toEqual('Extension - Nouvelle lune');
-  });
-
-  it('should display "Extension - Village" for VILLAGE', () => {
-    const name = pipe.transform(GameBoxEnum.VILLAGE);
-    expect(name).toEqual('Extension - Village');
-  });
-
-  it('should display "Extension - Personnages" for PERSONNAGES', () => {
-    const name = pipe.transform(GameBoxEnum.PERSONNAGES);
-    expect(name).toEqual('Extension - Personnages');
-  });
-
-  it('should display "Le Pacte" for PACTE', () => {
-    const name = pipe.transform(GameBoxEnum.PACTE);
-    expect(name).toEqual('Le Pacte');
+    expect(name).toEqual('Test');
   });
 });

@@ -238,7 +238,7 @@ describe('RoundOrchestrationService', () => {
       .calledWith(RoundEnum.VOYANTE)
       .mockReturnValue(new MockRoundHandler());
     when(getHandlerSpy)
-      .calledWith(RoundEnum.VOLEUR)
+      .calledWith(RoundEnum.VILLAGEOIS)
       .mockReturnValue(new MockRoundHandler());
     when(getHandlerSpy)
       .calledWith(RoundEnum.CUPIDON)
@@ -246,7 +246,7 @@ describe('RoundOrchestrationService', () => {
 
     service['uniqueRoundsPassed'] = new Set([RoundEnum.CUPIDON]);
 
-    const nextRound = service.getNextRound(RoundEnum.VOLEUR);
+    const nextRound = service.getNextRound(RoundEnum.VILLAGEOIS);
 
     expect(nextRound).toEqual(RoundEnum.VOYANTE);
   });

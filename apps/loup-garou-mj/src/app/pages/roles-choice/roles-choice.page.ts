@@ -5,7 +5,7 @@ import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-rol
 import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
-import { GAME_BOX_CONTENTS } from '../../core/constants/game-box-contents';
+import { GAME_BOX_CONTENTS } from '../../core/configs/game-box-contents';
 import { GameBoxEnum } from '../../core/enums/game-box.enum';
 import { GameBoxNamePipe } from '../../core/pipes/game-box-name/game-box-name.pipe';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';

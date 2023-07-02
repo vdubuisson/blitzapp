@@ -21,7 +21,7 @@ import { NewGameService } from '../../core/services/new-game/new-game.service';
   styleUrls: ['./victory.page.scss'],
 })
 export class VictoryPage {
-  protected victory: VictoryEnum | null;
+  protected victory: VictoryEnum;
   protected victoryTitle: string;
 
   constructor(
