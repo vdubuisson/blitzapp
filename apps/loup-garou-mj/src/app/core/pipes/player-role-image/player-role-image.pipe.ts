@@ -44,6 +44,8 @@ export class PlayerRoleImagePipe implements PipeTransform {
         return `${PlayerRoleImagePipe.IMAGES_PATH}chien_loup.webp`;
       case PlayerRoleEnum.SOEUR:
         return `${PlayerRoleImagePipe.IMAGES_PATH}soeurs.webp`;
+      case PlayerRoleEnum.FRERE:
+        return `${PlayerRoleImagePipe.IMAGES_PATH}freres.webp`;
       default:
         return '';
     }

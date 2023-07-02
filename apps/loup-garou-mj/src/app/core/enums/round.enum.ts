@@ -19,4 +19,5 @@ export enum RoundEnum {
   RENARD,
   CHIEN_LOUP,
   SOEURS,
+  FRERES,
 }

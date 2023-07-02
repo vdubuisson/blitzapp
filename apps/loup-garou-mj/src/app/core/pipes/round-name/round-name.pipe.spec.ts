@@ -111,4 +111,9 @@ describe('RoundNamePipe', () => {
     const name = pipe.transform(RoundEnum.SOEURS);
     expect(name).toEqual('Découverte des 2 sœurs');
   });
+
+  it('should display "Découverte des 3 frères" for FRERES', () => {
+    const name = pipe.transform(RoundEnum.FRERES);
+    expect(name).toEqual('Découverte des 3 frères');
+  });
 });

@@ -78,6 +78,16 @@ export class NewGameRolesPage {
       );
     }
 
+    if (
+      usedRoles.has(PlayerRoleEnum.FRERE) &&
+      players.filter((player) => player.role === PlayerRoleEnum.FRERE)
+        .length === 3
+    ) {
+      availableRoles = availableRoles.filter(
+        (role) => role !== PlayerRoleEnum.FRERE
+      );
+    }
+
     return availableRoles;
   }
 
@@ -92,6 +102,14 @@ export class NewGameRolesPage {
       canCreate =
         players.filter((player) => player.role === PlayerRoleEnum.SOEUR)
           .length === 2;
+    }
+    if (
+      canCreate &&
+      players.some((player) => player.role === PlayerRoleEnum.FRERE)
+    ) {
+      canCreate =
+        players.filter((player) => player.role === PlayerRoleEnum.FRERE)
+          .length === 3;
     }
     return canCreate;
   }

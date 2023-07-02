@@ -17,6 +17,7 @@ export const GAME_BOX_CONTENTS: { [box: string]: PlayerRoleEnum[] } = {
   [GameBoxEnum.PERSONNAGES]: [
     PlayerRoleEnum.CHIEN_LOUP,
     PlayerRoleEnum.SOEUR,
+    PlayerRoleEnum.FRERE,
     PlayerRoleEnum.ENFANT_SAUVAGE,
     PlayerRoleEnum.GRAND_MECHANT_LOUP,
     PlayerRoleEnum.MONTREUR_OURS,
