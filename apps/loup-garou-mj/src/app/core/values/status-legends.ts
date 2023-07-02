@@ -1,4 +1,4 @@
-import { PlayerStatusEnum } from '../../../core/enums/player-status.enum';
+import { PlayerStatusEnum } from '../enums/player-status.enum';
 
 export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.WOLF_TARGET]: `Ce joueur est la cible des loups-garous pour cette nuit. A la fin de la nuit il mourra.`,

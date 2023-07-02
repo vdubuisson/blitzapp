@@ -1,4 +1,4 @@
-import { LOUPS_GAROUS_ROLES } from '../../constants/loups-garous-roles';
+import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { Player } from '../../models/player.model';
 import { VictoryHandler } from '../victory.handler';
 

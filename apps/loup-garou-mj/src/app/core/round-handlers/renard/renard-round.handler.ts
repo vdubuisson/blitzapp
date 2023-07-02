@@ -1,4 +1,4 @@
-import { LOUPS_GAROUS_ROLES } from '../../constants/loups-garous-roles';
+import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';

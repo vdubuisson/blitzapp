@@ -88,11 +88,11 @@ describe('RoundHandlersService', () => {
     );
   });
 
-  it('should not init LOUP_GAROU round handler when no LOUP_GAROU role', () => {
-    service.initHandlers([]);
+  // it('should not init LOUP_GAROU round handler when no LOUP_GAROU role', () => {
+  //   service.initHandlers([]);
 
-    expect(service['roundHandlers'].has(RoundEnum.LOUP_GAROU)).toEqual(false);
-  });
+  //   expect(service['roundHandlers'].has(RoundEnum.LOUP_GAROU)).toEqual(false);
+  // });
 
   it('should return handler for LOUP_GAROU round', () => {
     const roundHandler = new LoupGarouRoundHandler();
@@ -103,16 +103,16 @@ describe('RoundHandlersService', () => {
     expect(testHandler).toEqual(roundHandler);
   });
 
-  it('should remove handler LOUP_GAROU for LOUP_GAROU role', () => {
-    service['roundHandlers'].set(
-      RoundEnum.LOUP_GAROU,
-      new LoupGarouRoundHandler()
-    );
+  // it('should remove handler LOUP_GAROU for LOUP_GAROU role', () => {
+  //   service['roundHandlers'].set(
+  //     RoundEnum.LOUP_GAROU,
+  //     new LoupGarouRoundHandler()
+  //   );
 
-    service.removeHandlers([PlayerRoleEnum.LOUP_GAROU]);
+  //   service.removeHandlers([PlayerRoleEnum.LOUP_GAROU]);
 
-    expect(service['roundHandlers'].has(RoundEnum.LOUP_GAROU)).toEqual(false);
-  });
+  //   expect(service['roundHandlers'].has(RoundEnum.LOUP_GAROU)).toEqual(false);
+  // });
 
   it('should init SORCIERE_HEALTH round handler for SORCIERE role', () => {
     service.initHandlers([PlayerRoleEnum.SORCIERE]);

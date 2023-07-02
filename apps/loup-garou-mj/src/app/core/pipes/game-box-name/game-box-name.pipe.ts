@@ -1,23 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { GameBoxEnum } from '../../enums/game-box.enum';
+import { GAME_BOX_NAMES } from '../../values/game-box-names';
 
 @Pipe({
   name: 'gameBoxName',
   standalone: true,
 })
 export class GameBoxNamePipe implements PipeTransform {
-  transform(gameBox: GameBoxEnum ): string {
-    switch (gameBox) {
-      case GameBoxEnum.CORE:
-        return 'Boite de base'
-      case GameBoxEnum.LUNE:
-        return 'Extension - Nouvelle lune';
-      case GameBoxEnum.VILLAGE:
-        return 'Extension - Village';
-      case GameBoxEnum.PERSONNAGES:
-        return 'Extension - Personnages';
-      case GameBoxEnum.PACTE:
-        return 'Le Pacte';
-    }
+  transform(gameBox: GameBoxEnum): string {
+    return GAME_BOX_NAMES[gameBox];
   }
 }

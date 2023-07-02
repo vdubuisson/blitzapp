@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ROLES_RULES } from './rules/roles-rules';
+import { ROLES_RULES } from '../../core/values/roles-rules';
 import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';

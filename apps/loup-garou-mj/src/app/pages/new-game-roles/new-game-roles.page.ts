@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { NON_UNIQUE_ROLES } from '../../core/constants/non-unique-roles';
+import { NON_UNIQUE_ROLES } from '../../core/configs/non-unique-roles';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { Player } from '../../core/models/player.model';

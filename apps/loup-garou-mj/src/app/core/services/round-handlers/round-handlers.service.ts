@@ -1,31 +1,11 @@
 import { Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
-import {
-  VillageoisRoundHandler,
-  CapitaineRoundHandler,
-  LoupGarouRoundHandler,
-  SorciereHealthRoundHandler,
-  SorciereKillRoundHandler,
-  CupidonRoundHandler,
-  ChasseurRoundHandler,
-  VoyanteRoundHandler,
-  AmoureuxRoundHandler,
-  JoueurFluteRoundHandler,
-  CharmedRoundHandler,
-  CorbeauRoundHandler,
-  EnfantSauvageRoundHandler,
-  SalvateurRoundHandler,
-  GrandMechantLoupRoundHandler,
-  MontreurOursRoundHandler,
-  RenardRoundHandler,
-  ChienLoupRoundHandler,
-  SoeursRoundHandler,
-  FreresRoundHandler,
-} from '../../round-handlers';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { StorageService } from '../storage/storage.service';
+import { ROUND_HANDLERS_CONFIG } from '../../configs/round-handlers.config';
+import { ROLE_ROUNDS_CONFIG } from '../../configs/role-rounds.config';
 
 @Injectable({
   providedIn: 'root',
@@ -47,95 +27,15 @@ export class RoundHandlersService {
 
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
 
-    this.roundHandlers.set(RoundEnum.VILLAGEOIS, new VillageoisRoundHandler());
-    this.roundHandlers.set(RoundEnum.CAPITAINE, new CapitaineRoundHandler());
+    this.createRoundHandler(RoundEnum.VILLAGEOIS);
+    this.createRoundHandler(RoundEnum.LOUP_GAROU);
+    this.createRoundHandler(RoundEnum.CAPITAINE);
 
-    if (
-      rolesSet.has(PlayerRoleEnum.LOUP_GAROU) ||
-      rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)
-    ) {
-      this.roundHandlers.set(RoundEnum.LOUP_GAROU, new LoupGarouRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.SORCIERE)) {
-      this.roundHandlers.set(
-        RoundEnum.SORCIERE_HEALTH,
-        new SorciereHealthRoundHandler()
+    rolesSet.forEach((role) => {
+      ROLE_ROUNDS_CONFIG[role].forEach((round) =>
+        this.createRoundHandler(round)
       );
-      this.roundHandlers.set(
-        RoundEnum.SORCIERE_KILL,
-        new SorciereKillRoundHandler()
-      );
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
-      this.roundHandlers.set(RoundEnum.CUPIDON, new CupidonRoundHandler());
-      this.roundHandlers.set(RoundEnum.AMOUREUX, new AmoureuxRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.CHASSEUR)) {
-      this.roundHandlers.set(RoundEnum.CHASSEUR, new ChasseurRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.VOYANTE)) {
-      this.roundHandlers.set(RoundEnum.VOYANTE, new VoyanteRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
-      this.roundHandlers.set(
-        RoundEnum.JOUEUR_FLUTE,
-        new JoueurFluteRoundHandler()
-      );
-      this.roundHandlers.set(RoundEnum.CHARMED, new CharmedRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.CORBEAU)) {
-      this.roundHandlers.set(RoundEnum.CORBEAU, new CorbeauRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.ENFANT_SAUVAGE)) {
-      this.roundHandlers.set(
-        RoundEnum.ENFANT_SAUVAGE,
-        new EnfantSauvageRoundHandler()
-      );
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.SALVATEUR)) {
-      this.roundHandlers.set(RoundEnum.SALVATEUR, new SalvateurRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)) {
-      this.roundHandlers.set(
-        RoundEnum.GRAND_MECHANT_LOUP,
-        new GrandMechantLoupRoundHandler()
-      );
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.MONTREUR_OURS)) {
-      this.roundHandlers.set(
-        RoundEnum.MONTREUR_OURS,
-        new MontreurOursRoundHandler(this.announcementService)
-      );
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.RENARD)) {
-      this.roundHandlers.set(
-        RoundEnum.RENARD,
-        new RenardRoundHandler(this.announcementService)
-      );
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.CHIEN_LOUP)) {
-      this.roundHandlers.set(RoundEnum.CHIEN_LOUP, new ChienLoupRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.SOEUR)) {
-      this.roundHandlers.set(RoundEnum.SOEURS, new SoeursRoundHandler());
-    }
-
-    if (rolesSet.has(PlayerRoleEnum.FRERE)) {
-      this.roundHandlers.set(RoundEnum.FRERES, new FreresRoundHandler());
-    }
+    });
   }
 
   getHandler(round: RoundEnum): RoundHandler | undefined {
@@ -153,53 +53,11 @@ export class RoundHandlersService {
       });
 
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
-    if (rolesSet.has(PlayerRoleEnum.LOUP_GAROU)) {
-      this.roundHandlers.delete(RoundEnum.LOUP_GAROU);
-    }
-    if (rolesSet.has(PlayerRoleEnum.SORCIERE)) {
-      this.roundHandlers.delete(RoundEnum.SORCIERE_HEALTH);
-      this.roundHandlers.delete(RoundEnum.SORCIERE_KILL);
-    }
-    if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
-      this.roundHandlers.delete(RoundEnum.CUPIDON);
-    }
-    if (rolesSet.has(PlayerRoleEnum.CHASSEUR)) {
-      this.roundHandlers.delete(RoundEnum.CHASSEUR);
-    }
-    if (rolesSet.has(PlayerRoleEnum.VOYANTE)) {
-      this.roundHandlers.delete(RoundEnum.VOYANTE);
-    }
-    if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
-      this.roundHandlers.delete(RoundEnum.JOUEUR_FLUTE);
-      this.roundHandlers.delete(RoundEnum.CHARMED);
-    }
-    if (rolesSet.has(PlayerRoleEnum.CORBEAU)) {
-      this.roundHandlers.delete(RoundEnum.CORBEAU);
-    }
-    if (rolesSet.has(PlayerRoleEnum.ENFANT_SAUVAGE)) {
-      this.roundHandlers.delete(RoundEnum.ENFANT_SAUVAGE);
-    }
-    if (rolesSet.has(PlayerRoleEnum.SALVATEUR)) {
-      this.roundHandlers.delete(RoundEnum.SALVATEUR);
-    }
-    if (rolesSet.has(PlayerRoleEnum.GRAND_MECHANT_LOUP)) {
-      this.roundHandlers.delete(RoundEnum.GRAND_MECHANT_LOUP);
-    }
-    if (rolesSet.has(PlayerRoleEnum.MONTREUR_OURS)) {
-      this.roundHandlers.delete(RoundEnum.MONTREUR_OURS);
-    }
-    if (rolesSet.has(PlayerRoleEnum.RENARD)) {
-      this.roundHandlers.delete(RoundEnum.RENARD);
-    }
-    if (rolesSet.has(PlayerRoleEnum.CHIEN_LOUP)) {
-      this.roundHandlers.delete(RoundEnum.CHIEN_LOUP);
-    }
-    if (rolesSet.has(PlayerRoleEnum.SOEUR)) {
-      this.roundHandlers.delete(RoundEnum.SOEURS);
-    }
-    if (rolesSet.has(PlayerRoleEnum.FRERE)) {
-      this.roundHandlers.delete(RoundEnum.FRERES);
-    }
+    rolesSet.forEach((role) => {
+      ROLE_ROUNDS_CONFIG[role].forEach((round) =>
+        this.roundHandlers.delete(round)
+      );
+    });
   }
 
   clearHandlers(): void {
@@ -215,5 +73,14 @@ export class RoundHandlersService {
           this.initHandlers(roles);
         }
       });
+  }
+
+  private createRoundHandler(round: RoundEnum): void {
+    if (!this.roundHandlers.has(round)) {
+      this.roundHandlers.set(
+        round,
+        new ROUND_HANDLERS_CONFIG[round](this.announcementService)
+      );
+    }
   }
 }
