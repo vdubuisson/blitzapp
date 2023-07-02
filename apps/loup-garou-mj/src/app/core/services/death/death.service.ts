@@ -158,6 +158,15 @@ export class DeathService {
           this.rolesToRemove.push(PlayerRoleEnum.SOEUR);
         }
         break;
+      case PlayerRoleEnum.FRERE:
+        if (
+          players
+            .filter((player) => player.role === PlayerRoleEnum.FRERE)
+            .every((player) => player.isDead)
+        ) {
+          this.rolesToRemove.push(PlayerRoleEnum.FRERE);
+        }
+        break;
       default:
         this.rolesToRemove.push(deadPlayer.role);
         break;

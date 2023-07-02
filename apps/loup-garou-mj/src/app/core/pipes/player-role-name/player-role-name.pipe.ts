@@ -42,6 +42,8 @@ export class PlayerRoleNamePipe implements PipeTransform {
         return 'Chien-Loup';
       case PlayerRoleEnum.SOEUR:
         return 'Sœur';
+      case PlayerRoleEnum.FRERE:
+        return 'Frère';
       default:
         return '';
     }

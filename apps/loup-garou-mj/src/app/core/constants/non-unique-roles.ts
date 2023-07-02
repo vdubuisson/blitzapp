@@ -4,4 +4,5 @@ export const NON_UNIQUE_ROLES: PlayerRoleEnum[] = [
   PlayerRoleEnum.VILLAGEOIS,
   PlayerRoleEnum.LOUP_GAROU,
   PlayerRoleEnum.SOEUR,
+  PlayerRoleEnum.FRERE,
 ];

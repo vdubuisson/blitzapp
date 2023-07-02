@@ -1029,6 +1029,71 @@ describe('DeathService', () => {
     expect(roundHandlersService.removeHandlers).toBeCalledTimes(0);
   });
 
+  it('should remove FRERE handlers if all FRERE are dead', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.FRERE,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.FRERE,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+      PlayerRoleEnum.FRERE,
+      PlayerRoleEnum.FRERE,
+    ]);
+  });
+
+  it('should not remove FRERE handlers if some FRERE is alive', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.FRERE,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.FRERE,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toBeCalledTimes(0);
+  });
+
   it('should remove useless victory handlers on deaths handle', () => {
     jest.spyOn(victoryHandlersService, 'removeUselessHandlers');
     const mockPlayers: Player[] = [

@@ -95,4 +95,9 @@ describe('PlayerRoleImagePipe', () => {
     const path = pipe.transform(PlayerRoleEnum.SOEUR);
     expect(path).toEqual('assets/images/roles/soeurs.webp');
   });
+
+  it('should return image path for FRERE', () => {
+    const path = pipe.transform(PlayerRoleEnum.FRERE);
+    expect(path).toEqual('assets/images/roles/freres.webp');
+  });
 });

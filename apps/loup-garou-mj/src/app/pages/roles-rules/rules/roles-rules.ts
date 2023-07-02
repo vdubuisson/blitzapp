@@ -87,4 +87,7 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.SOEUR]: `Son objectif est d'éliminer tous les loups-garous.
 
   Lors de la première nuit, les deux Sœurs se découvrent. Elles peuvent donc se faire confiance lors des votes du village.`,
+  [PlayerRoleEnum.FRERE]: `Son objectif est d'éliminer tous les loups-garous.
+
+  Lors de la première nuit, les trois Frères se découvrent. Ils peuvent donc se faire confiance lors des votes du village.`,
 };
