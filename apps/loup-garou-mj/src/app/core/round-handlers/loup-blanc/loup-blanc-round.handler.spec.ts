@@ -1,15 +1,14 @@
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
-import { GrandMechantLoupRoundHandler } from './grand-mechant-loup-round.handler';
+import { LoupBlancRoundHandler } from './loup-blanc-round.handler';
 
-describe('GrandMechantLoupRoundHandler', () => {
-  let roundHandler: GrandMechantLoupRoundHandler;
+describe('LoupBlancRoundHandler', () => {
+  let roundHandler: LoupBlancRoundHandler;
 
   beforeEach(() => {
-    roundHandler = new GrandMechantLoupRoundHandler();
+    roundHandler = new LoupBlancRoundHandler();
   });
 
   it('should not be only once', () => {
@@ -36,7 +35,7 @@ describe('GrandMechantLoupRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add WOLF_TARGET status to selected player', () => {
+  it('should kill selected player', () => {
     const players: Player[] = [
       {
         id: 0,
@@ -48,7 +47,7 @@ describe('GrandMechantLoupRoundHandler', () => {
       {
         id: 1,
         name: 'player1',
-        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        role: PlayerRoleEnum.LOUP_BLANC,
         statuses: new Set(),
         isDead: false,
       },
@@ -56,9 +55,7 @@ describe('GrandMechantLoupRoundHandler', () => {
 
     const newPlayers = roundHandler.handleAction(players, [0]);
 
-    expect(newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET)).toEqual(
-      true
-    );
+    expect(newPlayers[0].isDead).toEqual(true);
   });
 
   it('should return alive players as selectable', () => {
@@ -66,7 +63,39 @@ describe('GrandMechantLoupRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.selectablePlayers.includes(0)).toEqual(true);
+  });
+
+  it('should return LOUP_GAROU players as selectable', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.selectablePlayers.includes(0)).toEqual(true);
+  });
+
+  it('should return GRAND_MECHANT_LOUP player as selectable', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
         statuses: new Set(),
         isDead: false,
       },
@@ -82,7 +111,7 @@ describe('GrandMechantLoupRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
+        role: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
@@ -93,12 +122,12 @@ describe('GrandMechantLoupRoundHandler', () => {
     expect(round.selectablePlayers.includes(0)).toEqual(false);
   });
 
-  it('should not return LOUP_GAROU players as selectable', () => {
+  it('should not return LOUP_BLANC player as selectable', () => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_BLANC,
         statuses: new Set(),
         isDead: false,
       },
@@ -109,29 +138,13 @@ describe('GrandMechantLoupRoundHandler', () => {
     expect(round.selectablePlayers.includes(0)).toEqual(false);
   });
 
-  it('should not return GRAND_MECHANT_LOUP player as selectable', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const round = roundHandler.getRoundConfig(players);
-
-    expect(round.selectablePlayers.includes(0)).toEqual(false);
-  });
-
-  it('should not return WOLF_TARGET player as selectable', () => {
+  it('should not return VILLAGEOIS players as selectable', () => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set(),
         isDead: false,
       },
     ];
@@ -141,10 +154,10 @@ describe('GrandMechantLoupRoundHandler', () => {
     expect(round.selectablePlayers.includes(0)).toEqual(false);
   });
 
-  it('should return GRAND_MECHANT_LOUP as role round', () => {
+  it('should return LOUP_BLANC as role round', () => {
     const round = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.GRAND_MECHANT_LOUP);
+    expect(round.role).toEqual(RoundEnum.LOUP_BLANC);
   });
 
   it('should return 1 as maxSelectable players', () => {

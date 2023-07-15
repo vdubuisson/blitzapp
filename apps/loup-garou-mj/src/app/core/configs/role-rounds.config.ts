@@ -23,4 +23,5 @@ export const ROLE_ROUNDS_CONFIG: Record<PlayerRoleEnum, RoundEnum[]> = {
   [PlayerRoleEnum.CHIEN_LOUP]: [RoundEnum.CHIEN_LOUP],
   [PlayerRoleEnum.SOEUR]: [RoundEnum.SOEURS],
   [PlayerRoleEnum.FRERE]: [RoundEnum.FRERES],
+  [PlayerRoleEnum.LOUP_BLANC]: [RoundEnum.LOUP_BLANC]
 };

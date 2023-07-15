@@ -90,4 +90,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.FRERE]: `Son objectif est d'éliminer tous les loups-garous.
 
   Lors de la première nuit, les trois Frères se découvrent. Ils peuvent donc se faire confiance lors des votes du village.`,
+  [PlayerRoleEnum.LOUP_BLANC]: `Son objectif est de terminer la partie en étant le seul joueur en vie.
+
+  Chaque nuit, il se réveille avec les autres loups-garous pour attaquer un innocent.
+  
+  Une nuit sur deux, il se réveille et peut éliminer un Loup-Garou s'il le souhaite.`,
 };

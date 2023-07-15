@@ -12,6 +12,8 @@ import {
 } from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
+import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
+import { LoupBlancVictoryHandler } from '../../victory-handlers/loup-blanc/loup-blanc-victory.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +24,7 @@ export class VictoryHandlersService {
   private readonly victoryPriorities: VictoryEnum[] = [
     VictoryEnum.NONE,
     VictoryEnum.AMOUREUX,
+    VictoryEnum.LOUP_BLANC,
     VictoryEnum.JOUEUR_FLUTE,
     VictoryEnum.LOUP_GAROU,
     VictoryEnum.VILLAGEOIS,
@@ -44,7 +47,7 @@ export class VictoryHandlersService {
       new VillageoisVictoryHandler()
     );
 
-    if (rolesSet.has(PlayerRoleEnum.LOUP_GAROU)) {
+    if (LOUPS_GAROUS_ROLES.some((role) => rolesSet.has(role))) {
       this.victoryHandlers.set(
         VictoryEnum.LOUP_GAROU,
         new LoupGarouVictoryHandler()
@@ -60,6 +63,12 @@ export class VictoryHandlersService {
       this.victoryHandlers.set(
         VictoryEnum.JOUEUR_FLUTE,
         new JoueurFluteVictoryHandler()
+      );
+    }
+    if (rolesSet.has(PlayerRoleEnum.LOUP_BLANC)) {
+      this.victoryHandlers.set(
+        VictoryEnum.LOUP_BLANC,
+        new LoupBlancVictoryHandler()
       );
     }
   }
@@ -79,6 +88,13 @@ export class VictoryHandlersService {
         ?.isDead
     ) {
       this.victoryHandlers.delete(VictoryEnum.JOUEUR_FLUTE);
+    }
+    if (
+      this.victoryHandlers.has(VictoryEnum.LOUP_BLANC) &&
+      players.find((player) => player.role === PlayerRoleEnum.LOUP_BLANC)
+        ?.isDead
+    ) {
+      this.victoryHandlers.delete(VictoryEnum.LOUP_BLANC);
     }
   }
 
