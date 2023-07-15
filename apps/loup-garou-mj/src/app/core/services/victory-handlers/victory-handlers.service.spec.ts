@@ -10,10 +10,10 @@ import {
   LoupGarouVictoryHandler,
   AmoureuxVictoryHandler,
   JoueurFluteVictoryHandler,
+  LoupBlancVictoryHandler,
 } from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
-
 import { VictoryHandlersService } from './victory-handlers.service';
 
 class MockVictoryHandler implements VictoryHandler {
@@ -52,6 +52,14 @@ describe('VictoryHandlersService', () => {
 
   it('should init LOUP_GAROU victory handler if there are LOUP_GAROU', () => {
     service.initHandlers([PlayerRoleEnum.LOUP_GAROU]);
+
+    expect(
+      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU)
+    ).toBeInstanceOf(LoupGarouVictoryHandler);
+  });
+
+  it('should init LOUP_GAROU victory handler if there is GRAND_MECHANT_LOUP', () => {
+    service.initHandlers([PlayerRoleEnum.GRAND_MECHANT_LOUP]);
 
     expect(
       service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU)
@@ -148,6 +156,44 @@ describe('VictoryHandlersService', () => {
     service.removeUselessHandlers(players);
 
     expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
+      false
+    );
+  });
+
+  it('should init LOUP_BLANC victory handler if there is LOUP_BLANC', () => {
+    service.initHandlers([PlayerRoleEnum.LOUP_BLANC]);
+
+    expect(
+      service['victoryHandlers'].get(VictoryEnum.LOUP_BLANC)
+    ).toBeInstanceOf(LoupBlancVictoryHandler);
+  });
+
+  it('should not init LOUP_BLANC victory handler if there is no LOUP_BLANC', () => {
+    service.initHandlers([]);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
+      false
+    );
+  });
+
+  it('should remove LOUP_BLANC victory handler if LOUP_BLANC is dead', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_BLANC,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+    service['victoryHandlers'].set(
+      VictoryEnum.LOUP_BLANC,
+      new LoupBlancVictoryHandler()
+    );
+
+    service.removeUselessHandlers(players);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
       false
     );
   });

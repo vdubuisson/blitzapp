@@ -21,6 +21,7 @@ import {
   VillageoisRoundHandler,
   VoyanteRoundHandler,
 } from '../round-handlers';
+import { LoupBlancRoundHandler } from '../round-handlers/loup-blanc/loup-blanc-round.handler';
 import { RoundHandler } from '../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../services/announcement/announcement.service';
 
@@ -39,6 +40,7 @@ export const ROUND_HANDLERS_CONFIG: Record<
   [RoundEnum.FRERES]: FreresRoundHandler,
   [RoundEnum.GRAND_MECHANT_LOUP]: GrandMechantLoupRoundHandler,
   [RoundEnum.JOUEUR_FLUTE]: JoueurFluteRoundHandler,
+  [RoundEnum.LOUP_BLANC]: LoupBlancRoundHandler,
   [RoundEnum.LOUP_GAROU]: LoupGarouRoundHandler,
   [RoundEnum.MONTREUR_OURS]: MontreurOursRoundHandler,
   [RoundEnum.RENARD]: RenardRoundHandler,

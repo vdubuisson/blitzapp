@@ -127,6 +127,12 @@ export class GameService {
       throw error;
     }
 
+    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount.value % 2 !== 0) {
+      nextRound = this.roundOrchestrationService.getNextRound(
+        RoundEnum.LOUP_BLANC
+      );
+    }
+
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
     if (
       nextHandler !== undefined &&

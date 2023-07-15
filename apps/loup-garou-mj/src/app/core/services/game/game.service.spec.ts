@@ -492,6 +492,118 @@ describe('GameService', () => {
     expect(service['round'].value).toEqual(mockNextRound);
   });
 
+  it('should skip LOUP_BLANC next round on odd day', () => {
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    const mockRound: Round = {
+      role: RoundEnum.LOUP_GAROU,
+      selectablePlayers: [0, 2],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockSorciereHealthRound: Round = {
+      role: RoundEnum.SORCIERE_HEALTH,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockLoupBlancRound: Round = {
+      role: RoundEnum.LOUP_BLANC,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockSorciereHealthHandler = new MockRoundHandler();
+    const mockLoupBlancHandler = new MockRoundHandler();
+    mockSorciereHealthHandler.getRoundConfig = () => mockSorciereHealthRound;
+    mockLoupBlancHandler.getRoundConfig = () => mockLoupBlancRound;
+
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.SORCIERE_HEALTH)
+      .mockReturnValue(mockSorciereHealthHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_BLANC)
+      .mockReturnValue(mockLoupBlancHandler);
+
+    service['round'].next(mockRound);
+    service['dayCount'].next(1);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValueOnce(RoundEnum.LOUP_BLANC);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
+
+    expect(service['round'].value).toEqual(mockRound);
+
+    service.submitRoundAction([]);
+
+    expect(service['round'].value).toEqual(mockSorciereHealthRound);
+  });
+
+  it('should not skip LOUP_BLANC next round on even day', () => {
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    const mockRound: Round = {
+      role: RoundEnum.LOUP_GAROU,
+      selectablePlayers: [0, 2],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockSorciereHealthRound: Round = {
+      role: RoundEnum.SORCIERE_HEALTH,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockLoupBlancRound: Round = {
+      role: RoundEnum.LOUP_BLANC,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    const mockSorciereHealthHandler = new MockRoundHandler();
+    const mockLoupBlancHandler = new MockRoundHandler();
+    mockSorciereHealthHandler.getRoundConfig = () => mockSorciereHealthRound;
+    mockLoupBlancHandler.getRoundConfig = () => mockLoupBlancRound;
+
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.SORCIERE_HEALTH)
+      .mockReturnValue(mockSorciereHealthHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_BLANC)
+      .mockReturnValue(mockLoupBlancHandler);
+
+    service['round'].next(mockRound);
+    service['dayCount'].next(2);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValueOnce(RoundEnum.LOUP_BLANC);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
+
+    expect(service['round'].value).toEqual(mockRound);
+
+    service.submitRoundAction([]);
+
+    expect(service['round'].value).toEqual(mockLoupBlancRound);
+  });
+
   it('should handle deaths and use after-death round after submit if next round is during day', () => {
     jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
     jest.spyOn(deathService, 'handleNewDeaths').mockReturnValue(mockPlayers);
