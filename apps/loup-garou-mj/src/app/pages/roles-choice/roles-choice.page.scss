@@ -4,3 +4,12 @@
   background: var(--ion-background-color, #fff);
   display: flow-root;
 }
+
+ion-input.role-count {
+  border: 1px solid var(--ion-color-dark, #222428);
+  border-radius: 5px;
+  max-width: 2.5rem;
+  text-align: right;
+
+  --padding-end: var(--padding-start);
+}

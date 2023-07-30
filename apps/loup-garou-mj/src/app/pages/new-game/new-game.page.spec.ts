@@ -1,23 +1,30 @@
 import { waitForAsync } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { Player } from '../../core/models/player.model';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 
 import { NewGamePage } from './new-game.page';
+import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
+import { RoleList } from '../../core/models/role-list.model';
 
 describe('NewGamePage', () => {
   let component: NewGamePage;
   let newGameService: NewGameService;
+  let roleChoiceService: RoleChoiceService;
   let mockPlayers$: BehaviorSubject<Player[]>;
 
   beforeEach(waitForAsync(() => {
     mockPlayers$ = new BehaviorSubject<Player[]>([]);
     newGameService = MockService(NewGameService);
+    roleChoiceService = MockService(RoleChoiceService);
     jest.spyOn(newGameService, 'getPlayers').mockReturnValue(mockPlayers$);
+    jest
+      .spyOn(roleChoiceService, 'getCurrentChosenRoles')
+      .mockReturnValue(of({ playersNumber: 3 } as RoleList));
 
-    component = new NewGamePage(newGameService);
+    component = new NewGamePage(newGameService, roleChoiceService);
   }));
 
   it('should get players from NewGameService', waitForAsync(() => {
@@ -44,7 +51,15 @@ describe('NewGamePage', () => {
     );
   }));
 
-  it('should not be able to validate if less than 2 players', waitForAsync(() => {
+  it('should get playersNumber from RoleChoiceService', waitForAsync(() => {
+    mockPlayers$.next([]);
+
+    component['players$'].subscribe(() =>
+      expect(component['playersCount']).toEqual(3)
+    );
+  }));
+
+  it('should not be able to validate if less than playersCount', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -61,7 +76,7 @@ describe('NewGamePage', () => {
     );
   }));
 
-  it('should be able to validate if at least 2 players', waitForAsync(() => {
+  it('should be able to validate if equals playersCount', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -74,6 +89,13 @@ describe('NewGamePage', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

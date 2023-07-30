@@ -13,6 +13,7 @@ import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
+import { RoleList } from '../../core/models/role-list.model';
 
 @Component({
   selector: 'lgmj-new-game-roles',
@@ -38,7 +39,12 @@ export class NewGameRolesPage {
 
   protected availableRoles: PlayerRoleEnum[] = [];
 
-  private rolesToPlay = new Set<PlayerRoleEnum>();
+  private rolesToPlay: RoleList = {
+    selectedRoles: new Set(),
+    villageois: 0,
+    loupGarou: 0,
+    playersNumber: 0,
+  };
 
   constructor(
     private newGameService: NewGameService,
@@ -64,9 +70,25 @@ export class NewGameRolesPage {
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
     const usedRoles = new Set(players.map((player) => player.role));
-    let availableRoles = Array.from(this.rolesToPlay).filter(
+    let availableRoles = Array.from(this.rolesToPlay.selectedRoles).filter(
       (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role)
     );
+
+    if (
+      this.rolesToPlay.villageois >
+      players.filter((player) => player.role === PlayerRoleEnum.VILLAGEOIS)
+        .length
+    ) {
+      availableRoles.push(PlayerRoleEnum.VILLAGEOIS);
+    }
+
+    if (
+      this.rolesToPlay.loupGarou >
+      players.filter((player) => player.role === PlayerRoleEnum.LOUP_GAROU)
+        .length
+    ) {
+      availableRoles.push(PlayerRoleEnum.LOUP_GAROU);
+    }
 
     if (
       usedRoles.has(PlayerRoleEnum.SOEUR) &&

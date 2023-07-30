@@ -1,13 +1,13 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  Validators,
   FormBuilder,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, IonInput } from '@ionic/angular';
 
 @Component({
   selector: 'lgmj-new-player',
@@ -26,14 +26,17 @@ import { IonicModule } from '@ionic/angular';
 export class NewPlayerComponent {
   @Output() newPlayer = new EventEmitter<string>();
 
+  @ViewChild(IonInput) ionInput?: IonInput;
+
   protected playerForm = this.formBuilder.group({
     name: ['', Validators.required],
   });
 
   constructor(private formBuilder: FormBuilder) {}
 
-  onSubmit() {
+  async onSubmit() {
     this.newPlayer.emit(this.playerForm.value.name as string);
     this.playerForm.reset();
+    (await this.ionInput?.getInputElement())?.focus();
   }
 }

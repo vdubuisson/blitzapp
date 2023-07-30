@@ -1,7 +1,7 @@
 <lgmj-header title="Nouvelle partie - Joueurs" />
 
 <ion-content>
-  <div id="container">
+  <div id="container" *ngIf="players$ | async as players">
     <ion-item lines="full">
       <ion-icon slot="start" name="warning" size="large" color="warning" />
       <em>Respectez la position réelle des joueurs</em>
@@ -14,7 +14,7 @@
         [disabled]="false"
       >
         <ion-item
-          *ngFor="let player of players$ | async; trackBy: playerTrackBy"
+          *ngFor="let player of players; trackBy: playerTrackBy"
         >
           <ion-button
             (click)="removePlayer(player.id)"
@@ -39,7 +39,7 @@
         routerLink="/new-game/roles"
         class="ion-margin-horizontal"
       >
-        Valider
+        Valider ({{ players.length }}/{{ playersCount }})
       </ion-button>
       <ion-button
         expand="block"

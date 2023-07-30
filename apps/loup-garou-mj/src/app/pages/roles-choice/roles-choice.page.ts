@@ -11,6 +11,9 @@ import { GameBoxNamePipe } from '../../core/pipes/game-box-name/game-box-name.pi
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RoleList } from '../../core/models/role-list.model';
 
 @Component({
   selector: 'lgmj-roles-choice',
@@ -22,6 +25,8 @@ import { Router } from '@angular/router';
     PlayerRoleImagePipe,
     GameBoxNamePipe,
     HeaderComponent,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './roles-choice.page.html',
@@ -35,10 +40,18 @@ export class RolesChoicePage {
 
   protected roleTrackBy = ROLE_TRACK_BY;
 
+  protected loupGarouRole = PlayerRoleEnum.LOUP_GAROU;
+  protected villageoisRole = PlayerRoleEnum.VILLAGEOIS;
+
+  protected roleCountForm: FormGroup;
+
+  protected playersCount = 0;
+
   constructor(
     private playerRoleNamePipe: PlayerRoleNamePipe,
     private roleChoiceService: RoleChoiceService,
-    private router: Router
+    private router: Router,
+    private formBuilder: FormBuilder
   ) {
     Object.values(this.boxContents).forEach((roles) => {
       roles.sort((a, b) =>
@@ -48,26 +61,88 @@ export class RolesChoicePage {
       );
     });
 
+    this.roleCountForm = this.formBuilder.group({
+      loupGarou: [0, Validators.min(0)],
+      villageois: [0, Validators.min(0)]
+    });
+
+    this.listenRoleCountChange('loupGarou');
+    this.listenRoleCountChange('villageois');
+
     this.roleChoiceService
       .getCurrentChosenRoles()
-      .subscribe((roles) => (this.selectedRoles = roles));
+      .subscribe((roleList) => {
+        this.selectedRoles = roleList.selectedRoles;
+        this.selectedRoles.forEach((role) => this.incrementPlayersCount(role));
+        this.roleCountForm.patchValue(roleList);
+      });
   }
 
   protected onRoleCheckChange(event: Event): void {
     const eventDetail = (event as CheckboxCustomEvent<PlayerRoleEnum>).detail;
     if (eventDetail.checked) {
       this.selectedRoles.add(eventDetail.value);
+      this.incrementPlayersCount(eventDetail.value);
     } else {
       this.selectedRoles.delete(eventDetail.value);
+      this.decrementPlayersCount(eventDetail.value);
     }
   }
 
-  validateRoles() {
-    this.roleChoiceService.setRoles(this.selectedRoles);
+  protected validateRoles() {
+    const roleList: RoleList = {
+      selectedRoles: this.selectedRoles,
+      playersNumber: this.playersCount,
+      ...this.roleCountForm.value
+    };
+    this.roleChoiceService.setRoles(roleList);
     this.router.navigate(['new-game']);
   }
 
-  deselectAll() {
+  protected deselectAll() {
     this.selectedRoles.clear();
+    this.roleCountForm.patchValue({
+      villageois: 0,
+      loupGarou: 0
+    });
+    this.playersCount = 0;
+  }
+
+  protected selectInput(event: Event): void {
+    (((event as CustomEvent).detail as FocusEvent).target as HTMLInputElement).select();
+  }
+
+  private incrementPlayersCount(role: PlayerRoleEnum): void {
+    switch (role) {
+      case PlayerRoleEnum.SOEUR:
+        this.playersCount += 2;
+        break;
+      case PlayerRoleEnum.FRERE:
+        this.playersCount += 3;
+        break;
+      default:
+        this.playersCount += 1;
+    }
+  }
+
+  private decrementPlayersCount(role: PlayerRoleEnum): void {
+    switch (role) {
+      case PlayerRoleEnum.SOEUR:
+        this.playersCount -= 2;
+        break;
+      case PlayerRoleEnum.FRERE:
+        this.playersCount -= 3;
+        break;
+      default:
+        this.playersCount -= 1;
+    }
+  }
+
+  private listenRoleCountChange(role: string): void {
+    this.roleCountForm.get(role)?.valueChanges.pipe(takeUntilDestroyed()).subscribe((newValue) => {
+      const oldValue = this.roleCountForm.value[role];
+      const diff = newValue - oldValue;
+      this.playersCount += diff;
+    });
   }
 }
