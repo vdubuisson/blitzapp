@@ -5,10 +5,11 @@ import { Player } from '../../core/models/player.model';
 import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
 
 @Component({
   selector: 'lgmj-new-game',
@@ -30,10 +31,17 @@ export class NewGamePage {
 
   protected canValidate = false;
 
-  constructor(private newGameService: NewGameService) {
-    this.players$ = this.newGameService
-      .getPlayers()
-      .pipe(tap((players) => (this.canValidate = players.length > 1)));
+  protected playersCount = 0;
+
+  constructor(
+    private newGameService: NewGameService,
+    private roleChoiceService: RoleChoiceService,
+  ) {
+    this.players$ = this.roleChoiceService.getCurrentChosenRoles().pipe(
+      tap((roleList) => this.playersCount = roleList.playersNumber),
+      switchMap(() => this.newGameService.getPlayers()),
+      tap((players) => (this.canValidate = players.length === this.playersCount))
+    );
   }
 
   protected addPlayer(name: string): void {
