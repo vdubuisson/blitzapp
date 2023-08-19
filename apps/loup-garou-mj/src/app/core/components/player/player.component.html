@@ -9,8 +9,10 @@
     *ngIf="player.role !== playerRoleEnum.NOT_SELECTED"
   >
     <img
-      [src]="player.role | playerRoleImage"
+      [ngSrc]="player.role | playerRoleImage"
       [alt]="player.role | playerRoleName"
+      width="150"
+      height="150"
     />
   </ion-thumbnail>
 

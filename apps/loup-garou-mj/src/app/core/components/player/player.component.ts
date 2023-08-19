@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
   ActionSheetOptions,
   CheckboxCustomEvent,
@@ -24,6 +24,7 @@ import { STATUS_TRACK_BY } from '../../utils/status.track-by';
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     PlayerStatusPipe,
+    NgOptimizedImage,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './player.component.html',

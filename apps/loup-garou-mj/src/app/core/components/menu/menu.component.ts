@@ -31,6 +31,8 @@ export class MenuComponent {
         filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed()
       )
-      .subscribe(() => this.menu?.close());
+      .subscribe(() => {
+        this.menu?.close();
+      });
   }
 }

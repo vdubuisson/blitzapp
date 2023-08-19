@@ -14,6 +14,7 @@ import { RoundOrchestrationService } from '../round-orchestration/round-orchestr
 import { StatusesService } from '../statuses/statuses.service';
 import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
+import { RoundHandler } from '../../round-handlers/round-handler.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -105,74 +106,40 @@ export class GameService {
     }
     const currentHandler =
       this.roundHandlersService.getHandler(currentRoundRole);
-    if (currentHandler?.isDuringDay) {
-      // Handle daytime deaths
-      const playersAfterDeath = this.deathService.handleNewDeaths(
-        this.players.value
-      );
-      this.setPlayers(playersAfterDeath);
-    }
+
+    this.handleDaytimeDeaths(currentHandler);
 
     let nextRound;
     try {
       nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
     } catch (error) {
-      const victory = this.victoryHandlersService.getVictory(
-        this.players.value
-      );
-      if (victory !== undefined) {
-        this.handleVictory(victory);
+      if (this.checkVictory()) {
         return;
       }
       throw error;
     }
 
-    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount.value % 2 !== 0) {
-      nextRound = this.roundOrchestrationService.getNextRound(
-        RoundEnum.LOUP_BLANC
-      );
-    }
+    nextRound = this.checkLoupBlancRound(nextRound);
 
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
-    if (
-      nextHandler !== undefined &&
-      nextHandler.isDuringDay &&
-      !currentHandler?.isDuringDay
-    ) {
-      // Handle after-night deaths
-      const playersAfterDeath = this.deathService.handleNewDeaths(
-        this.players.value
-      );
-      this.setPlayers(playersAfterDeath);
-      nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
+
+    nextRound = this.handleAfterNightDeaths(
+      currentHandler,
+      currentRoundRole,
+      nextHandler,
+      nextRound
+    );
+
+    const isVictory = this.handleDayRound(
+      currentHandler,
+      nextHandler,
+      nextRound
+    );
+    if (isVictory) {
+      return;
     }
 
-    if (
-      (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
-      nextRound !== RoundEnum.CHASSEUR
-    ) {
-      const victory = this.victoryHandlersService.getVictory(
-        this.players.value
-      );
-      if (victory !== undefined) {
-        this.handleVictory(victory);
-        return;
-      }
-      this.deathService.announceDeaths();
-    }
-
-    if (
-      nextHandler !== undefined &&
-      !nextHandler.isDuringDay &&
-      currentHandler?.isDuringDay
-    ) {
-      // Handle after-day events
-      const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
-        this.players.value
-      );
-      this.setPlayers(playersAfterDay);
-      this.nextDayCount();
-    }
+    this.handleAfterDayEvents(currentHandler, nextHandler);
 
     this.setRound(nextRound);
   }
@@ -233,5 +200,80 @@ export class GameService {
     this.roundHandlersService.clearHandlers();
     this.victoryHandlersService.clearHandlers();
     this.router.navigate(['victory'], { queryParams: { victory } });
+  }
+
+  private handleDaytimeDeaths(currentHandler: RoundHandler | undefined) {
+    if (currentHandler?.isDuringDay) {
+      const playersAfterDeath = this.deathService.handleNewDeaths(
+        this.players.value
+      );
+      this.setPlayers(playersAfterDeath);
+    }
+  }
+
+  private checkLoupBlancRound(nextRound: RoundEnum): RoundEnum {
+    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount.value % 2 !== 0) {
+      return this.roundOrchestrationService.getNextRound(RoundEnum.LOUP_BLANC);
+    }
+    return nextRound;
+  }
+
+  private handleAfterNightDeaths(
+    currentHandler: RoundHandler | undefined,
+    currentRoundRole: RoundEnum,
+    nextHandler: RoundHandler | undefined,
+    nextRound: RoundEnum
+  ): RoundEnum {
+    if (nextHandler?.isDuringDay && !currentHandler?.isDuringDay) {
+      const playersAfterDeath = this.deathService.handleNewDeaths(
+        this.players.value
+      );
+      this.setPlayers(playersAfterDeath);
+      return this.roundOrchestrationService.getNextRound(currentRoundRole);
+    }
+    return nextRound;
+  }
+
+  private handleDayRound(
+    currentHandler: RoundHandler | undefined,
+    nextHandler: RoundHandler | undefined,
+    nextRound: RoundEnum
+  ): boolean {
+    if (
+      (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
+      nextRound !== RoundEnum.CHASSEUR
+    ) {
+      if (this.checkVictory()) {
+        return true;
+      }
+      this.deathService.announceDeaths();
+    }
+    return false;
+  }
+
+  private checkVictory(): boolean {
+    const victory = this.victoryHandlersService.getVictory(this.players.value);
+    if (victory !== undefined) {
+      this.handleVictory(victory);
+      return true;
+    }
+    return false;
+  }
+
+  private handleAfterDayEvents(
+    currentHandler: RoundHandler | undefined,
+    nextHandler: RoundHandler | undefined
+  ) {
+    if (
+      nextHandler !== undefined &&
+      !nextHandler.isDuringDay &&
+      currentHandler?.isDuringDay
+    ) {
+      const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
+        this.players.value
+      );
+      this.setPlayers(playersAfterDay);
+      this.nextDayCount();
+    }
   }
 }

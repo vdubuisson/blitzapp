@@ -5,7 +5,12 @@
     <ion-accordion *ngFor="let role of roles; trackBy: roleTrackBy">
       <ion-item slot="header">
         <ion-thumbnail slot="start">
-          <img [src]="role | playerRoleImage" [alt]="role | playerRoleName" />
+          <img
+            [ngSrc]="role | playerRoleImage"
+            [alt]="role | playerRoleName"
+            width="150"
+            height="150"
+          />
         </ion-thumbnail>
         <ion-label>{{ role | playerRoleName }}</ion-label>
       </ion-item>
