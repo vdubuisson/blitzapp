@@ -4,6 +4,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { SorciereHealthRoundHandler } from './sorciere-health-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('SorciereHealthRoundHandler', () => {
   let roundHandler: SorciereHealthRoundHandler;
@@ -36,12 +37,13 @@ describe('SorciereHealthRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should remove WOLF_TARGET status to selected player', () => {
+  it('should remove WOLF_TARGET status to selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
@@ -49,24 +51,28 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(
+          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET)
+        ).toEqual(false)
+      );
+  }));
 
-    expect(newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET)).toEqual(
-      false
-    );
-  });
-
-  it('should remove HEALTH_POTION status to SORCIERE player', () => {
+  it('should remove HEALTH_POTION status to SORCIERE player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
@@ -74,24 +80,28 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(
+          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)
+        ).toEqual(false)
+      );
+  }));
 
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)).toEqual(
-      false
-    );
-  });
-
-  it('should not remove HEALTH_POTION status to SORCIERE player if no player selected', () => {
+  it('should not remove HEALTH_POTION status to SORCIERE player if no player selected', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
@@ -99,17 +109,20 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, []);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)).toEqual(
-      true
-    );
-  });
+    roundHandler
+      .handleAction(players, [])
+      .subscribe((newPlayers) =>
+        expect(
+          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)
+        ).toEqual(true)
+      );
+  }));
 
   it('should return player with WOLF_TARGET status as selectable players if SORCIERE has HEALTH_POTION', () => {
     const players: Player[] = [
@@ -117,6 +130,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
@@ -124,6 +138,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
         isDead: false,
       },
@@ -140,6 +155,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([
           PlayerStatusEnum.WOLF_TARGET,
           PlayerStatusEnum.PROTECTED,
@@ -150,6 +166,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
         isDead: false,
       },
@@ -166,6 +183,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.PETITE_FILLE,
+        card: PlayerRoleEnum.PETITE_FILLE,
         statuses: new Set([
           PlayerStatusEnum.WOLF_TARGET,
           PlayerStatusEnum.PROTECTED,
@@ -176,6 +194,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
         isDead: false,
       },
@@ -192,6 +211,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
@@ -199,6 +219,7 @@ describe('SorciereHealthRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
         isDead: false,
       },

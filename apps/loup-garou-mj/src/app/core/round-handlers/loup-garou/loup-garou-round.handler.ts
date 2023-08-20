@@ -5,18 +5,19 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
+import { Observable, of } from 'rxjs';
 
 export class LoupGarouRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
+  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
     const newPlayers = [...players];
     newPlayers
       .find((player) => player.id === selectedPlayerIds[0])
       ?.statuses.add(PlayerStatusEnum.WOLF_TARGET);
-    return newPlayers;
+    return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {

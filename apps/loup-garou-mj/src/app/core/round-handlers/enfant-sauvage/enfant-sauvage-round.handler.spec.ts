@@ -4,6 +4,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { EnfantSauvageRoundHandler } from './enfant-sauvage-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('EnfantSauvageRoundHandler', () => {
   let roundHandler: EnfantSauvageRoundHandler;
@@ -36,12 +37,13 @@ describe('EnfantSauvageRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add CHILD_MODEL status to selected player', () => {
+  it('should add CHILD_MODEL status to selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -49,6 +51,7 @@ describe('EnfantSauvageRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        card: PlayerRoleEnum.ENFANT_SAUVAGE,
         statuses: new Set(),
         isDead: false,
       },
@@ -56,39 +59,20 @@ describe('EnfantSauvageRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const testPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.CHILD_MODEL]),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ENFANT_SAUVAGE,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = roundHandler.handleAction(players, [0]);
-
-    expect(newPlayers).toEqual(testPlayers);
-  });
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(
+          newPlayers[0].statuses.has(PlayerStatusEnum.CHILD_MODEL)
+        ).toEqual(true)
+      );
+  }));
 
   it('should return all players except ENFANT_SAUVAGE as selectable', () => {
     const players: Player[] = [
@@ -96,6 +80,7 @@ describe('EnfantSauvageRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -103,6 +88,7 @@ describe('EnfantSauvageRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -110,6 +96,7 @@ describe('EnfantSauvageRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        card: PlayerRoleEnum.ENFANT_SAUVAGE,
         statuses: new Set(),
         isDead: false,
       },

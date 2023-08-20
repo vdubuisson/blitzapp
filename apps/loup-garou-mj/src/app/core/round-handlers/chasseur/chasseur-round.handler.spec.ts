@@ -3,6 +3,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { ChasseurRoundHandler } from './chasseur-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('ChasseurRoundHandler', () => {
   let roundHandler: ChasseurRoundHandler;
@@ -35,12 +36,13 @@ describe('ChasseurRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', () => {
+  it('should kill selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -48,15 +50,16 @@ describe('ChasseurRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
-
-    expect(newPlayers[0].isDead).toEqual(true);
-  });
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
+  }));
 
   it('should return all players alive except CHASSEUR as selectable players', () => {
     const players: Player[] = [
@@ -64,6 +67,7 @@ describe('ChasseurRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -71,6 +75,7 @@ describe('ChasseurRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.CHASSEUR,
+        card: PlayerRoleEnum.CHASSEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -78,6 +83,7 @@ describe('ChasseurRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -85,6 +91,7 @@ describe('ChasseurRoundHandler', () => {
         id: 3,
         name: 'player3',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

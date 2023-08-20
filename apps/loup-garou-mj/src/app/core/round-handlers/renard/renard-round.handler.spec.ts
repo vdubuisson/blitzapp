@@ -7,6 +7,7 @@ import { AnnouncementService } from '../../services/announcement/announcement.se
 import { RenardRoundHandler } from './renard-round.handler';
 import * as neighborUtils from '../../utils/neighbor.utils';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
@@ -41,12 +42,13 @@ describe('RenardRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should return players without change if no selected player', () => {
+  it('should return players without change if no selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -54,6 +56,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -61,22 +64,24 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, []);
+    roundHandler
+      .handleAction(players, [])
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
 
-    expect(newPlayers).toEqual(players);
-  });
-
-  it('should not announce success if no selected player', () => {
+  it('should not announce success if no selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -84,6 +89,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -91,23 +97,27 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
     jest.spyOn(announcementService, 'announceFoxSuccess');
 
-    roundHandler.handleAction(players, []);
+    roundHandler
+      .handleAction(players, [])
+      .subscribe(() =>
+        expect(announcementService.announceFoxSuccess).toBeCalledTimes(0)
+      );
+  }));
 
-    expect(announcementService.announceFoxSuccess).toBeCalledTimes(0);
-  });
-
-  it('should not announce fail if no selected player', () => {
+  it('should not announce fail if no selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -115,6 +125,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -122,23 +133,27 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
     jest.spyOn(announcementService, 'announceFoxFail');
 
-    roundHandler.handleAction(players, []);
+    roundHandler
+      .handleAction(players, [])
+      .subscribe(() =>
+        expect(announcementService.announceFoxFail).toBeCalledTimes(0)
+      );
+  }));
 
-    expect(announcementService.announceFoxFail).toBeCalledTimes(0);
-  });
-
-  it('should return players without change if selected player is LOUP_GAROU', () => {
+  it('should return players without change if selected player is LOUP_GAROU', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -146,6 +161,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -153,22 +169,24 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
 
-    expect(newPlayers).toEqual(players);
-  });
-
-  it('should announce success if selected player is LOUP_GAROU', () => {
+  it('should announce success if selected player is LOUP_GAROU', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -176,6 +194,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -183,23 +202,27 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
     jest.spyOn(announcementService, 'announceFoxSuccess');
 
-    roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe(() =>
+        expect(announcementService.announceFoxSuccess).toBeCalled()
+      );
+  }));
 
-    expect(announcementService.announceFoxSuccess).toBeCalled();
-  });
-
-  it('should return players without change if left neighbor is LOUP_GAROU', () => {
+  it('should return players without change if left neighbor is LOUP_GAROU', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -207,6 +230,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -214,6 +238,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -222,21 +247,23 @@ describe('RenardRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
 
-    const newPlayers = roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
 
-    expect(newPlayers).toEqual(players);
-  });
-
-  it('should announce success if left neighbor is LOUP_GAROU', () => {
+  it('should announce success if left neighbor is LOUP_GAROU', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -244,6 +271,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -251,6 +279,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -259,22 +288,26 @@ describe('RenardRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
     jest.spyOn(announcementService, 'announceFoxSuccess');
 
-    roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe(() =>
+        expect(announcementService.announceFoxSuccess).toBeCalled()
+      );
+  }));
 
-    expect(announcementService.announceFoxSuccess).toBeCalled();
-  });
-
-  it('should return players without change if right neighbor is LOUP_GAROU', () => {
+  it('should return players without change if right neighbor is LOUP_GAROU', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -282,6 +315,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -289,6 +323,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -297,6 +332,7 @@ describe('RenardRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -304,21 +340,23 @@ describe('RenardRoundHandler', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
 
-    const newPlayers = roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
 
-    expect(newPlayers).toEqual(players);
-  });
-
-  it('should announce success if right neighbor is LOUP_GAROU', () => {
+  it('should announce success if right neighbor is LOUP_GAROU', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -326,6 +364,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -333,6 +372,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -341,6 +381,7 @@ describe('RenardRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -348,23 +389,27 @@ describe('RenardRoundHandler', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
 
     jest.spyOn(announcementService, 'announceFoxSuccess');
 
-    roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe(() =>
+        expect(announcementService.announceFoxSuccess).toBeCalled()
+      );
+  }));
 
-    expect(announcementService.announceFoxSuccess).toBeCalled();
-  });
-
-  it('should add NO_POWER status to RENARD if no LOUP_GAROU selected', () => {
+  it('should add NO_POWER status to RENARD if no LOUP_GAROU selected', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -372,6 +417,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },
@@ -379,6 +425,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -387,6 +434,7 @@ describe('RenardRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -394,21 +442,27 @@ describe('RenardRoundHandler', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
 
-    const newPlayers = roundHandler.handleAction(players, [1]);
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe((newPlayers) =>
+        expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
+          true
+        )
+      );
+  }));
 
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(true);
-  });
-
-  it('should announce fail if no LOUP_GAROU selected', () => {
+  it('should announce fail if no LOUP_GAROU selected', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -416,6 +470,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },
@@ -423,6 +478,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -431,6 +487,7 @@ describe('RenardRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -438,16 +495,19 @@ describe('RenardRoundHandler', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
 
     jest.spyOn(announcementService, 'announceFoxFail');
 
-    roundHandler.handleAction(players, [1]);
-
-    expect(announcementService.announceFoxFail).toBeCalled();
-  });
+    roundHandler
+      .handleAction(players, [1])
+      .subscribe(() =>
+        expect(announcementService.announceFoxFail).toBeCalled()
+      );
+  }));
 
   it('should return alive players as selectable players', () => {
     const players: Player[] = [
@@ -455,6 +515,7 @@ describe('RenardRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -462,6 +523,7 @@ describe('RenardRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -469,6 +531,7 @@ describe('RenardRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -491,6 +554,7 @@ describe('RenardRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set([PlayerStatusEnum.NO_POWER]),
         isDead: false,
       },
@@ -506,6 +570,7 @@ describe('RenardRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },

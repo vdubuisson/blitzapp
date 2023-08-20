@@ -6,6 +6,7 @@ import { Player } from '../../models/player.model';
 import { AnnouncementService } from '../../services/announcement/announcement.service';
 import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 import * as neighborUtils from '../../utils/neighbor.utils';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('MontreurOursRoundHandler', () => {
   let roundHandler: MontreurOursRoundHandler;
@@ -40,12 +41,13 @@ describe('MontreurOursRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.AUTO);
   });
 
-  it('should return players without change', () => {
+  it('should return players without change', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -53,15 +55,16 @@ describe('MontreurOursRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, []);
-
-    expect(newPlayers).toEqual(players);
-  });
+    roundHandler
+      .handleAction(players, [])
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
 
   it('should return no players as selectable players', () => {
     const players: Player[] = [
@@ -69,6 +72,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -76,6 +80,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -83,6 +88,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -111,12 +117,13 @@ describe('MontreurOursRoundHandler', () => {
     expect(round.minSelectable).toEqual(0);
   });
 
-  it('should announce bear growl if left neighbor is LOUP_GAROU', () => {
+  it('should announce bear growl if left neighbor is LOUP_GAROU', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -124,6 +131,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.MONTREUR_OURS,
+        card: PlayerRoleEnum.MONTREUR_OURS,
         statuses: new Set(),
         isDead: false,
       },
@@ -131,6 +139,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -140,21 +149,25 @@ describe('MontreurOursRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
 
-    roundHandler.handleAction(mockPlayers, []);
+    roundHandler
+      .handleAction(mockPlayers, [])
+      .subscribe(() =>
+        expect(announcementService.announceBearGrowl).toBeCalled()
+      );
+  }));
 
-    expect(announcementService.announceBearGrowl).toBeCalled();
-  });
-
-  it('should announce bear growl if right neighbor is LOUP_GAROU', () => {
+  it('should announce bear growl if right neighbor is LOUP_GAROU', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -162,6 +175,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.MONTREUR_OURS,
+        card: PlayerRoleEnum.MONTREUR_OURS,
         statuses: new Set(),
         isDead: false,
       },
@@ -169,6 +183,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -178,6 +193,7 @@ describe('MontreurOursRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -185,21 +201,25 @@ describe('MontreurOursRoundHandler', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
 
-    roundHandler.handleAction(mockPlayers, []);
+    roundHandler
+      .handleAction(mockPlayers, [])
+      .subscribe(() =>
+        expect(announcementService.announceBearGrowl).toBeCalled()
+      );
+  }));
 
-    expect(announcementService.announceBearGrowl).toBeCalled();
-  });
-
-  it('should not announce bear growl if no neighbor is LOUP_GAROU', () => {
+  it('should not announce bear growl if no neighbor is LOUP_GAROU', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -207,6 +227,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.MONTREUR_OURS,
+        card: PlayerRoleEnum.MONTREUR_OURS,
         statuses: new Set(),
         isDead: false,
       },
@@ -214,6 +235,7 @@ describe('MontreurOursRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -223,6 +245,7 @@ describe('MontreurOursRoundHandler', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -230,12 +253,15 @@ describe('MontreurOursRoundHandler', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
 
-    roundHandler.handleAction(mockPlayers, []);
-
-    expect(announcementService.announceBearGrowl).toBeCalledTimes(0);
-  });
+    roundHandler
+      .handleAction(mockPlayers, [])
+      .subscribe(() =>
+        expect(announcementService.announceBearGrowl).toBeCalledTimes(0)
+      );
+  }));
 });

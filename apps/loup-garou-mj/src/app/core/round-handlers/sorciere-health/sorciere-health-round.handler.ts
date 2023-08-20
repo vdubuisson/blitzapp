@@ -5,13 +5,14 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
+import { Observable, of } from 'rxjs';
 
 export class SorciereHealthRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
+  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
     const newPlayers = [...players];
     if (selectedPlayerIds.length > 0) {
       newPlayers
@@ -21,7 +22,7 @@ export class SorciereHealthRoundHandler implements RoundHandler {
         .find((player) => player.role === PlayerRoleEnum.SORCIERE)
         ?.statuses.delete(PlayerStatusEnum.HEALTH_POTION);
     }
-    return newPlayers;
+    return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {

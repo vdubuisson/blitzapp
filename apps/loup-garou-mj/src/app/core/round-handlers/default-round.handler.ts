@@ -3,6 +3,7 @@ import { RoundEnum } from '../enums/round.enum';
 import { Player } from '../models/player.model';
 import { Round } from '../models/round.model';
 import { RoundHandler } from './round-handler.interface';
+import { Observable, of } from 'rxjs';
 
 export abstract class DefaultRoundHandler implements RoundHandler {
   protected constructor(
@@ -12,8 +13,8 @@ export abstract class DefaultRoundHandler implements RoundHandler {
     public type: RoundTypeEnum = RoundTypeEnum.DEFAULT
   ) {}
 
-  handleAction(players: Player[], _: number[]): Player[] {
-    return [...players];
+  handleAction(players: Player[], _: number[]): Observable<Player[]> {
+    return of([...players]);
   }
 
   getRoundConfig(_: Player[]): Round {

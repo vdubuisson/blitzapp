@@ -1,6 +1,6 @@
 import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
@@ -16,7 +16,7 @@ class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
   isDuringDay = false;
   type = RoundTypeEnum.DEFAULT;
-  handleAction(_: Player[], __: number[]): Player[] {
+  handleAction(_: Player[], __: number[]): Observable<Player[]> {
     throw new Error('Method not implemented.');
   }
   getRoundConfig(_: Player[]): Round {

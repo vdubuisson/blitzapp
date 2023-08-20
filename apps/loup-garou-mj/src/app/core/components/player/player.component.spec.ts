@@ -29,6 +29,7 @@ describe('PlayerComponent', () => {
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.VILLAGEOIS,
+card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     };
@@ -60,6 +61,7 @@ describe('PlayerComponent', () => {
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.CUPIDON,
+card: PlayerRoleEnum.CUPIDON,
       statuses: new Set(),
       isDead: false,
     };
@@ -90,6 +92,7 @@ describe('PlayerComponent', () => {
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.CUPIDON,
+card: PlayerRoleEnum.CUPIDON,
       statuses: new Set(),
       isDead: false,
     };
@@ -119,6 +122,7 @@ describe('PlayerComponent', () => {
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.NOT_SELECTED,
+card: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set(),
       isDead: false,
     };

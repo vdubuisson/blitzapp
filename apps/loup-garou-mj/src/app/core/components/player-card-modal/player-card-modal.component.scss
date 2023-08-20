@@ -1,0 +1,23 @@
+#container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  img.role-img {
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+  }
+}
+
+ion-button {
+  position: absolute;
+  bottom: 20px;
+  width: 80%;
+}

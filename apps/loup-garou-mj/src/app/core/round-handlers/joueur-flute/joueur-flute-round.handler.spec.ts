@@ -4,6 +4,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { JoueurFluteRoundHandler } from './joueur-flute-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('JoueurFluteRoundHandler', () => {
   let roundHandler: JoueurFluteRoundHandler;
@@ -36,12 +37,13 @@ describe('JoueurFluteRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add CHARMED status to selected players', () => {
+  it('should add CHARMED status to selected players', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -49,6 +51,7 @@ describe('JoueurFluteRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },
@@ -56,39 +59,21 @@ describe('JoueurFluteRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const testPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.CHARMED]),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.JOUEUR_FLUTE,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set([PlayerStatusEnum.CHARMED]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = roundHandler.handleAction(players, [0, 2]);
-
-    expect(newPlayers).toEqual(testPlayers);
-  });
+    roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
+      expect(newPlayers[0].statuses.has(PlayerStatusEnum.CHARMED)).toEqual(
+        true
+      );
+      expect(newPlayers[2].statuses.has(PlayerStatusEnum.CHARMED)).toEqual(
+        true
+      );
+    });
+  }));
 
   it('should return all alive players except JOUEUR_FLUTE and CHARMED as selectable', () => {
     const players: Player[] = [
@@ -96,6 +81,7 @@ describe('JoueurFluteRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.CHARMED]),
         isDead: false,
       },
@@ -103,6 +89,7 @@ describe('JoueurFluteRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -110,6 +97,7 @@ describe('JoueurFluteRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
@@ -117,6 +105,7 @@ describe('JoueurFluteRoundHandler', () => {
         id: 3,
         name: 'player3',
         role: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },

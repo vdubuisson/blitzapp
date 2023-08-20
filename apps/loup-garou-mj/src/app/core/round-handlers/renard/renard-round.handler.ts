@@ -11,6 +11,7 @@ import {
   findRightNeighbor,
 } from '../../utils/neighbor.utils';
 import { RoundHandler } from '../round-handler.interface';
+import { Observable, of } from 'rxjs';
 
 export class RenardRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -19,7 +20,7 @@ export class RenardRoundHandler implements RoundHandler {
 
   constructor(private announcementService: AnnouncementService) {}
 
-  handleAction(players: Player[], selectedPlayers: number[]): Player[] {
+  handleAction(players: Player[], selectedPlayers: number[]): Observable<Player[]> {
     const newPlayers = [...players];
 
     if (selectedPlayers.length > 0) {
@@ -33,7 +34,7 @@ export class RenardRoundHandler implements RoundHandler {
       }
     }
 
-    return newPlayers;
+    return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {

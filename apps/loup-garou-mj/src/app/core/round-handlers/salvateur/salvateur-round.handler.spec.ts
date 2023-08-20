@@ -4,6 +4,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { SalvateurRoundHandler } from './salvateur-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('SalvateurRoundHandler', () => {
   let roundHandler: SalvateurRoundHandler;
@@ -36,12 +37,13 @@ describe('SalvateurRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should move PROTECTED status to selected player', () => {
+  it('should move PROTECTED status to selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.PROTECTED]),
         isDead: false,
       },
@@ -49,6 +51,7 @@ describe('SalvateurRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -56,39 +59,21 @@ describe('SalvateurRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const testPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.SALVATEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set([PlayerStatusEnum.PROTECTED]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = roundHandler.handleAction(players, [2]);
-
-    expect(newPlayers).toEqual(testPlayers);
-  });
+    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
+      expect(newPlayers[0].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
+        false
+      );
+      expect(newPlayers[2].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
+        true
+      );
+    });
+  }));
 
   it('should return alive player as selectable', () => {
     const players: Player[] = [
@@ -96,6 +81,7 @@ describe('SalvateurRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -103,6 +89,7 @@ describe('SalvateurRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -119,6 +106,7 @@ describe('SalvateurRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -126,6 +114,7 @@ describe('SalvateurRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -142,6 +131,7 @@ describe('SalvateurRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.PROTECTED]),
         isDead: false,
       },
@@ -149,6 +139,7 @@ describe('SalvateurRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },

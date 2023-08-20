@@ -3,6 +3,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { FreresRoundHandler } from './freres-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('FreresRoundHandler', () => {
   let roundHandler: FreresRoundHandler;
@@ -35,12 +36,13 @@ describe('FreresRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
-  it('should return players without change', () => {
+  it('should return players without change', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -48,15 +50,16 @@ describe('FreresRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, []);
-
-    expect(newPlayers).toEqual(players);
-  });
+    roundHandler
+      .handleAction(players, [])
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
 
   it('should return no players as selectable players', () => {
     const players: Player[] = [
@@ -64,6 +67,7 @@ describe('FreresRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -71,6 +75,7 @@ describe('FreresRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -78,6 +83,7 @@ describe('FreresRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
