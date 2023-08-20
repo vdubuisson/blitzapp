@@ -4,6 +4,7 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
+import { Observable, of } from 'rxjs';
 
 export class ChienLoupRoundHandler implements RoundHandler {
   readonly isOnlyOnce = true;
@@ -14,7 +15,7 @@ export class ChienLoupRoundHandler implements RoundHandler {
     players: Player[],
     _: number[],
     selectedRole?: PlayerRoleEnum
-  ): Player[] {
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     const chienLoup = newPlayers.find(
       (player) => player.role === PlayerRoleEnum.CHIEN_LOUP
@@ -22,7 +23,7 @@ export class ChienLoupRoundHandler implements RoundHandler {
     if (chienLoup !== undefined && selectedRole !== undefined) {
       chienLoup.role = selectedRole;
     }
-    return newPlayers;
+    return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {

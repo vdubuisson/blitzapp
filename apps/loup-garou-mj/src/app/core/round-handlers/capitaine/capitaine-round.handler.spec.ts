@@ -4,6 +4,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { CapitaineRoundHandler } from './capitaine-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('CapitaineRoundHandler', () => {
   let roundHandler: CapitaineRoundHandler;
@@ -36,12 +37,13 @@ describe('CapitaineRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add CAPTAIN status to selected player', () => {
+  it('should add CAPTAIN status to selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -49,15 +51,20 @@ describe('CapitaineRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
-
-    expect(newPlayers[0].statuses.has(PlayerStatusEnum.CAPTAIN)).toEqual(true);
-  });
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(newPlayers[0].statuses.has(PlayerStatusEnum.CAPTAIN)).toEqual(
+          true
+        )
+      );
+  }));
 
   it('should return all players alive as selectable players', () => {
     const players: Player[] = [
@@ -65,6 +72,7 @@ describe('CapitaineRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -72,6 +80,7 @@ describe('CapitaineRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -79,6 +88,7 @@ describe('CapitaineRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

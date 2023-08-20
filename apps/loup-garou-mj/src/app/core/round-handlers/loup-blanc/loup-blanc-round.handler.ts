@@ -5,13 +5,14 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
+import { Observable, of } from 'rxjs';
 
 export class LoupBlancRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Player[] {
+  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
     const newPlayers = [...players];
     if (selectedPlayerIds.length > 0) {
       (
@@ -20,7 +21,7 @@ export class LoupBlancRoundHandler implements RoundHandler {
         ) as Player
       ).isDead = true;
     }
-    return newPlayers;
+    return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {

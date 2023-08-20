@@ -4,6 +4,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { SorciereKillRoundHandler } from './sorciere-kill-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('SorciereKillRoundHandler', () => {
   let roundHandler: SorciereKillRoundHandler;
@@ -36,12 +37,13 @@ describe('SorciereKillRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', () => {
+  it('should kill selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -49,22 +51,24 @@ describe('SorciereKillRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
+  }));
 
-    expect(newPlayers[0].isDead).toEqual(true);
-  });
-
-  it('should remove DEATH_POTION status to SORCIERE player', () => {
+  it('should remove DEATH_POTION status to SORCIERE player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -72,24 +76,28 @@ describe('SorciereKillRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(
+          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)
+        ).toEqual(false)
+      );
+  }));
 
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)).toEqual(
-      false
-    );
-  });
-
-  it('should not remove DEATH_POTION status to SORCIERE player if no player selected', () => {
+  it('should not remove DEATH_POTION status to SORCIERE player if no player selected', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -97,17 +105,20 @@ describe('SorciereKillRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, []);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)).toEqual(
-      true
-    );
-  });
+    roundHandler
+      .handleAction(players, [])
+      .subscribe((newPlayers) =>
+        expect(
+          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)
+        ).toEqual(true)
+      );
+  }));
 
   it('should return all players alive except SORCIERE as selectable players if SORCIERE has DEATH_POTION', () => {
     const players: Player[] = [
@@ -115,6 +126,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -122,6 +134,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
@@ -129,6 +142,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -136,6 +150,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 3,
         name: 'player3',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -152,6 +167,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -159,6 +175,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -166,6 +183,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -173,6 +191,7 @@ describe('SorciereKillRoundHandler', () => {
         id: 3,
         name: 'player3',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

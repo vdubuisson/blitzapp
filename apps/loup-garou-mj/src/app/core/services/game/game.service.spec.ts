@@ -2,7 +2,7 @@ import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
@@ -25,8 +25,8 @@ class MockRoundHandler implements RoundHandler {
   isDuringDay = false;
   type = RoundTypeEnum.DEFAULT;
 
-  handleAction(players: Player[], _: number[]): Player[] {
-    return players;
+  handleAction(players: Player[], _: number[]): Observable<Player[]> {
+    return of(players);
   }
 
   getRoundConfig(_: Player[]): Round {
@@ -50,6 +50,7 @@ describe('GameService with storage init', () => {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     },
@@ -57,6 +58,7 @@ describe('GameService with storage init', () => {
       id: 1,
       name: 'player1',
       role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     },
@@ -64,6 +66,7 @@ describe('GameService with storage init', () => {
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.SORCIERE,
+      card: PlayerRoleEnum.SORCIERE,
       statuses: new Set(),
       isDead: false,
     },
@@ -281,6 +284,7 @@ describe('GameService', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -288,6 +292,7 @@ describe('GameService', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -295,6 +300,7 @@ describe('GameService', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -443,7 +449,7 @@ describe('GameService', () => {
   });
 
   it('should update players with handler action on submit', () => {
-    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
     const mockRound: Round = {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
@@ -462,7 +468,7 @@ describe('GameService', () => {
   });
 
   it('should set next round on submit', () => {
-    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
     const mockRound: Round = {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
@@ -495,7 +501,7 @@ describe('GameService', () => {
   it('should skip LOUP_BLANC next round on odd day', () => {
     const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
 
-    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
     const mockRound: Round = {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
@@ -551,7 +557,7 @@ describe('GameService', () => {
   it('should not skip LOUP_BLANC next round on even day', () => {
     const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
 
-    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
     const mockRound: Round = {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
@@ -605,7 +611,7 @@ describe('GameService', () => {
   });
 
   it('should handle deaths and use after-death round after submit if next round is during day', () => {
-    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
     jest.spyOn(deathService, 'handleNewDeaths').mockReturnValue(mockPlayers);
     const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
     const getNextRoundSpy = jest.spyOn(
@@ -661,7 +667,7 @@ describe('GameService', () => {
   });
 
   it('should handle deaths and continue round after submit if next round is during day and no after-death rounds', () => {
-    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(mockPlayers);
+    jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
     jest.spyOn(deathService, 'handleNewDeaths').mockReturnValue(mockPlayers);
     const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
     const getNextRoundSpy = jest.spyOn(

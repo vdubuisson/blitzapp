@@ -9,6 +9,7 @@ import {
   findRightNeighbor,
 } from '../../utils/neighbor.utils';
 import { DefaultRoundHandler } from '../default-round.handler';
+import { Observable } from 'rxjs';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
   constructor(private announcementService: AnnouncementService) {
@@ -18,7 +19,7 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
   override handleAction(
     players: Player[],
     selectedPlayers: number[]
-  ): Player[] {
+  ): Observable<Player[]> {
     const montreurOursIndex = players.findIndex(
       (player) => player.role === PlayerRoleEnum.MONTREUR_OURS
     );

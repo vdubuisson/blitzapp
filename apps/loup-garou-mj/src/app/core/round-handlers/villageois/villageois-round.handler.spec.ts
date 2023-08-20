@@ -3,6 +3,7 @@ import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { VillageoisRoundHandler } from './villageois-round.handler';
+import { waitForAsync } from '@angular/core/testing';
 
 describe('VillageoisRoundHandler', () => {
   let roundHandler: VillageoisRoundHandler;
@@ -35,12 +36,13 @@ describe('VillageoisRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', () => {
+  it('should kill selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -48,15 +50,16 @@ describe('VillageoisRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
-    const newPlayers = roundHandler.handleAction(players, [0]);
-
-    expect(newPlayers[0].isDead).toEqual(true);
-  });
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
+  }));
 
   it('should return all players alive as selectable players', () => {
     const players: Player[] = [
@@ -64,6 +67,7 @@ describe('VillageoisRoundHandler', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
@@ -71,6 +75,7 @@ describe('VillageoisRoundHandler', () => {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -78,6 +83,7 @@ describe('VillageoisRoundHandler', () => {
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

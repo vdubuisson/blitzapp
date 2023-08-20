@@ -4,8 +4,13 @@ import { RoundEnum } from '../../enums/round.enum';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { StorageService } from '../storage/storage.service';
-import { ROUND_HANDLERS_CONFIG } from '../../configs/round-handlers.config';
 import { ROLE_ROUNDS_CONFIG } from '../../configs/role-rounds.config';
+import { ModalService } from '../modal/modal.service';
+import {
+  ANNOUNCEMENT_ROUND_HANDLERS_CONFIG,
+  MODAL_ROUND_HANDLERS_CONFIG,
+  SIMPLE_ROUND_HANDLERS_CONFIG
+} from '../../configs/round-handlers.config';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +22,7 @@ export class RoundHandlersService {
 
   constructor(
     private announcementService: AnnouncementService,
+    private modalService: ModalService,
     private storageService: StorageService
   ) {
     this.initFromStorage();
@@ -77,10 +83,17 @@ export class RoundHandlersService {
 
   private createRoundHandler(round: RoundEnum): void {
     if (!this.roundHandlers.has(round)) {
-      this.roundHandlers.set(
-        round,
-        new ROUND_HANDLERS_CONFIG[round](this.announcementService)
-      );
+      let roundHandler: RoundHandler;
+      if (SIMPLE_ROUND_HANDLERS_CONFIG[round] !== undefined) {
+        roundHandler = new SIMPLE_ROUND_HANDLERS_CONFIG[round]();
+      } else if (ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round] !== undefined) {
+        roundHandler = new ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round](this.announcementService);
+      } else if (MODAL_ROUND_HANDLERS_CONFIG[round] !== undefined) {
+        roundHandler = new MODAL_ROUND_HANDLERS_CONFIG[round](this.modalService);
+      } else {
+        throw new Error(`Missing RoundHandler config for ${round}`);
+      }
+      this.roundHandlers.set(round, roundHandler);
     }
   }
 }

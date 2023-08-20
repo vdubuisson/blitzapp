@@ -83,13 +83,14 @@ export class GameService {
     if (currentRoundRole !== undefined) {
       const handler = this.roundHandlersService.getHandler(currentRoundRole);
       if (handler !== undefined) {
-        const newPlayers = handler.handleAction(
+        handler.handleAction(
           this.players.value,
           selectedPlayers,
           selectedRole
-        );
-        this.setPlayers(newPlayers);
-        this.nextRound();
+        ).subscribe((newPlayers) => {
+          this.setPlayers(newPlayers);
+          this.nextRound();
+        });
       }
     }
   }

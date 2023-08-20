@@ -2,6 +2,7 @@ import { PlayerRoleEnum } from '../enums/player-role.enum';
 import { RoundTypeEnum } from '../enums/round-type.enum';
 import { Player } from '../models/player.model';
 import { Round } from '../models/round.model';
+import { Observable } from 'rxjs';
 
 export interface RoundHandler {
   readonly isOnlyOnce: boolean;
@@ -11,6 +12,6 @@ export interface RoundHandler {
     players: Player[],
     selectedPlayerIds: number[],
     selectedRole?: PlayerRoleEnum
-  ): Player[];
+  ): Observable<Player[]>;
   getRoundConfig(players: Player[]): Round;
 }

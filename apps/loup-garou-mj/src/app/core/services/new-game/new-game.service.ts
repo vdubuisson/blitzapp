@@ -15,6 +15,7 @@ export class NewGameService {
     //   id: 0,
     //   name: 'Valentin',
     //   role: PlayerRoleEnum.VILLAGEOIS,
+    // card: PlayerRoleEnum.VILLAGEOIS,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -22,6 +23,7 @@ export class NewGameService {
     //   id: 1,
     //   name: 'Jean-Baptiste',
     //   role: PlayerRoleEnum.LOUP_GAROU,
+    // card: PlayerRoleEnum.LOUP_GAROU,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -29,6 +31,7 @@ export class NewGameService {
     //   id: 2,
     //   name: 'Davy',
     //   role: PlayerRoleEnum.SORCIERE,
+    // card: PlayerRoleEnum.SORCIERE,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -36,6 +39,7 @@ export class NewGameService {
     //   id: 3,
     //   name: 'Romain',
     //   role: PlayerRoleEnum.VILLAGEOIS,
+    // card: PlayerRoleEnum.VILLAGEOIS,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -43,6 +47,7 @@ export class NewGameService {
     //   id: 4,
     //   name: 'Anne-Lise',
     //   role: PlayerRoleEnum.CHASSEUR,
+    // card: PlayerRoleEnum.CHASSEUR,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -60,6 +65,7 @@ export class NewGameService {
       id: currentPlayers.length,
       name,
       role: PlayerRoleEnum.NOT_SELECTED,
+card: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set<PlayerStatusEnum>(),
       isDead: false,
     };
@@ -90,6 +96,7 @@ export class NewGameService {
           players.map((player) => ({
             ...player,
             role: PlayerRoleEnum.NOT_SELECTED,
+            card: PlayerRoleEnum.NOT_SELECTED,
             statuses: new Set<PlayerStatusEnum>(),
             isDead: false,
           }))
@@ -106,6 +113,7 @@ export class NewGameService {
     const player = currentPlayers.find((player) => player.id === id);
     if (player !== undefined) {
       player.role = role;
+      player.card = role;
       this.players.next(currentPlayers);
     }
   }

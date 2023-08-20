@@ -27,10 +27,12 @@ import {
 import { AnnouncementService } from '../announcement/announcement.service';
 import { StorageService } from '../storage/storage.service';
 import { RoundHandlersService } from './round-handlers.service';
+import { ModalService } from '../modal/modal.service';
 
 describe('RoundHandlersService', () => {
   let service: RoundHandlersService;
   let announcementService: AnnouncementService;
+  let modalService: ModalService;
   let storageService: StorageService;
 
   beforeEach(() => {
@@ -39,7 +41,11 @@ describe('RoundHandlersService', () => {
 
     jest.spyOn(storageService, 'get').mockReturnValue(of(null));
 
-    service = new RoundHandlersService(announcementService, storageService);
+    service = new RoundHandlersService(
+      announcementService,
+      modalService,
+      storageService
+    );
   });
 
   it('should be created', () => {
@@ -293,7 +299,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for VOYANTE round', () => {
-    const roundHandler = new VoyanteRoundHandler();
+    const roundHandler = new VoyanteRoundHandler(modalService);
     service['roundHandlers'].set(RoundEnum.VOYANTE, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.VOYANTE);
@@ -302,7 +308,10 @@ describe('RoundHandlersService', () => {
   });
 
   it('should remove handler VOYANTE for VOYANTE role', () => {
-    service['roundHandlers'].set(RoundEnum.VOYANTE, new VoyanteRoundHandler());
+    service['roundHandlers'].set(
+      RoundEnum.VOYANTE,
+      new VoyanteRoundHandler(modalService)
+    );
 
     service.removeHandlers([PlayerRoleEnum.VOYANTE]);
 
