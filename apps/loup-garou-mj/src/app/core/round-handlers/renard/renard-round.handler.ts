@@ -71,10 +71,6 @@ export class RenardRoundHandler implements RoundHandler {
 
     const rightPlayer = findRightNeighbor(players, selectedPlayerIndex);
     // TODO handle INFECTED player
-    if (LOUPS_GAROUS_ROLES.includes(rightPlayer.role)) {
-      return true;
-    }
-
-    return false;
+    return LOUPS_GAROUS_ROLES.includes(rightPlayer.role);
   }
 }

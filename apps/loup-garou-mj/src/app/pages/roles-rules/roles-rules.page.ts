@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ROLES_RULES } from '../../core/values/roles-rules';
 import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
@@ -17,6 +17,7 @@ import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     HeaderComponent,
+    NgOptimizedImage,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './roles-rules.page.html',
@@ -24,7 +25,7 @@ import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
 })
 export class RolesRulesPage {
   protected rules = ROLES_RULES;
-  protected roles = Object.values(PlayerRoleEnum)
+  protected roles: PlayerRoleEnum[] = Object.values(PlayerRoleEnum)
     .filter((role) => role !== PlayerRoleEnum.NOT_SELECTED)
     .sort((a, b) =>
       this.playerRoleNamePipe

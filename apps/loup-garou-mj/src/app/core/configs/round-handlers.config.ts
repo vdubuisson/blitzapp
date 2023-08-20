@@ -11,6 +11,7 @@ import {
   FreresRoundHandler,
   GrandMechantLoupRoundHandler,
   JoueurFluteRoundHandler,
+  LoupBlancRoundHandler,
   LoupGarouRoundHandler,
   MontreurOursRoundHandler,
   RenardRoundHandler,
@@ -21,7 +22,6 @@ import {
   VillageoisRoundHandler,
   VoyanteRoundHandler,
 } from '../round-handlers';
-import { LoupBlancRoundHandler } from '../round-handlers/loup-blanc/loup-blanc-round.handler';
 import { RoundHandler } from '../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../services/announcement/announcement.service';
 

@@ -23,7 +23,7 @@ import { STATUS_TRACK_BY } from '../../core/utils/status.track-by';
 })
 export class StatusLegendsPage {
   protected legends = STATUS_LEGENDS;
-  protected statuses = Object.values(PlayerStatusEnum);
+  protected statuses: PlayerStatusEnum[] = Object.values(PlayerStatusEnum);
 
   protected statusTrackBy = STATUS_TRACK_BY;
 }

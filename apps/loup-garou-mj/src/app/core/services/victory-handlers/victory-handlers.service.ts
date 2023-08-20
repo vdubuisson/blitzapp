@@ -4,16 +4,16 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
 import {
-  NoneVictoryHandler,
-  VillageoisVictoryHandler,
-  LoupGarouVictoryHandler,
   AmoureuxVictoryHandler,
   JoueurFluteVictoryHandler,
+  LoupBlancVictoryHandler,
+  LoupGarouVictoryHandler,
+  NoneVictoryHandler,
+  VillageoisVictoryHandler,
 } from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
 import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
-import { LoupBlancVictoryHandler } from '../../victory-handlers/loup-blanc/loup-blanc-victory.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -102,10 +102,7 @@ export class VictoryHandlersService {
     let resultVictory: VictoryEnum | undefined;
     for (const victoryEnum of this.victoryPriorities) {
       const victoryHandler = this.victoryHandlers.get(victoryEnum);
-      if (
-        victoryHandler !== undefined &&
-        victoryHandler.isVictorious(players)
-      ) {
+      if (victoryHandler?.isVictorious(players)) {
         resultVictory = victoryEnum;
         break;
       }

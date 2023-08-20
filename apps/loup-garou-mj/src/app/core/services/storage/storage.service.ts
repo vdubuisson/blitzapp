@@ -77,7 +77,7 @@ export class StorageService {
       }
     }
     if (this.actionQueue.length > 0) {
-      this.handleNextAction();
+      await this.handleNextAction();
     } else {
       this.actionInProgress = false;
     }

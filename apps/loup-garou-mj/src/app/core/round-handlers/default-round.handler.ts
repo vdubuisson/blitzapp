@@ -5,7 +5,7 @@ import { Round } from '../models/round.model';
 import { RoundHandler } from './round-handler.interface';
 
 export abstract class DefaultRoundHandler implements RoundHandler {
-  constructor(
+  protected constructor(
     private roundRole: RoundEnum,
     public isOnlyOnce: boolean,
     public isDuringDay: boolean,
