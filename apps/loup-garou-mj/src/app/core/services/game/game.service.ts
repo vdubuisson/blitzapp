@@ -243,10 +243,8 @@ export class GameService {
       (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
       nextRound !== RoundEnum.CHASSEUR
     ) {
-      if (this.checkVictory()) {
-        return true;
-      }
       this.deathService.announceDeaths();
+      return this.checkVictory();
     }
     return false;
   }
