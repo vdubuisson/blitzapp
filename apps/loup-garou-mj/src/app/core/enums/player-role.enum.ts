@@ -18,5 +18,5 @@ export enum PlayerRoleEnum {
   CHIEN_LOUP = 'CHIEN_LOUP',
   SOEUR = 'SOEUR',
   FRERE = 'FRERE',
-  LOUP_BLANC = 'LOUP_BLANC'
+  LOUP_BLANC = 'LOUP_BLANC',
 }

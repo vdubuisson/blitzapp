@@ -61,8 +61,8 @@ describe('CapitaineRoundHandler', () => {
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
         expect(newPlayers[0].statuses.has(PlayerStatusEnum.CAPTAIN)).toEqual(
-          true
-        )
+          true,
+        ),
       );
   }));
 

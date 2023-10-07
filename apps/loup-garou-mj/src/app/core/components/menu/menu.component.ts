@@ -23,13 +23,16 @@ export class MenuComponent {
 
   @ViewChild('menu') private menu: IonMenu | undefined;
 
-  constructor(private router: Router, private gameService: GameService) {
+  constructor(
+    private router: Router,
+    private gameService: GameService,
+  ) {
     this.isGameInProgress$ = this.gameService.isGameInProgress();
 
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe(() => {
         this.menu?.close();

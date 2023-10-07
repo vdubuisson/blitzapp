@@ -26,7 +26,7 @@ export class DeathService {
     private roundHandlersService: RoundHandlersService,
     private victoryHandlersService: VictoryHandlersService,
     private announcementService: AnnouncementService,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.initFromStorage();
   }
@@ -94,7 +94,7 @@ export class DeathService {
 
     this.storageService.set(
       this.KNOWN_DEATHS_KEY,
-      Array.from(this.knownDeaths)
+      Array.from(this.knownDeaths),
     );
     this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
     this.storageService.set(this.QUEUE_KEY, this.afterDeathRoundQueue);
@@ -102,7 +102,7 @@ export class DeathService {
 
   private handlePlayerDeathStatuses(
     players: Player[],
-    deadPlayer: Player
+    deadPlayer: Player,
   ): void {
     if (deadPlayer.statuses.has(PlayerStatusEnum.CAPTAIN)) {
       deadPlayer.statuses.delete(PlayerStatusEnum.CAPTAIN);
@@ -113,7 +113,7 @@ export class DeathService {
         (player) =>
           player.statuses.has(PlayerStatusEnum.LOVER) &&
           player.id !== deadPlayer.id &&
-          !player.isDead
+          !player.isDead,
       );
       if (otherLivingLover !== undefined) {
         otherLivingLover.isDead = true;
@@ -122,7 +122,7 @@ export class DeathService {
     }
     if (deadPlayer.statuses.has(PlayerStatusEnum.CHILD_MODEL)) {
       const enfantSauvage = players.find(
-        (player) => player.role === PlayerRoleEnum.ENFANT_SAUVAGE
+        (player) => player.role === PlayerRoleEnum.ENFANT_SAUVAGE,
       );
       if (enfantSauvage !== undefined && !enfantSauvage.isDead) {
         enfantSauvage.role = PlayerRoleEnum.LOUP_GAROU;
@@ -139,7 +139,7 @@ export class DeathService {
               [
                 PlayerRoleEnum.LOUP_GAROU,
                 PlayerRoleEnum.GRAND_MECHANT_LOUP,
-              ].includes(player.role) && !player.isDead
+              ].includes(player.role) && !player.isDead,
           ).length === 0
         ) {
           this.rolesToRemove.push(PlayerRoleEnum.LOUP_GAROU);

@@ -78,7 +78,7 @@ describe('RoleChoiceService', () => {
 
     expect(storageService.set).toHaveBeenCalledWith(
       'RoleChoiceService_roles',
-      expectedRoles
+      expectedRoles,
     );
   });
 });

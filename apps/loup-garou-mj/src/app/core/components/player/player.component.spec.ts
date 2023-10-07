@@ -29,7 +29,7 @@ describe('PlayerComponent', () => {
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     };
@@ -61,7 +61,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.CUPIDON,
-card: PlayerRoleEnum.CUPIDON,
+      card: PlayerRoleEnum.CUPIDON,
       statuses: new Set(),
       isDead: false,
     };
@@ -72,7 +72,7 @@ card: PlayerRoleEnum.CUPIDON,
     ];
 
     expect(component['sortedRoles'].includes(PlayerRoleEnum.CUPIDON)).toEqual(
-      true
+      true,
     );
   });
 
@@ -92,7 +92,7 @@ card: PlayerRoleEnum.CUPIDON,
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.CUPIDON,
-card: PlayerRoleEnum.CUPIDON,
+      card: PlayerRoleEnum.CUPIDON,
       statuses: new Set(),
       isDead: false,
     };
@@ -105,7 +105,7 @@ card: PlayerRoleEnum.CUPIDON,
     ];
 
     expect(component['sortedRoles'].includes(PlayerRoleEnum.CUPIDON)).toEqual(
-      false
+      false,
     );
   });
 
@@ -122,7 +122,7 @@ card: PlayerRoleEnum.CUPIDON,
       id: 0,
       name: 'player',
       role: PlayerRoleEnum.NOT_SELECTED,
-card: PlayerRoleEnum.NOT_SELECTED,
+      card: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set(),
       isDead: false,
     };
@@ -133,7 +133,7 @@ card: PlayerRoleEnum.NOT_SELECTED,
     ];
 
     expect(
-      component['sortedRoles'].includes(PlayerRoleEnum.NOT_SELECTED)
+      component['sortedRoles'].includes(PlayerRoleEnum.NOT_SELECTED),
     ).toEqual(false);
   });
 });

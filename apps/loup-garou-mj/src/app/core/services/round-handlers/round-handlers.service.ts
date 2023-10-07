@@ -9,7 +9,7 @@ import { ModalService } from '../modal/modal.service';
 import {
   ANNOUNCEMENT_ROUND_HANDLERS_CONFIG,
   MODAL_ROUND_HANDLERS_CONFIG,
-  SIMPLE_ROUND_HANDLERS_CONFIG
+  SIMPLE_ROUND_HANDLERS_CONFIG,
 } from '../../configs/round-handlers.config';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class RoundHandlersService {
   constructor(
     private announcementService: AnnouncementService,
     private modalService: ModalService,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.initFromStorage();
   }
@@ -39,7 +39,7 @@ export class RoundHandlersService {
 
     rolesSet.forEach((role) => {
       ROLE_ROUNDS_CONFIG[role].forEach((round) =>
-        this.createRoundHandler(round)
+        this.createRoundHandler(round),
       );
     });
   }
@@ -61,7 +61,7 @@ export class RoundHandlersService {
     const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
     rolesSet.forEach((role) => {
       ROLE_ROUNDS_CONFIG[role].forEach((round) =>
-        this.roundHandlers.delete(round)
+        this.roundHandlers.delete(round),
       );
     });
   }
@@ -87,9 +87,13 @@ export class RoundHandlersService {
       if (SIMPLE_ROUND_HANDLERS_CONFIG[round] !== undefined) {
         roundHandler = new SIMPLE_ROUND_HANDLERS_CONFIG[round]();
       } else if (ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        roundHandler = new ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round](this.announcementService);
+        roundHandler = new ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round](
+          this.announcementService,
+        );
       } else if (MODAL_ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        roundHandler = new MODAL_ROUND_HANDLERS_CONFIG[round](this.modalService);
+        roundHandler = new MODAL_ROUND_HANDLERS_CONFIG[round](
+          this.modalService,
+        );
       } else {
         throw new Error(`Missing RoundHandler config for ${round}`);
       }

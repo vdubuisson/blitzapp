@@ -12,12 +12,15 @@ export class SorciereKillRoundHandler implements RoundHandler {
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     if (selectedPlayerIds.length > 0) {
       (
         newPlayers.find(
-          (player) => player.id === selectedPlayerIds[0]
+          (player) => player.id === selectedPlayerIds[0],
         ) as Player
       ).isDead = true;
       newPlayers
@@ -51,7 +54,7 @@ export class SorciereKillRoundHandler implements RoundHandler {
   private getKillablePlayers(players: Player[]): number[] {
     return players
       .filter(
-        (player) => player.role !== PlayerRoleEnum.SORCIERE && !player.isDead
+        (player) => player.role !== PlayerRoleEnum.SORCIERE && !player.isDead,
       )
       .map((player) => player.id);
   }

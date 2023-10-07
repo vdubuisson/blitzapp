@@ -10,7 +10,7 @@ export abstract class DefaultRoundHandler implements RoundHandler {
     private roundRole: RoundEnum,
     public isOnlyOnce: boolean,
     public isDuringDay: boolean,
-    public type: RoundTypeEnum = RoundTypeEnum.DEFAULT
+    public type: RoundTypeEnum = RoundTypeEnum.DEFAULT,
   ) {}
 
   handleAction(players: Player[], _: number[]): Observable<Player[]> {

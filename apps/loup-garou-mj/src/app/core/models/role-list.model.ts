@@ -1,4 +1,4 @@
-import { PlayerRoleEnum } from "../enums/player-role.enum";
+import { PlayerRoleEnum } from '../enums/player-role.enum';
 
 export interface RoleList {
   selectedRoles: Set<PlayerRoleEnum>;

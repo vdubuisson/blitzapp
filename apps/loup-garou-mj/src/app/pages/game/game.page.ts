@@ -76,7 +76,7 @@ export class GamePage {
             this.playerDisplayMode = PlayerDisplayModeEnum.DEFAULT;
           }
         }
-      })
+      }),
     );
     this.players$ = this.gameService.getPlayers();
     this.dayCount$ = this.gameService.getDayCount();

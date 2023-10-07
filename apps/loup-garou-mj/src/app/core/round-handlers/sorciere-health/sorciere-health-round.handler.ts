@@ -12,7 +12,10 @@ export class SorciereHealthRoundHandler implements RoundHandler {
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     if (selectedPlayerIds.length > 0) {
       newPlayers
@@ -52,7 +55,7 @@ export class SorciereHealthRoundHandler implements RoundHandler {
         (player) =>
           player.statuses.has(PlayerStatusEnum.WOLF_TARGET) &&
           (!player.statuses.has(PlayerStatusEnum.PROTECTED) ||
-            player.role === PlayerRoleEnum.PETITE_FILLE)
+            player.role === PlayerRoleEnum.PETITE_FILLE),
       )
       .map((player) => player.id);
   }

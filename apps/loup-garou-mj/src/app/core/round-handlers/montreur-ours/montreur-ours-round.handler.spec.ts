@@ -157,7 +157,7 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler
       .handleAction(mockPlayers, [])
       .subscribe(() =>
-        expect(announcementService.announceBearGrowl).toBeCalled()
+        expect(announcementService.announceBearGrowl).toBeCalled(),
       );
   }));
 
@@ -209,7 +209,7 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler
       .handleAction(mockPlayers, [])
       .subscribe(() =>
-        expect(announcementService.announceBearGrowl).toBeCalled()
+        expect(announcementService.announceBearGrowl).toBeCalled(),
       );
   }));
 
@@ -261,7 +261,7 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler
       .handleAction(mockPlayers, [])
       .subscribe(() =>
-        expect(announcementService.announceBearGrowl).toBeCalledTimes(0)
+        expect(announcementService.announceBearGrowl).toBeCalledTimes(0),
       );
   }));
 });

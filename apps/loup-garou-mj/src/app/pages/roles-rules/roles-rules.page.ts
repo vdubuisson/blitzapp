@@ -30,7 +30,7 @@ export class RolesRulesPage {
     .sort((a, b) =>
       this.playerRoleNamePipe
         .transform(a)
-        .localeCompare(this.playerRoleNamePipe.transform(b))
+        .localeCompare(this.playerRoleNamePipe.transform(b)),
     );
 
   protected roleTrackBy = ROLE_TRACK_BY;

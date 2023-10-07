@@ -67,10 +67,10 @@ describe('SalvateurRoundHandler', () => {
 
     roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
       expect(newPlayers[0].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
-        false
+        false,
       );
       expect(newPlayers[2].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
-        true
+        true,
       );
     });
   }));

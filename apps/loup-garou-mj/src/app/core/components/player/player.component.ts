@@ -53,7 +53,7 @@ export class PlayerComponent {
     sortedRoles.sort((a, b) =>
       this.playerRoleNamePipe
         .transform(a)
-        .localeCompare(this.playerRoleNamePipe.transform(b))
+        .localeCompare(this.playerRoleNamePipe.transform(b)),
     );
     this.sortedRoles = sortedRoles;
   }

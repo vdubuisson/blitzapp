@@ -14,7 +14,7 @@ export class AnnouncementService {
 
   constructor(
     private alertController: AlertController,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.storageService
       .get<AlertOptions[]>(this.QUEUE_KEY)
@@ -77,7 +77,7 @@ export class AnnouncementService {
   private async showNextAnnouncement(): Promise<void> {
     this.isPresenting = true;
     const alert = await this.alertController.create(
-      this.announcementsQueue.shift()
+      this.announcementsQueue.shift(),
     );
     alert.onDidDismiss().then(() => {
       if (this.announcementsQueue.length > 0) {

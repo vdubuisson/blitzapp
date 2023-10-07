@@ -53,7 +53,10 @@ export class NewGameService {
     // },
   ]);
 
-  constructor(private gameService: GameService, private router: Router) {}
+  constructor(
+    private gameService: GameService,
+    private router: Router,
+  ) {}
 
   getPlayers(): Observable<Player[]> {
     return this.players.asObservable();
@@ -65,7 +68,7 @@ export class NewGameService {
       id: currentPlayers.length,
       name,
       role: PlayerRoleEnum.NOT_SELECTED,
-card: PlayerRoleEnum.NOT_SELECTED,
+      card: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set<PlayerStatusEnum>(),
       isDead: false,
     };
@@ -99,8 +102,8 @@ card: PlayerRoleEnum.NOT_SELECTED,
             card: PlayerRoleEnum.NOT_SELECTED,
             statuses: new Set<PlayerStatusEnum>(),
             isDead: false,
-          }))
-        )
+          })),
+        ),
       )
       .subscribe((players) => {
         this.players.next(players);

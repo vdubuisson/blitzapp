@@ -9,7 +9,14 @@ import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-nam
 @Component({
   selector: 'lgmj-player-card-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink, NgOptimizedImage, PlayerRoleImagePipe, PlayerRoleNamePipe],
+  imports: [
+    CommonModule,
+    IonicModule,
+    RouterLink,
+    NgOptimizedImage,
+    PlayerRoleImagePipe,
+    PlayerRoleNamePipe,
+  ],
   templateUrl: './player-card-modal.component.html',
   styleUrls: ['./player-card-modal.component.scss'],
 })

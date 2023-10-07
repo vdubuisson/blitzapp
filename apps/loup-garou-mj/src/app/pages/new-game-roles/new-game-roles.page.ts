@@ -48,7 +48,7 @@ export class NewGameRolesPage {
 
   constructor(
     private newGameService: NewGameService,
-    private roleChoiceService: RoleChoiceService
+    private roleChoiceService: RoleChoiceService,
   ) {
     this.players$ = this.roleChoiceService.getCurrentChosenRoles().pipe(
       tap((selectedRoles) => (this.rolesToPlay = selectedRoles)),
@@ -56,7 +56,7 @@ export class NewGameRolesPage {
       tap((players) => {
         this.cannotCreate = !this.canCreateGame(players);
         this.availableRoles = this.getAvailableRoles(players);
-      })
+      }),
     );
   }
 
@@ -71,7 +71,7 @@ export class NewGameRolesPage {
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
     const usedRoles = new Set(players.map((player) => player.role));
     let availableRoles = Array.from(this.rolesToPlay.selectedRoles).filter(
-      (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role)
+      (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role),
     );
 
     if (
@@ -96,7 +96,7 @@ export class NewGameRolesPage {
         .length === 2
     ) {
       availableRoles = availableRoles.filter(
-        (role) => role !== PlayerRoleEnum.SOEUR
+        (role) => role !== PlayerRoleEnum.SOEUR,
       );
     }
 
@@ -106,7 +106,7 @@ export class NewGameRolesPage {
         .length === 3
     ) {
       availableRoles = availableRoles.filter(
-        (role) => role !== PlayerRoleEnum.FRERE
+        (role) => role !== PlayerRoleEnum.FRERE,
       );
     }
 
@@ -115,7 +115,7 @@ export class NewGameRolesPage {
 
   private canCreateGame(players: Player[]): boolean {
     let canCreate = players.every(
-      (player) => player.role !== PlayerRoleEnum.NOT_SELECTED
+      (player) => player.role !== PlayerRoleEnum.NOT_SELECTED,
     );
     if (
       canCreate &&

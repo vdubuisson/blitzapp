@@ -61,8 +61,8 @@ describe('LoupGarouRoundHandler', () => {
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET)
-        ).toEqual(true)
+          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET),
+        ).toEqual(true),
       );
   }));
 

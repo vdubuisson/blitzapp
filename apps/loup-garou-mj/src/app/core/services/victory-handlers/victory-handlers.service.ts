@@ -44,31 +44,31 @@ export class VictoryHandlersService {
     this.victoryHandlers.set(VictoryEnum.NONE, new NoneVictoryHandler());
     this.victoryHandlers.set(
       VictoryEnum.VILLAGEOIS,
-      new VillageoisVictoryHandler()
+      new VillageoisVictoryHandler(),
     );
 
     if (LOUPS_GAROUS_ROLES.some((role) => rolesSet.has(role))) {
       this.victoryHandlers.set(
         VictoryEnum.LOUP_GAROU,
-        new LoupGarouVictoryHandler()
+        new LoupGarouVictoryHandler(),
       );
     }
     if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
       this.victoryHandlers.set(
         VictoryEnum.AMOUREUX,
-        new AmoureuxVictoryHandler()
+        new AmoureuxVictoryHandler(),
       );
     }
     if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
       this.victoryHandlers.set(
         VictoryEnum.JOUEUR_FLUTE,
-        new JoueurFluteVictoryHandler()
+        new JoueurFluteVictoryHandler(),
       );
     }
     if (rolesSet.has(PlayerRoleEnum.LOUP_BLANC)) {
       this.victoryHandlers.set(
         VictoryEnum.LOUP_BLANC,
-        new LoupBlancVictoryHandler()
+        new LoupBlancVictoryHandler(),
       );
     }
   }

@@ -38,9 +38,11 @@ export class NewGamePage {
     private roleChoiceService: RoleChoiceService,
   ) {
     this.players$ = this.roleChoiceService.getCurrentChosenRoles().pipe(
-      tap((roleList) => this.playersCount = roleList.playersNumber),
+      tap((roleList) => (this.playersCount = roleList.playersNumber)),
       switchMap(() => this.newGameService.getPlayers()),
-      tap((players) => (this.canValidate = players.length === this.playersCount))
+      tap(
+        (players) => (this.canValidate = players.length === this.playersCount),
+      ),
     );
   }
 
@@ -52,7 +54,7 @@ export class NewGamePage {
     const reorderEvent = event as ItemReorderCustomEvent;
     this.newGameService.reorderPlayers(
       reorderEvent.detail.from,
-      reorderEvent.detail.to
+      reorderEvent.detail.to,
     );
     reorderEvent.detail.complete(false);
   }
