@@ -12,7 +12,10 @@ export class JoueurFluteRoundHandler implements RoundHandler {
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     newPlayers
       .filter((player) => selectedPlayerIds.includes(player.id))
@@ -28,7 +31,7 @@ export class JoueurFluteRoundHandler implements RoundHandler {
           (player) =>
             player.role !== PlayerRoleEnum.JOUEUR_FLUTE &&
             !player.isDead &&
-            !player.statuses.has(PlayerStatusEnum.CHARMED)
+            !player.statuses.has(PlayerStatusEnum.CHARMED),
         )
         .map((player) => player.id),
       maxSelectable: 2,

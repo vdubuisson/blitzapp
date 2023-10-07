@@ -24,7 +24,7 @@ export class RoundOrchestrationService {
   constructor(
     private roundHandlersService: RoundHandlersService,
     private deathService: DeathService,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.initFromStorage();
   }
@@ -40,7 +40,7 @@ export class RoundOrchestrationService {
       this.uniqueRoundsPassed.add(currentRound);
       this.storageService.set(
         this.UNIQUE_ROUNDS_KEY,
-        Array.from(this.uniqueRoundsPassed)
+        Array.from(this.uniqueRoundsPassed),
       );
     }
 

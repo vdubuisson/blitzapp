@@ -26,7 +26,7 @@ describe('GamePage', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -34,7 +34,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -82,7 +82,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
-        PlayerDisplayModeEnum.EDIT_ROLE
+        PlayerDisplayModeEnum.EDIT_ROLE,
       );
     });
   }));
@@ -98,7 +98,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
-        PlayerDisplayModeEnum.SELECT_SINGLE
+        PlayerDisplayModeEnum.SELECT_SINGLE,
       );
     });
   }));
@@ -114,7 +114,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
-        PlayerDisplayModeEnum.SELECT_MULTI
+        PlayerDisplayModeEnum.SELECT_MULTI,
       );
     });
   }));
@@ -130,7 +130,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     });
     component['round$'].subscribe(() => {
       expect(component['playerDisplayMode']).toEqual(
-        PlayerDisplayModeEnum.DEFAULT
+        PlayerDisplayModeEnum.DEFAULT,
       );
     });
   }));
@@ -323,7 +323,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
 
     expect(gameService.submitRoundAction).toBeCalledWith(
       [],
-      PlayerRoleEnum.LOUP_GAROU
+      PlayerRoleEnum.LOUP_GAROU,
     );
   });
 

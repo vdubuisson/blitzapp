@@ -14,7 +14,7 @@ import { StorageService } from '../../core/services/storage/storage.service';
 export class OptionsPage {
   constructor(
     private storageService: StorageService,
-    private toastController: ToastController
+    private toastController: ToastController,
   ) {}
 
   protected clear(): void {

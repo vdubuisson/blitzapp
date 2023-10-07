@@ -13,9 +13,7 @@
         (ionItemReorder)="reorderPlayer($event)"
         [disabled]="false"
       >
-        <ion-item
-          *ngFor="let player of players; trackBy: playerTrackBy"
-        >
+        <ion-item *ngFor="let player of players; trackBy: playerTrackBy">
           <ion-button
             (click)="removePlayer(player.id)"
             slot="start"

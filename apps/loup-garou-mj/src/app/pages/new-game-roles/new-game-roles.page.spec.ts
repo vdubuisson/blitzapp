@@ -56,7 +56,7 @@ describe('NewGamePage', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -64,7 +64,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -72,7 +72,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe((players) =>
-      expect(players).toEqual(mockPlayers)
+      expect(players).toEqual(mockPlayers),
     );
   }));
 
@@ -91,7 +91,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
 
     expect(newGameService.changeRole).toBeCalledWith(
       0,
-      PlayerRoleEnum.SORCIERE
+      PlayerRoleEnum.SORCIERE,
     );
   });
 
@@ -101,7 +101,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.NOT_SELECTED,
-card: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
         statuses: new Set(),
         isDead: false,
       },
@@ -109,7 +109,7 @@ card: PlayerRoleEnum.NOT_SELECTED,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(true)
+      expect(component['cannotCreate']).toEqual(true),
     );
   }));
 
@@ -119,7 +119,7 @@ card: PlayerRoleEnum.NOT_SELECTED,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -127,7 +127,7 @@ card: PlayerRoleEnum.SOEUR,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(true)
+      expect(component['cannotCreate']).toEqual(true),
     );
   }));
 
@@ -137,7 +137,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -145,7 +145,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -153,7 +153,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -161,7 +161,7 @@ card: PlayerRoleEnum.SOEUR,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(true)
+      expect(component['cannotCreate']).toEqual(true),
     );
   }));
 
@@ -171,7 +171,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -179,7 +179,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -187,7 +187,7 @@ card: PlayerRoleEnum.SOEUR,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(false)
+      expect(component['cannotCreate']).toEqual(false),
     );
   }));
 
@@ -197,7 +197,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -205,7 +205,7 @@ card: PlayerRoleEnum.FRERE,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -213,7 +213,7 @@ card: PlayerRoleEnum.FRERE,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(true)
+      expect(component['cannotCreate']).toEqual(true),
     );
   }));
 
@@ -223,7 +223,7 @@ card: PlayerRoleEnum.FRERE,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -231,7 +231,7 @@ card: PlayerRoleEnum.FRERE,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -239,7 +239,7 @@ card: PlayerRoleEnum.FRERE,
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -247,7 +247,7 @@ card: PlayerRoleEnum.FRERE,
         id: 3,
         name: 'player3',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -255,7 +255,7 @@ card: PlayerRoleEnum.FRERE,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(true)
+      expect(component['cannotCreate']).toEqual(true),
     );
   }));
 
@@ -265,7 +265,7 @@ card: PlayerRoleEnum.FRERE,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -273,7 +273,7 @@ card: PlayerRoleEnum.FRERE,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -281,7 +281,7 @@ card: PlayerRoleEnum.FRERE,
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -289,7 +289,7 @@ card: PlayerRoleEnum.FRERE,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(false)
+      expect(component['cannotCreate']).toEqual(false),
     );
   }));
 
@@ -299,7 +299,7 @@ card: PlayerRoleEnum.FRERE,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -307,7 +307,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['cannotCreate']).toEqual(false)
+      expect(component['cannotCreate']).toEqual(false),
     );
   }));
 
@@ -323,7 +323,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.CUPIDON,
-card: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
         statuses: new Set(),
         isDead: false,
       },
@@ -332,8 +332,8 @@ card: PlayerRoleEnum.CUPIDON,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.CUPIDON)
-      ).toEqual(false)
+        component['availableRoles'].includes(PlayerRoleEnum.CUPIDON),
+      ).toEqual(false),
     );
   }));
 
@@ -349,7 +349,7 @@ card: PlayerRoleEnum.CUPIDON,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -358,8 +358,8 @@ card: PlayerRoleEnum.SOEUR,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.SOEUR)
-      ).toEqual(true)
+        component['availableRoles'].includes(PlayerRoleEnum.SOEUR),
+      ).toEqual(true),
     );
   }));
 
@@ -375,7 +375,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -383,7 +383,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.SOEUR,
-card: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -392,8 +392,8 @@ card: PlayerRoleEnum.SOEUR,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.SOEUR)
-      ).toEqual(false)
+        component['availableRoles'].includes(PlayerRoleEnum.SOEUR),
+      ).toEqual(false),
     );
   }));
 
@@ -409,7 +409,7 @@ card: PlayerRoleEnum.SOEUR,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -417,7 +417,7 @@ card: PlayerRoleEnum.FRERE,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -426,8 +426,8 @@ card: PlayerRoleEnum.FRERE,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.FRERE)
-      ).toEqual(true)
+        component['availableRoles'].includes(PlayerRoleEnum.FRERE),
+      ).toEqual(true),
     );
   }));
 
@@ -443,7 +443,7 @@ card: PlayerRoleEnum.FRERE,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -451,7 +451,7 @@ card: PlayerRoleEnum.FRERE,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -459,7 +459,7 @@ card: PlayerRoleEnum.FRERE,
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.FRERE,
-card: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -468,8 +468,8 @@ card: PlayerRoleEnum.FRERE,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.FRERE)
-      ).toEqual(false)
+        component['availableRoles'].includes(PlayerRoleEnum.FRERE),
+      ).toEqual(false),
     );
   }));
 
@@ -485,7 +485,7 @@ card: PlayerRoleEnum.FRERE,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -494,8 +494,8 @@ card: PlayerRoleEnum.LOUP_GAROU,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS)
-      ).toEqual(true)
+        component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS),
+      ).toEqual(true),
     );
   }));
 
@@ -511,7 +511,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -519,7 +519,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -528,8 +528,8 @@ card: PlayerRoleEnum.VILLAGEOIS,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS)
-      ).toEqual(false)
+        component['availableRoles'].includes(PlayerRoleEnum.VILLAGEOIS),
+      ).toEqual(false),
     );
   }));
 
@@ -545,7 +545,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -554,8 +554,8 @@ card: PlayerRoleEnum.VILLAGEOIS,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.LOUP_GAROU)
-      ).toEqual(true)
+        component['availableRoles'].includes(PlayerRoleEnum.LOUP_GAROU),
+      ).toEqual(true),
     );
   }));
 
@@ -571,7 +571,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -579,7 +579,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -588,8 +588,8 @@ card: PlayerRoleEnum.VILLAGEOIS,
 
     component['players$'].subscribe(() =>
       expect(
-        component['availableRoles'].includes(PlayerRoleEnum.LOUP_GAROU)
-      ).toEqual(false)
+        component['availableRoles'].includes(PlayerRoleEnum.LOUP_GAROU),
+      ).toEqual(false),
     );
   }));
 });

@@ -61,8 +61,8 @@ describe('SorciereHealthRoundHandler', () => {
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET)
-        ).toEqual(false)
+          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET),
+        ).toEqual(false),
       );
   }));
 
@@ -90,8 +90,8 @@ describe('SorciereHealthRoundHandler', () => {
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)
-        ).toEqual(false)
+          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION),
+        ).toEqual(false),
       );
   }));
 
@@ -119,8 +119,8 @@ describe('SorciereHealthRoundHandler', () => {
       .handleAction(players, [])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)
-        ).toEqual(true)
+          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION),
+        ).toEqual(true),
       );
   }));
 

@@ -69,8 +69,8 @@ describe('EnfantSauvageRoundHandler', () => {
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.CHILD_MODEL)
-        ).toEqual(true)
+          newPlayers[0].statuses.has(PlayerStatusEnum.CHILD_MODEL),
+        ).toEqual(true),
       );
   }));
 

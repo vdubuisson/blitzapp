@@ -2,7 +2,7 @@ import { Player } from '../models/player.model';
 
 export function findLeftNeighbor(
   players: Player[],
-  selectedIndex: number
+  selectedIndex: number,
 ): Player {
   let leftIndex = selectedIndex + 1;
   if (leftIndex > players.length - 1) {
@@ -21,7 +21,7 @@ export function findLeftNeighbor(
 
 export function findRightNeighbor(
   players: Player[],
-  selectedIndex: number
+  selectedIndex: number,
 ): Player {
   let rightIndex = selectedIndex - 1;
   if (rightIndex < 0) {

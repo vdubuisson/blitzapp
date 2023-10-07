@@ -67,10 +67,10 @@ describe('JoueurFluteRoundHandler', () => {
 
     roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
       expect(newPlayers[0].statuses.has(PlayerStatusEnum.CHARMED)).toEqual(
-        true
+        true,
       );
       expect(newPlayers[2].statuses.has(PlayerStatusEnum.CHARMED)).toEqual(
-        true
+        true,
       );
     });
   }));

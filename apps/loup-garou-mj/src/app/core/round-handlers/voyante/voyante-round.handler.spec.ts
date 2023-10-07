@@ -91,7 +91,7 @@ describe('VoyanteRoundHandler', () => {
 
     roundHandler.handleAction(players, [1]).subscribe(() => {
       expect(modalService.showPlayerCard).toHaveBeenCalledWith(
-        PlayerRoleEnum.CHIEN_LOUP
+        PlayerRoleEnum.CHIEN_LOUP,
       );
     });
   }));

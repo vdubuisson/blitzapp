@@ -20,7 +20,10 @@ export class RenardRoundHandler implements RoundHandler {
 
   constructor(private announcementService: AnnouncementService) {}
 
-  handleAction(players: Player[], selectedPlayers: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayers: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
 
     if (selectedPlayers.length > 0) {
@@ -56,7 +59,7 @@ export class RenardRoundHandler implements RoundHandler {
 
   private isFoxActionSuccess(
     players: Player[],
-    selectedPlayerIndex: number
+    selectedPlayerIndex: number,
   ): boolean {
     const centerPlayer = players[selectedPlayerIndex];
     // TODO handle INFECTED player

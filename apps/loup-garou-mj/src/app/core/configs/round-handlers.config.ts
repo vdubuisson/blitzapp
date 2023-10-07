@@ -26,7 +26,9 @@ import { RoundHandler } from '../round-handlers/round-handler.interface';
 import { AnnouncementService } from '../services/announcement/announcement.service';
 import { ModalService } from '../services/modal/modal.service';
 
-export const SIMPLE_ROUND_HANDLERS_CONFIG: { [round: string]: new () => RoundHandler } = {
+export const SIMPLE_ROUND_HANDLERS_CONFIG: {
+  [round: string]: new () => RoundHandler;
+} = {
   [RoundEnum.AMOUREUX]: AmoureuxRoundHandler,
   [RoundEnum.CAPITAINE]: CapitaineRoundHandler,
   [RoundEnum.CHARMED]: CharmedRoundHandler,
@@ -44,14 +46,18 @@ export const SIMPLE_ROUND_HANDLERS_CONFIG: { [round: string]: new () => RoundHan
   [RoundEnum.SOEURS]: SoeursRoundHandler,
   [RoundEnum.SORCIERE_HEALTH]: SorciereHealthRoundHandler,
   [RoundEnum.SORCIERE_KILL]: SorciereKillRoundHandler,
-  [RoundEnum.VILLAGEOIS]: VillageoisRoundHandler
+  [RoundEnum.VILLAGEOIS]: VillageoisRoundHandler,
 };
 
-export const ANNOUNCEMENT_ROUND_HANDLERS_CONFIG: { [round: string]: new (s: AnnouncementService) => RoundHandler } = {
+export const ANNOUNCEMENT_ROUND_HANDLERS_CONFIG: {
+  [round: string]: new (s: AnnouncementService) => RoundHandler;
+} = {
   [RoundEnum.MONTREUR_OURS]: MontreurOursRoundHandler,
   [RoundEnum.RENARD]: RenardRoundHandler,
 };
 
-export const MODAL_ROUND_HANDLERS_CONFIG: { [round: string]: new (s: ModalService) => RoundHandler } = {
+export const MODAL_ROUND_HANDLERS_CONFIG: {
+  [round: string]: new (s: ModalService) => RoundHandler;
+} = {
   [RoundEnum.VOYANTE]: VoyanteRoundHandler,
 };

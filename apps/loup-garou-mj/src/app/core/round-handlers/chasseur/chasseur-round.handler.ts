@@ -11,7 +11,10 @@ export class ChasseurRoundHandler implements RoundHandler {
   readonly isDuringDay = true;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     (
       newPlayers.find((player) => player.id === selectedPlayerIds[0]) as Player
@@ -33,7 +36,7 @@ export class ChasseurRoundHandler implements RoundHandler {
   private getKillablePlayers(players: Player[]): number[] {
     return players
       .filter(
-        (player) => player.role !== PlayerRoleEnum.CHASSEUR && !player.isDead
+        (player) => player.role !== PlayerRoleEnum.CHASSEUR && !player.isDead,
       )
       .map((player) => player.id);
   }

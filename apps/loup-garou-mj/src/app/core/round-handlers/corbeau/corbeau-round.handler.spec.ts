@@ -68,7 +68,9 @@ describe('CorbeauRoundHandler', () => {
     roundHandler
       .handleAction(players, [2])
       .subscribe((newPlayers) =>
-        expect(newPlayers[2].statuses.has(PlayerStatusEnum.RAVEN)).toEqual(true)
+        expect(newPlayers[2].statuses.has(PlayerStatusEnum.RAVEN)).toEqual(
+          true,
+        ),
       );
   }));
 

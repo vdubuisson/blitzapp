@@ -11,7 +11,10 @@ export class CupidonRoundHandler implements RoundHandler {
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     newPlayers
       .filter((player) => selectedPlayerIds.includes(player.id))

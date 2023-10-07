@@ -113,7 +113,7 @@ describe('GameService with storage init', () => {
       roundOrchestrationService,
       deathService,
       statusesService,
-      storageService
+      storageService,
     );
   });
 
@@ -168,7 +168,7 @@ describe('GameService on victory', () => {
       roundOrchestrationService,
       deathService,
       statusesService,
-      storageService
+      storageService,
     );
   });
 
@@ -327,7 +327,7 @@ describe('GameService', () => {
       roundOrchestrationService,
       deathService,
       statusesService,
-      storageService
+      storageService,
     );
   });
 
@@ -436,7 +436,7 @@ describe('GameService', () => {
     service.createGame(mockPlayers);
 
     expect(
-      service['players'].value[2].statuses.has(PlayerStatusEnum.HEALTH_POTION)
+      service['players'].value[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
     ).toEqual(true);
   });
 
@@ -444,7 +444,7 @@ describe('GameService', () => {
     service.createGame(mockPlayers);
 
     expect(
-      service['players'].value[2].statuses.has(PlayerStatusEnum.DEATH_POTION)
+      service['players'].value[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
     ).toEqual(true);
   });
 
@@ -616,7 +616,7 @@ describe('GameService', () => {
     const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
     const getNextRoundSpy = jest.spyOn(
       roundOrchestrationService,
-      'getNextRound'
+      'getNextRound',
     );
 
     const mockCurrentRound: Round = {
@@ -672,7 +672,7 @@ describe('GameService', () => {
     const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
     const getNextRoundSpy = jest.spyOn(
       roundOrchestrationService,
-      'getNextRound'
+      'getNextRound',
     );
 
     const mockCurrentRound: Round = {

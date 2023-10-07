@@ -8,7 +8,7 @@ export class AmoureuxVictoryHandler implements VictoryHandler {
     return (
       alivePlayers.length === 2 &&
       alivePlayers.every((player) =>
-        player.statuses.has(PlayerStatusEnum.LOVER)
+        player.statuses.has(PlayerStatusEnum.LOVER),
       )
     );
   }

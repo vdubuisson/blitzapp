@@ -14,11 +14,11 @@ export class ChienLoupRoundHandler implements RoundHandler {
   handleAction(
     players: Player[],
     _: number[],
-    selectedRole?: PlayerRoleEnum
+    selectedRole?: PlayerRoleEnum,
   ): Observable<Player[]> {
     const newPlayers = [...players];
     const chienLoup = newPlayers.find(
-      (player) => player.role === PlayerRoleEnum.CHIEN_LOUP
+      (player) => player.role === PlayerRoleEnum.CHIEN_LOUP,
     );
     if (chienLoup !== undefined && selectedRole !== undefined) {
       chienLoup.role = selectedRole;

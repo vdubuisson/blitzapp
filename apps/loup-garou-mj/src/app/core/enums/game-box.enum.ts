@@ -3,5 +3,5 @@ export enum GameBoxEnum {
   LUNE = 'LUNE',
   VILLAGE = 'VILLAGE',
   PERSONNAGES = 'PERSONNAGES',
-  PACTE = 'PACTE'
+  PACTE = 'PACTE',
 }

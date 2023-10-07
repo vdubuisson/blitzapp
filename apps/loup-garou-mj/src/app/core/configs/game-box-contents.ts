@@ -22,6 +22,11 @@ export const GAME_BOX_CONTENTS: { [box: string]: PlayerRoleEnum[] } = {
     PlayerRoleEnum.RENARD,
   ],
   [GameBoxEnum.PACTE]: Object.values(PlayerRoleEnum).filter(
-    (role) => ![PlayerRoleEnum.NOT_SELECTED, PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU].includes(role)
+    (role) =>
+      ![
+        PlayerRoleEnum.NOT_SELECTED,
+        PlayerRoleEnum.VILLAGEOIS,
+        PlayerRoleEnum.LOUP_GAROU,
+      ].includes(role),
   ),
 };

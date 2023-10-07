@@ -42,7 +42,7 @@ export class StorageService {
   get<T>(key: string): Observable<T | null> {
     return this.isInitialized.pipe(
       filter((isInitialized) => isInitialized),
-      switchMap(() => from((this._storage as Storage).get(key)))
+      switchMap(() => from((this._storage as Storage).get(key))),
     );
   }
 

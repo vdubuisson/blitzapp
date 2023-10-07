@@ -11,7 +11,10 @@ export class SalvateurRoundHandler implements RoundHandler {
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     newPlayers
       .find((player) => player.statuses.has(PlayerStatusEnum.PROTECTED))
@@ -28,7 +31,7 @@ export class SalvateurRoundHandler implements RoundHandler {
       selectablePlayers: players
         .filter(
           (player) =>
-            !player.isDead && !player.statuses.has(PlayerStatusEnum.PROTECTED)
+            !player.isDead && !player.statuses.has(PlayerStatusEnum.PROTECTED),
         )
         .map((player) => player.id),
       maxSelectable: 1,

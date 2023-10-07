@@ -86,7 +86,7 @@ describe('RolesChoicePage', () => {
     expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
@@ -103,7 +103,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']).toEqual(mockRoles.playersNumber);
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['playersCount']).toEqual(mockRoles.playersNumber + 1);
@@ -120,7 +120,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']).toEqual(mockRoles.playersNumber);
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['playersCount']).toEqual(mockRoles.playersNumber + 2);
@@ -137,7 +137,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']).toEqual(mockRoles.playersNumber);
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['playersCount']).toEqual(mockRoles.playersNumber + 3);
@@ -156,7 +156,7 @@ describe('RolesChoicePage', () => {
     expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
@@ -173,7 +173,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']).toEqual(mockRoles.playersNumber);
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['playersCount']).toEqual(mockRoles.playersNumber - 1);
@@ -190,7 +190,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']).toEqual(mockRoles.playersNumber);
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['playersCount']).toEqual(mockRoles.playersNumber - 2);
@@ -207,7 +207,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']).toEqual(mockRoles.playersNumber);
 
     page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
     expect(page['playersCount']).toEqual(mockRoles.playersNumber - 3);

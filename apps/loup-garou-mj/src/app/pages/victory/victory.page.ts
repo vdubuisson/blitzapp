@@ -26,10 +26,10 @@ export class VictoryPage {
 
   constructor(
     private route: ActivatedRoute,
-    private newGameService: NewGameService
+    private newGameService: NewGameService,
   ) {
     this.victory = this.route.snapshot.queryParamMap.get(
-      'victory'
+      'victory',
     ) as VictoryEnum;
     this.victoryTitle =
       this.victory === VictoryEnum.NONE ? 'Match nul' : 'Victoire';

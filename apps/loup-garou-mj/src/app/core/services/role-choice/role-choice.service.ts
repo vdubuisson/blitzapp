@@ -7,9 +7,7 @@ import { RoleList, StoredRoleList } from '../../models/role-list.model';
   providedIn: 'root',
 })
 export class RoleChoiceService {
-  private roles = new BehaviorSubject<RoleList | undefined>(
-    undefined
-  );
+  private roles = new BehaviorSubject<RoleList | undefined>(undefined);
 
   private readonly ROLES_KEY = 'RoleChoiceService_roles';
 
@@ -27,7 +25,7 @@ export class RoleChoiceService {
     this.roles.next(roles);
     const storedRoleList: StoredRoleList = {
       ...roles,
-      selectedRoles: Array.from(roles.selectedRoles)
+      selectedRoles: Array.from(roles.selectedRoles),
     };
     this.storageService.set(this.ROLES_KEY, storedRoleList);
   }
@@ -39,7 +37,7 @@ export class RoleChoiceService {
         if (storedRoles) {
           const roleList: RoleList = {
             ...storedRoles,
-            selectedRoles: new Set(storedRoles.selectedRoles)
+            selectedRoles: new Set(storedRoles.selectedRoles),
           };
           this.roles.next(roleList);
         } else {
@@ -47,7 +45,7 @@ export class RoleChoiceService {
             villageois: 0,
             loupGarou: 0,
             playersNumber: 0,
-            selectedRoles: new Set()
+            selectedRoles: new Set(),
           });
         }
       });

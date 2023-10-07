@@ -24,7 +24,7 @@ export const appRoutes: Routes = [
     title: 'LG Assistant MJ | Nouvelle partie | Roles',
     loadComponent: () =>
       import('./pages/new-game-roles/new-game-roles.page').then(
-        (m) => m.NewGameRolesPage
+        (m) => m.NewGameRolesPage,
       ),
   },
   {
@@ -32,7 +32,7 @@ export const appRoutes: Routes = [
     title: 'LG Assistant MJ | Choix des rôles à jouer',
     loadComponent: () =>
       import('./pages/roles-choice/roles-choice.page').then(
-        (m) => m.RolesChoicePage
+        (m) => m.RolesChoicePage,
       ),
   },
   {
@@ -40,7 +40,7 @@ export const appRoutes: Routes = [
     title: 'LG Assistant MJ | Règles des rôles',
     loadComponent: () =>
       import('./pages/roles-rules/roles-rules.page').then(
-        (m) => m.RolesRulesPage
+        (m) => m.RolesRulesPage,
       ),
   },
   {
@@ -48,7 +48,7 @@ export const appRoutes: Routes = [
     title: 'LG Assistant MJ | Légende des statuts',
     loadComponent: () =>
       import('./pages/status-legends/status-legends.page').then(
-        (m) => m.StatusLegendsPage
+        (m) => m.StatusLegendsPage,
       ),
   },
   {

@@ -12,7 +12,10 @@ export class LoupGarouRoundHandler implements RoundHandler {
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
     const newPlayers = [...players];
     newPlayers
       .find((player) => player.id === selectedPlayerIds[0])
@@ -26,7 +29,7 @@ export class LoupGarouRoundHandler implements RoundHandler {
       selectablePlayers: players
         .filter(
           (player) =>
-            !LOUPS_GAROUS_ROLES.includes(player.role) && !player.isDead
+            !LOUPS_GAROUS_ROLES.includes(player.role) && !player.isDead,
         )
         .map((player) => player.id),
       maxSelectable: 1,

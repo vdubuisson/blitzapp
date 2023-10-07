@@ -18,10 +18,10 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
 
   override handleAction(
     players: Player[],
-    selectedPlayers: number[]
+    selectedPlayers: number[],
   ): Observable<Player[]> {
     const montreurOursIndex = players.findIndex(
-      (player) => player.role === PlayerRoleEnum.MONTREUR_OURS
+      (player) => player.role === PlayerRoleEnum.MONTREUR_OURS,
     );
     if (montreurOursIndex > -1) {
       // const montreurOurs = players[montreurOursIndex];

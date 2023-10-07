@@ -38,7 +38,7 @@ describe('VictoryHandlersService', () => {
     service.initHandlers([]);
 
     expect(
-      service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS)
+      service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS),
     ).toBeInstanceOf(VillageoisVictoryHandler);
   });
 
@@ -46,7 +46,7 @@ describe('VictoryHandlersService', () => {
     service.initHandlers([]);
 
     expect(service['victoryHandlers'].get(VictoryEnum.NONE)).toBeInstanceOf(
-      NoneVictoryHandler
+      NoneVictoryHandler,
     );
   });
 
@@ -54,7 +54,7 @@ describe('VictoryHandlersService', () => {
     service.initHandlers([PlayerRoleEnum.LOUP_GAROU]);
 
     expect(
-      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU)
+      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU),
     ).toBeInstanceOf(LoupGarouVictoryHandler);
   });
 
@@ -62,7 +62,7 @@ describe('VictoryHandlersService', () => {
     service.initHandlers([PlayerRoleEnum.GRAND_MECHANT_LOUP]);
 
     expect(
-      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU)
+      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU),
     ).toBeInstanceOf(LoupGarouVictoryHandler);
   });
 
@@ -70,7 +70,7 @@ describe('VictoryHandlersService', () => {
     service.initHandlers([]);
 
     expect(service['victoryHandlers'].has(VictoryEnum.LOUP_GAROU)).toEqual(
-      false
+      false,
     );
   });
 
@@ -78,7 +78,7 @@ describe('VictoryHandlersService', () => {
     service.initHandlers([PlayerRoleEnum.CUPIDON]);
 
     expect(service['victoryHandlers'].get(VictoryEnum.AMOUREUX)).toBeInstanceOf(
-      AmoureuxVictoryHandler
+      AmoureuxVictoryHandler,
     );
   });
 
@@ -94,7 +94,7 @@ describe('VictoryHandlersService', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.LOVER]),
         isDead: true,
       },
@@ -102,7 +102,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.LOVER]),
         isDead: false,
       },
@@ -110,14 +110,14 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
     service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
-      new AmoureuxVictoryHandler()
+      new AmoureuxVictoryHandler(),
     );
 
     service.removeUselessHandlers(players);
@@ -129,7 +129,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     service.initHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
 
     expect(
-      service['victoryHandlers'].get(VictoryEnum.JOUEUR_FLUTE)
+      service['victoryHandlers'].get(VictoryEnum.JOUEUR_FLUTE),
     ).toBeInstanceOf(JoueurFluteVictoryHandler);
   });
 
@@ -137,7 +137,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     service.initHandlers([]);
 
     expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
-      false
+      false,
     );
   });
 
@@ -147,20 +147,20 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.JOUEUR_FLUTE,
-card: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: true,
       },
     ];
     service['victoryHandlers'].set(
       VictoryEnum.JOUEUR_FLUTE,
-      new JoueurFluteVictoryHandler()
+      new JoueurFluteVictoryHandler(),
     );
 
     service.removeUselessHandlers(players);
 
     expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
-      false
+      false,
     );
   });
 
@@ -168,7 +168,7 @@ card: PlayerRoleEnum.JOUEUR_FLUTE,
     service.initHandlers([PlayerRoleEnum.LOUP_BLANC]);
 
     expect(
-      service['victoryHandlers'].get(VictoryEnum.LOUP_BLANC)
+      service['victoryHandlers'].get(VictoryEnum.LOUP_BLANC),
     ).toBeInstanceOf(LoupBlancVictoryHandler);
   });
 
@@ -176,7 +176,7 @@ card: PlayerRoleEnum.JOUEUR_FLUTE,
     service.initHandlers([]);
 
     expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
-      false
+      false,
     );
   });
 
@@ -186,20 +186,20 @@ card: PlayerRoleEnum.JOUEUR_FLUTE,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_BLANC,
-card: PlayerRoleEnum.LOUP_BLANC,
+        card: PlayerRoleEnum.LOUP_BLANC,
         statuses: new Set(),
         isDead: true,
       },
     ];
     service['victoryHandlers'].set(
       VictoryEnum.LOUP_BLANC,
-      new LoupBlancVictoryHandler()
+      new LoupBlancVictoryHandler(),
     );
 
     service.removeUselessHandlers(players);
 
     expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
-      false
+      false,
     );
   });
 
@@ -219,15 +219,15 @@ card: PlayerRoleEnum.LOUP_BLANC,
 
     service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
-      mockAmoureuxVictoryHandler
+      mockAmoureuxVictoryHandler,
     );
     service['victoryHandlers'].set(
       VictoryEnum.LOUP_GAROU,
-      mockLoupGarouVictoryHandler
+      mockLoupGarouVictoryHandler,
     );
     service['victoryHandlers'].set(
       VictoryEnum.VILLAGEOIS,
-      mockVillageoisVictoryHandler
+      mockVillageoisVictoryHandler,
     );
 
     const victory = service.getVictory([]);
@@ -251,15 +251,15 @@ card: PlayerRoleEnum.LOUP_BLANC,
 
     service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
-      mockAmoureuxVictoryHandler
+      mockAmoureuxVictoryHandler,
     );
     service['victoryHandlers'].set(
       VictoryEnum.LOUP_GAROU,
-      mockLoupGarouVictoryHandler
+      mockLoupGarouVictoryHandler,
     );
     service['victoryHandlers'].set(
       VictoryEnum.VILLAGEOIS,
-      mockVillageoisVictoryHandler
+      mockVillageoisVictoryHandler,
     );
 
     const victory = service.getVictory([]);

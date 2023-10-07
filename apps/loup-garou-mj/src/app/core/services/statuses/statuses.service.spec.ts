@@ -16,7 +16,7 @@ describe('StatusesService', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.CORBEAU,
-card: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -24,7 +24,7 @@ card: PlayerRoleEnum.CORBEAU,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.RAVEN]),
         isDead: false,
       },
@@ -41,7 +41,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SALVATEUR,
-card: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: true,
       },
@@ -49,7 +49,7 @@ card: PlayerRoleEnum.SALVATEUR,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.PROTECTED]),
         isDead: false,
       },
@@ -58,7 +58,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
 
     expect(newPlayers[1].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
-      false
+      false,
     );
   });
 
@@ -68,7 +68,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.SALVATEUR,
-card: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -76,7 +76,7 @@ card: PlayerRoleEnum.SALVATEUR,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set([PlayerStatusEnum.PROTECTED]),
         isDead: false,
       },
@@ -85,7 +85,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
 
     expect(newPlayers[1].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
-      true
+      true,
     );
   });
 });

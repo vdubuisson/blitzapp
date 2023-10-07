@@ -86,8 +86,8 @@ describe('SorciereKillRoundHandler', () => {
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)
-        ).toEqual(false)
+          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION),
+        ).toEqual(false),
       );
   }));
 
@@ -115,8 +115,8 @@ describe('SorciereKillRoundHandler', () => {
       .handleAction(players, [])
       .subscribe((newPlayers) =>
         expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)
-        ).toEqual(true)
+          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION),
+        ).toEqual(true),
       );
   }));
 

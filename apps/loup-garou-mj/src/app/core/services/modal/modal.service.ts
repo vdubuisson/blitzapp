@@ -16,14 +16,14 @@ export class ModalService {
       this.modalCtrl.create({
         component: PlayerCardModalComponent,
         componentProps: { card },
-      })
+      }),
     ).pipe(
       switchMap((modal) =>
-        fromPromise(modal.present().then(() => modal.onDidDismiss()))
+        fromPromise(modal.present().then(() => modal.onDidDismiss())),
       ),
       map((_) => {
         return;
-      })
+      }),
     );
   }
 }

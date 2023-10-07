@@ -11,7 +11,7 @@ export interface RoundHandler {
   handleAction(
     players: Player[],
     selectedPlayerIds: number[],
-    selectedRole?: PlayerRoleEnum
+    selectedRole?: PlayerRoleEnum,
   ): Observable<Player[]>;
   getRoundConfig(players: Player[]): Round;
 }

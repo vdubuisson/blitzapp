@@ -36,7 +36,7 @@ export class GameService {
     private roundOrchestrationService: RoundOrchestrationService,
     private deathService: DeathService,
     private statusesService: StatusesService,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
     this.initFromStorage();
   }
@@ -62,7 +62,7 @@ export class GameService {
     this.roundHandlersService.initHandlers(roles);
     this.victoryHandlersService.initHandlers(roles);
     const sorciere = players.find(
-      (player) => player.role === PlayerRoleEnum.SORCIERE
+      (player) => player.role === PlayerRoleEnum.SORCIERE,
     );
     if (sorciere) {
       sorciere.statuses.add(PlayerStatusEnum.HEALTH_POTION);
@@ -77,20 +77,18 @@ export class GameService {
 
   submitRoundAction(
     selectedPlayers: number[],
-    selectedRole?: PlayerRoleEnum
+    selectedRole?: PlayerRoleEnum,
   ): void {
     const currentRoundRole = this.round.value?.role;
     if (currentRoundRole !== undefined) {
       const handler = this.roundHandlersService.getHandler(currentRoundRole);
       if (handler !== undefined) {
-        handler.handleAction(
-          this.players.value,
-          selectedPlayers,
-          selectedRole
-        ).subscribe((newPlayers) => {
-          this.setPlayers(newPlayers);
-          this.nextRound();
-        });
+        handler
+          .handleAction(this.players.value, selectedPlayers, selectedRole)
+          .subscribe((newPlayers) => {
+            this.setPlayers(newPlayers);
+            this.nextRound();
+          });
       }
     }
   }
@@ -128,13 +126,13 @@ export class GameService {
       currentHandler,
       currentRoundRole,
       nextHandler,
-      nextRound
+      nextRound,
     );
 
     const isVictory = this.handleDayRound(
       currentHandler,
       nextHandler,
-      nextRound
+      nextRound,
     );
     if (isVictory) {
       return;
@@ -206,7 +204,7 @@ export class GameService {
   private handleDaytimeDeaths(currentHandler: RoundHandler | undefined) {
     if (currentHandler?.isDuringDay) {
       const playersAfterDeath = this.deathService.handleNewDeaths(
-        this.players.value
+        this.players.value,
       );
       this.setPlayers(playersAfterDeath);
     }
@@ -223,11 +221,11 @@ export class GameService {
     currentHandler: RoundHandler | undefined,
     currentRoundRole: RoundEnum,
     nextHandler: RoundHandler | undefined,
-    nextRound: RoundEnum
+    nextRound: RoundEnum,
   ): RoundEnum {
     if (nextHandler?.isDuringDay && !currentHandler?.isDuringDay) {
       const playersAfterDeath = this.deathService.handleNewDeaths(
-        this.players.value
+        this.players.value,
       );
       this.setPlayers(playersAfterDeath);
       return this.roundOrchestrationService.getNextRound(currentRoundRole);
@@ -238,7 +236,7 @@ export class GameService {
   private handleDayRound(
     currentHandler: RoundHandler | undefined,
     nextHandler: RoundHandler | undefined,
-    nextRound: RoundEnum
+    nextRound: RoundEnum,
   ): boolean {
     if (
       (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
@@ -261,7 +259,7 @@ export class GameService {
 
   private handleAfterDayEvents(
     currentHandler: RoundHandler | undefined,
-    nextHandler: RoundHandler | undefined
+    nextHandler: RoundHandler | undefined,
   ) {
     if (
       nextHandler !== undefined &&
@@ -269,7 +267,7 @@ export class GameService {
       currentHandler?.isDuringDay
     ) {
       const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
-        this.players.value
+        this.players.value,
       );
       this.setPlayers(playersAfterDay);
       this.nextDayCount();

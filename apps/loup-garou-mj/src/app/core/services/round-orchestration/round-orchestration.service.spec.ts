@@ -49,13 +49,13 @@ describe('RoundOrchestrationService with storage init', () => {
     service = new RoundOrchestrationService(
       roundHandlersService,
       deathService,
-      storageService
+      storageService,
     );
   });
 
   it('should init unique rounds passed from storage', () => {
     expect(service['uniqueRoundsPassed']).toEqual(
-      new Set(mockStoredUniqueRoundsPassed)
+      new Set(mockStoredUniqueRoundsPassed),
     );
   });
 
@@ -80,7 +80,7 @@ describe('RoundOrchestrationService', () => {
     service = new RoundOrchestrationService(
       roundHandlersService,
       deathService,
-      storageService
+      storageService,
     );
   });
 

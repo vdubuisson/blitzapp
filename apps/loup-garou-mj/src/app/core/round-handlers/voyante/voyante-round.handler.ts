@@ -13,11 +13,16 @@ export class VoyanteRoundHandler implements RoundHandler {
   readonly type = RoundTypeEnum.PLAYERS;
   constructor(private modalService: ModalService) {}
 
-  handleAction(players: Player[], selectedPlayerIds: number[]): Observable<Player[]> {
-    const selectedPlayerCard = (players.find((player) => player.id === selectedPlayerIds[0]) as Player).card;
-    return this.modalService.showPlayerCard(selectedPlayerCard).pipe(
-      map(() => [...players])
-    );
+  handleAction(
+    players: Player[],
+    selectedPlayerIds: number[],
+  ): Observable<Player[]> {
+    const selectedPlayerCard = (
+      players.find((player) => player.id === selectedPlayerIds[0]) as Player
+    ).card;
+    return this.modalService
+      .showPlayerCard(selectedPlayerCard)
+      .pipe(map(() => [...players]));
   }
 
   getRoundConfig(players: Player[]): Round {

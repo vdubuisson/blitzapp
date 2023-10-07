@@ -107,7 +107,7 @@ describe('RenardRoundHandler', () => {
     roundHandler
       .handleAction(players, [])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalledTimes(0)
+        expect(announcementService.announceFoxSuccess).toBeCalledTimes(0),
       );
   }));
 
@@ -143,7 +143,7 @@ describe('RenardRoundHandler', () => {
     roundHandler
       .handleAction(players, [])
       .subscribe(() =>
-        expect(announcementService.announceFoxFail).toBeCalledTimes(0)
+        expect(announcementService.announceFoxFail).toBeCalledTimes(0),
       );
   }));
 
@@ -212,7 +212,7 @@ describe('RenardRoundHandler', () => {
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalled()
+        expect(announcementService.announceFoxSuccess).toBeCalled(),
       );
   }));
 
@@ -297,7 +297,7 @@ describe('RenardRoundHandler', () => {
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalled()
+        expect(announcementService.announceFoxSuccess).toBeCalled(),
       );
   }));
 
@@ -399,7 +399,7 @@ describe('RenardRoundHandler', () => {
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalled()
+        expect(announcementService.announceFoxSuccess).toBeCalled(),
       );
   }));
 
@@ -451,8 +451,8 @@ describe('RenardRoundHandler', () => {
       .handleAction(players, [1])
       .subscribe((newPlayers) =>
         expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
-          true
-        )
+          true,
+        ),
       );
   }));
 
@@ -505,7 +505,7 @@ describe('RenardRoundHandler', () => {
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxFail).toBeCalled()
+        expect(announcementService.announceFoxFail).toBeCalled(),
       );
   }));
 

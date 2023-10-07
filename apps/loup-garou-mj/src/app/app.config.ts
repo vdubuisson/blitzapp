@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
       IonicModule.forRoot({
         innerHTMLTemplatesEnabled: true,
       }),
-      IonicStorageModule.forRoot({ name: '_lgmj-db' })
+      IonicStorageModule.forRoot({ name: '_lgmj-db' }),
     ),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],

@@ -33,7 +33,7 @@ describe('NewGamePage', () => {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -41,7 +41,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -49,7 +49,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe((players) =>
-      expect(players).toEqual(mockPlayers)
+      expect(players).toEqual(mockPlayers),
     );
   }));
 
@@ -57,7 +57,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
     mockPlayers$.next([]);
 
     component['players$'].subscribe(() =>
-      expect(component['playersCount']).toEqual(3)
+      expect(component['playersCount']).toEqual(3),
     );
   }));
 
@@ -67,7 +67,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -75,7 +75,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['canValidate']).toEqual(false)
+      expect(component['canValidate']).toEqual(false),
     );
   }));
 
@@ -85,7 +85,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -93,7 +93,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.LOUP_GAROU,
-card: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -101,7 +101,7 @@ card: PlayerRoleEnum.LOUP_GAROU,
         id: 2,
         name: 'player2',
         role: PlayerRoleEnum.VILLAGEOIS,
-card: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -109,7 +109,7 @@ card: PlayerRoleEnum.VILLAGEOIS,
     mockPlayers$.next(mockPlayers);
 
     component['players$'].subscribe(() =>
-      expect(component['canValidate']).toEqual(true)
+      expect(component['canValidate']).toEqual(true),
     );
   }));
 

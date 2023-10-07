@@ -58,13 +58,13 @@ export class RolesChoicePage {
     private playerRoleNamePipe: PlayerRoleNamePipe,
     private roleChoiceService: RoleChoiceService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {
     Object.values(this.boxContents).forEach((roles) => {
       roles.sort((a, b) =>
         this.playerRoleNamePipe
           .transform(a)
-          .localeCompare(this.playerRoleNamePipe.transform(b))
+          .localeCompare(this.playerRoleNamePipe.transform(b)),
       );
     });
 
