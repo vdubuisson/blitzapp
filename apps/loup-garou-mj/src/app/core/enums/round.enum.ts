@@ -1,5 +1,5 @@
 export enum RoundEnum {
-  // VOLEUR = 'VOLEUR',
+  VOLEUR = 'VOLEUR',
   CUPIDON = 'CUPIDON',
   VOYANTE = 'VOYANTE',
   AMOUREUX = 'AMOUREUX',

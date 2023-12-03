@@ -14,7 +14,7 @@ describe('MontreurOursRoundHandler', () => {
 
   beforeEach(() => {
     announcementService = MockService(AnnouncementService);
-    roundHandler = new MontreurOursRoundHandler(announcementService);
+    roundHandler = new MontreurOursRoundHandler({ announcementService });
   });
 
   it('should not be only once', () => {

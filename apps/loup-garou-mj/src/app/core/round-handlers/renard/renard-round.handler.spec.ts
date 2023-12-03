@@ -15,7 +15,7 @@ describe('RenardRoundHandler', () => {
 
   beforeEach(() => {
     announcementService = MockService(AnnouncementService);
-    roundHandler = new RenardRoundHandler(announcementService);
+    roundHandler = new RenardRoundHandler({ announcementService });
   });
 
   it('should not be only once', () => {

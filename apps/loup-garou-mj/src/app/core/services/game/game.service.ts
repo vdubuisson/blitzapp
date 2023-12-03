@@ -15,6 +15,8 @@ import { StatusesService } from '../statuses/statuses.service';
 import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
+import { CardList } from '../../models/card-list.model';
+import { getNotPlayedRoles } from '../../utils/roles.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +26,8 @@ export class GameService {
   private round = new BehaviorSubject<Round | undefined>(undefined);
   private gameInProgress = new BehaviorSubject<boolean>(false);
   private dayCount = new BehaviorSubject<number>(1);
+
+  private cardList: CardList | undefined;
 
   private readonly PLAYERS_KEY = 'GameService_currentPlayers';
   private readonly ROUND_KEY = 'GameService_currentRound';
@@ -57,18 +61,9 @@ export class GameService {
     return this.dayCount.asObservable();
   }
 
-  createGame(players: Player[]): void {
-    const roles = players.map((player) => player.role);
-    this.roundHandlersService.initHandlers(roles);
-    this.victoryHandlersService.initHandlers(roles);
-    const sorciere = players.find(
-      (player) => player.role === PlayerRoleEnum.SORCIERE,
-    );
-    if (sorciere) {
-      sorciere.statuses.add(PlayerStatusEnum.HEALTH_POTION);
-      sorciere.statuses.add(PlayerStatusEnum.DEATH_POTION);
-    }
-    this.setPlayers(players);
+  createGame(players: Player[], cardList: CardList): void {
+    this.cardList = cardList;
+    this.initGame(players, cardList);
     this.setFirstRound();
     this.nextDayCount(0);
     this.gameInProgress.next(true);
@@ -93,6 +88,22 @@ export class GameService {
     }
   }
 
+  private initGame(players: Player[], cardList: CardList): void {
+    const roles = players.map((player) => player.role);
+    const notPlayedRoles = getNotPlayedRoles(players, cardList);
+    this.roundHandlersService.initHandlers(roles);
+    this.roundHandlersService.initDefaultHandlers(notPlayedRoles);
+    this.victoryHandlersService.initHandlers(roles);
+    const sorciere = players.find(
+      (player) => player.role === PlayerRoleEnum.SORCIERE,
+    );
+    if (sorciere) {
+      sorciere.statuses.add(PlayerStatusEnum.HEALTH_POTION);
+      sorciere.statuses.add(PlayerStatusEnum.DEATH_POTION);
+    }
+    this.setPlayers(players);
+  }
+
   private setFirstRound(): void {
     const firstRound = this.roundOrchestrationService.getFirstRound();
     this.setRound(firstRound);
@@ -103,6 +114,11 @@ export class GameService {
     if (currentRoundRole === undefined) {
       throw new Error('No current round');
     }
+
+    if (currentRoundRole === RoundEnum.VOLEUR) {
+      this.handleAfterVoleurRound();
+    }
+
     const currentHandler =
       this.roundHandlersService.getHandler(currentRoundRole);
 
@@ -146,7 +162,10 @@ export class GameService {
   private setRound(role: RoundEnum): void {
     const handler = this.roundHandlersService.getHandler(role);
     if (handler !== undefined) {
-      const roundConfig = handler.getRoundConfig(this.players.value);
+      const roundConfig = handler.getRoundConfig(
+        this.players.value,
+        this.cardList,
+      );
       this.round.next(roundConfig);
       this.storageService.set(this.ROUND_KEY, roundConfig);
       if (handler.type === RoundTypeEnum.AUTO) {
@@ -272,5 +291,13 @@ export class GameService {
       this.setPlayers(playersAfterDay);
       this.nextDayCount();
     }
+  }
+
+  private handleAfterVoleurRound(): void {
+    this.roundHandlersService.clearHandlers();
+    this.victoryHandlersService.clearHandlers();
+
+    const players = [...this.players.value];
+    this.initGame(players, this.cardList as CardList);
   }
 }

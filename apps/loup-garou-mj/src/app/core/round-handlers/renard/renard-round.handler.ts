@@ -12,13 +12,18 @@ import {
 } from '../../utils/neighbor.utils';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
+import { RoundHandlerParameters } from '../round-handler-parameters.interface';
 
 export class RenardRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
 
-  constructor(private announcementService: AnnouncementService) {}
+  private announcementService: AnnouncementService;
+
+  constructor({ announcementService }: RoundHandlerParameters) {
+    this.announcementService = announcementService as AnnouncementService;
+  }
 
   handleAction(
     players: Player[],

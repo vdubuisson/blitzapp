@@ -3,31 +3,32 @@ import { of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import {
-  VillageoisRoundHandler,
-  CapitaineRoundHandler,
-  LoupGarouRoundHandler,
-  SorciereHealthRoundHandler,
-  SorciereKillRoundHandler,
-  CupidonRoundHandler,
-  ChasseurRoundHandler,
-  VoyanteRoundHandler,
   AmoureuxRoundHandler,
-  JoueurFluteRoundHandler,
+  CapitaineRoundHandler,
   CharmedRoundHandler,
+  ChasseurRoundHandler,
+  ChienLoupRoundHandler,
   CorbeauRoundHandler,
+  CupidonRoundHandler,
   EnfantSauvageRoundHandler,
-  SalvateurRoundHandler,
+  FreresRoundHandler,
   GrandMechantLoupRoundHandler,
+  JoueurFluteRoundHandler,
+  LoupGarouRoundHandler,
   MontreurOursRoundHandler,
   RenardRoundHandler,
-  ChienLoupRoundHandler,
+  SalvateurRoundHandler,
   SoeursRoundHandler,
-  FreresRoundHandler,
+  SorciereHealthRoundHandler,
+  SorciereKillRoundHandler,
+  VillageoisRoundHandler,
+  VoyanteRoundHandler,
 } from '../../round-handlers';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { StorageService } from '../storage/storage.service';
 import { RoundHandlersService } from './round-handlers.service';
 import { ModalService } from '../modal/modal.service';
+import { DefaultRoundHandler } from '../../round-handlers/default/default-round.handler';
 
 describe('RoundHandlersService', () => {
   let service: RoundHandlersService;
@@ -299,7 +300,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for VOYANTE round', () => {
-    const roundHandler = new VoyanteRoundHandler(modalService);
+    const roundHandler = new VoyanteRoundHandler({ modalService });
     service['roundHandlers'].set(RoundEnum.VOYANTE, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.VOYANTE);
@@ -310,7 +311,7 @@ describe('RoundHandlersService', () => {
   it('should remove handler VOYANTE for VOYANTE role', () => {
     service['roundHandlers'].set(
       RoundEnum.VOYANTE,
-      new VoyanteRoundHandler(modalService),
+      new VoyanteRoundHandler({ modalService }),
     );
 
     service.removeHandlers([PlayerRoleEnum.VOYANTE]);
@@ -549,7 +550,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for MONTREUR_OURS round', () => {
-    const roundHandler = new MontreurOursRoundHandler(announcementService);
+    const roundHandler = new MontreurOursRoundHandler({ announcementService });
     service['roundHandlers'].set(RoundEnum.MONTREUR_OURS, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.MONTREUR_OURS);
@@ -560,7 +561,7 @@ describe('RoundHandlersService', () => {
   it('should remove handler MONTREUR_OURS for MONTREUR_OURS role', () => {
     service['roundHandlers'].set(
       RoundEnum.MONTREUR_OURS,
-      new MontreurOursRoundHandler(announcementService),
+      new MontreurOursRoundHandler({ announcementService }),
     );
 
     service.removeHandlers([PlayerRoleEnum.MONTREUR_OURS]);
@@ -585,7 +586,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for RENARD round', () => {
-    const roundHandler = new RenardRoundHandler(announcementService);
+    const roundHandler = new RenardRoundHandler({ announcementService });
     service['roundHandlers'].set(RoundEnum.RENARD, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.RENARD);
@@ -596,7 +597,7 @@ describe('RoundHandlersService', () => {
   it('should remove handler RENARD for RENARD role', () => {
     service['roundHandlers'].set(
       RoundEnum.RENARD,
-      new RenardRoundHandler(announcementService),
+      new RenardRoundHandler({ announcementService }),
     );
 
     service.removeHandlers([PlayerRoleEnum.RENARD]);
@@ -698,5 +699,13 @@ describe('RoundHandlersService', () => {
     service.removeHandlers([PlayerRoleEnum.FRERE]);
 
     expect(service['roundHandlers'].has(RoundEnum.FRERES)).toEqual(false);
+  });
+
+  it('should init handler as default', () => {
+    service.initDefaultHandlers([PlayerRoleEnum.VOYANTE]);
+
+    expect(service['roundHandlers'].get(RoundEnum.VOYANTE)).toBeInstanceOf(
+      DefaultRoundHandler,
+    );
   });
 });

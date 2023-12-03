@@ -6,11 +6,8 @@ import { AnnouncementService } from '../announcement/announcement.service';
 import { StorageService } from '../storage/storage.service';
 import { ROLE_ROUNDS_CONFIG } from '../../configs/role-rounds.config';
 import { ModalService } from '../modal/modal.service';
-import {
-  ANNOUNCEMENT_ROUND_HANDLERS_CONFIG,
-  MODAL_ROUND_HANDLERS_CONFIG,
-  SIMPLE_ROUND_HANDLERS_CONFIG,
-} from '../../configs/round-handlers.config';
+import { ROUND_HANDLERS_CONFIG } from '../../configs/round-handlers.config';
+import { DefaultRoundHandler } from '../../round-handlers/default/default-round.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +16,8 @@ export class RoundHandlersService {
   private readonly roundHandlers: Map<RoundEnum, RoundHandler> = new Map();
 
   private readonly HANDLERS_KEY = 'RoundHandlersService_handlers';
+  private readonly DEFAULT_HANDLERS_KEY =
+    'RoundHandlersService_defaultHandlers';
 
   constructor(
     private announcementService: AnnouncementService,
@@ -40,6 +39,17 @@ export class RoundHandlersService {
     rolesSet.forEach((role) => {
       ROLE_ROUNDS_CONFIG[role].forEach((round) =>
         this.createRoundHandler(round),
+      );
+    });
+  }
+
+  initDefaultHandlers(roles: PlayerRoleEnum[]): void {
+    this.storageService.set(this.DEFAULT_HANDLERS_KEY, roles);
+
+    const rolesSet: Set<PlayerRoleEnum> = new Set(roles);
+    rolesSet.forEach((role) => {
+      ROLE_ROUNDS_CONFIG[role].forEach((round) =>
+        this.createDefaultRoundHandler(round),
       );
     });
   }
@@ -69,6 +79,7 @@ export class RoundHandlersService {
   clearHandlers(): void {
     this.roundHandlers.clear();
     this.storageService.remove(this.HANDLERS_KEY);
+    this.storageService.remove(this.DEFAULT_HANDLERS_KEY);
   }
 
   private initFromStorage(): void {
@@ -79,25 +90,43 @@ export class RoundHandlersService {
           this.initHandlers(roles);
         }
       });
+
+    this.storageService
+      .get<PlayerRoleEnum[]>(this.DEFAULT_HANDLERS_KEY)
+      .subscribe((roles) => {
+        if (roles !== null) {
+          this.initDefaultHandlers(roles);
+        }
+      });
   }
 
   private createRoundHandler(round: RoundEnum): void {
     if (!this.roundHandlers.has(round)) {
-      let roundHandler: RoundHandler;
-      if (SIMPLE_ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        roundHandler = new SIMPLE_ROUND_HANDLERS_CONFIG[round]();
-      } else if (ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        roundHandler = new ANNOUNCEMENT_ROUND_HANDLERS_CONFIG[round](
-          this.announcementService,
-        );
-      } else if (MODAL_ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        roundHandler = new MODAL_ROUND_HANDLERS_CONFIG[round](
-          this.modalService,
-        );
+      if (ROUND_HANDLERS_CONFIG[round] !== undefined) {
+        const roundHandler = new ROUND_HANDLERS_CONFIG[round]({
+          announcementService: this.announcementService,
+          modalService: this.modalService,
+        });
+        this.roundHandlers.set(round, roundHandler);
       } else {
         throw new Error(`Missing RoundHandler config for ${round}`);
       }
-      this.roundHandlers.set(round, roundHandler);
+    }
+  }
+
+  private createDefaultRoundHandler(round: RoundEnum): void {
+    if (!this.roundHandlers.has(round)) {
+      if (ROUND_HANDLERS_CONFIG[round] !== undefined) {
+        const roundHandler = new ROUND_HANDLERS_CONFIG[round]({});
+        const defaultRoundHandler = new DefaultRoundHandler(
+          round,
+          true,
+          roundHandler.isDuringDay,
+        );
+        this.roundHandlers.set(round, defaultRoundHandler);
+      } else {
+        throw new Error(`Missing RoundHandler config for ${round}`);
+      }
     }
   }
 }
