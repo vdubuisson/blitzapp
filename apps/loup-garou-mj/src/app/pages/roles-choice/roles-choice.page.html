@@ -39,7 +39,7 @@
           slot="end"
           formControlName="villageois"
           type="number"
-          [min]="requiredVillageois"
+          [min]="requiredVillageois()"
           class="role-count"
           (ionFocus)="selectInput($event)"
         />
@@ -61,7 +61,7 @@
             <ion-checkbox
               slot="end"
               [value]="role"
-              [checked]="selectedRoles.has(role)"
+              [checked]="selectedRoles().has(role)"
               (ionChange)="onRoleCheckChange($event)"
             />
             <ion-thumbnail slot="start">
@@ -81,16 +81,16 @@
 
     <div id="submit-block">
       <ion-button
-        [disabled]="playersCount <= 0 || roleCountForm.invalid"
+        [disabled]="playersCount() <= 0 || roleCountForm.invalid"
         expand="block"
         class="ion-margin-horizontal"
         color="primary"
         type="submit"
       >
-        Valider ({{playersCount}} joueurs)
+        Valider ({{playersCount()}} joueurs)
       </ion-button>
       <ion-button
-        [disabled]="playersCount <= 0"
+        [disabled]="playersCount() <= 0"
         expand="block"
         (click)="deselectAll()"
         class="ion-margin-horizontal"

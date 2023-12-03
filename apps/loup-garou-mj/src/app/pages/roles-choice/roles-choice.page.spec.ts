@@ -62,7 +62,7 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['selectedRoles']).toEqual(mockCards.selectedRoles);
+    expect(page['selectedRoles']()).toEqual(mockCards.selectedRoles);
   });
 
   it('should init form with roles', () => {
@@ -89,7 +89,7 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
   });
 
   it('should add role on check', () => {
@@ -100,15 +100,15 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    page['selectedRoles'] = new Set();
+    page['selectedRoles'].set(new Set());
 
-    expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
   });
 
   it('should increment playersCount by 1 on simple role check', () => {
@@ -127,13 +127,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber + 1);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 1);
   });
 
   it('should increment playersCount by 2 on SOEUR role check', () => {
@@ -152,13 +152,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber + 2);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should increment playersCount by 3 on FRERE role check', () => {
@@ -177,13 +177,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber + 3);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 3);
   });
 
   it('should delete role on uncheck', () => {
@@ -194,15 +194,15 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    page['selectedRoles'] = new Set([PlayerRoleEnum.CHASSEUR]);
+    page['selectedRoles'].set(new Set([PlayerRoleEnum.CHASSEUR]));
 
-    expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['selectedRoles'].has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
   });
 
   it('should decrement playersCount by 1 on simple role uncheck', () => {
@@ -221,13 +221,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber - 1);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 1);
   });
 
   it('should decrement playersCount by 2 on SOEUR role uncheck', () => {
@@ -246,13 +246,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber - 2);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
 
   it('should decrement playersCount by 3 on FRERE role uncheck', () => {
@@ -271,23 +271,23 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber - 3);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 3);
   });
 
   it('should clear selected roles on deselect', () => {
-    page['selectedRoles'] = new Set([PlayerRoleEnum.CHASSEUR]);
+    page['selectedRoles'].set(new Set([PlayerRoleEnum.CHASSEUR]));
 
-    expect(page['selectedRoles'].size).toEqual(1);
+    expect(page['selectedRoles']().size).toEqual(1);
 
     page['deselectAll']();
 
-    expect(page['selectedRoles'].size).toEqual(0);
+    expect(page['selectedRoles']().size).toEqual(0);
   });
 
   it('should reset form on deselect', () => {
@@ -321,11 +321,11 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['playersCount']).not.toEqual(0);
+    expect(page['playersCount']()).not.toEqual(0);
 
     page['deselectAll']();
 
-    expect(page['playersCount']).toEqual(0);
+    expect(page['playersCount']()).toEqual(0);
   });
 
   it('should set roles on validate', () => {
@@ -343,7 +343,7 @@ describe('RolesChoicePage', () => {
     ]);
     jest.spyOn(roleChoiceService, 'setCards');
 
-    page['selectedRoles'] = selectedRoles;
+    page['selectedRoles'].set(selectedRoles);
 
     const expectedCardList: CardList = {
       selectedRoles,
@@ -374,11 +374,11 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois + 2);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber + 2);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should increment playersCount on loupGarou form increase', () => {
@@ -390,11 +390,11 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou + 2);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber + 2);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should decrement playersCount on villageois form decrease', () => {
@@ -406,11 +406,11 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois - 2);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber - 2);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
 
   it('should decrement playersCount on loupGarou form decrease', () => {
@@ -422,11 +422,11 @@ describe('RolesChoicePage', () => {
     };
     currentChosenCards.next(mockCards);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou - 2);
 
-    expect(page['playersCount']).toEqual(mockCards.playersNumber - 2);
+    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
 
   it('should increment villageois count by 2 on VOLEUR check', () => {
@@ -522,6 +522,6 @@ describe('RolesChoicePage', () => {
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(3);
+    expect(page['playersCount']()).toEqual(3);
   });
 });
