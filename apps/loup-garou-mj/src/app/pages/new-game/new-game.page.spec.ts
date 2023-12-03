@@ -6,23 +6,23 @@ import { Player } from '../../core/models/player.model';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 
 import { NewGamePage } from './new-game.page';
-import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
-import { RoleList } from '../../core/models/role-list.model';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { CardList } from '../../core/models/card-list.model';
 
 describe('NewGamePage', () => {
   let component: NewGamePage;
   let newGameService: NewGameService;
-  let roleChoiceService: RoleChoiceService;
+  let roleChoiceService: CardChoiceService;
   let mockPlayers$: BehaviorSubject<Player[]>;
 
   beforeEach(waitForAsync(() => {
     mockPlayers$ = new BehaviorSubject<Player[]>([]);
     newGameService = MockService(NewGameService);
-    roleChoiceService = MockService(RoleChoiceService);
+    roleChoiceService = MockService(CardChoiceService);
     jest.spyOn(newGameService, 'getPlayers').mockReturnValue(mockPlayers$);
     jest
-      .spyOn(roleChoiceService, 'getCurrentChosenRoles')
-      .mockReturnValue(of({ playersNumber: 3 } as RoleList));
+      .spyOn(roleChoiceService, 'getCurrentChosenCards')
+      .mockReturnValue(of({ playersNumber: 3 } as CardList));
 
     component = new NewGamePage(newGameService, roleChoiceService);
   }));

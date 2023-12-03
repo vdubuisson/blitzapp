@@ -7,7 +7,7 @@ export const GAME_BOX_CONTENTS: { [box: string]: PlayerRoleEnum[] } = {
     PlayerRoleEnum.CUPIDON,
     PlayerRoleEnum.PETITE_FILLE,
     PlayerRoleEnum.SORCIERE,
-    // PlayerRoleEnum.VOLEUR,
+    PlayerRoleEnum.VOLEUR,
     PlayerRoleEnum.VOYANTE,
   ],
   [GameBoxEnum.LUNE]: [PlayerRoleEnum.JOUEUR_FLUTE, PlayerRoleEnum.SALVATEUR],

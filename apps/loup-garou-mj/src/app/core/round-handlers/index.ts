@@ -19,3 +19,4 @@ export * from './chien-loup/chien-loup-round.handler';
 export * from './soeurs/soeurs-round.handler';
 export * from './freres/freres-round.handler';
 export * from './loup-blanc/loup-blanc-round.handler';
+export * from './voleur/voleur-round.handler';

@@ -1,12 +1,12 @@
-import { RoundTypeEnum } from '../enums/round-type.enum';
-import { RoundEnum } from '../enums/round.enum';
-import { Player } from '../models/player.model';
-import { Round } from '../models/round.model';
-import { RoundHandler } from './round-handler.interface';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
+import { RoundEnum } from '../../enums/round.enum';
+import { Player } from '../../models/player.model';
+import { Round } from '../../models/round.model';
+import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 
-export abstract class DefaultRoundHandler implements RoundHandler {
-  protected constructor(
+export class DefaultRoundHandler implements RoundHandler {
+  constructor(
     private roundRole: RoundEnum,
     public isOnlyOnce: boolean,
     public isDuringDay: boolean,

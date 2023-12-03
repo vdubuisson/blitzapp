@@ -8,12 +8,16 @@ import {
   findLeftNeighbor,
   findRightNeighbor,
 } from '../../utils/neighbor.utils';
-import { DefaultRoundHandler } from '../default-round.handler';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 import { Observable } from 'rxjs';
+import { RoundHandlerParameters } from '../round-handler-parameters.interface';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
-  constructor(private announcementService: AnnouncementService) {
+  private announcementService: AnnouncementService;
+
+  constructor({ announcementService }: RoundHandlerParameters) {
     super(RoundEnum.MONTREUR_OURS, false, true, RoundTypeEnum.AUTO);
+    this.announcementService = announcementService as AnnouncementService;
   }
 
   override handleAction(

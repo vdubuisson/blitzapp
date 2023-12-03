@@ -20,14 +20,14 @@ import {
   SorciereHealthRoundHandler,
   SorciereKillRoundHandler,
   VillageoisRoundHandler,
+  VoleurRoundHandler,
   VoyanteRoundHandler,
 } from '../round-handlers';
 import { RoundHandler } from '../round-handlers/round-handler.interface';
-import { AnnouncementService } from '../services/announcement/announcement.service';
-import { ModalService } from '../services/modal/modal.service';
+import { RoundHandlerParameters } from '../round-handlers/round-handler-parameters.interface';
 
-export const SIMPLE_ROUND_HANDLERS_CONFIG: {
-  [round: string]: new () => RoundHandler;
+export const ROUND_HANDLERS_CONFIG: {
+  [round: string]: new (p: RoundHandlerParameters) => RoundHandler;
 } = {
   [RoundEnum.AMOUREUX]: AmoureuxRoundHandler,
   [RoundEnum.CAPITAINE]: CapitaineRoundHandler,
@@ -42,22 +42,13 @@ export const SIMPLE_ROUND_HANDLERS_CONFIG: {
   [RoundEnum.JOUEUR_FLUTE]: JoueurFluteRoundHandler,
   [RoundEnum.LOUP_BLANC]: LoupBlancRoundHandler,
   [RoundEnum.LOUP_GAROU]: LoupGarouRoundHandler,
+  [RoundEnum.MONTREUR_OURS]: MontreurOursRoundHandler,
+  [RoundEnum.RENARD]: RenardRoundHandler,
   [RoundEnum.SALVATEUR]: SalvateurRoundHandler,
   [RoundEnum.SOEURS]: SoeursRoundHandler,
   [RoundEnum.SORCIERE_HEALTH]: SorciereHealthRoundHandler,
   [RoundEnum.SORCIERE_KILL]: SorciereKillRoundHandler,
   [RoundEnum.VILLAGEOIS]: VillageoisRoundHandler,
-};
-
-export const ANNOUNCEMENT_ROUND_HANDLERS_CONFIG: {
-  [round: string]: new (s: AnnouncementService) => RoundHandler;
-} = {
-  [RoundEnum.MONTREUR_OURS]: MontreurOursRoundHandler,
-  [RoundEnum.RENARD]: RenardRoundHandler,
-};
-
-export const MODAL_ROUND_HANDLERS_CONFIG: {
-  [round: string]: new (s: ModalService) => RoundHandler;
-} = {
+  [RoundEnum.VOLEUR]: VoleurRoundHandler,
   [RoundEnum.VOYANTE]: VoyanteRoundHandler,
 };

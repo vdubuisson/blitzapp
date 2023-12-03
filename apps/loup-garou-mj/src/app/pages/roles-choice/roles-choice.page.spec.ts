@@ -1,13 +1,13 @@
 import { MockService } from 'ng-mocks';
 import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
 import { RolesChoicePage } from './roles-choice.page';
-import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { Router } from '@angular/router';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RoleList } from '../../core/models/role-list.model';
+import { CardList } from '../../core/models/card-list.model';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
@@ -16,34 +16,29 @@ describe('RolesChoicePage', () => {
   let fixture: ComponentFixture<RolesChoicePage>;
 
   let playerRoleNamePipe: PlayerRoleNamePipe;
-  let roleChoiceService: RoleChoiceService;
+  let roleChoiceService: CardChoiceService;
   let router: Router;
 
-  let mockRoles: RoleList;
+  let currentChosenCards: Subject<CardList>;
 
   beforeEach(async () => {
     playerRoleNamePipe = MockService(PlayerRoleNamePipe);
-    roleChoiceService = MockService(RoleChoiceService);
+    roleChoiceService = MockService(CardChoiceService);
     router = MockService(Router);
 
-    mockRoles = {
-      selectedRoles: new Set([PlayerRoleEnum.CHASSEUR]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
+    currentChosenCards = new Subject<CardList>();
 
     jest.spyOn(playerRoleNamePipe, 'transform').mockReturnValue('');
     jest
-      .spyOn(roleChoiceService, 'getCurrentChosenRoles')
-      .mockReturnValue(of(mockRoles));
+      .spyOn(roleChoiceService, 'getCurrentChosenCards')
+      .mockReturnValue(currentChosenCards);
 
     await TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       imports: [RolesChoicePage, ReactiveFormsModule, FormsModule],
       providers: [
         { provide: PlayerRoleNamePipe, useValue: playerRoleNamePipe },
-        { provide: RoleChoiceService, useValue: roleChoiceService },
+        { provide: CardChoiceService, useValue: roleChoiceService },
         { provide: Router, useValue: router },
       ],
     }).compileComponents();
@@ -59,18 +54,42 @@ describe('RolesChoicePage', () => {
   });
 
   it('should get roles from service', () => {
-    expect(page['selectedRoles']).toEqual(mockRoles.selectedRoles);
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
+    expect(page['selectedRoles']).toEqual(mockCards.selectedRoles);
   });
 
   it('should init form with roles', () => {
+    const mockCards = {
+      selectedRoles: new Set([]),
+      villageois: 1,
+      loupGarou: 2,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     expect(page['roleCountForm'].value).toEqual({
-      loupGarou: mockRoles.loupGarou,
-      villageois: mockRoles.villageois,
+      loupGarou: mockCards.loupGarou,
+      villageois: mockCards.villageois,
     });
   });
 
   it('should init playersCount', () => {
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
   });
 
   it('should add role on check', () => {
@@ -93,6 +112,14 @@ describe('RolesChoicePage', () => {
   });
 
   it('should increment playersCount by 1 on simple role check', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     const checkEvent = {
       detail: {
         checked: true,
@@ -100,16 +127,24 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber + 1);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber + 1);
   });
 
   it('should increment playersCount by 2 on SOEUR role check', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     const checkEvent = {
       detail: {
         checked: true,
@@ -117,16 +152,24 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber + 2);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should increment playersCount by 3 on FRERE role check', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     const checkEvent = {
       detail: {
         checked: true,
@@ -134,13 +177,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber + 3);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber + 3);
   });
 
   it('should delete role on uncheck', () => {
@@ -163,23 +206,39 @@ describe('RolesChoicePage', () => {
   });
 
   it('should decrement playersCount by 1 on simple role uncheck', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     const checkEvent = {
       detail: {
         checked: false,
-        value: PlayerRoleEnum.CHASSEUR,
+        value: PlayerRoleEnum.SORCIERE,
       },
     };
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber - 1);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber - 1);
   });
 
   it('should decrement playersCount by 2 on SOEUR role uncheck', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SOEUR]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 4,
+    };
+    currentChosenCards.next(mockCards);
+
     const checkEvent = {
       detail: {
         checked: false,
@@ -187,16 +246,24 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber - 2);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber - 2);
   });
 
   it('should decrement playersCount by 3 on FRERE role uncheck', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.FRERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 5,
+    };
+    currentChosenCards.next(mockCards);
+
     const checkEvent = {
       detail: {
         checked: false,
@@ -204,13 +271,13 @@ describe('RolesChoicePage', () => {
       },
     };
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
     page['onRoleCheckChange'](
       checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
     );
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber - 3);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber - 3);
   });
 
   it('should clear selected roles on deselect', () => {
@@ -224,6 +291,14 @@ describe('RolesChoicePage', () => {
   });
 
   it('should reset form on deselect', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     expect(page['roleCountForm'].value).not.toEqual({
       villageois: 0,
       loupGarou: 0,
@@ -238,6 +313,14 @@ describe('RolesChoicePage', () => {
   });
 
   it('should reset playersCount on deselect', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
     expect(page['playersCount']).not.toEqual(0);
 
     page['deselectAll']();
@@ -246,24 +329,32 @@ describe('RolesChoicePage', () => {
   });
 
   it('should set roles on validate', () => {
+    const mockCards = {
+      selectedRoles: new Set([]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 2,
+    };
+    currentChosenCards.next(mockCards);
+
     const selectedRoles = new Set([
       PlayerRoleEnum.CHASSEUR,
       PlayerRoleEnum.CUPIDON,
     ]);
-    jest.spyOn(roleChoiceService, 'setRoles');
+    jest.spyOn(roleChoiceService, 'setCards');
 
     page['selectedRoles'] = selectedRoles;
 
-    const expectedRoleList: RoleList = {
+    const expectedCardList: CardList = {
       selectedRoles,
       villageois: 1,
       loupGarou: 1,
-      playersNumber: 3,
+      playersNumber: 4,
     };
 
     page['validateRoles']();
 
-    expect(roleChoiceService.setRoles).toHaveBeenCalledWith(expectedRoleList);
+    expect(roleChoiceService.setCards).toHaveBeenCalledWith(expectedCardList);
   });
 
   it('should navigate to /new-game on validate', () => {
@@ -275,34 +366,162 @@ describe('RolesChoicePage', () => {
   });
 
   it('should increment playersCount on villageois form increase', () => {
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
 
-    page['roleCountForm'].get('villageois')?.setValue(mockRoles.villageois + 2);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber + 2);
+    page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois + 2);
+
+    expect(page['playersCount']).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should increment playersCount on loupGarou form increase', () => {
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
 
-    page['roleCountForm'].get('loupGarou')?.setValue(mockRoles.loupGarou + 2);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber + 2);
+    page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou + 2);
+
+    expect(page['playersCount']).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should decrement playersCount on villageois form decrease', () => {
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 3,
+      loupGarou: 1,
+      playersNumber: 5,
+    };
+    currentChosenCards.next(mockCards);
 
-    page['roleCountForm'].get('villageois')?.setValue(mockRoles.villageois - 2);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber - 2);
+    page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois - 2);
+
+    expect(page['playersCount']).toEqual(mockCards.playersNumber - 2);
   });
 
   it('should decrement playersCount on loupGarou form decrease', () => {
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber);
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+      villageois: 1,
+      loupGarou: 3,
+      playersNumber: 5,
+    };
+    currentChosenCards.next(mockCards);
 
-    page['roleCountForm'].get('loupGarou')?.setValue(mockRoles.loupGarou - 2);
+    expect(page['playersCount']).toEqual(mockCards.playersNumber);
 
-    expect(page['playersCount']).toEqual(mockRoles.playersNumber - 2);
+    page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou - 2);
+
+    expect(page['playersCount']).toEqual(mockCards.playersNumber - 2);
+  });
+
+  it('should increment villageois count by 2 on VOLEUR check', () => {
+    const mockCards = {
+      selectedRoles: new Set([]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 2,
+    };
+    currentChosenCards.next(mockCards);
+
+    const checkEvent = {
+      detail: {
+        checked: true,
+        value: PlayerRoleEnum.VOLEUR,
+      },
+    };
+
+    page['onRoleCheckChange'](
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
+    );
+
+    expect(page['roleCountForm'].get('villageois')?.value).toEqual(
+      mockCards.villageois + 2,
+    );
+  });
+
+  it('should decrement villageois count by 2 on VOLEUR uncheck', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.VOLEUR]),
+      villageois: 3,
+      loupGarou: 1,
+      playersNumber: 3,
+    };
+    currentChosenCards.next(mockCards);
+
+    const checkEvent = {
+      detail: {
+        checked: false,
+        value: PlayerRoleEnum.VOLEUR,
+      },
+    };
+
+    page['onRoleCheckChange'](
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
+    );
+
+    expect(page['roleCountForm'].get('villageois')?.value).toEqual(
+      mockCards.villageois - 2,
+    );
+  });
+
+  it('should decrement villageois count to 0 on VOLEUR uncheck if less than 2', () => {
+    const mockCards = {
+      selectedRoles: new Set([PlayerRoleEnum.VOLEUR]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 2,
+    };
+    currentChosenCards.next(mockCards);
+
+    const checkEvent = {
+      detail: {
+        checked: false,
+        value: PlayerRoleEnum.VOLEUR,
+      },
+    };
+
+    page['onRoleCheckChange'](
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
+    );
+
+    expect(page['roleCountForm'].get('villageois')?.value).toEqual(0);
+  });
+
+  it('should ignore 2 villageois in playersCount when VOLEUR checked', () => {
+    const mockCards = {
+      selectedRoles: new Set([]),
+      villageois: 1,
+      loupGarou: 1,
+      playersNumber: 2,
+    };
+    currentChosenCards.next(mockCards);
+
+    const checkEvent = {
+      detail: {
+        checked: true,
+        value: PlayerRoleEnum.VOLEUR,
+      },
+    };
+
+    page['onRoleCheckChange'](
+      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
+    );
+
+    expect(page['playersCount']).toEqual(3);
   });
 });

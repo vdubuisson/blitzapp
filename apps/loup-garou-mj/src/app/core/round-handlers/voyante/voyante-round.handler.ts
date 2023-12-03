@@ -6,12 +6,18 @@ import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { map, Observable } from 'rxjs';
+import { RoundHandlerParameters } from '../round-handler-parameters.interface';
 
 export class VoyanteRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
-  constructor(private modalService: ModalService) {}
+
+  private modalService: ModalService;
+
+  constructor({ modalService }: RoundHandlerParameters) {
+    this.modalService = modalService as ModalService;
+  }
 
   handleAction(
     players: Player[],

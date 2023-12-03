@@ -8,16 +8,21 @@ import { Player } from '../../models/player.model';
 import { GameService } from '../game/game.service';
 
 import { NewGameService } from './new-game.service';
+import { CardChoiceService } from '../card-choice/card-choice.service';
+import { CardList } from '../../models/card-list.model';
 
 describe('NewGameService', () => {
   let service: NewGameService;
   let gameService: GameService;
   let router: Router;
+  let cardChoiceService: CardChoiceService;
 
   beforeEach(() => {
     gameService = MockService(GameService);
     router = MockService(Router);
-    service = new NewGameService(gameService, router);
+    cardChoiceService = MockService(CardChoiceService);
+
+    service = new NewGameService(gameService, router, cardChoiceService);
   });
 
   it('should return players', waitForAsync(() => {
@@ -289,13 +294,23 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
+    const mockCardList: CardList = {
+      selectedRoles: new Set(),
+      loupGarou: 1,
+      villageois: 1,
+      playersNumber: 2,
+    };
+
     service['players'].next(mockPlayers);
+    jest
+      .spyOn(cardChoiceService, 'getCurrentChosenCards')
+      .mockReturnValue(of(mockCardList));
 
     jest.spyOn(gameService, 'createGame');
 
     service.createGame();
 
-    expect(gameService.createGame).toBeCalledWith(mockPlayers);
+    expect(gameService.createGame).toBeCalledWith(mockPlayers, mockCardList);
   });
 
   it('should reset players on create game', () => {
@@ -317,7 +332,17 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
+    const mockCardList: CardList = {
+      selectedRoles: new Set(),
+      loupGarou: 1,
+      villageois: 1,
+      playersNumber: 2,
+    };
+
     service['players'].next(mockPlayers);
+    jest
+      .spyOn(cardChoiceService, 'getCurrentChosenCards')
+      .mockReturnValue(of(mockCardList));
 
     service.createGame();
 

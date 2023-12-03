@@ -5,6 +5,7 @@ import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { Player } from '../../models/player.model';
 import { GameService } from '../game/game.service';
+import { CardChoiceService } from '../card-choice/card-choice.service';
 
 @Injectable({
   providedIn: 'root',
@@ -56,6 +57,7 @@ export class NewGameService {
   constructor(
     private gameService: GameService,
     private router: Router,
+    private cardChoiceService: CardChoiceService,
   ) {}
 
   getPlayers(): Observable<Player[]> {
@@ -122,8 +124,10 @@ export class NewGameService {
   }
 
   createGame(): void {
-    this.gameService.createGame(this.players.value);
-    this.players.next([]);
+    this.cardChoiceService.getCurrentChosenCards().subscribe((cardList) => {
+      this.gameService.createGame(this.players.value, cardList);
+      this.players.next([]);
+    });
   }
 
   private reindexPlayers(players: Player[]): Player[] {

@@ -17,7 +17,7 @@ describe('VoyanteRoundHandler', () => {
     modalService = MockService(ModalService);
     jest.spyOn(modalService, 'showPlayerCard').mockReturnValue(of(undefined));
 
-    roundHandler = new VoyanteRoundHandler(modalService);
+    roundHandler = new VoyanteRoundHandler({ modalService });
   });
 
   it('should not be only once', () => {

@@ -9,7 +9,7 @@ import { switchMap, tap } from 'rxjs/operators';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 
 @Component({
   selector: 'lgmj-new-game',
@@ -35,9 +35,9 @@ export class NewGamePage {
 
   constructor(
     private newGameService: NewGameService,
-    private roleChoiceService: RoleChoiceService,
+    private roleChoiceService: CardChoiceService,
   ) {
-    this.players$ = this.roleChoiceService.getCurrentChosenRoles().pipe(
+    this.players$ = this.roleChoiceService.getCurrentChosenCards().pipe(
       tap((roleList) => (this.playersCount = roleList.playersNumber)),
       switchMap(() => this.newGameService.getPlayers()),
       tap(

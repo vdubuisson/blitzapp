@@ -1,17 +1,17 @@
 import { MockService } from 'ng-mocks';
 import { when } from 'jest-when';
-import { RoleChoiceService } from './role-choice.service';
+import { CardChoiceService } from './card-choice.service';
 import { StorageService } from '../storage/storage.service';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { of } from 'rxjs';
 import { waitForAsync } from '@angular/core/testing';
-import { RoleList, StoredRoleList } from '../../models/role-list.model';
+import { CardList, StoredCardList } from '../../models/card-list.model';
 
-describe('RoleChoiceService', () => {
-  let service: RoleChoiceService;
+describe('CardChoiceService', () => {
+  let service: CardChoiceService;
 
   let storageService: StorageService;
-  const mockRoles: RoleList = {
+  const mockCards: CardList = {
     selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.SORCIERE]),
     villageois: 4,
     loupGarou: 1,
@@ -23,24 +23,24 @@ describe('RoleChoiceService', () => {
 
     const storageGetSpy = jest.spyOn(storageService, 'get');
     when(storageGetSpy)
-      .calledWith('RoleChoiceService_roles')
-      .mockReturnValue(of(mockRoles));
+      .calledWith('CardChoiceService_cards')
+      .mockReturnValue(of(mockCards));
 
-    service = new RoleChoiceService(storageService);
+    service = new CardChoiceService(storageService);
   });
 
   it('should init from storage', () => {
-    expect(service['roles'].value).toEqual(mockRoles);
+    expect(service['cards'].value).toEqual(mockCards);
   });
 
-  it('should return roles', waitForAsync(() => {
-    service.getCurrentChosenRoles().subscribe((chosenRoles) => {
-      expect(chosenRoles).toEqual(mockRoles);
+  it('should return cards', waitForAsync(() => {
+    service.getCurrentChosenCards().subscribe((chosenCards) => {
+      expect(chosenCards).toEqual(mockCards);
     });
   }));
 
-  it('should set roles', () => {
-    const newMockRoles: RoleList = {
+  it('should set cards', () => {
+    const newMockCards: CardList = {
       selectedRoles: new Set<PlayerRoleEnum>([
         PlayerRoleEnum.CHASSEUR,
         PlayerRoleEnum.CUPIDON,
@@ -50,13 +50,13 @@ describe('RoleChoiceService', () => {
       playersNumber: 5,
     };
 
-    service.setRoles(newMockRoles);
+    service.setCards(newMockCards);
 
-    expect(service['roles'].value).toEqual(newMockRoles);
+    expect(service['cards'].value).toEqual(newMockCards);
   });
 
-  it('should store new roles', () => {
-    const newMockRoles: RoleList = {
+  it('should store new cards', () => {
+    const newMockCards: CardList = {
       selectedRoles: new Set<PlayerRoleEnum>([
         PlayerRoleEnum.CHASSEUR,
         PlayerRoleEnum.CUPIDON,
@@ -66,7 +66,7 @@ describe('RoleChoiceService', () => {
       playersNumber: 5,
     };
 
-    const expectedRoles: StoredRoleList = {
+    const expectedCards: StoredCardList = {
       selectedRoles: [PlayerRoleEnum.CHASSEUR, PlayerRoleEnum.CUPIDON],
       villageois: 2,
       loupGarou: 1,
@@ -74,11 +74,11 @@ describe('RoleChoiceService', () => {
     };
     jest.spyOn(storageService, 'set');
 
-    service.setRoles(newMockRoles);
+    service.setCards(newMockCards);
 
     expect(storageService.set).toHaveBeenCalledWith(
-      'RoleChoiceService_roles',
-      expectedRoles,
+      'CardChoiceService_cards',
+      expectedCards,
     );
   });
 });

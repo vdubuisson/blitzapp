@@ -12,8 +12,8 @@ import { switchMap, tap } from 'rxjs/operators';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
-import { RoleList } from '../../core/models/role-list.model';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { CardList } from '../../core/models/card-list.model';
 
 @Component({
   selector: 'lgmj-new-game-roles',
@@ -39,7 +39,7 @@ export class NewGameRolesPage {
 
   protected availableRoles: PlayerRoleEnum[] = [];
 
-  private rolesToPlay: RoleList = {
+  private cardsToPlay: CardList = {
     selectedRoles: new Set(),
     villageois: 0,
     loupGarou: 0,
@@ -48,10 +48,10 @@ export class NewGameRolesPage {
 
   constructor(
     private newGameService: NewGameService,
-    private roleChoiceService: RoleChoiceService,
+    private roleChoiceService: CardChoiceService,
   ) {
-    this.players$ = this.roleChoiceService.getCurrentChosenRoles().pipe(
-      tap((selectedRoles) => (this.rolesToPlay = selectedRoles)),
+    this.players$ = this.roleChoiceService.getCurrentChosenCards().pipe(
+      tap((selectedRoles) => (this.cardsToPlay = selectedRoles)),
       switchMap(() => this.newGameService.getPlayers()),
       tap((players) => {
         this.cannotCreate = !this.canCreateGame(players);
@@ -70,12 +70,12 @@ export class NewGameRolesPage {
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
     const usedRoles = new Set(players.map((player) => player.role));
-    let availableRoles = Array.from(this.rolesToPlay.selectedRoles).filter(
+    let availableRoles = Array.from(this.cardsToPlay.selectedRoles).filter(
       (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role),
     );
 
     if (
-      this.rolesToPlay.villageois >
+      this.cardsToPlay.villageois >
       players.filter((player) => player.role === PlayerRoleEnum.VILLAGEOIS)
         .length
     ) {
@@ -83,7 +83,7 @@ export class NewGameRolesPage {
     }
 
     if (
-      this.rolesToPlay.loupGarou >
+      this.cardsToPlay.loupGarou >
       players.filter((player) => player.role === PlayerRoleEnum.LOUP_GAROU)
         .length
     ) {

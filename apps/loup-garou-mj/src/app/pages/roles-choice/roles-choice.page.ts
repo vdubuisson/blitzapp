@@ -9,17 +9,22 @@ import { GAME_BOX_CONTENTS } from '../../core/configs/game-box-contents';
 import { GameBoxEnum } from '../../core/enums/game-box.enum';
 import { GameBoxNamePipe } from '../../core/pipes/game-box-name/game-box-name.pipe';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { RoleChoiceService } from '../../core/services/role-choice/role-choice.service';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { Router } from '@angular/router';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RoleList } from '../../core/models/role-list.model';
+import { CardList } from '../../core/models/card-list.model';
+
+interface RoleForm {
+  villageois: FormControl<number | null>;
+  loupGarou: FormControl<number | null>;
+}
 
 @Component({
   selector: 'lgmj-roles-choice',
@@ -50,13 +55,27 @@ export class RolesChoicePage {
   protected loupGarouRole = PlayerRoleEnum.LOUP_GAROU;
   protected villageoisRole = PlayerRoleEnum.VILLAGEOIS;
 
-  protected roleCountForm: FormGroup;
+  protected roleCountForm: FormGroup<RoleForm>;
 
-  protected playersCount = 0;
+  protected get playersCount(): number {
+    const formValue = this.roleCountForm.value;
+    return (
+      this.selectedRoles.size +
+      (formValue.villageois ?? 0) +
+      (formValue.loupGarou ?? 0) +
+      (this.selectedRoles.has(PlayerRoleEnum.SOEUR) ? 1 : 0) +
+      (this.selectedRoles.has(PlayerRoleEnum.FRERE) ? 2 : 0) -
+      (this.selectedRoles.has(PlayerRoleEnum.VOLEUR) ? 2 : 0)
+    );
+  }
+
+  protected get requiredVillageois(): number {
+    return this.selectedRoles.has(PlayerRoleEnum.VOLEUR) ? 2 : 0;
+  }
 
   constructor(
     private playerRoleNamePipe: PlayerRoleNamePipe,
-    private roleChoiceService: RoleChoiceService,
+    private roleChoiceService: CardChoiceService,
     private router: Router,
     private formBuilder: FormBuilder,
   ) {
@@ -70,15 +89,11 @@ export class RolesChoicePage {
 
     this.roleCountForm = this.formBuilder.group({
       loupGarou: [0, Validators.min(0)],
-      villageois: [0, Validators.min(0)],
+      villageois: [0, Validators.min(this.requiredVillageois)],
     });
 
-    this.listenRoleCountChange('loupGarou');
-    this.listenRoleCountChange('villageois');
-
-    this.roleChoiceService.getCurrentChosenRoles().subscribe((roleList) => {
+    this.roleChoiceService.getCurrentChosenCards().subscribe((roleList) => {
       this.selectedRoles = roleList.selectedRoles;
-      this.selectedRoles.forEach((role) => this.incrementPlayersCount(role));
       this.roleCountForm.patchValue(roleList);
     });
   }
@@ -87,20 +102,29 @@ export class RolesChoicePage {
     const eventDetail = (event as CheckboxCustomEvent<PlayerRoleEnum>).detail;
     if (eventDetail.checked) {
       this.selectedRoles.add(eventDetail.value);
-      this.incrementPlayersCount(eventDetail.value);
+      if (eventDetail.value === PlayerRoleEnum.VOLEUR) {
+        const currentVillageois = this.roleCountForm.value.villageois ?? 0;
+        this.roleCountForm.patchValue({ villageois: currentVillageois + 2 });
+      }
     } else {
       this.selectedRoles.delete(eventDetail.value);
-      this.decrementPlayersCount(eventDetail.value);
+      if (eventDetail.value === PlayerRoleEnum.VOLEUR) {
+        const currentVillageois = this.roleCountForm.value.villageois ?? 0;
+        this.roleCountForm.patchValue({
+          villageois: Math.max(currentVillageois - 2, 0),
+        });
+      }
     }
   }
 
   protected validateRoles() {
-    const roleList: RoleList = {
+    const cardList: CardList = {
       selectedRoles: this.selectedRoles,
       playersNumber: this.playersCount,
-      ...this.roleCountForm.value,
+      villageois: this.roleCountForm.value.villageois ?? 0,
+      loupGarou: this.roleCountForm.value.loupGarou ?? 0,
     };
-    this.roleChoiceService.setRoles(roleList);
+    this.roleChoiceService.setCards(cardList);
     this.router.navigate(['new-game']);
   }
 
@@ -110,49 +134,11 @@ export class RolesChoicePage {
       villageois: 0,
       loupGarou: 0,
     });
-    this.playersCount = 0;
   }
 
   protected selectInput(event: Event): void {
     (
       ((event as CustomEvent).detail as FocusEvent).target as HTMLInputElement
     ).select();
-  }
-
-  private incrementPlayersCount(role: PlayerRoleEnum): void {
-    switch (role) {
-      case PlayerRoleEnum.SOEUR:
-        this.playersCount += 2;
-        break;
-      case PlayerRoleEnum.FRERE:
-        this.playersCount += 3;
-        break;
-      default:
-        this.playersCount += 1;
-    }
-  }
-
-  private decrementPlayersCount(role: PlayerRoleEnum): void {
-    switch (role) {
-      case PlayerRoleEnum.SOEUR:
-        this.playersCount -= 2;
-        break;
-      case PlayerRoleEnum.FRERE:
-        this.playersCount -= 3;
-        break;
-      default:
-        this.playersCount -= 1;
-    }
-  }
-
-  private listenRoleCountChange(role: string): void {
-    this.roleCountForm
-      .get(role)
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((newValue) => {
-        const oldValue = this.roleCountForm.value[role];
-        const diff = newValue - oldValue;
-        this.playersCount += diff;
-      });
   }
 }

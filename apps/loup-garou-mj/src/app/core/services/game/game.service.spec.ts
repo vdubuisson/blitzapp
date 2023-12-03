@@ -19,6 +19,7 @@ import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 import { GameService } from './game.service';
+import { CardList } from '../../models/card-list.model';
 
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
@@ -277,6 +278,7 @@ describe('GameService', () => {
   let storageService: StorageService;
 
   let mockPlayers: Player[];
+  let mockCardList: CardList;
 
   beforeEach(() => {
     mockPlayers = [
@@ -305,6 +307,12 @@ describe('GameService', () => {
         isDead: false,
       },
     ];
+    mockCardList = {
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE, PlayerRoleEnum.VOLEUR]),
+      loupGarou: 1,
+      villageois: 1,
+      playersNumber: 3,
+    };
     router = MockService(Router);
     roundHandlersService = MockService(RoundHandlersService);
     victoryHandlersService = MockService(VictoryHandlersService);
@@ -370,7 +378,7 @@ describe('GameService', () => {
   it('should init round handlers on game creation', () => {
     jest.spyOn(roundHandlersService, 'initHandlers');
 
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(roundHandlersService.initHandlers).toBeCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
@@ -382,7 +390,7 @@ describe('GameService', () => {
   it('should init victory handlers on game creation', () => {
     jest.spyOn(victoryHandlersService, 'initHandlers');
 
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(victoryHandlersService.initHandlers).toBeCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
@@ -392,7 +400,7 @@ describe('GameService', () => {
   });
 
   it('should set players on game creation', () => {
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(service['players'].value).toEqual(mockPlayers);
   });
@@ -400,7 +408,7 @@ describe('GameService', () => {
   it('should set day count to 1 on game creation', () => {
     service['dayCount'].next(2);
 
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(service['dayCount'].value).toEqual(1);
   });
@@ -408,7 +416,7 @@ describe('GameService', () => {
   it('should navigate to /game on game creation', () => {
     jest.spyOn(router, 'navigate');
 
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(router.navigate).toBeCalledWith(['game']);
   });
@@ -427,13 +435,13 @@ describe('GameService', () => {
       .spyOn(roundOrchestrationService, 'getFirstRound')
       .mockReturnValue(RoundEnum.LOUP_GAROU);
 
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(service['round'].value).toEqual(mockRound);
   });
 
   it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(
       service['players'].value[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
@@ -441,7 +449,7 @@ describe('GameService', () => {
   });
 
   it('should add DEATH_POTION status to player with role SORCIERE on game creation', () => {
-    service.createGame(mockPlayers);
+    service.createGame(mockPlayers, mockCardList);
 
     expect(
       service['players'].value[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
@@ -1108,5 +1116,88 @@ describe('GameService', () => {
     service.submitRoundAction([]);
 
     expect(storageService.set).toBeCalledWith(service['DAY_COUNT_KEY'], 2);
+  });
+
+  it('should clear and reinit handlers after VOLEUR round', waitForAsync(() => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.VOLEUR,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: false,
+      type: RoundTypeEnum.ROLES,
+    };
+    const mockNewPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.VOLEUR,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = false;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+    jest
+      .spyOn(mockCurrentRoundHandler, 'handleAction')
+      .mockReturnValue(of(mockNewPlayers));
+
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VOLEUR)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VOYANTE)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.VOYANTE);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    jest.spyOn(roundHandlersService, 'initHandlers');
+    jest.spyOn(roundHandlersService, 'clearHandlers');
+    jest.spyOn(victoryHandlersService, 'initHandlers');
+    jest.spyOn(victoryHandlersService, 'clearHandlers');
+
+    service['round'].next(mockCurrentRoundConfig);
+    service['cardList'] = mockCardList;
+
+    service.submitRoundAction([]);
+
+    expect(roundHandlersService.clearHandlers).toHaveBeenCalled();
+    expect(victoryHandlersService.clearHandlers).toHaveBeenCalled();
+    expect(roundHandlersService.initHandlers).toHaveBeenCalledWith([
+      PlayerRoleEnum.SORCIERE,
+      PlayerRoleEnum.CUPIDON,
+    ]);
+    expect(victoryHandlersService.initHandlers).toHaveBeenCalledWith([
+      PlayerRoleEnum.SORCIERE,
+      PlayerRoleEnum.CUPIDON,
+    ]);
+  }));
+
+  it('should init default round handlers on game creation', () => {
+    jest.spyOn(roundHandlersService, 'initDefaultHandlers');
+
+    service.createGame(mockPlayers, mockCardList);
+
+    expect(roundHandlersService.initDefaultHandlers).toBeCalledWith([
+      PlayerRoleEnum.VOLEUR,
+    ]);
   });
 });
