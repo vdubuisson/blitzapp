@@ -119,19 +119,15 @@ describe('GameService with storage init', () => {
   });
 
   it('should init players from storage', () => {
-    expect(service['players'].value).toEqual(mockStoredPlayers);
+    expect(service['players']()).toEqual(mockStoredPlayers);
   });
 
   it('should init round from storage', () => {
-    expect(service['round'].value).toEqual(mockStoredRound);
-  });
-
-  it('should init game in progress from storage', () => {
-    expect(service['gameInProgress'].value).toEqual(true);
+    expect(service['round']()).toEqual(mockStoredRound);
   });
 
   it('should init day count from storage', () => {
-    expect(service['dayCount'].value).toEqual(mockStoredDayCount);
+    expect(service['dayCount']()).toEqual(mockStoredDayCount);
   });
 });
 
@@ -206,7 +202,7 @@ describe('GameService on victory', () => {
       .spyOn(victoryHandlersService, 'getVictory')
       .mockReturnValue(VictoryEnum.LOUP_GAROU);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
   });
 
   it('should reset rounds on victory', () => {
@@ -214,7 +210,7 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(roundOrchestrationService.resetRounds).toBeCalled();
+    expect(roundOrchestrationService.resetRounds).toHaveBeenCalled();
   });
 
   it('should reset deaths on victory', () => {
@@ -222,7 +218,7 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(deathService.reset).toBeCalled();
+    expect(deathService.reset).toHaveBeenCalled();
   });
 
   it('should clear round handlers on victory', () => {
@@ -230,7 +226,7 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(roundHandlersService.clearHandlers).toBeCalled();
+    expect(roundHandlersService.clearHandlers).toHaveBeenCalled();
   });
 
   it('should clear victory handlers on victory', () => {
@@ -238,7 +234,7 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(victoryHandlersService.clearHandlers).toBeCalled();
+    expect(victoryHandlersService.clearHandlers).toHaveBeenCalled();
   });
 
   it('should remove players from storage on victory', () => {
@@ -246,7 +242,7 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(storageService.remove).toBeCalledWith(service['PLAYERS_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(service['PLAYERS_KEY']);
   });
 
   it('should remove round from storage on victory', () => {
@@ -254,7 +250,7 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(storageService.remove).toBeCalledWith(service['ROUND_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(service['ROUND_KEY']);
   });
 
   it('should remove day count from storage on victory', () => {
@@ -262,7 +258,9 @@ describe('GameService on victory', () => {
 
     service.submitRoundAction([]);
 
-    expect(storageService.remove).toBeCalledWith(service['DAY_COUNT_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(
+      service['DAY_COUNT_KEY'],
+    );
   });
 });
 
@@ -344,11 +342,9 @@ describe('GameService', () => {
   });
 
   it('should return players', waitForAsync(() => {
-    service['players'].next(mockPlayers);
+    service['players'].set(mockPlayers);
 
-    service.getPlayers().subscribe((players) => {
-      expect(players).toEqual(mockPlayers);
-    });
+    expect(service.currentPlayers()).toEqual(mockPlayers);
   }));
 
   it('should return round', waitForAsync(() => {
@@ -360,19 +356,15 @@ describe('GameService', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     };
-    service['round'].next(mockRound);
+    service['round'].set(mockRound);
 
-    service.getRound().subscribe((round) => {
-      expect(round).toEqual(mockRound);
-    });
+    expect(service.currentRound()).toEqual(mockRound);
   }));
 
   it('should return day count', waitForAsync(() => {
-    service['dayCount'].next(2);
+    service['dayCount'].set(2);
 
-    service.getDayCount().subscribe((dayCount) => {
-      expect(dayCount).toEqual(2);
-    });
+    expect(service.currentDayCount()).toEqual(2);
   }));
 
   it('should init round handlers on game creation', () => {
@@ -380,7 +372,7 @@ describe('GameService', () => {
 
     service.createGame(mockPlayers, mockCardList);
 
-    expect(roundHandlersService.initHandlers).toBeCalledWith([
+    expect(roundHandlersService.initHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
       PlayerRoleEnum.LOUP_GAROU,
       PlayerRoleEnum.SORCIERE,
@@ -392,7 +384,7 @@ describe('GameService', () => {
 
     service.createGame(mockPlayers, mockCardList);
 
-    expect(victoryHandlersService.initHandlers).toBeCalledWith([
+    expect(victoryHandlersService.initHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
       PlayerRoleEnum.LOUP_GAROU,
       PlayerRoleEnum.SORCIERE,
@@ -402,15 +394,15 @@ describe('GameService', () => {
   it('should set players on game creation', () => {
     service.createGame(mockPlayers, mockCardList);
 
-    expect(service['players'].value).toEqual(mockPlayers);
+    expect(service['players']()).toEqual(mockPlayers);
   });
 
   it('should set day count to 1 on game creation', () => {
-    service['dayCount'].next(2);
+    service['dayCount'].set(2);
 
     service.createGame(mockPlayers, mockCardList);
 
-    expect(service['dayCount'].value).toEqual(1);
+    expect(service['dayCount']()).toEqual(1);
   });
 
   it('should navigate to /game on game creation', () => {
@@ -418,7 +410,7 @@ describe('GameService', () => {
 
     service.createGame(mockPlayers, mockCardList);
 
-    expect(router.navigate).toBeCalledWith(['game']);
+    expect(router.navigate).toHaveBeenCalledWith(['game']);
   });
 
   it('should set first round on game creation', () => {
@@ -437,14 +429,14 @@ describe('GameService', () => {
 
     service.createGame(mockPlayers, mockCardList);
 
-    expect(service['round'].value).toEqual(mockRound);
+    expect(service['round']()).toEqual(mockRound);
   });
 
   it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {
     service.createGame(mockPlayers, mockCardList);
 
     expect(
-      service['players'].value[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
+      service['players']()[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
     ).toEqual(true);
   });
 
@@ -452,7 +444,7 @@ describe('GameService', () => {
     service.createGame(mockPlayers, mockCardList);
 
     expect(
-      service['players'].value[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
+      service['players']()[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
     ).toEqual(true);
   });
 
@@ -466,13 +458,13 @@ describe('GameService', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     };
-    service['round'].next(mockRound);
+    service['round'].set(mockRound);
 
-    expect(service['players'].value).toEqual([]);
+    expect(service['players']()).toEqual([]);
 
     service.submitRoundAction([]);
 
-    expect(service['players'].value).toEqual(mockPlayers);
+    expect(service['players']()).toEqual(mockPlayers);
   });
 
   it('should set next round on submit', () => {
@@ -493,17 +485,17 @@ describe('GameService', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     };
-    service['round'].next(mockRound);
+    service['round'].set(mockRound);
     jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockNextRound);
     jest
       .spyOn(roundOrchestrationService, 'getNextRound')
       .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
 
-    expect(service['round'].value).toEqual(mockRound);
+    expect(service['round']()).toEqual(mockRound);
 
     service.submitRoundAction([]);
 
-    expect(service['round'].value).toEqual(mockNextRound);
+    expect(service['round']()).toEqual(mockNextRound);
   });
 
   it('should skip LOUP_BLANC next round on odd day', () => {
@@ -546,8 +538,8 @@ describe('GameService', () => {
       .calledWith(RoundEnum.LOUP_BLANC)
       .mockReturnValue(mockLoupBlancHandler);
 
-    service['round'].next(mockRound);
-    service['dayCount'].next(1);
+    service['round'].set(mockRound);
+    service['dayCount'].set(1);
     jest
       .spyOn(roundOrchestrationService, 'getNextRound')
       .mockReturnValueOnce(RoundEnum.LOUP_BLANC);
@@ -555,11 +547,11 @@ describe('GameService', () => {
       .spyOn(roundOrchestrationService, 'getNextRound')
       .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
 
-    expect(service['round'].value).toEqual(mockRound);
+    expect(service['round']()).toEqual(mockRound);
 
     service.submitRoundAction([]);
 
-    expect(service['round'].value).toEqual(mockSorciereHealthRound);
+    expect(service['round']()).toEqual(mockSorciereHealthRound);
   });
 
   it('should not skip LOUP_BLANC next round on even day', () => {
@@ -602,8 +594,8 @@ describe('GameService', () => {
       .calledWith(RoundEnum.LOUP_BLANC)
       .mockReturnValue(mockLoupBlancHandler);
 
-    service['round'].next(mockRound);
-    service['dayCount'].next(2);
+    service['round'].set(mockRound);
+    service['dayCount'].set(2);
     jest
       .spyOn(roundOrchestrationService, 'getNextRound')
       .mockReturnValueOnce(RoundEnum.LOUP_BLANC);
@@ -611,11 +603,11 @@ describe('GameService', () => {
       .spyOn(roundOrchestrationService, 'getNextRound')
       .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
 
-    expect(service['round'].value).toEqual(mockRound);
+    expect(service['round']()).toEqual(mockRound);
 
     service.submitRoundAction([]);
 
-    expect(service['round'].value).toEqual(mockLoupBlancRound);
+    expect(service['round']()).toEqual(mockLoupBlancRound);
   });
 
   it('should handle deaths and use after-death round after submit if next round is during day', () => {
@@ -667,11 +659,11 @@ describe('GameService', () => {
       .mockReturnValueOnce(RoundEnum.VILLAGEOIS)
       .mockReturnValueOnce(RoundEnum.CHASSEUR);
 
-    service['round'].next(mockCurrentRound);
+    service['round'].set(mockCurrentRound);
 
     service.submitRoundAction([]);
 
-    expect(service['round'].value).toEqual(mockChasseurRound);
+    expect(service['round']()).toEqual(mockChasseurRound);
   });
 
   it('should handle deaths and continue round after submit if next round is during day and no after-death rounds', () => {
@@ -717,11 +709,11 @@ describe('GameService', () => {
       .mockReturnValueOnce(RoundEnum.VILLAGEOIS)
       .mockReturnValueOnce(RoundEnum.VILLAGEOIS);
 
-    service['round'].next(mockCurrentRound);
+    service['round'].set(mockCurrentRound);
 
     service.submitRoundAction([]);
 
-    expect(service['round'].value).toEqual(mockVillageoisRound);
+    expect(service['round']()).toEqual(mockVillageoisRound);
   });
 
   it('should not check victory during night', () => {
@@ -753,11 +745,11 @@ describe('GameService', () => {
       .spyOn(roundOrchestrationService, 'getNextRound')
       .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(victoryHandlersService.getVictory).toBeCalledTimes(0);
+    expect(victoryHandlersService.getVictory).toHaveBeenCalledTimes(0);
   });
 
   it('should check victory after night', () => {
@@ -794,11 +786,11 @@ describe('GameService', () => {
       .spyOn(victoryHandlersService, 'getVictory')
       .mockReturnValue(VictoryEnum.LOUP_GAROU);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(router.navigate).toBeCalledWith(['victory'], {
+    expect(router.navigate).toHaveBeenCalledWith(['victory'], {
       queryParams: { victory: VictoryEnum.LOUP_GAROU },
     });
   });
@@ -837,11 +829,11 @@ describe('GameService', () => {
       .spyOn(victoryHandlersService, 'getVictory')
       .mockReturnValue(VictoryEnum.LOUP_GAROU);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(router.navigate).toBeCalledWith(['victory'], {
+    expect(router.navigate).toHaveBeenCalledWith(['victory'], {
       queryParams: { victory: VictoryEnum.LOUP_GAROU },
     });
   });
@@ -878,11 +870,11 @@ describe('GameService', () => {
 
     jest.spyOn(victoryHandlersService, 'getVictory');
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(victoryHandlersService.getVictory).toBeCalledTimes(0);
+    expect(victoryHandlersService.getVictory).toHaveBeenCalledTimes(0);
   });
 
   it('should announce deaths after night if no victory', () => {
@@ -917,11 +909,11 @@ describe('GameService', () => {
 
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(deathService.announceDeaths).toBeCalled();
+    expect(deathService.announceDeaths).toHaveBeenCalled();
   });
 
   it('should announce deaths during day if no victory', () => {
@@ -956,11 +948,11 @@ describe('GameService', () => {
 
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(deathService.announceDeaths).toBeCalled();
+    expect(deathService.announceDeaths).toHaveBeenCalled();
   });
 
   it('should not announce deaths if next round is CHASSEUR', () => {
@@ -995,11 +987,11 @@ describe('GameService', () => {
 
     jest.spyOn(victoryHandlersService, 'getVictory');
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(deathService.announceDeaths).toBeCalledTimes(0);
+    expect(deathService.announceDeaths).toHaveBeenCalledTimes(0);
   });
 
   it('should clean statuses after day', () => {
@@ -1033,11 +1025,11 @@ describe('GameService', () => {
 
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(statusesService.cleanStatusesAfterDay).toBeCalled();
+    expect(statusesService.cleanStatusesAfterDay).toHaveBeenCalled();
   });
 
   it('should increment day count after day', () => {
@@ -1071,11 +1063,11 @@ describe('GameService', () => {
 
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(service['dayCount'].value).toEqual(2);
+    expect(service['dayCount']()).toEqual(2);
   });
 
   it('should save new day count to storage after day', () => {
@@ -1111,11 +1103,14 @@ describe('GameService', () => {
 
     jest.spyOn(storageService, 'set');
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
-    expect(storageService.set).toBeCalledWith(service['DAY_COUNT_KEY'], 2);
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['DAY_COUNT_KEY'],
+      2,
+    );
   });
 
   it('should clear and reinit handlers after VOLEUR round', waitForAsync(() => {
@@ -1174,7 +1169,7 @@ describe('GameService', () => {
     jest.spyOn(victoryHandlersService, 'initHandlers');
     jest.spyOn(victoryHandlersService, 'clearHandlers');
 
-    service['round'].next(mockCurrentRoundConfig);
+    service['round'].set(mockCurrentRoundConfig);
     service['cardList'] = mockCardList;
 
     service.submitRoundAction([]);
@@ -1196,8 +1191,27 @@ describe('GameService', () => {
 
     service.createGame(mockPlayers, mockCardList);
 
-    expect(roundHandlersService.initDefaultHandlers).toBeCalledWith([
+    expect(roundHandlersService.initDefaultHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VOLEUR,
     ]);
+  });
+
+  it('should return game in progress if current round', () => {
+    service['round'].set({
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [],
+      maxSelectable: 0,
+      minSelectable: 0,
+      type: RoundTypeEnum.DEFAULT,
+      isDuringDay: true,
+    });
+
+    expect(service.isGameInProgress()).toBe(true);
+  });
+
+  it('should return game not in progress if no current round', () => {
+    service['round'].set(undefined);
+
+    expect(service.isGameInProgress()).toBe(false);
   });
 });

@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  computed,
+  signal,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, RadioGroupCustomEvent } from '@ionic/angular';
-import { Observable, tap } from 'rxjs';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { Player } from '../../core/models/player.model';
 import { Round } from '../../core/models/round.model';
@@ -27,89 +32,95 @@ import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
   styleUrls: ['./game.page.scss'],
 })
 export class GamePage {
-  protected players$: Observable<Player[]>;
-  protected round$: Observable<Round | undefined>;
-  protected dayCount$: Observable<number>;
+  protected players: Signal<Player[]> = this.gameService.currentPlayers;
+  protected round: Signal<Round | undefined> = this.gameService.currentRound;
+  protected dayCount: Signal<number> = this.gameService.currentDayCount;
 
-  protected playerDisplayMode: PlayerDisplayModeEnum =
-    PlayerDisplayModeEnum.DEFAULT;
+  protected playerDisplayMode: Signal<PlayerDisplayModeEnum> = computed(() => {
+    if (this.round() !== undefined) {
+      const currentRound = this.round() as Round;
+      if (currentRound.type === RoundTypeEnum.ROLES) {
+        return PlayerDisplayModeEnum.EDIT_ROLE;
+      } else if (currentRound.maxSelectable > 1) {
+        return PlayerDisplayModeEnum.SELECT_MULTI;
+      } else if (currentRound.maxSelectable === 1) {
+        return PlayerDisplayModeEnum.SELECT_SINGLE;
+      } else {
+        return PlayerDisplayModeEnum.DEFAULT;
+      }
+    } else {
+      return PlayerDisplayModeEnum.DEFAULT;
+    }
+  });
+
   protected PlayerDisplayModeEnum = PlayerDisplayModeEnum;
 
   protected playerTrackBy = PLAYER_TRACK_BY;
 
-  protected selectedPlayer?: number;
-  protected selectedPlayers = new Set<number>();
-  protected selectedRole?: PlayerRoleEnum;
+  protected selectedPlayer: WritableSignal<number | undefined> =
+    signal(undefined);
+  protected selectedPlayers: WritableSignal<Set<number>> = signal(
+    new Set<number>(),
+  );
+  protected selectedRole: WritableSignal<PlayerRoleEnum | undefined> =
+    signal(undefined);
 
-  private maxSelectable = 0;
-  private minSelectable = 0;
-
-  protected get submitDisabled(): boolean {
-    switch (this.playerDisplayMode) {
+  protected submitDisabled: Signal<boolean> = computed(() => {
+    switch (this.playerDisplayMode()) {
       case PlayerDisplayModeEnum.SELECT_SINGLE:
-        return this.minSelectable > 0 && this.selectedPlayer === undefined;
+        return (
+          (this.round()?.minSelectable ?? 0) > 0 &&
+          this.selectedPlayer() === undefined
+        );
       case PlayerDisplayModeEnum.SELECT_MULTI:
         return (
-          this.selectedPlayers.size > this.maxSelectable ||
-          this.selectedPlayers.size < this.minSelectable
+          this.selectedPlayers().size > (this.round()?.maxSelectable ?? 0) ||
+          this.selectedPlayers().size < (this.round()?.minSelectable ?? 0)
         );
       case PlayerDisplayModeEnum.EDIT_ROLE:
-        return this.minSelectable > 0 && this.selectedRole === undefined;
+        return (
+          (this.round()?.minSelectable ?? 0) > 0 &&
+          this.selectedRole() === undefined
+        );
       default:
         return false;
     }
-  }
+  });
 
-  constructor(private gameService: GameService) {
-    this.round$ = this.gameService.getRound().pipe(
-      tap((round) => {
-        if (round !== undefined) {
-          this.maxSelectable = round.maxSelectable;
-          this.minSelectable = round.minSelectable;
-          if (round.type === RoundTypeEnum.ROLES) {
-            this.playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
-          } else if (round.maxSelectable > 1) {
-            this.playerDisplayMode = PlayerDisplayModeEnum.SELECT_MULTI;
-          } else if (round.maxSelectable === 1) {
-            this.playerDisplayMode = PlayerDisplayModeEnum.SELECT_SINGLE;
-          } else {
-            this.playerDisplayMode = PlayerDisplayModeEnum.DEFAULT;
-          }
-        }
-      }),
-    );
-    this.players$ = this.gameService.getPlayers();
-    this.dayCount$ = this.gameService.getDayCount();
-  }
+  constructor(private gameService: GameService) {}
 
   protected onSinglePlayerChecked(event: Event) {
-    if (this.playerDisplayMode === PlayerDisplayModeEnum.SELECT_SINGLE) {
-      this.selectedPlayer = (event as RadioGroupCustomEvent).detail.value;
+    if (this.playerDisplayMode() === PlayerDisplayModeEnum.SELECT_SINGLE) {
+      this.selectedPlayer.set((event as RadioGroupCustomEvent).detail.value);
     }
   }
 
   protected onMultiPlayerChecked(id: number, checked: boolean): void {
-    if (this.playerDisplayMode === PlayerDisplayModeEnum.SELECT_MULTI) {
-      if (checked) {
-        this.selectedPlayers.add(id);
-      } else {
-        this.selectedPlayers.delete(id);
-      }
+    if (this.playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI) {
+      this.selectedPlayers.update((previousPlayers) => {
+        const newPlayers = new Set(previousPlayers);
+        if (checked) {
+          newPlayers.add(id);
+        } else {
+          newPlayers.delete(id);
+        }
+        return newPlayers;
+      });
     }
   }
 
   protected onRoleSelect(role: PlayerRoleEnum): void {
-    this.selectedRole = role;
+    this.selectedRole.set(role);
   }
 
   protected onSubmit(): void {
     const selectedPlayers =
-      this.selectedPlayer !== undefined
-        ? [this.selectedPlayer]
-        : Array.from(this.selectedPlayers);
-    this.gameService.submitRoundAction(selectedPlayers, this.selectedRole);
-    this.selectedPlayer = undefined;
-    this.selectedPlayers.clear();
-    this.selectedRole = undefined;
+      this.selectedPlayer() !== undefined
+        ? [this.selectedPlayer() as number]
+        : Array.from(this.selectedPlayers());
+    this.gameService.submitRoundAction(selectedPlayers, this.selectedRole());
+    this.selectedPlayer.set(undefined);
+    this.selectedPlayers.set(new Set());
+    this.selectedRole.set(undefined);
   }
 }

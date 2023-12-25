@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { NON_UNIQUE_ROLES } from '../../core/configs/non-unique-roles';
@@ -8,9 +8,7 @@ import { Player } from '../../core/models/player.model';
 import { PlayerComponent } from '../../core/components/player/player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { switchMap, tap } from 'rxjs/operators';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
-import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { CardList } from '../../core/models/card-list.model';
@@ -29,36 +27,24 @@ import { CardList } from '../../core/models/card-list.model';
   styleUrls: ['./new-game-roles.page.scss'],
 })
 export class NewGameRolesPage {
-  protected players$: Observable<Player[]>;
+  protected players: Signal<Player[]> = this.newGameService.currentPlayers;
 
   protected playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
 
   protected playerTrackBy = PLAYER_TRACK_BY;
 
-  protected cannotCreate = true;
+  protected canCreate: Signal<boolean> = computed(() =>
+    this.canCreateGame(this.players()),
+  );
 
-  protected availableRoles: PlayerRoleEnum[] = [];
-
-  private cardsToPlay: CardList = {
-    selectedRoles: new Set(),
-    villageois: 0,
-    loupGarou: 0,
-    playersNumber: 0,
-  };
+  protected availableRoles: Signal<PlayerRoleEnum[]> = computed(() =>
+    this.getAvailableRoles(this.players()),
+  );
 
   constructor(
     private newGameService: NewGameService,
-    private roleChoiceService: CardChoiceService,
-  ) {
-    this.players$ = this.roleChoiceService.getCurrentChosenCards().pipe(
-      tap((selectedRoles) => (this.cardsToPlay = selectedRoles)),
-      switchMap(() => this.newGameService.getPlayers()),
-      tap((players) => {
-        this.cannotCreate = !this.canCreateGame(players);
-        this.availableRoles = this.getAvailableRoles(players);
-      }),
-    );
-  }
+    private cardChoiceService: CardChoiceService,
+  ) {}
 
   protected changeRole(id: number, role: PlayerRoleEnum): void {
     this.newGameService.changeRole(id, role);
@@ -69,13 +55,15 @@ export class NewGameRolesPage {
   }
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
+    const cardsToPlay: Signal<CardList> =
+      this.cardChoiceService.currentChosenCards;
     const usedRoles = new Set(players.map((player) => player.role));
-    let availableRoles = Array.from(this.cardsToPlay.selectedRoles).filter(
+    let availableRoles = Array.from(cardsToPlay().selectedRoles).filter(
       (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role),
     );
 
     if (
-      this.cardsToPlay.villageois >
+      cardsToPlay().villageois >
       players.filter((player) => player.role === PlayerRoleEnum.VILLAGEOIS)
         .length
     ) {
@@ -83,7 +71,7 @@ export class NewGameRolesPage {
     }
 
     if (
-      this.cardsToPlay.loupGarou >
+      cardsToPlay().loupGarou >
       players.filter((player) => player.role === PlayerRoleEnum.LOUP_GAROU)
         .length
     ) {

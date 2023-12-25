@@ -12,7 +12,7 @@
       >Accueil</ion-item
     >
     <ion-item
-      *ngIf="isGameInProgress$ | async"
+      *ngIf="isGameInProgress()"
       routerLink="/game"
       routerLinkActive="active"
       >Partie en cours</ion-item

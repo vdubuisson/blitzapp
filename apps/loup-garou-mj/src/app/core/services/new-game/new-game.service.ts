@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable, take } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { Player } from '../../models/player.model';
@@ -11,7 +10,7 @@ import { CardChoiceService } from '../card-choice/card-choice.service';
   providedIn: 'root',
 })
 export class NewGameService {
-  private players = new BehaviorSubject<Player[]>([
+  private players: WritableSignal<Player[]> = signal([
     // {
     //   id: 0,
     //   name: 'Valentin',
@@ -60,12 +59,12 @@ export class NewGameService {
     private cardChoiceService: CardChoiceService,
   ) {}
 
-  getPlayers(): Observable<Player[]> {
-    return this.players.asObservable();
+  get currentPlayers(): Signal<Player[]> {
+    return this.players.asReadonly();
   }
 
   addPlayer(name: string): void {
-    const currentPlayers = this.players.value;
+    const currentPlayers = this.players();
     const newPlayer: Player = {
       id: currentPlayers.length,
       name,
@@ -74,60 +73,53 @@ export class NewGameService {
       statuses: new Set<PlayerStatusEnum>(),
       isDead: false,
     };
-    this.players.next([...currentPlayers, newPlayer]);
+    this.players.set([...currentPlayers, newPlayer]);
   }
 
   removePlayer(id: number): void {
-    const currentPlayers = this.players.value;
+    const currentPlayers = this.players();
     currentPlayers.splice(id, 1);
     const newPlayers = this.reindexPlayers(currentPlayers);
-    this.players.next(newPlayers);
+    this.players.set(newPlayers);
   }
 
   reorderPlayers(from: number, to: number): void {
-    const currentPlayers = this.players.value;
+    const currentPlayers = this.players();
     const movedPlayer = currentPlayers.splice(from, 1)[0];
     currentPlayers.splice(to, 0, movedPlayer);
     const newPlayers = this.reindexPlayers(currentPlayers);
-    this.players.next(newPlayers);
+    this.players.set(newPlayers);
   }
 
   replay(): void {
-    this.gameService
-      .getPlayers()
-      .pipe(
-        take(1),
-        map((players) =>
-          players.map((player) => ({
-            ...player,
-            role: PlayerRoleEnum.NOT_SELECTED,
-            card: PlayerRoleEnum.NOT_SELECTED,
-            statuses: new Set<PlayerStatusEnum>(),
-            isDead: false,
-          })),
-        ),
-      )
-      .subscribe((players) => {
-        this.players.next(players);
-        this.router.navigate(['roles-choice']);
-      });
+    const players = this.gameService.currentPlayers();
+
+    const newPlayers = [...players].map((player) => ({
+      ...player,
+      role: PlayerRoleEnum.NOT_SELECTED,
+      card: PlayerRoleEnum.NOT_SELECTED,
+      statuses: new Set<PlayerStatusEnum>(),
+      isDead: false,
+    }));
+
+    this.players.set(newPlayers);
+    this.router.navigate(['roles-choice']);
   }
 
   changeRole(id: number, role: PlayerRoleEnum): void {
-    const currentPlayers = this.players.value;
+    const currentPlayers = [...this.players()];
     const player = currentPlayers.find((player) => player.id === id);
     if (player !== undefined) {
       player.role = role;
       player.card = role;
-      this.players.next(currentPlayers);
+      this.players.set(currentPlayers);
     }
   }
 
   createGame(): void {
-    this.cardChoiceService.getCurrentChosenCards().subscribe((cardList) => {
-      this.gameService.createGame(this.players.value, cardList);
-      this.players.next([]);
-    });
+    const cardList = this.cardChoiceService.currentChosenCards();
+    this.gameService.createGame(this.players(), cardList);
+    this.players.set([]);
   }
 
   private reindexPlayers(players: Player[]): Player[] {

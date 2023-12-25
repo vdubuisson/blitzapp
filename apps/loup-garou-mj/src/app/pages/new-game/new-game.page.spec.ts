@@ -1,6 +1,5 @@
 import { waitForAsync } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
-import { BehaviorSubject, of } from 'rxjs';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { Player } from '../../core/models/player.model';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
@@ -8,23 +7,28 @@ import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { NewGamePage } from './new-game.page';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { CardList } from '../../core/models/card-list.model';
+import { signal, WritableSignal } from '@angular/core';
 
 describe('NewGamePage', () => {
   let component: NewGamePage;
   let newGameService: NewGameService;
-  let roleChoiceService: CardChoiceService;
-  let mockPlayers$: BehaviorSubject<Player[]>;
+  let cardChoiceService: CardChoiceService;
+  let mockPlayers$: WritableSignal<Player[]>;
+  let mockCardList: WritableSignal<CardList | undefined>;
 
   beforeEach(waitForAsync(() => {
-    mockPlayers$ = new BehaviorSubject<Player[]>([]);
-    newGameService = MockService(NewGameService);
-    roleChoiceService = MockService(CardChoiceService);
-    jest.spyOn(newGameService, 'getPlayers').mockReturnValue(mockPlayers$);
-    jest
-      .spyOn(roleChoiceService, 'getCurrentChosenCards')
-      .mockReturnValue(of({ playersNumber: 3 } as CardList));
+    mockPlayers$ = signal([]);
+    mockCardList = signal({ playersNumber: 0 } as CardList);
+    newGameService = {
+      ...MockService(NewGameService),
+      currentPlayers: mockPlayers$.asReadonly(),
+    } as NewGameService;
+    cardChoiceService = {
+      ...MockService(CardChoiceService),
+      currentChosenCards: mockCardList.asReadonly(),
+    } as CardChoiceService;
 
-    component = new NewGamePage(newGameService, roleChoiceService);
+    component = new NewGamePage(newGameService, cardChoiceService);
   }));
 
   it('should get players from NewGameService', waitForAsync(() => {
@@ -46,19 +50,15 @@ describe('NewGamePage', () => {
         isDead: false,
       },
     ];
-    mockPlayers$.next(mockPlayers);
+    mockPlayers$.set(mockPlayers);
 
-    component['players$'].subscribe((players) =>
-      expect(players).toEqual(mockPlayers),
-    );
+    expect(component['players']()).toEqual(mockPlayers);
   }));
 
-  it('should get playersNumber from RoleChoiceService', waitForAsync(() => {
-    mockPlayers$.next([]);
+  it('should get playersNumber from CardChoiceService', waitForAsync(() => {
+    mockCardList.set({ playersNumber: 3 } as CardList);
 
-    component['players$'].subscribe(() =>
-      expect(component['playersCount']).toEqual(3),
-    );
+    expect(component['playersCount']()).toEqual(3);
   }));
 
   it('should not be able to validate if less than playersCount', waitForAsync(() => {
@@ -72,11 +72,10 @@ describe('NewGamePage', () => {
         isDead: false,
       },
     ];
-    mockPlayers$.next(mockPlayers);
+    mockPlayers$.set(mockPlayers);
+    mockCardList.set({ playersNumber: 3 } as CardList);
 
-    component['players$'].subscribe(() =>
-      expect(component['canValidate']).toEqual(false),
-    );
+    expect(component['canValidate']()).toEqual(false);
   }));
 
   it('should be able to validate if equals playersCount', waitForAsync(() => {
@@ -106,11 +105,10 @@ describe('NewGamePage', () => {
         isDead: false,
       },
     ];
-    mockPlayers$.next(mockPlayers);
+    mockPlayers$.set(mockPlayers);
+    mockCardList.set({ playersNumber: 3 } as CardList);
 
-    component['players$'].subscribe(() =>
-      expect(component['canValidate']).toEqual(true),
-    );
+    expect(component['canValidate']()).toEqual(true);
   }));
 
   it('should add player', () => {
@@ -118,7 +116,7 @@ describe('NewGamePage', () => {
 
     component['addPlayer']('player0');
 
-    expect(newGameService.addPlayer).toBeCalledWith('player0');
+    expect(newGameService.addPlayer).toHaveBeenCalledWith('player0');
   });
 
   it('should remove player', () => {
@@ -126,7 +124,7 @@ describe('NewGamePage', () => {
 
     component['removePlayer'](0);
 
-    expect(newGameService.removePlayer).toBeCalledWith(0);
+    expect(newGameService.removePlayer).toHaveBeenCalledWith(0);
   });
 
   it('should reorder player', () => {
@@ -137,6 +135,6 @@ describe('NewGamePage', () => {
 
     component['reorderPlayer'](mockEvent as Event);
 
-    expect(newGameService.reorderPlayers).toBeCalledWith(0, 2);
+    expect(newGameService.reorderPlayers).toHaveBeenCalledWith(0, 2);
   });
 });

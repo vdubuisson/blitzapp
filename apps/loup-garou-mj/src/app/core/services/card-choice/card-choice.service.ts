@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, first } from 'rxjs';
+import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { StorageService } from '../storage/storage.service';
 import { CardList, StoredCardList } from '../../models/card-list.model';
 
@@ -7,7 +6,16 @@ import { CardList, StoredCardList } from '../../models/card-list.model';
   providedIn: 'root',
 })
 export class CardChoiceService {
-  private cards = new BehaviorSubject<CardList | undefined>(undefined);
+  private cards: WritableSignal<CardList> = signal({
+    villageois: 0,
+    loupGarou: 0,
+    playersNumber: 0,
+    selectedRoles: new Set(),
+  });
+
+  get currentChosenCards(): Signal<CardList> {
+    return this.cards.asReadonly();
+  }
 
   private readonly CARDS_KEY = 'CardChoiceService_cards';
 
@@ -15,14 +23,8 @@ export class CardChoiceService {
     this.initFromStorage();
   }
 
-  getCurrentChosenCards(): Observable<CardList> {
-    return this.cards
-      .asObservable()
-      .pipe(first((cards) => cards !== undefined)) as Observable<CardList>;
-  }
-
   setCards(cards: CardList): void {
-    this.cards.next(cards);
+    this.cards.set(cards);
     const storedCardList: StoredCardList = {
       ...cards,
       selectedRoles: Array.from(cards.selectedRoles),
@@ -39,14 +41,7 @@ export class CardChoiceService {
             ...storedCards,
             selectedRoles: new Set(storedCards.selectedRoles),
           };
-          this.cards.next(cardList);
-        } else {
-          this.cards.next({
-            villageois: 0,
-            loupGarou: 0,
-            playersNumber: 0,
-            selectedRoles: new Set(),
-          });
+          this.cards.set(cardList);
         }
       });
   }

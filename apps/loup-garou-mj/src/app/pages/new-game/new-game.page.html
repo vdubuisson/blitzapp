@@ -1,7 +1,7 @@
 <lgmj-header title="Nouvelle partie - Joueurs" />
 
 <ion-content>
-  <div id="container" *ngIf="players$ | async as players">
+  <div id="container">
     <ion-item lines="full">
       <ion-icon slot="start" name="warning" size="large" color="warning" />
       <em>Respectez la position réelle des joueurs</em>
@@ -13,7 +13,7 @@
         (ionItemReorder)="reorderPlayer($event)"
         [disabled]="false"
       >
-        <ion-item *ngFor="let player of players; trackBy: playerTrackBy">
+        <ion-item *ngFor="let player of players(); trackBy: playerTrackBy">
           <ion-button
             (click)="removePlayer(player.id)"
             slot="start"
@@ -32,12 +32,12 @@
 
     <div id="submit-block">
       <ion-button
-        [disabled]="!canValidate"
+        [disabled]="!canValidate()"
         expand="block"
         routerLink="/new-game/roles"
         class="ion-margin-horizontal"
       >
-        Valider ({{ players.length }}/{{ playersCount }})
+        Valider ({{ players().length }}/{{ playersCount() }})
       </ion-button>
       <ion-button
         expand="block"

@@ -1,6 +1,12 @@
-import { Injectable } from '@angular/core';
+import {
+  computed,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
@@ -22,10 +28,13 @@ import { getNotPlayedRoles } from '../../utils/roles.utils';
   providedIn: 'root',
 })
 export class GameService {
-  private players = new BehaviorSubject<Player[]>([]);
-  private round = new BehaviorSubject<Round | undefined>(undefined);
-  private gameInProgress = new BehaviorSubject<boolean>(false);
-  private dayCount = new BehaviorSubject<number>(1);
+  isGameInProgress: Signal<boolean> = computed(
+    () => this.round() !== undefined,
+  );
+
+  private players: WritableSignal<Player[]> = signal([]);
+  private round: WritableSignal<Round | undefined> = signal(undefined);
+  private dayCount: WritableSignal<number> = signal(1);
 
   private cardList: CardList | undefined;
 
@@ -45,20 +54,16 @@ export class GameService {
     this.initFromStorage();
   }
 
-  getPlayers(): Observable<Player[]> {
-    return this.players.asObservable();
+  get currentPlayers(): Signal<Player[]> {
+    return this.players.asReadonly();
   }
 
-  getRound(): Observable<Round | undefined> {
-    return this.round.asObservable();
+  get currentRound(): Signal<Round | undefined> {
+    return this.round.asReadonly();
   }
 
-  isGameInProgress(): Observable<boolean> {
-    return this.gameInProgress.asObservable();
-  }
-
-  getDayCount(): Observable<number> {
-    return this.dayCount.asObservable();
+  get currentDayCount(): Signal<number> {
+    return this.dayCount.asReadonly();
   }
 
   createGame(players: Player[], cardList: CardList): void {
@@ -66,7 +71,6 @@ export class GameService {
     this.initGame(players, cardList);
     this.setFirstRound();
     this.nextDayCount(0);
-    this.gameInProgress.next(true);
     this.router.navigate(['game']);
   }
 
@@ -74,12 +78,12 @@ export class GameService {
     selectedPlayers: number[],
     selectedRole?: PlayerRoleEnum,
   ): void {
-    const currentRoundRole = this.round.value?.role;
+    const currentRoundRole = this.round()?.role;
     if (currentRoundRole !== undefined) {
       const handler = this.roundHandlersService.getHandler(currentRoundRole);
       if (handler !== undefined) {
         handler
-          .handleAction(this.players.value, selectedPlayers, selectedRole)
+          .handleAction(this.players(), selectedPlayers, selectedRole)
           .subscribe((newPlayers) => {
             this.setPlayers(newPlayers);
             this.nextRound();
@@ -110,7 +114,7 @@ export class GameService {
   }
 
   private nextRound(): void {
-    const currentRoundRole = this.round.value?.role;
+    const currentRoundRole = this.round()?.role;
     if (currentRoundRole === undefined) {
       throw new Error('No current round');
     }
@@ -162,11 +166,8 @@ export class GameService {
   private setRound(role: RoundEnum): void {
     const handler = this.roundHandlersService.getHandler(role);
     if (handler !== undefined) {
-      const roundConfig = handler.getRoundConfig(
-        this.players.value,
-        this.cardList,
-      );
-      this.round.next(roundConfig);
+      const roundConfig = handler.getRoundConfig(this.players(), this.cardList);
+      this.round.set(roundConfig);
       this.storageService.set(this.ROUND_KEY, roundConfig);
       if (handler.type === RoundTypeEnum.AUTO) {
         this.submitRoundAction([]);
@@ -175,13 +176,13 @@ export class GameService {
   }
 
   private setPlayers(players: Player[]): void {
-    this.players.next(players);
+    this.players.set(players);
     this.storageService.set(this.PLAYERS_KEY, players);
   }
 
   private nextDayCount(currentDay?: number): void {
-    const nextDay = (currentDay ?? this.dayCount.value) + 1;
-    this.dayCount.next(nextDay);
+    const nextDay = (currentDay ?? this.dayCount()) + 1;
+    this.dayCount.set(nextDay);
     this.storageService.set(this.DAY_COUNT_KEY, nextDay);
   }
 
@@ -196,10 +197,9 @@ export class GameService {
         storedRound !== null &&
         storedDayCount !== null
       ) {
-        this.players.next(storedPlayers);
-        this.round.next(storedRound);
-        this.dayCount.next(storedDayCount);
-        this.gameInProgress.next(true);
+        this.players.set(storedPlayers);
+        this.round.set(storedRound);
+        this.dayCount.set(storedDayCount);
       }
     });
   }
@@ -211,7 +211,7 @@ export class GameService {
   }
 
   private handleVictory(victory: VictoryEnum): void {
-    this.gameInProgress.next(false);
+    this.round.set(undefined);
     this.clearStorage();
     this.roundOrchestrationService.resetRounds();
     this.deathService.reset();
@@ -223,14 +223,14 @@ export class GameService {
   private handleDaytimeDeaths(currentHandler: RoundHandler | undefined) {
     if (currentHandler?.isDuringDay) {
       const playersAfterDeath = this.deathService.handleNewDeaths(
-        this.players.value,
+        this.players(),
       );
       this.setPlayers(playersAfterDeath);
     }
   }
 
   private checkLoupBlancRound(nextRound: RoundEnum): RoundEnum {
-    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount.value % 2 !== 0) {
+    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount() % 2 !== 0) {
       return this.roundOrchestrationService.getNextRound(RoundEnum.LOUP_BLANC);
     }
     return nextRound;
@@ -244,7 +244,7 @@ export class GameService {
   ): RoundEnum {
     if (nextHandler?.isDuringDay && !currentHandler?.isDuringDay) {
       const playersAfterDeath = this.deathService.handleNewDeaths(
-        this.players.value,
+        this.players(),
       );
       this.setPlayers(playersAfterDeath);
       return this.roundOrchestrationService.getNextRound(currentRoundRole);
@@ -268,7 +268,7 @@ export class GameService {
   }
 
   private checkVictory(): boolean {
-    const victory = this.victoryHandlersService.getVictory(this.players.value);
+    const victory = this.victoryHandlersService.getVictory(this.players());
     if (victory !== undefined) {
       this.handleVictory(victory);
       return true;
@@ -286,7 +286,7 @@ export class GameService {
       currentHandler?.isDuringDay
     ) {
       const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
-        this.players.value,
+        this.players(),
       );
       this.setPlayers(playersAfterDay);
       this.nextDayCount();
@@ -297,7 +297,7 @@ export class GameService {
     this.roundHandlersService.clearHandlers();
     this.victoryHandlersService.clearHandlers();
 
-    const players = [...this.players.value];
+    const players = [...this.players()];
     this.initGame(players, this.cardList as CardList);
   }
 }

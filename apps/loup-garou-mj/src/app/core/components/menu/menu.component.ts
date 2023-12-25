@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, IonMenu } from '@ionic/angular';
 import {
@@ -7,7 +7,7 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
-import { filter, Observable } from 'rxjs';
+import { filter } from 'rxjs';
 import { GameService } from '../../services/game/game.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -19,7 +19,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent {
-  protected isGameInProgress$: Observable<boolean>;
+  protected isGameInProgress: Signal<boolean> =
+    this.gameService.isGameInProgress;
 
   @ViewChild('menu') private menu: IonMenu | undefined;
 
@@ -27,8 +28,6 @@ export class MenuComponent {
     private router: Router,
     private gameService: GameService,
   ) {
-    this.isGameInProgress$ = this.gameService.isGameInProgress();
-
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),

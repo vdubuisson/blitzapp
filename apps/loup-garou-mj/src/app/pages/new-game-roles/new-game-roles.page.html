@@ -4,17 +4,17 @@
   <div id="container">
     <ion-list id="player-list">
       <lgmj-player
-        *ngFor="let player of players$ | async; trackBy: playerTrackBy"
+        *ngFor="let player of players(); trackBy: playerTrackBy"
         [player]="player"
         [displayMode]="playerDisplayMode"
-        [selectableRoles]="availableRoles"
+        [selectableRoles]="availableRoles()"
         (roleChange)="changeRole(player.id, $event)"
       />
     </ion-list>
 
     <div id="submit-block">
       <ion-button
-        [disabled]="cannotCreate"
+        [disabled]="!canCreate()"
         expand="block"
         (click)="createGame()"
         class="ion-margin-horizontal"
