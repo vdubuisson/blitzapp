@@ -1,13 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ItemReorderCustomEvent } from '@ionic/angular';
 import { Player } from '../../core/models/player.model';
 import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { switchMap, tap } from 'rxjs/operators';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
-import { Observable } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 
@@ -25,26 +23,22 @@ import { CardChoiceService } from '../../core/services/card-choice/card-choice.s
   styleUrls: ['./new-game.page.scss'],
 })
 export class NewGamePage {
-  protected players$: Observable<Player[]>;
+  protected players: Signal<Player[]> = this.newGameService.currentPlayers;
 
   protected playerTrackBy = PLAYER_TRACK_BY;
 
-  protected canValidate = false;
+  protected canValidate: Signal<boolean> = computed(
+    () => this.players().length === this.playersCount(),
+  );
 
-  protected playersCount = 0;
+  protected playersCount: Signal<number> = computed(
+    () => this.cardChoiceService.currentChosenCards().playersNumber,
+  );
 
   constructor(
     private newGameService: NewGameService,
-    private roleChoiceService: CardChoiceService,
-  ) {
-    this.players$ = this.roleChoiceService.getCurrentChosenCards().pipe(
-      tap((roleList) => (this.playersCount = roleList.playersNumber)),
-      switchMap(() => this.newGameService.getPlayers()),
-      tap(
-        (players) => (this.canValidate = players.length === this.playersCount),
-      ),
-    );
-  }
+    private cardChoiceService: CardChoiceService,
+  ) {}
 
   protected addPlayer(name: string): void {
     this.newGameService.addPlayer(name);

@@ -30,13 +30,11 @@ describe('CardChoiceService', () => {
   });
 
   it('should init from storage', () => {
-    expect(service['cards'].value).toEqual(mockCards);
+    expect(service['cards']()).toEqual(mockCards);
   });
 
   it('should return cards', waitForAsync(() => {
-    service.getCurrentChosenCards().subscribe((chosenCards) => {
-      expect(chosenCards).toEqual(mockCards);
-    });
+    expect(service.currentChosenCards()).toEqual(mockCards);
   }));
 
   it('should set cards', () => {
@@ -52,7 +50,7 @@ describe('CardChoiceService', () => {
 
     service.setCards(newMockCards);
 
-    expect(service['cards'].value).toEqual(newMockCards);
+    expect(service.currentChosenCards()).toEqual(newMockCards);
   });
 
   it('should store new cards', () => {

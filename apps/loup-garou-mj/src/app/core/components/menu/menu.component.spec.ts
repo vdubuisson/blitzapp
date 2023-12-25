@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { GameService } from '../../services/game/game.service';
 import { MenuComponent } from './menu.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, signal, WritableSignal } from '@angular/core';
 
 describe('MenuComponent', () => {
   let component: MenuComponent;
@@ -13,12 +13,16 @@ describe('MenuComponent', () => {
   let router: Router;
   let routerEvents$: Subject<NavigationEnd>;
   let gameService: GameService;
+  let isGameInProgress: WritableSignal<boolean>;
 
   beforeEach(async () => {
     router = MockService(Router);
     routerEvents$ = new Subject();
     jest.spyOn(router, 'events', 'get').mockReturnValue(routerEvents$);
-    gameService = MockService(GameService);
+    isGameInProgress = signal(false);
+    gameService = {
+      isGameInProgress: isGameInProgress.asReadonly(),
+    } as GameService;
 
     await TestBed.configureTestingModule({
       imports: [MenuComponent],

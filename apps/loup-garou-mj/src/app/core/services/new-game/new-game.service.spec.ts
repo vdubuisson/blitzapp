@@ -1,7 +1,6 @@
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { Player } from '../../models/player.model';
@@ -10,17 +9,28 @@ import { GameService } from '../game/game.service';
 import { NewGameService } from './new-game.service';
 import { CardChoiceService } from '../card-choice/card-choice.service';
 import { CardList } from '../../models/card-list.model';
+import { signal, WritableSignal } from '@angular/core';
 
 describe('NewGameService', () => {
   let service: NewGameService;
   let gameService: GameService;
   let router: Router;
   let cardChoiceService: CardChoiceService;
+  let currentCards: WritableSignal<CardList | undefined>;
+  let currentPlayers: WritableSignal<Player[]>;
 
   beforeEach(() => {
-    gameService = MockService(GameService);
+    currentPlayers = signal([]);
+    gameService = {
+      ...MockService(GameService),
+      currentPlayers: currentPlayers.asReadonly(),
+    } as GameService;
     router = MockService(Router);
-    cardChoiceService = MockService(CardChoiceService);
+    currentCards = signal(undefined);
+    cardChoiceService = {
+      ...MockService(CardChoiceService),
+      currentChosenCards: currentCards.asReadonly(),
+    } as CardChoiceService;
 
     service = new NewGameService(gameService, router, cardChoiceService);
   });
@@ -45,19 +55,17 @@ describe('NewGameService', () => {
       },
     ];
 
-    service['players'].next(mockPlayers);
+    service['players'].set(mockPlayers);
 
-    service.getPlayers().subscribe((players) => {
-      expect(players).toEqual(mockPlayers);
-    });
+    expect(service.currentPlayers()).toEqual(mockPlayers);
   }));
 
   it('should add player', () => {
-    service['players'].next([]);
+    service['players'].set([]);
 
     service.addPlayer('player0');
 
-    expect(service['players'].value).toEqual([
+    expect(service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -88,11 +96,11 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
-    service['players'].next(mockPlayers);
+    service['players'].set(mockPlayers);
 
     service.removePlayer(1);
 
-    expect(service['players'].value).toEqual([
+    expect(service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -139,11 +147,11 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
-    service['players'].next(mockPlayers);
+    service['players'].set(mockPlayers);
 
     service.reorderPlayers(0, 2);
 
-    expect(service['players'].value).toEqual([
+    expect(service['players']()).toEqual([
       {
         id: 0,
         name: 'player1',
@@ -199,11 +207,11 @@ describe('NewGameService', () => {
       },
     ];
 
-    jest.spyOn(gameService, 'getPlayers').mockReturnValue(of(mockPlayers));
+    currentPlayers.set(mockPlayers);
 
     service.replay();
 
-    expect(service['players'].value).toEqual([
+    expect(service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -224,12 +232,11 @@ describe('NewGameService', () => {
   });
 
   it('should navigate to /roles-choice on replay', () => {
-    jest.spyOn(gameService, 'getPlayers').mockReturnValue(of([]));
     jest.spyOn(router, 'navigate');
 
     service.replay();
 
-    expect(router.navigate).toBeCalledWith(['roles-choice']);
+    expect(router.navigate).toHaveBeenCalledWith(['roles-choice']);
   });
 
   it('should change role', () => {
@@ -251,11 +258,11 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
-    service['players'].next(mockPlayers);
+    service['players'].set(mockPlayers);
 
     service.changeRole(0, PlayerRoleEnum.SORCIERE);
 
-    expect(service['players'].value).toEqual([
+    expect(service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -301,16 +308,17 @@ describe('NewGameService', () => {
       playersNumber: 2,
     };
 
-    service['players'].next(mockPlayers);
-    jest
-      .spyOn(cardChoiceService, 'getCurrentChosenCards')
-      .mockReturnValue(of(mockCardList));
+    service['players'].set(mockPlayers);
+    currentCards.set(mockCardList);
 
     jest.spyOn(gameService, 'createGame');
 
     service.createGame();
 
-    expect(gameService.createGame).toBeCalledWith(mockPlayers, mockCardList);
+    expect(gameService.createGame).toHaveBeenCalledWith(
+      mockPlayers,
+      mockCardList,
+    );
   });
 
   it('should reset players on create game', () => {
@@ -339,13 +347,11 @@ describe('NewGameService', () => {
       playersNumber: 2,
     };
 
-    service['players'].next(mockPlayers);
-    jest
-      .spyOn(cardChoiceService, 'getCurrentChosenCards')
-      .mockReturnValue(of(mockCardList));
+    service['players'].set(mockPlayers);
+    currentCards.set(mockCardList);
 
     service.createGame();
 
-    expect(service['players'].value).toEqual([]);
+    expect(service['players']()).toEqual([]);
   });
 });

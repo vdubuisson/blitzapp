@@ -84,7 +84,7 @@ export class RolesChoicePage {
 
   constructor(
     private playerRoleNamePipe: PlayerRoleNamePipe,
-    private roleChoiceService: CardChoiceService,
+    private cardChoiceService: CardChoiceService,
     private router: Router,
     private formBuilder: FormBuilder,
   ) {
@@ -104,10 +104,9 @@ export class RolesChoicePage {
     this.listenRoleCountChange('loupGarou');
     this.listenRoleCountChange('villageois');
 
-    this.roleChoiceService.getCurrentChosenCards().subscribe((roleList) => {
-      this.selectedRoles.set(roleList.selectedRoles);
-      this.roleCountForm.patchValue(roleList);
-    });
+    const cardList: CardList = this.cardChoiceService.currentChosenCards();
+    this.selectedRoles.set(cardList.selectedRoles);
+    this.roleCountForm.patchValue(cardList);
   }
 
   protected onRoleCheckChange(event: Event): void {
@@ -142,7 +141,7 @@ export class RolesChoicePage {
       villageois: this.roleCountForm.value.villageois ?? 0,
       loupGarou: this.roleCountForm.value.loupGarou ?? 0,
     };
-    this.roleChoiceService.setCards(cardList);
+    this.cardChoiceService.setCards(cardList);
     this.router.navigate(['new-game']);
   }
 
