@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { confirmNewGameGuard } from './core/guards/confirm-new-game.guard';
 
 export const appRoutes: Routes = [
   {
@@ -30,6 +31,7 @@ export const appRoutes: Routes = [
   {
     path: 'roles-choice',
     title: 'LG Assistant MJ | Choix des rôles à jouer',
+    canActivate: [confirmNewGameGuard],
     loadComponent: () =>
       import('./pages/roles-choice/roles-choice.page').then(
         (m) => m.RolesChoicePage,
