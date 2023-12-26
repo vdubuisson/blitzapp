@@ -14,6 +14,7 @@ import {
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
 import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
+import { AngeVictoryHandler } from '../../victory-handlers/ange/ange-victory.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,7 @@ export class VictoryHandlersService {
 
   private readonly victoryPriorities: VictoryEnum[] = [
     VictoryEnum.NONE,
+    VictoryEnum.ANGE,
     VictoryEnum.AMOUREUX,
     VictoryEnum.LOUP_BLANC,
     VictoryEnum.JOUEUR_FLUTE,
@@ -71,6 +73,9 @@ export class VictoryHandlersService {
         new LoupBlancVictoryHandler(),
       );
     }
+    if (rolesSet.has(PlayerRoleEnum.ANGE)) {
+      this.victoryHandlers.set(VictoryEnum.ANGE, new AngeVictoryHandler());
+    }
   }
 
   removeUselessHandlers(players: Player[]): void {
@@ -98,11 +103,14 @@ export class VictoryHandlersService {
     }
   }
 
-  getVictory(players: Player[]): VictoryEnum | undefined {
+  getVictory(
+    players: Player[],
+    isFirstDayOrNight: boolean,
+  ): VictoryEnum | undefined {
     let resultVictory: VictoryEnum | undefined;
     for (const victoryEnum of this.victoryPriorities) {
       const victoryHandler = this.victoryHandlers.get(victoryEnum);
-      if (victoryHandler?.isVictorious(players)) {
+      if (victoryHandler?.isVictorious(players, isFirstDayOrNight)) {
         resultVictory = victoryEnum;
         break;
       }

@@ -230,7 +230,7 @@ describe('VictoryHandlersService', () => {
       mockVillageoisVictoryHandler,
     );
 
-    const victory = service.getVictory([]);
+    const victory = service.getVictory([], false);
 
     expect(victory).toEqual(VictoryEnum.LOUP_GAROU);
   });
@@ -262,7 +262,7 @@ describe('VictoryHandlersService', () => {
       mockVillageoisVictoryHandler,
     );
 
-    const victory = service.getVictory([]);
+    const victory = service.getVictory([], false);
 
     expect(victory).toEqual(undefined);
   });

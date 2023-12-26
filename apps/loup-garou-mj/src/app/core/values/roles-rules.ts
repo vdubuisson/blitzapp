@@ -97,4 +97,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Chaque nuit, il se réveille avec les autres loups-garous pour attaquer un innocent.
 
   Une nuit sur deux, il se réveille et peut éliminer un Loup-Garou s'il le souhaite.`,
+  [PlayerRoleEnum.ANGE]: `Lorsque l'Ange est joué, la partie commence par un vote des villageois.
+
+  Son objectif est de se faire éliminer lors de ce premier vote ou lors de la première nuit.
+
+  S'il se fait éliminer le premier jour ou la première nuit, il gagne la partie. Dans le cas contraire, il devient un simple villageois et la partie continue.`,
 };

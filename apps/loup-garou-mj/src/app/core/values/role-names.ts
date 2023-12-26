@@ -21,4 +21,5 @@ export const ROLE_NAMES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.FRERE]: 'Frère',
   [PlayerRoleEnum.LOUP_BLANC]: 'Loup-garou blanc',
   [PlayerRoleEnum.VOLEUR]: 'Voleur',
+  [PlayerRoleEnum.ANGE]: 'Ange',
 };
