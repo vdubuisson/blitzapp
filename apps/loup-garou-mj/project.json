@@ -84,13 +84,7 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/loup-garou-mj/**/*.ts",
-          "apps/loup-garou-mj/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@nx/jest:jest",
