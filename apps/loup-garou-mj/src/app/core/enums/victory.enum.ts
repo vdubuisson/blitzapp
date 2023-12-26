@@ -1,5 +1,6 @@
 export enum VictoryEnum {
   NONE = 'NONE',
+  ANGE = 'ANGE',
   AMOUREUX = 'AMOUREUX',
   LOUP_GAROU = 'LOUP_GAROU',
   VILLAGEOIS = 'VILLAGEOIS',

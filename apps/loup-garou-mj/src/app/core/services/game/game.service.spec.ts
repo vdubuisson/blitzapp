@@ -397,12 +397,32 @@ describe('GameService', () => {
     expect(service['players']()).toEqual(mockPlayers);
   });
 
-  it('should set day count to 1 on game creation', () => {
+  it('should set day count to 1 on game creation if no Ange', () => {
     service['dayCount'].set(2);
 
     service.createGame(mockPlayers, mockCardList);
 
     expect(service['dayCount']()).toEqual(1);
+  });
+
+  it('should set day count to 0 on game creation if Ange', () => {
+    service['dayCount'].set(2);
+
+    const newMockPlayers: Player[] = [
+      ...mockPlayers,
+      {
+        id: 3,
+        name: 'player3',
+        role: PlayerRoleEnum.ANGE,
+        card: PlayerRoleEnum.ANGE,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.createGame(newMockPlayers, mockCardList);
+
+    expect(service['dayCount']()).toEqual(0);
   });
 
   it('should navigate to /game on game creation', () => {
@@ -413,7 +433,7 @@ describe('GameService', () => {
     expect(router.navigate).toHaveBeenCalledWith(['game']);
   });
 
-  it('should set first round on game creation', () => {
+  it('should set first round on game creation using RoundOrchestrationService if no Ange', () => {
     const mockRound: Round = {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
@@ -430,6 +450,40 @@ describe('GameService', () => {
     service.createGame(mockPlayers, mockCardList);
 
     expect(service['round']()).toEqual(mockRound);
+  });
+
+  it('should set first round on game creation as VILLAGEOIS if Ange', () => {
+    const mockRound: Round = {
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0, 2],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    };
+    jest.spyOn(roundHandler, 'getRoundConfig').mockReturnValue(mockRound);
+    jest
+      .spyOn(roundOrchestrationService, 'getFirstRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    const newMockPlayers: Player[] = [
+      ...mockPlayers,
+      {
+        id: 3,
+        name: 'player3',
+        role: PlayerRoleEnum.ANGE,
+        card: PlayerRoleEnum.ANGE,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.createGame(newMockPlayers, mockCardList);
+
+    expect(service['round']()).toEqual(mockRound);
+    expect(roundHandlersService.getHandler).toHaveBeenCalledWith(
+      RoundEnum.VILLAGEOIS,
+    );
   });
 
   it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {

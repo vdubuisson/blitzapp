@@ -69,8 +69,16 @@ export class GameService {
   createGame(players: Player[], cardList: CardList): void {
     this.cardList = cardList;
     this.initGame(players, cardList);
-    this.setFirstRound();
-    this.nextDayCount(0);
+    const isAngePresent = players
+      .map((player) => player.role)
+      .includes(PlayerRoleEnum.ANGE);
+    if (isAngePresent) {
+      this.setRound(RoundEnum.VILLAGEOIS);
+      this.nextDayCount(-1);
+    } else {
+      this.setFirstRound();
+      this.nextDayCount(0);
+    }
     this.router.navigate(['game']);
   }
 
@@ -268,7 +276,13 @@ export class GameService {
   }
 
   private checkVictory(): boolean {
-    const victory = this.victoryHandlersService.getVictory(this.players());
+    const isFirstDay =
+      (this.round()?.isDuringDay && this.dayCount() === 0) ?? false;
+    const isFirstNight = !this.round()?.isDuringDay && this.dayCount() === 1;
+    const victory = this.victoryHandlersService.getVictory(
+      this.players(),
+      isFirstDay || isFirstNight,
+    );
     if (victory !== undefined) {
       this.handleVictory(victory);
       return true;
