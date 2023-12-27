@@ -10,6 +10,9 @@ import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { DeathService } from './death.service';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { StatusesService } from '../statuses/statuses.service';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
 
 describe('DeathService with storage init', () => {
   let service: DeathService;
@@ -17,6 +20,7 @@ describe('DeathService with storage init', () => {
   let victoryHandlersService: VictoryHandlersService;
   let announcementService: AnnouncementService;
   let storageService: StorageService;
+  let statusesService: StatusesService;
 
   const mockStoredKnownDeaths: number[] = [0, 1, 2];
   const mockStoredAnnounce: Player[] = [
@@ -36,6 +40,7 @@ describe('DeathService with storage init', () => {
     victoryHandlersService = MockService(VictoryHandlersService);
     announcementService = MockService(AnnouncementService);
     storageService = MockService(StorageService);
+    statusesService = MockService(StatusesService);
 
     const storageGetSpy = jest.spyOn(storageService, 'get');
     when(storageGetSpy)
@@ -53,6 +58,7 @@ describe('DeathService with storage init', () => {
       victoryHandlersService,
       announcementService,
       storageService,
+      statusesService,
     );
   });
 
@@ -75,12 +81,14 @@ describe('DeathService', () => {
   let victoryHandlersService: VictoryHandlersService;
   let announcementService: AnnouncementService;
   let storageService: StorageService;
+  let statusesService: StatusesService;
 
   beforeEach(() => {
     roundHandlersService = MockService(RoundHandlersService);
     victoryHandlersService = MockService(VictoryHandlersService);
     announcementService = MockService(AnnouncementService);
     storageService = MockService(StorageService);
+    statusesService = MockService(StatusesService);
 
     jest.spyOn(storageService, 'get').mockReturnValue(of(null));
 
@@ -89,6 +97,7 @@ describe('DeathService', () => {
       victoryHandlersService,
       announcementService,
       storageService,
+      statusesService,
     );
   });
 
@@ -107,7 +116,7 @@ describe('DeathService', () => {
 
     service.getNextAfterDeathRound();
 
-    expect(storageService.set).toBeCalledWith(service['QUEUE_KEY'], [
+    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
       RoundEnum.CAPITAINE,
     ]);
   });
@@ -125,7 +134,9 @@ describe('DeathService', () => {
 
     service.reset();
 
-    expect(storageService.remove).toBeCalledWith(service['KNOWN_DEATHS_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(
+      service['KNOWN_DEATHS_KEY'],
+    );
   });
 
   it('should empty afterDeathRoundQueue on reset', () => {
@@ -141,7 +152,7 @@ describe('DeathService', () => {
 
     service.reset();
 
-    expect(storageService.remove).toBeCalledWith(service['QUEUE_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(service['QUEUE_KEY']);
   });
 
   it('should empty deathsToAnnounce on reset', () => {
@@ -166,7 +177,7 @@ describe('DeathService', () => {
 
     service.reset();
 
-    expect(storageService.remove).toBeCalledWith(service['ANNOUNCE_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(service['ANNOUNCE_KEY']);
   });
 
   it('should kill players with WOLF_TARGET status', () => {
@@ -240,6 +251,62 @@ describe('DeathService', () => {
         statuses: new Set([
           PlayerStatusEnum.WOLF_TARGET,
           PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].isDead).toEqual(true);
+  });
+
+  it('should add FIRST_DEATH status to player with WOLF_TARGET status and ANCIEN role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].isDead).toEqual(false);
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.FIRST_DEATH)).toEqual(
+      true,
+    );
+  });
+
+  it('should kill player with WOLF_TARGET and FIRST_DEATH statuses and ANCIEN role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.FIRST_DEATH,
         ]),
         isDead: false,
       },
@@ -325,7 +392,10 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(storageService.set).toBeCalledWith(service['KNOWN_DEATHS_KEY'], [0]);
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['KNOWN_DEATHS_KEY'],
+      [0],
+    );
   });
 
   it('should add dead player to deaths to announce', () => {
@@ -385,7 +455,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(storageService.set).toBeCalledWith(service['ANNOUNCE_KEY'], [
+    expect(storageService.set).toHaveBeenCalledWith(service['ANNOUNCE_KEY'], [
       {
         id: 0,
         name: 'player0',
@@ -448,7 +518,7 @@ describe('DeathService', () => {
     expect(
       service['afterDeathRoundQueue'].includes(RoundEnum.CAPITAINE),
     ).toEqual(true);
-    expect(storageService.set).toBeCalledWith(service['QUEUE_KEY'], [
+    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
       RoundEnum.CAPITAINE,
     ]);
   });
@@ -608,7 +678,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith(
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith(
       expect.arrayContaining([PlayerRoleEnum.LOUP_GAROU]),
     );
   });
@@ -644,7 +714,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
@@ -680,7 +750,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
@@ -716,7 +786,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
@@ -747,7 +817,7 @@ describe('DeathService', () => {
     service.handleNewDeaths(mockPlayers);
 
     expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.CHASSEUR);
-    expect(storageService.set).toBeCalledWith(service['QUEUE_KEY'], [
+    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
       RoundEnum.CHASSEUR,
       RoundEnum.CAPITAINE,
     ]);
@@ -776,7 +846,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.CUPIDON,
     ]);
   });
@@ -804,7 +874,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SORCIERE,
     ]);
   });
@@ -832,7 +902,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VOYANTE,
     ]);
   });
@@ -860,7 +930,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.JOUEUR_FLUTE,
     ]);
   });
@@ -888,7 +958,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.CORBEAU,
     ]);
   });
@@ -916,7 +986,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.ENFANT_SAUVAGE,
     ]);
   });
@@ -944,7 +1014,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SALVATEUR,
     ]);
   });
@@ -972,7 +1042,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.MONTREUR_OURS,
     ]);
   });
@@ -1000,7 +1070,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.RENARD,
     ]);
   });
@@ -1028,7 +1098,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.CHIEN_LOUP,
     ]);
   });
@@ -1064,7 +1134,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SOEUR,
       PlayerRoleEnum.SOEUR,
     ]);
@@ -1101,7 +1171,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledTimes(0);
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
   });
 
   it('should remove FRERE handlers if all FRERE are dead', () => {
@@ -1135,7 +1205,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledWith([
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.FRERE,
       PlayerRoleEnum.FRERE,
     ]);
@@ -1172,7 +1242,119 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(roundHandlersService.removeHandlers).toBeCalledTimes(0);
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
+  });
+
+  it('should remove power from innocents if ANCIEN killed by innocents', () => {
+    jest.spyOn(statusesService, 'removePowersFromInnocents');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.VILLAGEOIS,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(statusesService.removePowersFromInnocents).toHaveBeenCalledWith(
+      mockPlayers,
+    );
+  });
+
+  it('should not remove power from innocents if ANCIEN not killed by innocents', () => {
+    jest.spyOn(statusesService, 'removePowersFromInnocents');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(statusesService.removePowersFromInnocents).toHaveBeenCalledTimes(0);
+  });
+
+  it('should remove innocents handlers if ANCIEN killed by innocents', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.VILLAGEOIS,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith(
+      INNOCENTS_POWER_REMOVAL_ROLES,
+    );
+  });
+
+  it('should not remove innocents handlers if ANCIEN not killed by innocents', () => {
+    jest.spyOn(roundHandlersService, 'removeHandlers');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
   });
 
   it('should remove useless victory handlers on deaths handle', () => {
@@ -1198,7 +1380,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(victoryHandlersService.removeUselessHandlers).toBeCalledWith(
+    expect(victoryHandlersService.removeUselessHandlers).toHaveBeenCalledWith(
       mockPlayers,
     );
   });
@@ -1220,7 +1402,98 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
-    expect(announcementService.announceDeaths).toBeCalledWith(mockPlayers);
+    expect(announcementService.announceDeaths).toHaveBeenCalledWith(
+      mockPlayers,
+    );
+  });
+
+  it('should announce ANCIEN killed by innocents if killed by CHASSEUR', () => {
+    jest.spyOn(announcementService, 'announce');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.CHASSEUR,
+      },
+    ];
+
+    service['deathsToAnnounce'] = mockPlayers;
+
+    service.announceDeaths();
+
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
+    );
+  });
+
+  it('should announce ANCIEN killed by innocents if killed by SORCIERE', () => {
+    jest.spyOn(announcementService, 'announce');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.SORCIERE,
+      },
+    ];
+
+    service['deathsToAnnounce'] = mockPlayers;
+
+    service.announceDeaths();
+
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
+    );
+  });
+
+  it('should announce ANCIEN killed by innocents if killed by VILLAGEOIS', () => {
+    jest.spyOn(announcementService, 'announce');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.VILLAGEOIS,
+      },
+    ];
+
+    service['deathsToAnnounce'] = mockPlayers;
+
+    service.announceDeaths();
+
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
+    );
+  });
+
+  it('should not announce ANCIEN killed by innocents if not killed by innocent', () => {
+    jest.spyOn(announcementService, 'announce');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+
+    service['deathsToAnnounce'] = mockPlayers;
+
+    service.announceDeaths();
+
+    expect(announcementService.announce).toHaveBeenCalledTimes(0);
   });
 
   it('should not announce deaths if there are none', () => {
@@ -1230,7 +1503,7 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
-    expect(announcementService.announceDeaths).toBeCalledTimes(0);
+    expect(announcementService.announceDeaths).toHaveBeenCalledTimes(0);
   });
 
   it('should clear deaths to announce after announce', () => {
@@ -1265,6 +1538,9 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
-    expect(storageService.set).toBeCalledWith(service['ANNOUNCE_KEY'], []);
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['ANNOUNCE_KEY'],
+      [],
+    );
   });
 });

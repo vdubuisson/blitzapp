@@ -8,6 +8,7 @@ import { RenardRoundHandler } from './renard-round.handler';
 import * as neighborUtils from '../../utils/neighbor.utils';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { waitForAsync } from '@angular/core/testing';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
 
 describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
@@ -102,12 +103,12 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcementService, 'announceFoxSuccess');
+    jest.spyOn(announcementService, 'announce');
 
     roundHandler
       .handleAction(players, [])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalledTimes(0),
+        expect(announcementService.announce).toHaveBeenCalledTimes(0),
       );
   }));
 
@@ -138,12 +139,12 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcementService, 'announceFoxFail');
+    jest.spyOn(announcementService, 'announce');
 
     roundHandler
       .handleAction(players, [])
       .subscribe(() =>
-        expect(announcementService.announceFoxFail).toBeCalledTimes(0),
+        expect(announcementService.announce).toHaveBeenCalledTimes(0),
       );
   }));
 
@@ -207,12 +208,14 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcementService, 'announceFoxSuccess');
+    jest.spyOn(announcementService, 'announce');
 
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalled(),
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.FOX_SUCCESS,
+        ),
       );
   }));
 
@@ -292,12 +295,14 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(announcementService, 'announceFoxSuccess');
+    jest.spyOn(announcementService, 'announce');
 
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalled(),
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.FOX_SUCCESS,
+        ),
       );
   }));
 
@@ -394,12 +399,14 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
 
-    jest.spyOn(announcementService, 'announceFoxSuccess');
+    jest.spyOn(announcementService, 'announce');
 
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxSuccess).toBeCalled(),
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.FOX_SUCCESS,
+        ),
       );
   }));
 
@@ -500,12 +507,14 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
 
-    jest.spyOn(announcementService, 'announceFoxFail');
+    jest.spyOn(announcementService, 'announce');
 
     roundHandler
       .handleAction(players, [1])
       .subscribe(() =>
-        expect(announcementService.announceFoxFail).toBeCalled(),
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.FOX_FAIL,
+        ),
       );
   }));
 

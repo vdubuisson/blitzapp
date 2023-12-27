@@ -11,4 +11,5 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.CHILD_MODEL]: `Ce joueur est le modèle de l'enfant sauvage. S'il meurt alors l'enfant sauvage devient un loup-garou.`,
   [PlayerStatusEnum.PROTECTED]: `Ce joueur est actuellement protégé par le Salvateur.`,
   [PlayerStatusEnum.NO_POWER]: `Ce joueur a perdu son pouvoir. Par exemple pour le Renard, il ne peut plus renifler.`,
+  [PlayerStatusEnum.FIRST_DEATH]: `Ce joueur a survécu à une première attaque de loup-garou.`,
 };

@@ -22,7 +22,7 @@ describe('NewPlayerComponent', () => {
 
     component.newPlayer.asObservable().subscribe((newPlayer) => {
       expect(newPlayer).toEqual('Name');
-      expect(component['playerForm'].reset).toBeCalled();
+      expect(component['playerForm'].reset).toHaveBeenCalled();
     });
   }));
 });

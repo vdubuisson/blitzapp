@@ -62,6 +62,33 @@ describe('SorciereKillRoundHandler', () => {
       .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
   }));
 
+  it('should set killedBy SORCIERE on selected player', waitForAsync(() => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
+        isDead: false,
+      },
+    ];
+
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.SORCIERE),
+      );
+  }));
+
   it('should remove DEATH_POTION status to SORCIERE player', waitForAsync(() => {
     const players: Player[] = [
       {

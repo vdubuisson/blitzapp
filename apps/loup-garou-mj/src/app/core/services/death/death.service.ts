@@ -8,6 +8,9 @@ import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { StatusesService } from '../statuses/statuses.service';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +30,7 @@ export class DeathService {
     private victoryHandlersService: VictoryHandlersService,
     private announcementService: AnnouncementService,
     private storageService: StorageService,
+    private statusesService: StatusesService,
   ) {
     this.initFromStorage();
   }
@@ -67,6 +71,17 @@ export class DeathService {
   announceDeaths(): void {
     if (this.deathsToAnnounce.length > 0) {
       this.announcementService.announceDeaths(this.deathsToAnnounce);
+      const deadAncienPlayer = this.deathsToAnnounce.find(
+        (player) => player.role === PlayerRoleEnum.ANCIEN,
+      );
+      if (
+        deadAncienPlayer !== undefined &&
+        this.isAncienKilledByInnocents(deadAncienPlayer)
+      ) {
+        this.announcementService.announce(
+          AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
+        );
+      }
       this.deathsToAnnounce = [];
       this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
     }
@@ -81,7 +96,14 @@ export class DeathService {
           !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
           player.role === PlayerRoleEnum.PETITE_FILLE
         ) {
-          player.isDead = true;
+          if (
+            player.role === PlayerRoleEnum.ANCIEN &&
+            !player.statuses.has(PlayerStatusEnum.FIRST_DEATH)
+          ) {
+            player.statuses.add(PlayerStatusEnum.FIRST_DEATH);
+          } else {
+            player.isDead = true;
+          }
         }
       });
   }
@@ -167,10 +189,27 @@ export class DeathService {
           this.rolesToRemove.push(PlayerRoleEnum.FRERE);
         }
         break;
+      case PlayerRoleEnum.ANCIEN:
+        if (this.isAncienKilledByInnocents(deadPlayer)) {
+          this.statusesService.removePowersFromInnocents(players);
+          this.rolesToRemove.push(...INNOCENTS_POWER_REMOVAL_ROLES);
+        }
+        break;
       default:
         this.rolesToRemove.push(deadPlayer.role);
         break;
     }
+  }
+
+  private isAncienKilledByInnocents(player: Player): boolean {
+    return (
+      player.killedBy !== undefined &&
+      [
+        PlayerRoleEnum.CHASSEUR,
+        PlayerRoleEnum.SORCIERE,
+        PlayerRoleEnum.VILLAGEOIS,
+      ].includes(player.killedBy)
+    );
   }
 
   private initFromStorage(): void {

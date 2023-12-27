@@ -48,6 +48,6 @@ describe('MenuComponent', () => {
 
     routerEvents$.next(new NavigationEnd(0, '', ''));
 
-    expect(menu.close).toBeCalled();
+    expect(menu.close).toHaveBeenCalled();
   });
 });

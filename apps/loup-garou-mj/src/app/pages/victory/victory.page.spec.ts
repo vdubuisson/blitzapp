@@ -23,6 +23,6 @@ describe('VictoryPage', () => {
 
     component['replay']();
 
-    expect(newGameService.replay).toBeCalled();
+    expect(newGameService.replay).toHaveBeenCalled();
   });
 });

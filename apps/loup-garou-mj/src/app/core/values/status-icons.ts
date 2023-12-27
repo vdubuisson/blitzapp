@@ -6,7 +6,7 @@ export const STATUS_ICONS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.DEATH_POTION]: '🖤',
   [PlayerStatusEnum.CAPTAIN]: '🎖️',
   [PlayerStatusEnum.LOVER]: '💕',
-  // [PlayerStatusEnum.FIRST_DEATH]: "☠️",
+  [PlayerStatusEnum.FIRST_DEATH]: '☠️',
   [PlayerStatusEnum.PROTECTED]: '🛡️',
   [PlayerStatusEnum.NO_POWER]: '❌',
   [PlayerStatusEnum.CHARMED]: '🎶',

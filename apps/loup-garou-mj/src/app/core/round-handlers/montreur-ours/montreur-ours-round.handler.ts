@@ -11,6 +11,7 @@ import {
 import { DefaultRoundHandler } from '../default/default-round.handler';
 import { Observable } from 'rxjs';
 import { RoundHandlerParameters } from '../round-handler-parameters.interface';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
   private announcementService: AnnouncementService;
@@ -34,14 +35,14 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
       const leftPlayer = findLeftNeighbor(players, montreurOursIndex);
       // TODO handle INFECTED player
       if (LOUPS_GAROUS_ROLES.includes(leftPlayer.role)) {
-        this.announcementService.announceBearGrowl();
+        this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
         return super.handleAction(players, selectedPlayers);
       }
 
       const rightPlayer = findRightNeighbor(players, montreurOursIndex);
       // TODO handle INFECTED player
       if (LOUPS_GAROUS_ROLES.includes(rightPlayer.role)) {
-        this.announcementService.announceBearGrowl();
+        this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
       }
     }
     return super.handleAction(players, selectedPlayers);

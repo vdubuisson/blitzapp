@@ -4,6 +4,7 @@ import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
 
 export class VillageoisRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -15,9 +16,11 @@ export class VillageoisRoundHandler implements RoundHandler {
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
     const newPlayers = [...players];
-    (
-      newPlayers.find((player) => player.id === selectedPlayerIds[0]) as Player
-    ).isDead = true;
+    const selectedPlayer = newPlayers.find(
+      (player) => player.id === selectedPlayerIds[0],
+    ) as Player;
+    selectedPlayer.isDead = true;
+    selectedPlayer.killedBy = PlayerRoleEnum.VILLAGEOIS;
     return of(newPlayers);
   }
 

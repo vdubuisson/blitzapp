@@ -17,7 +17,7 @@ describe('StorageService', () => {
   });
 
   it('should create storage', () => {
-    expect(storage.create).toBeCalled();
+    expect(storage.create).toHaveBeenCalled();
   });
 
   it('should set value to storage', () => {
@@ -25,7 +25,7 @@ describe('StorageService', () => {
 
     service.set('mockKey', 'mockValue');
 
-    expect(mockStorage.set).toBeCalledWith('mockKey', 'mockValue');
+    expect(mockStorage.set).toHaveBeenCalledWith('mockKey', 'mockValue');
   });
 
   it('should remove key from storage', () => {
@@ -33,7 +33,7 @@ describe('StorageService', () => {
 
     service.remove('mockKey');
 
-    expect(mockStorage.remove).toBeCalledWith('mockKey');
+    expect(mockStorage.remove).toHaveBeenCalledWith('mockKey');
   });
 
   it('should get value from storage', waitForAsync(() => {
@@ -50,7 +50,7 @@ describe('StorageService', () => {
     when(jest.spyOn(mockStorage, 'clear')).mockResolvedValue(undefined);
 
     service.clear().subscribe(() => {
-      expect(mockStorage.clear).toBeCalled();
+      expect(mockStorage.clear).toHaveBeenCalled();
     });
   }));
 });

@@ -7,6 +7,7 @@ import { AnnouncementService } from '../../services/announcement/announcement.se
 import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 import * as neighborUtils from '../../utils/neighbor.utils';
 import { waitForAsync } from '@angular/core/testing';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
 
 describe('MontreurOursRoundHandler', () => {
   let roundHandler: MontreurOursRoundHandler;
@@ -144,7 +145,7 @@ describe('MontreurOursRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
+    jest.spyOn(announcementService, 'announce');
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
@@ -157,7 +158,9 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler
       .handleAction(mockPlayers, [])
       .subscribe(() =>
-        expect(announcementService.announceBearGrowl).toBeCalled(),
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.BEAR_GROWL,
+        ),
       );
   }));
 
@@ -188,7 +191,7 @@ describe('MontreurOursRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
+    jest.spyOn(announcementService, 'announce');
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
@@ -209,7 +212,9 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler
       .handleAction(mockPlayers, [])
       .subscribe(() =>
-        expect(announcementService.announceBearGrowl).toBeCalled(),
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.BEAR_GROWL,
+        ),
       );
   }));
 
@@ -240,7 +245,7 @@ describe('MontreurOursRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcementService, 'announceBearGrowl');
+    jest.spyOn(announcementService, 'announce');
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
@@ -261,7 +266,7 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler
       .handleAction(mockPlayers, [])
       .subscribe(() =>
-        expect(announcementService.announceBearGrowl).toBeCalledTimes(0),
+        expect(announcementService.announce).toHaveBeenCalledTimes(0),
       );
   }));
 });

@@ -102,4 +102,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Son objectif est de se faire éliminer lors de ce premier vote ou lors de la première nuit.
 
   S'il se fait éliminer le premier jour ou la première nuit, il gagne la partie. Dans le cas contraire, il devient un simple villageois et la partie continue.`,
+  [PlayerRoleEnum.ANCIEN]: `Son objectif est d'éliminer tous les loups-garous.
+
+  Il peut survivre à une première attaque de loups-garous, mais il succombera à la deuxième.
+
+  S'il est éliminé par un innocent, alors tous les innocents perdent leurs pouvoirs jusqu'à la fin de la partie.`,
 };

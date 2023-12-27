@@ -13,3 +13,7 @@ ion-input.role-count {
 
   --padding-end: var(--padding-start);
 }
+
+ion-list#inputs ion-label {
+  width: auto;
+}
