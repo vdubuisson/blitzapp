@@ -20,6 +20,6 @@ describe('OptionsPage', () => {
 
     page['clear']();
 
-    expect(storageService.clear).toBeCalled();
+    expect(storageService.clear).toHaveBeenCalled();
   });
 });

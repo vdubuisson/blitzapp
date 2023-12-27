@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { AlertController, AlertOptions } from '@ionic/angular';
 import { Player } from '../../models/player.model';
 import { StorageService } from '../storage/storage.service';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { announcements } from '../../values/announcements';
 
 @Injectable({
   providedIn: 'root',
@@ -35,29 +37,8 @@ export class AnnouncementService {
     this.addAnnouncementToQueue(announcement);
   }
 
-  announceBearGrowl(): void {
-    const announcement: AlertOptions = {
-      header: "Grognement de l'ours",
-      message: "L'ours du montreur d'ours grogne",
-    };
-    this.addAnnouncementToQueue(announcement);
-  }
-
-  announceFoxSuccess(): void {
-    const announcement: AlertOptions = {
-      header: 'Reniflement du renard',
-      message:
-        '<p>Oui, ce groupe contient un loup-garou.</p><p>Le renard garde son pouvoir.</p>',
-    };
-    this.addAnnouncementToQueue(announcement);
-  }
-
-  announceFoxFail(): void {
-    const announcement: AlertOptions = {
-      header: 'Reniflement du renard',
-      message:
-        '<p>Non, ce groupe ne contient aucun loup-garou.</p><p>Le renard perd son pouvoir.</p>',
-    };
+  announce(type: AnnouncementEnum): void {
+    const announcement: AlertOptions = { ...announcements[type] };
     this.addAnnouncementToQueue(announcement);
   }
 

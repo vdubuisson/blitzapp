@@ -16,9 +16,11 @@ export class ChasseurRoundHandler implements RoundHandler {
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
     const newPlayers = [...players];
-    (
-      newPlayers.find((player) => player.id === selectedPlayerIds[0]) as Player
-    ).isDead = true;
+    const selectedPlayer = newPlayers.find(
+      (player) => player.id === selectedPlayerIds[0],
+    ) as Player;
+    selectedPlayer.isDead = true;
+    selectedPlayer.killedBy = PlayerRoleEnum.CHASSEUR;
     return of(newPlayers);
   }
 

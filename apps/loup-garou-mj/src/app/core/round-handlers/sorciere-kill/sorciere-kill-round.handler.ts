@@ -18,11 +18,11 @@ export class SorciereKillRoundHandler implements RoundHandler {
   ): Observable<Player[]> {
     const newPlayers = [...players];
     if (selectedPlayerIds.length > 0) {
-      (
-        newPlayers.find(
-          (player) => player.id === selectedPlayerIds[0],
-        ) as Player
-      ).isDead = true;
+      const selectedPlayer = newPlayers.find(
+        (player) => player.id === selectedPlayerIds[0],
+      ) as Player;
+      selectedPlayer.isDead = true;
+      selectedPlayer.killedBy = PlayerRoleEnum.SORCIERE;
       newPlayers
         .find((player) => player.role === PlayerRoleEnum.SORCIERE)
         ?.statuses.delete(PlayerStatusEnum.DEATH_POTION);

@@ -8,4 +8,5 @@ export interface Player {
   card: PlayerRoleEnum;
   statuses: Set<PlayerStatusEnum>;
   isDead: boolean;
+  killedBy?: PlayerRoleEnum;
 }

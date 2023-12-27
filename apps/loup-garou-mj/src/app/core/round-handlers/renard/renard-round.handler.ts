@@ -13,6 +13,7 @@ import {
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 import { RoundHandlerParameters } from '../round-handler-parameters.interface';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
 
 export class RenardRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -33,9 +34,9 @@ export class RenardRoundHandler implements RoundHandler {
 
     if (selectedPlayers.length > 0) {
       if (this.isFoxActionSuccess(players, selectedPlayers[0])) {
-        this.announcementService.announceFoxSuccess();
+        this.announcementService.announce(AnnouncementEnum.FOX_SUCCESS);
       } else {
-        this.announcementService.announceFoxFail();
+        this.announcementService.announce(AnnouncementEnum.FOX_FAIL);
         newPlayers
           .find((player) => player.role === PlayerRoleEnum.RENARD)
           ?.statuses.add(PlayerStatusEnum.NO_POWER);

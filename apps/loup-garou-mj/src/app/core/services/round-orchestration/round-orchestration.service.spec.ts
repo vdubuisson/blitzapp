@@ -101,7 +101,9 @@ describe('RoundOrchestrationService', () => {
 
     service.resetRounds();
 
-    expect(storageService.remove).toBeCalledWith(service['UNIQUE_ROUNDS_KEY']);
+    expect(storageService.remove).toHaveBeenCalledWith(
+      service['UNIQUE_ROUNDS_KEY'],
+    );
   });
 
   it('should return next available round', () => {
@@ -207,9 +209,10 @@ describe('RoundOrchestrationService', () => {
 
     service.getNextRound(RoundEnum.CUPIDON);
 
-    expect(storageService.set).toBeCalledWith(service['UNIQUE_ROUNDS_KEY'], [
-      RoundEnum.CUPIDON,
-    ]);
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['UNIQUE_ROUNDS_KEY'],
+      [RoundEnum.CUPIDON],
+    );
   });
 
   it('should not add current round to unique list if not onlyOnce', () => {
