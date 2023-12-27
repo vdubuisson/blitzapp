@@ -21,4 +21,5 @@ export enum PlayerRoleEnum {
   LOUP_BLANC = 'LOUP_BLANC',
   ANGE = 'ANGE',
   ANCIEN = 'ANCIEN',
+  IDIOT = 'IDIOT',
 }

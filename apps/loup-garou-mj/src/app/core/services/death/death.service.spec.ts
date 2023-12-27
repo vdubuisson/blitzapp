@@ -523,6 +523,34 @@ describe('DeathService', () => {
     ]);
   });
 
+  it('should not add CAPITAINE round to after-death rounds if it was IDIOT role', () => {
+    jest.spyOn(storageService, 'set');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
+        statuses: new Set([PlayerStatusEnum.CAPTAIN]),
+        isDead: true,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(
+      service['afterDeathRoundQueue'].includes(RoundEnum.CAPITAINE),
+    ).toEqual(false);
+  });
+
   it('should kill the other LOVER', () => {
     const mockPlayers: Player[] = [
       {

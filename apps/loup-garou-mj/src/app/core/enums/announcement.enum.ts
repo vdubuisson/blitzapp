@@ -4,4 +4,5 @@ export enum AnnouncementEnum {
   FOX_SUCCESS,
   FOX_FAIL,
   ANCIEN_KILLED_BY_INNOCENTS,
+  IDIOT_PARDONED,
 }

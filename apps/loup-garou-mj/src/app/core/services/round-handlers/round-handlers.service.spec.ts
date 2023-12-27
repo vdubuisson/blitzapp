@@ -62,7 +62,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for VILLAGEOIS round', () => {
-    const roundHandler = new VillageoisRoundHandler();
+    const roundHandler = new VillageoisRoundHandler({ announcementService });
     service['roundHandlers'].set(RoundEnum.VILLAGEOIS, roundHandler);
 
     const testHandler = service.getHandler(RoundEnum.VILLAGEOIS);

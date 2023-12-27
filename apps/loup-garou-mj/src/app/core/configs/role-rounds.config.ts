@@ -27,4 +27,5 @@ export const ROLE_ROUNDS_CONFIG: Record<PlayerRoleEnum, RoundEnum[]> = {
   [PlayerRoleEnum.VOLEUR]: [RoundEnum.VOLEUR],
   [PlayerRoleEnum.ANGE]: [],
   [PlayerRoleEnum.ANCIEN]: [],
+  [PlayerRoleEnum.IDIOT]: [],
 };

@@ -126,7 +126,10 @@ export class DeathService {
     players: Player[],
     deadPlayer: Player,
   ): void {
-    if (deadPlayer.statuses.has(PlayerStatusEnum.CAPTAIN)) {
+    if (
+      deadPlayer.statuses.has(PlayerStatusEnum.CAPTAIN) &&
+      deadPlayer.role !== PlayerRoleEnum.IDIOT
+    ) {
       deadPlayer.statuses.delete(PlayerStatusEnum.CAPTAIN);
       this.afterDeathRoundQueue.push(RoundEnum.CAPITAINE);
     }

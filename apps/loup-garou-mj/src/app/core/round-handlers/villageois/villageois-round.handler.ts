@@ -5,11 +5,21 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { RoundHandlerParameters } from '../round-handler-parameters.interface';
+import { AnnouncementService } from '../../services/announcement/announcement.service';
+import { AnnouncementEnum } from '../../enums/announcement.enum';
 
 export class VillageoisRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = true;
   readonly type = RoundTypeEnum.PLAYERS;
+
+  private announcementService: AnnouncementService;
+
+  constructor({ announcementService }: RoundHandlerParameters) {
+    this.announcementService = announcementService as AnnouncementService;
+  }
 
   handleAction(
     players: Player[],
@@ -19,8 +29,19 @@ export class VillageoisRoundHandler implements RoundHandler {
     const selectedPlayer = newPlayers.find(
       (player) => player.id === selectedPlayerIds[0],
     ) as Player;
-    selectedPlayer.isDead = true;
+
+    // TODO handle if INFECTED
+    if (
+      selectedPlayer.role === PlayerRoleEnum.IDIOT &&
+      selectedPlayer.killedBy === undefined
+    ) {
+      selectedPlayer.statuses.add(PlayerStatusEnum.NO_VOTE);
+      this.announcementService.announce(AnnouncementEnum.IDIOT_PARDONED);
+    } else {
+      selectedPlayer.isDead = true;
+    }
     selectedPlayer.killedBy = PlayerRoleEnum.VILLAGEOIS;
+
     return of(newPlayers);
   }
 

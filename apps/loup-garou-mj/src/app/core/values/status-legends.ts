@@ -12,4 +12,5 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.PROTECTED]: `Ce joueur est actuellement protégé par le Salvateur.`,
   [PlayerStatusEnum.NO_POWER]: `Ce joueur a perdu son pouvoir. Par exemple pour le Renard, il ne peut plus renifler.`,
   [PlayerStatusEnum.FIRST_DEATH]: `Ce joueur a survécu à une première attaque de loup-garou.`,
+  [PlayerStatusEnum.NO_VOTE]: `Ce joueur ne peut pas voter pendant la journée.`,
 };
