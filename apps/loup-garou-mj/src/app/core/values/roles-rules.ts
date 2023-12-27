@@ -107,4 +107,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   Il peut survivre à une première attaque de loups-garous, mais il succombera à la deuxième.
 
   S'il est éliminé par un innocent, alors tous les innocents perdent leurs pouvoirs jusqu'à la fin de la partie.`,
+  [PlayerRoleEnum.IDIOT]: `Son objectif est d'éliminer tous les loups-garous.
+
+  S'il est désigné par le vote du jour des villageois, ceux-ci décident de le gracier, mais il perd son droit de vote.
+
+  S'il est éliminé alors qu'il était Capitaine, alors sa fonction de Capitaine n'est pas transmise.`,
 };

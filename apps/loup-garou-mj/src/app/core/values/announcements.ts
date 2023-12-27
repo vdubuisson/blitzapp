@@ -26,4 +26,9 @@ export const announcements: Record<
     message:
       "<p>L'Ancien du village a été tué par des innocents.</p><p>Tous les innocents perdent leurs pouvoirs.</p>",
   },
+  [AnnouncementEnum.IDIOT_PARDONED]: {
+    header: 'Idiot gracié',
+    message:
+      "<p>Les villageois décide de gracier l'Idiot.</p><p>L'Idiot ne pourra plus voter.</p>",
+  },
 };

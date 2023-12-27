@@ -10,6 +10,7 @@ export enum PlayerStatusEnum {
   CHARMED = 'CHARMED',
   CHILD_MODEL = 'CHILD_MODEL',
   RAVEN = 'RAVEN',
+  NO_VOTE = 'NO_VOTE',
   // RUSTY_SWORD = 'RUSTY_SWORD',
   // COMEDIAN = 'COMEDIAN',
   // INFECTED = 'INFECTED',
