@@ -32,7 +32,7 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
       // const montreurOurs = players[montreurOursIndex];
       // TODO If INFECTED then announce and return
 
-      const leftPlayer = findLeftNeighbor(players, montreurOursIndex);
+      const leftPlayer = findLeftNeighbor(players, montreurOursIndex) as Player;
       // TODO handle INFECTED player
       if (LOUPS_GAROUS_ROLES.includes(leftPlayer.role)) {
         this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);

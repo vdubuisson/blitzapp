@@ -5,4 +5,5 @@ export enum AnnouncementEnum {
   FOX_FAIL,
   ANCIEN_KILLED_BY_INNOCENTS,
   IDIOT_PARDONED,
+  WOLF_KILLED_BY_CHEVALIER,
 }

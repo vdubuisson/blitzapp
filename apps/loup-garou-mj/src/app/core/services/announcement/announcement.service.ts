@@ -29,16 +29,29 @@ export class AnnouncementService {
   }
 
   announceDeaths(players: Player[]): void {
-    const message = players.map((player) => `<p>${player.name}</p>`).join('');
+    const playerNames = players
+      .map((player) => `<li>${player.name}</li>`)
+      .join('');
     const announcement: AlertOptions = {
       header: 'Morts à annoncer',
-      message,
+      message: `<ul>${playerNames}</ul>`,
     };
     this.addAnnouncementToQueue(announcement);
   }
 
-  announce(type: AnnouncementEnum): void {
-    const announcement: AlertOptions = { ...announcements[type] };
+  announce(type: AnnouncementEnum, params?: Record<string, string>): void {
+    let message = announcements[type].message;
+    if (message !== undefined && params !== undefined) {
+      Object.entries(params).forEach(([key, value]) => {
+        const toReplace: string = `{{\\s*${key}\\s*}}`;
+        const regex = new RegExp(toReplace, 'g');
+        message = (message as string).replaceAll(regex, value);
+      });
+    }
+    const announcement: AlertOptions = {
+      header: announcements[type].header,
+      message,
+    };
     this.addAnnouncementToQueue(announcement);
   }
 

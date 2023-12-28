@@ -130,6 +130,56 @@ describe('findLeftNeighbor', () => {
       isDead: false,
     });
   });
+
+  it('should find left neighbor with specific role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 3,
+        name: 'player3',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    const leftNeighbor = findLeftNeighbor(mockPlayers, 1, [
+      PlayerRoleEnum.LOUP_GAROU,
+    ]);
+
+    expect(leftNeighbor).toEqual({
+      id: 3,
+      name: 'player3',
+      role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
+      statuses: new Set(),
+      isDead: false,
+    });
+  });
 });
 
 describe('findRightNeighbor', () => {

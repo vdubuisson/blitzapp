@@ -31,4 +31,8 @@ export const announcements: Record<
     message:
       "<p>Les villageois décide de gracier l'Idiot.</p><p>L'Idiot ne pourra plus voter.</p>",
   },
+  [AnnouncementEnum.WOLF_KILLED_BY_CHEVALIER]: {
+    header: "Mort par l'épée rouillée",
+    message: "{{ playerName }} a été tué par l'épée rouillée du chevalier.",
+  },
 };

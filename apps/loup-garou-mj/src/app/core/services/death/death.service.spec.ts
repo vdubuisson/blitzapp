@@ -13,6 +13,7 @@ import { DeathService } from './death.service';
 import { AnnouncementEnum } from '../../enums/announcement.enum';
 import { StatusesService } from '../statuses/statuses.service';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
+import * as neighborUtils from '../../utils/neighbor.utils';
 
 describe('DeathService with storage init', () => {
   let service: DeathService;
@@ -231,6 +232,35 @@ describe('DeathService', () => {
     const newPlayers = service.handleNewDeaths(mockPlayers);
 
     expect(newPlayers[1].isDead).toEqual(false);
+  });
+
+  it('should remove killedBy on players with WOLF_TARGET status and PROTECTED status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
+      },
+    ];
+
+    const newPlayers = service.handleNewDeaths(mockPlayers);
+
+    expect(newPlayers[1].killedBy).toBeUndefined();
   });
 
   it('should kill PETITE_FILLE with WOLF_TARGET status and PROTECTED status', () => {
@@ -1385,6 +1415,65 @@ describe('DeathService', () => {
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
   });
 
+  it('should add RUSTY_SWORD status to GRAND_MECHANT_LOUP if CHEVALIER killed by GRAND_MECHANT_LOUP', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.CHEVALIER,
+        card: PlayerRoleEnum.CHEVALIER,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(mockPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toBe(
+      true,
+    );
+  });
+
+  it('should add RUSTY_SWORD status to left loup-garou if CHEVALIER killed by LOUP_GAROU', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.CHEVALIER,
+        card: PlayerRoleEnum.CHEVALIER,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    jest
+      .spyOn(neighborUtils, 'findLeftNeighbor')
+      .mockReturnValue(mockPlayers[1]);
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(mockPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toBe(
+      true,
+    );
+  });
+
   it('should remove useless victory handlers on deaths handle', () => {
     jest.spyOn(victoryHandlersService, 'removeUselessHandlers');
     const mockPlayers: Player[] = [
@@ -1522,6 +1611,30 @@ describe('DeathService', () => {
     service.announceDeaths();
 
     expect(announcementService.announce).toHaveBeenCalledTimes(0);
+  });
+
+  it('should announce player killed by CHEVALIER if present', () => {
+    jest.spyOn(announcementService, 'announce');
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: PlayerRoleEnum.CHEVALIER,
+      },
+    ];
+
+    service['deathsToAnnounce'] = mockPlayers;
+
+    service.announceDeaths();
+
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.WOLF_KILLED_BY_CHEVALIER,
+      { playerName: 'player0' },
+    );
   });
 
   it('should not announce deaths if there are none', () => {
