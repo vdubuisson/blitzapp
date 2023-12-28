@@ -11,6 +11,8 @@ import { VictoryHandlersService } from '../victory-handlers/victory-handlers.ser
 import { AnnouncementEnum } from '../../enums/announcement.enum';
 import { StatusesService } from '../statuses/statuses.service';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
+import { findLeftNeighbor } from '../../utils/neighbor.utils';
+import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 
 @Injectable({
   providedIn: 'root',
@@ -70,6 +72,15 @@ export class DeathService {
 
   announceDeaths(): void {
     if (this.deathsToAnnounce.length > 0) {
+      const deadByChevalier = this.deathsToAnnounce.find(
+        (player) => player.killedBy === PlayerRoleEnum.CHEVALIER,
+      );
+      if (deadByChevalier !== undefined) {
+        this.announcementService.announce(
+          AnnouncementEnum.WOLF_KILLED_BY_CHEVALIER,
+          { playerName: deadByChevalier.name },
+        );
+      }
       this.announcementService.announceDeaths(this.deathsToAnnounce);
       const deadAncienPlayer = this.deathsToAnnounce.find(
         (player) => player.role === PlayerRoleEnum.ANCIEN,
@@ -104,6 +115,8 @@ export class DeathService {
           } else {
             player.isDead = true;
           }
+        } else {
+          player.killedBy = undefined;
         }
       });
   }
@@ -196,6 +209,23 @@ export class DeathService {
         if (this.isAncienKilledByInnocents(deadPlayer)) {
           this.statusesService.removePowersFromInnocents(players);
           this.rolesToRemove.push(...INNOCENTS_POWER_REMOVAL_ROLES);
+        }
+        break;
+      case PlayerRoleEnum.CHEVALIER:
+        if (deadPlayer.killedBy === PlayerRoleEnum.GRAND_MECHANT_LOUP) {
+          players
+            .find((player) => player.role === PlayerRoleEnum.GRAND_MECHANT_LOUP)
+            ?.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
+        } else if (deadPlayer.killedBy === PlayerRoleEnum.LOUP_GAROU) {
+          const chevalierIndex = players.indexOf(deadPlayer);
+          const leftPlayer = findLeftNeighbor(
+            players,
+            chevalierIndex,
+            LOUPS_GAROUS_ROLES,
+          );
+          if (leftPlayer !== undefined) {
+            leftPlayer.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
+          }
         }
         break;
       default:

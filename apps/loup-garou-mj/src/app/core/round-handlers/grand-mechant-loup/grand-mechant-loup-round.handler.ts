@@ -6,6 +6,7 @@ import { Player } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
 
 export class GrandMechantLoupRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -17,23 +18,32 @@ export class GrandMechantLoupRoundHandler implements RoundHandler {
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
     const newPlayers = [...players];
-    newPlayers
-      .find((player) => player.id === selectedPlayerIds[0])
-      ?.statuses.add(PlayerStatusEnum.WOLF_TARGET);
+    const selectedPlayer = newPlayers.find(
+      (player) => player.id === selectedPlayerIds[0],
+    );
+    if (selectedPlayer !== undefined) {
+      selectedPlayer.statuses.add(PlayerStatusEnum.WOLF_TARGET);
+      selectedPlayer.killedBy = PlayerRoleEnum.GRAND_MECHANT_LOUP;
+    }
     return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {
+    const isLoupGarouDead = players.some(
+      (player) => LOUPS_GAROUS_ROLES.includes(player.role) && player.isDead,
+    );
     return {
       role: RoundEnum.GRAND_MECHANT_LOUP,
-      selectablePlayers: players
-        .filter(
-          (player) =>
-            !LOUPS_GAROUS_ROLES.includes(player.role) &&
-            !player.isDead &&
-            !player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
-        )
-        .map((player) => player.id),
+      selectablePlayers: isLoupGarouDead
+        ? []
+        : players
+            .filter(
+              (player) =>
+                !LOUPS_GAROUS_ROLES.includes(player.role) &&
+                !player.isDead &&
+                !player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
+            )
+            .map((player) => player.id),
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: this.isDuringDay,

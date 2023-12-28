@@ -66,6 +66,34 @@ describe('SorciereHealthRoundHandler', () => {
       );
   }));
 
+  it('should remove killedBy to selected player', waitForAsync(() => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        isDead: false,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
+        isDead: false,
+      },
+    ];
+
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(newPlayers[0].killedBy).toBeUndefined(),
+      );
+  }));
+
   it('should remove HEALTH_POTION status to SORCIERE player', waitForAsync(() => {
     const players: Player[] = [
       {

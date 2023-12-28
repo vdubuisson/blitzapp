@@ -18,9 +18,12 @@ export class SorciereHealthRoundHandler implements RoundHandler {
   ): Observable<Player[]> {
     const newPlayers = [...players];
     if (selectedPlayerIds.length > 0) {
-      newPlayers
-        .find((player) => player.id === selectedPlayerIds[0])
-        ?.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+      const selectedPlayer = newPlayers.find(
+        (player) => player.id === selectedPlayerIds[0],
+      ) as Player;
+      selectedPlayer.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+      selectedPlayer.killedBy = undefined;
+
       newPlayers
         .find((player) => player.role === PlayerRoleEnum.SORCIERE)
         ?.statuses.delete(PlayerStatusEnum.HEALTH_POTION);

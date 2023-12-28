@@ -89,6 +89,83 @@ describe('StatusesService', () => {
     );
   });
 
+  it('should remove RUSTY_SWORD status on after-day cleaning', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.CHEVALIER,
+        card: PlayerRoleEnum.CHEVALIER,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toEqual(
+      false,
+    );
+  });
+
+  it('should kill player with RUSTY_SWORD status on after-day cleaning', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.CHEVALIER,
+        card: PlayerRoleEnum.CHEVALIER,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
+
+    expect(newPlayers[1].isDead).toEqual(true);
+  });
+
+  it('should set killed by CHEVALIER on player with RUSTY_SWORD status on after-day cleaning', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.CHEVALIER,
+        card: PlayerRoleEnum.CHEVALIER,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
+
+    expect(newPlayers[1].killedBy).toEqual(PlayerRoleEnum.CHEVALIER);
+  });
+
   it('should remove HEALTH_POTION from SORCIERE when removing power from innocents', () => {
     const mockPlayers: Player[] = [
       {

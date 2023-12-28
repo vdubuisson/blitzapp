@@ -13,4 +13,5 @@ export const INNOCENTS_POWER_REMOVAL_ROLES: PlayerRoleEnum[] = [
   PlayerRoleEnum.MONTREUR_OURS,
   PlayerRoleEnum.RENARD,
   PlayerRoleEnum.ANGE,
+  PlayerRoleEnum.CHEVALIER,
 ];

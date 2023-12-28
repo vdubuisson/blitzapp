@@ -66,6 +66,35 @@ describe('GrandMechantLoupRoundHandler', () => {
       );
   }));
 
+  it('should set killedBy GRAND_MECHANT_LOUP to selected player', waitForAsync(() => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) =>
+        expect(newPlayers[0].killedBy).toEqual(
+          PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        ),
+      );
+  }));
+
   it('should return alive players as selectable', () => {
     const players: Player[] = [
       {
@@ -149,6 +178,31 @@ describe('GrandMechantLoupRoundHandler', () => {
     const round = roundHandler.getRoundConfig(players);
 
     expect(round.selectablePlayers.includes(0)).toEqual(false);
+  });
+
+  it('should return no players as selectable if at least one loup-garou is dead', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.selectablePlayers.length).toEqual(0);
   });
 
   it('should return GRAND_MECHANT_LOUP as role round', () => {

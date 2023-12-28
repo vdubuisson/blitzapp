@@ -27,6 +27,20 @@ export class StatusesService {
         ?.statuses.delete(PlayerStatusEnum.PROTECTED);
     }
 
+    if (
+      roles.has(PlayerRoleEnum.CHEVALIER) &&
+      players.find((player) => player.role === PlayerRoleEnum.CHEVALIER)?.isDead
+    ) {
+      const playerWithSword = newPlayers.find((player) =>
+        player.statuses.has(PlayerStatusEnum.RUSTY_SWORD),
+      );
+      if (playerWithSword != undefined) {
+        playerWithSword.statuses.delete(PlayerStatusEnum.RUSTY_SWORD);
+        playerWithSword.isDead = true;
+        playerWithSword.killedBy = PlayerRoleEnum.CHEVALIER;
+      }
+    }
+
     return newPlayers;
   }
 

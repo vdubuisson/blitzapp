@@ -112,4 +112,7 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   S'il est désigné par le vote du jour des villageois, ceux-ci décident de le gracier, mais il perd son droit de vote.
 
   S'il est éliminé alors qu'il était Capitaine, alors sa fonction de Capitaine n'est pas transmise.`,
+  [PlayerRoleEnum.CHEVALIER]: `Son objectif est d'éliminer tous les loups-garous.
+
+  S'il est dévoré par les loups-garous, alors le premier loup-garou à sa gauche ayant participé à son élimination sera contaminé et éliminé la prochaine nuit.`,
 };

@@ -13,7 +13,7 @@ export const STATUS_NAMES: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.CHILD_MODEL]: "Modèle de l'enfant",
   [PlayerStatusEnum.RAVEN]: 'Cible du corbeau',
   [PlayerStatusEnum.NO_VOTE]: 'Pas de vote',
-  // [PlayerStatusEnum.RUSTY_SWORD]: "Touché par l'épée rouillée",
+  [PlayerStatusEnum.RUSTY_SWORD]: "Contaminé par l'épée rouillée",
   // [PlayerStatusEnum.COMEDIAN]: "Comédien",
   // [PlayerStatusEnum.INFECTED]: "Infecté",
 };
