@@ -79,6 +79,55 @@ describe('NewGameRolesPage', () => {
     );
   });
 
+  it('should affect last role to players without role if only 1 available', () => {
+    jest.spyOn(newGameService, 'changeRole');
+
+    mockCards.set({
+      villageois: 3,
+      loupGarou: 0,
+      selectedRoles: new Set(),
+      playersNumber: 3,
+    });
+
+    mockPlayers$.set([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+
+    component['changeRole'](0, PlayerRoleEnum.VILLAGEOIS);
+
+    expect(newGameService.changeRole).toHaveBeenCalledWith(
+      1,
+      PlayerRoleEnum.VILLAGEOIS,
+    );
+    expect(newGameService.changeRole).toHaveBeenCalledWith(
+      2,
+      PlayerRoleEnum.VILLAGEOIS,
+    );
+  });
+
   it('should not be able to create if there is NOT_SELECTED role', waitForAsync(() => {
     const mockPlayers: Player[] = [
       {

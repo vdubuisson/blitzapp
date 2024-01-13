@@ -48,6 +48,9 @@ export class NewGameRolesPage {
 
   protected changeRole(id: number, role: PlayerRoleEnum): void {
     this.newGameService.changeRole(id, role);
+    if (this.availableRoles().length === 1) {
+      this.affectLastRoleToPlayers();
+    }
   }
 
   protected createGame(): void {
@@ -122,5 +125,12 @@ export class NewGameRolesPage {
           .length === 3;
     }
     return canCreate;
+  }
+
+  private affectLastRoleToPlayers(): void {
+    const lastRole = this.availableRoles()[0];
+    this.players()
+      .filter((player) => player.role === PlayerRoleEnum.NOT_SELECTED)
+      .forEach((player) => this.newGameService.changeRole(player.id, lastRole));
   }
 }
