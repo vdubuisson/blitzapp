@@ -5,7 +5,7 @@
     <ion-accordion *ngFor="let status of statuses; trackBy: statusTrackBy">
       <ion-item slot="header">
         <span slot="start" class="status-icon"
-          >{{ status | playerStatus }}</span
+          >{{ status | playerStatusIcon }}</span
         >
         <ion-label>{{ status | playerStatusName }}</ion-label>
       </ion-item>

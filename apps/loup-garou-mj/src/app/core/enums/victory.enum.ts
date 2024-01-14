@@ -6,4 +6,5 @@ export enum VictoryEnum {
   VILLAGEOIS = 'VILLAGEOIS',
   JOUEUR_FLUTE = 'JOUEUR_FLUTE',
   LOUP_BLANC = 'LOUP_BLANC',
+  SECTAIRE = 'SECTAIRE',
 }

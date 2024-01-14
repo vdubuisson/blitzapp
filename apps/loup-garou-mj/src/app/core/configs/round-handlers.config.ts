@@ -26,6 +26,7 @@ import {
 import { RoundHandler } from '../round-handlers/round-handler.interface';
 import { RoundHandlerParameters } from '../round-handlers/round-handler-parameters.interface';
 import { BoucRoundHandler } from '../round-handlers/bouc/bouc-round.handler';
+import { SectaireRoundHandler } from '../round-handlers/sectaire/sectaire-round.handler';
 
 export const ROUND_HANDLERS_CONFIG: {
   [round: string]: new (p: RoundHandlerParameters) => RoundHandler;
@@ -47,6 +48,7 @@ export const ROUND_HANDLERS_CONFIG: {
   [RoundEnum.MONTREUR_OURS]: MontreurOursRoundHandler,
   [RoundEnum.RENARD]: RenardRoundHandler,
   [RoundEnum.SALVATEUR]: SalvateurRoundHandler,
+  [RoundEnum.SECTAIRE]: SectaireRoundHandler,
   [RoundEnum.SOEURS]: SoeursRoundHandler,
   [RoundEnum.SORCIERE_HEALTH]: SorciereHealthRoundHandler,
   [RoundEnum.SORCIERE_KILL]: SorciereKillRoundHandler,

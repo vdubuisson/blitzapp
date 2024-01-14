@@ -12,6 +12,8 @@ export enum PlayerStatusEnum {
   RAVEN = 'RAVEN',
   NO_VOTE = 'NO_VOTE',
   RUSTY_SWORD = 'RUSTY_SWORD',
+  BLUE_TEAM = 'BLUE_TEAM',
+  RED_TEAM = 'RED_TEAM',
   // COMEDIAN = 'COMEDIAN',
   // INFECTED = 'INFECTED',
 }

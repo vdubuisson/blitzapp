@@ -28,6 +28,7 @@ export const GAME_BOX_CONTENTS: { [box: string]: PlayerRoleEnum[] } = {
     PlayerRoleEnum.RENARD,
     PlayerRoleEnum.ANGE,
     PlayerRoleEnum.CHEVALIER,
+    PlayerRoleEnum.SECTAIRE,
   ],
   [GameBoxEnum.PACTE]: Object.values(PlayerRoleEnum).filter(
     (role) =>

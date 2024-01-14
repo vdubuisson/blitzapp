@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { HeaderComponent } from '../../core/components/header/header.component';
-import { PlayerStatusPipe } from '../../core/pipes/player-status/player-status.pipe';
+import { PlayerStatusIconPipe } from '../../core/pipes/player-status-icon/player-status-icon.pipe';
 import { PlayerStatusNamePipe } from '../../core/pipes/player-status-name/player-status-name.pipe';
 import { STATUS_LEGENDS } from '../../core/values/status-legends';
 import { PlayerStatusEnum } from '../../core/enums/player-status.enum';
@@ -14,7 +14,7 @@ import { STATUS_TRACK_BY } from '../../core/utils/status.track-by';
   imports: [
     CommonModule,
     IonicModule,
-    PlayerStatusPipe,
+    PlayerStatusIconPipe,
     PlayerStatusNamePipe,
     HeaderComponent,
   ],

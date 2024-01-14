@@ -480,4 +480,30 @@ describe('GamePage', () => {
       true,
     );
   });
+
+  it('should be beforeGame if round is SECTAIRE', () => {
+    mockRound$.set({
+      role: RoundEnum.SECTAIRE,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    });
+
+    expect(component['isBeforeGame']()).toEqual(true);
+  });
+
+  it('should not be beforeGame if round is not SECTAIRE', () => {
+    mockRound$.set({
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    });
+
+    expect(component['isBeforeGame']()).toEqual(false);
+  });
 });

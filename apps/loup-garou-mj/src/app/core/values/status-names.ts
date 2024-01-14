@@ -14,6 +14,8 @@ export const STATUS_NAMES: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.RAVEN]: 'Cible du corbeau',
   [PlayerStatusEnum.NO_VOTE]: 'Pas de vote',
   [PlayerStatusEnum.RUSTY_SWORD]: "Contaminé par l'épée rouillée",
+  [PlayerStatusEnum.BLUE_TEAM]: 'Groupe bleu',
+  [PlayerStatusEnum.RED_TEAM]: 'Groupe rouge',
   // [PlayerStatusEnum.COMEDIAN]: "Comédien",
   // [PlayerStatusEnum.INFECTED]: "Infecté",
 };

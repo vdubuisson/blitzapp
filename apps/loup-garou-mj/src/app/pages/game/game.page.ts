@@ -33,7 +33,9 @@ import { RoundEnum } from '../../core/enums/round.enum';
   styleUrls: ['./game.page.scss'],
 })
 export class GamePage {
-  protected players: Signal<Player[]> = this.gameService.currentPlayers;
+  protected players: Signal<Player[]> = computed(() =>
+    this.gameService.currentPlayers().map((player) => ({ ...player })),
+  );
   protected round: Signal<Round | undefined> = this.gameService.currentRound;
   protected dayCount: Signal<number> = this.gameService.currentDayCount;
 
@@ -93,6 +95,10 @@ export class GamePage {
       this.players().some(
         (player) => player.role === PlayerRoleEnum.BOUC && !player.isDead,
       ) && this.round()?.role === RoundEnum.VILLAGEOIS,
+  );
+
+  protected isBeforeGame: Signal<boolean> = computed(
+    () => this.round()?.role === RoundEnum.SECTAIRE,
   );
 
   constructor(private gameService: GameService) {}

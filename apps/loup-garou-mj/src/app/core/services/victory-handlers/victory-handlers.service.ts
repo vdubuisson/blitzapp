@@ -15,6 +15,8 @@ import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
 import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { AngeVictoryHandler } from '../../victory-handlers/ange/ange-victory.handler';
+import { VICTORIES_PRIORITY_CONFIG } from '../../configs/victories-priority.config';
+import { SectaireVictoryHandler } from '../../victory-handlers/sectaire/sectaire-victory.handler';
 
 @Injectable({
   providedIn: 'root',
@@ -22,15 +24,7 @@ import { AngeVictoryHandler } from '../../victory-handlers/ange/ange-victory.han
 export class VictoryHandlersService {
   private readonly victoryHandlers = new Map<VictoryEnum, VictoryHandler>();
 
-  private readonly victoryPriorities: VictoryEnum[] = [
-    VictoryEnum.NONE,
-    VictoryEnum.ANGE,
-    VictoryEnum.AMOUREUX,
-    VictoryEnum.LOUP_BLANC,
-    VictoryEnum.JOUEUR_FLUTE,
-    VictoryEnum.LOUP_GAROU,
-    VictoryEnum.VILLAGEOIS,
-  ];
+  private readonly victoryPriorities = VICTORIES_PRIORITY_CONFIG;
 
   private readonly HANDLERS_KEY = 'VictoryHandlersService_handlers';
 
@@ -76,6 +70,12 @@ export class VictoryHandlersService {
     if (rolesSet.has(PlayerRoleEnum.ANGE)) {
       this.victoryHandlers.set(VictoryEnum.ANGE, new AngeVictoryHandler());
     }
+    if (rolesSet.has(PlayerRoleEnum.SECTAIRE)) {
+      this.victoryHandlers.set(
+        VictoryEnum.SECTAIRE,
+        new SectaireVictoryHandler(),
+      );
+    }
   }
 
   removeUselessHandlers(players: Player[]): void {
@@ -100,6 +100,12 @@ export class VictoryHandlersService {
         ?.isDead
     ) {
       this.victoryHandlers.delete(VictoryEnum.LOUP_BLANC);
+    }
+    if (
+      this.victoryHandlers.has(VictoryEnum.SECTAIRE) &&
+      players.find((player) => player.role === PlayerRoleEnum.SECTAIRE)?.isDead
+    ) {
+      this.victoryHandlers.delete(VictoryEnum.SECTAIRE);
     }
   }
 
