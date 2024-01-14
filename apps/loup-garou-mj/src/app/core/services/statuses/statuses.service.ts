@@ -59,4 +59,19 @@ export class StatusesService {
         player.role = PlayerRoleEnum.VILLAGEOIS;
       });
   }
+
+  cleanNoVoteAfterDay(players: Player[]): Player[] {
+    const newPlayers = [...players];
+
+    newPlayers
+      .filter(
+        (player) =>
+          player.statuses.has(PlayerStatusEnum.NO_VOTE) &&
+          (player.role !== PlayerRoleEnum.IDIOT ||
+            player.killedBy === undefined),
+      )
+      .forEach((player) => player.statuses.delete(PlayerStatusEnum.NO_VOTE));
+
+    return newPlayers;
+  }
 }

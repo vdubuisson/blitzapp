@@ -81,6 +81,13 @@ describe('GameService with storage init', () => {
     type: RoundTypeEnum.DEFAULT,
   };
   const mockStoredDayCount = 3;
+  const mockStoredCardList: CardList = {
+    villageois: 1,
+    loupGarou: 1,
+    selectedRoles: new Set([PlayerRoleEnum.CUPIDON]),
+    playersNumber: 3,
+  };
+  const mockStoredNeedCleanAfterBouc = true;
 
   beforeEach(() => {
     router = MockService(Router);
@@ -102,6 +109,12 @@ describe('GameService with storage init', () => {
     when(storageGetSpy)
       .calledWith('GameService_dayCount')
       .mockReturnValue(of(mockStoredDayCount));
+    when(storageGetSpy)
+      .calledWith('GameService_cardList')
+      .mockReturnValue(of(mockStoredCardList));
+    when(storageGetSpy)
+      .calledWith('GameService_needCleanAfterBouc')
+      .mockReturnValue(of(mockStoredNeedCleanAfterBouc));
 
     jest
       .spyOn(roundHandlersService, 'getHandler')
@@ -128,6 +141,14 @@ describe('GameService with storage init', () => {
 
   it('should init day count from storage', () => {
     expect(service['dayCount']()).toEqual(mockStoredDayCount);
+  });
+
+  it('should init card list from storage', () => {
+    expect(service['cardList']).toEqual(mockStoredCardList);
+  });
+
+  it('should init needCleanAfterBouc from storage', () => {
+    expect(service['needCleanAfterBouc']).toEqual(mockStoredNeedCleanAfterBouc);
   });
 });
 
@@ -260,6 +281,26 @@ describe('GameService on victory', () => {
 
     expect(storageService.remove).toHaveBeenCalledWith(
       service['DAY_COUNT_KEY'],
+    );
+  });
+
+  it('should remove card list from storage on victory', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.submitRoundAction([]);
+
+    expect(storageService.remove).toHaveBeenCalledWith(
+      service['CARD_LIST_KEY'],
+    );
+  });
+
+  it('should remove needCleanAfterBouc from storage on victory', () => {
+    jest.spyOn(storageService, 'remove');
+
+    service.submitRoundAction([]);
+
+    expect(storageService.remove).toHaveBeenCalledWith(
+      service['NEED_CLEAN_AFTER_BOUC_KEY'],
     );
   });
 });
@@ -1250,6 +1291,17 @@ describe('GameService', () => {
     ]);
   });
 
+  it('should store card list on game creation', () => {
+    jest.spyOn(storageService, 'set');
+
+    service.createGame(mockPlayers, mockCardList);
+
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['CARD_LIST_KEY'],
+      mockCardList,
+    );
+  });
+
   it('should return game in progress if current round', () => {
     service['round'].set({
       role: RoundEnum.VILLAGEOIS,
@@ -1268,4 +1320,222 @@ describe('GameService', () => {
 
     expect(service.isGameInProgress()).toBe(false);
   });
+
+  it('should set needCleanAfterBouc to true after BOUC round', waitForAsync(() => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.BOUC,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: true,
+      type: RoundTypeEnum.PLAYERS,
+    };
+    const mockNewPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+    jest
+      .spyOn(mockCurrentRoundHandler, 'handleAction')
+      .mockReturnValue(of(mockNewPlayers));
+
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.BOUC)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].set(mockCurrentRoundConfig);
+    service['cardList'] = mockCardList;
+
+    service.submitRoundAction([]);
+
+    expect(service['needCleanAfterBouc']).toEqual(true);
+  }));
+
+  it('should store needCleanAfterBouc to true after BOUC round', waitForAsync(() => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.BOUC,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: true,
+      type: RoundTypeEnum.PLAYERS,
+    };
+    const mockNewPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+    jest
+      .spyOn(mockCurrentRoundHandler, 'handleAction')
+      .mockReturnValue(of(mockNewPlayers));
+
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.BOUC)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].set(mockCurrentRoundConfig);
+    service['cardList'] = mockCardList;
+
+    jest.spyOn(storageService, 'set');
+
+    service.submitRoundAction([]);
+
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['NEED_CLEAN_AFTER_BOUC_KEY'],
+      true,
+    );
+  }));
+
+  it('should clean no vote after VILLAGEOIS round if need clean', waitForAsync(() => {
+    const mockCurrentRoundConfig: Round = {
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 0,
+      isDuringDay: true,
+      type: RoundTypeEnum.PLAYERS,
+    };
+    const mockNewPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+        isDead: false,
+      },
+    ];
+    const mockCurrentRoundHandler = new MockRoundHandler();
+    mockCurrentRoundHandler.isDuringDay = true;
+    const mockNextRoundHandler = new MockRoundHandler();
+    mockNextRoundHandler.isDuringDay = false;
+    jest
+      .spyOn(mockNextRoundHandler, 'getRoundConfig')
+      .mockReturnValue({} as Round);
+    jest
+      .spyOn(mockCurrentRoundHandler, 'handleAction')
+      .mockReturnValue(of(mockNewPlayers));
+
+    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.VILLAGEOIS)
+      .mockReturnValue(mockCurrentRoundHandler);
+    when(getHandlerSpy)
+      .calledWith(RoundEnum.LOUP_GAROU)
+      .mockReturnValue(mockNextRoundHandler);
+    jest
+      .spyOn(roundOrchestrationService, 'getNextRound')
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
+
+    service['round'].set(mockCurrentRoundConfig);
+    service['cardList'] = mockCardList;
+    service['needCleanAfterBouc'] = true;
+
+    const mockNewPlayersAfterClean: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    jest
+      .spyOn(statusesService, 'cleanNoVoteAfterDay')
+      .mockReturnValue(mockNewPlayersAfterClean);
+    jest.spyOn(storageService, 'set');
+    jest
+      .spyOn(deathService, 'handleNewDeaths')
+      .mockImplementation((players) => players);
+    jest
+      .spyOn(statusesService, 'cleanStatusesAfterDay')
+      .mockImplementation((players) => players);
+
+    service.submitRoundAction([]);
+
+    expect(service['players']()).toEqual(mockNewPlayersAfterClean);
+    expect(service['needCleanAfterBouc']).toEqual(false);
+    expect(storageService.set).toHaveBeenCalledWith(
+      service['NEED_CLEAN_AFTER_BOUC_KEY'],
+      false,
+    );
+  }));
 });

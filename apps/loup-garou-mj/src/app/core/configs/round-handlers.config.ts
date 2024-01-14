@@ -25,11 +25,13 @@ import {
 } from '../round-handlers';
 import { RoundHandler } from '../round-handlers/round-handler.interface';
 import { RoundHandlerParameters } from '../round-handlers/round-handler-parameters.interface';
+import { BoucRoundHandler } from '../round-handlers/bouc/bouc-round.handler';
 
 export const ROUND_HANDLERS_CONFIG: {
   [round: string]: new (p: RoundHandlerParameters) => RoundHandler;
 } = {
   [RoundEnum.AMOUREUX]: AmoureuxRoundHandler,
+  [RoundEnum.BOUC]: BoucRoundHandler,
   [RoundEnum.CAPITAINE]: CapitaineRoundHandler,
   [RoundEnum.CHARMED]: CharmedRoundHandler,
   [RoundEnum.CHASSEUR]: ChasseurRoundHandler,

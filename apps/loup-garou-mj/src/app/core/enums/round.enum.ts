@@ -21,4 +21,5 @@ export enum RoundEnum {
   SOEURS = 'SOEURS',
   FRERES = 'FRERES',
   LOUP_BLANC = 'LOUP_BLANC',
+  BOUC = 'BOUC',
 }

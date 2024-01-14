@@ -1684,4 +1684,36 @@ describe('DeathService', () => {
       [],
     );
   });
+
+  it('should add BOUC round to the after-death rounds', () => {
+    jest.spyOn(storageService, 'set');
+    service['afterDeathRoundQueue'] = [];
+
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: true,
+        killedBy: undefined,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    service.handleNewDeaths(mockPlayers);
+
+    expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.BOUC);
+    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
+      RoundEnum.BOUC,
+    ]);
+  });
 });

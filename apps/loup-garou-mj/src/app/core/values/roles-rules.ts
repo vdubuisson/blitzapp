@@ -115,4 +115,7 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.CHEVALIER]: `Son objectif est d'éliminer tous les loups-garous.
 
   S'il est dévoré par les loups-garous, alors le premier loup-garou à sa gauche ayant participé à son élimination sera contaminé et éliminé la prochaine nuit.`,
+  [PlayerRoleEnum.BOUC]: `Son objectif est d'éliminer tous les loups-garous.
+
+  En cas d'égalité lors du vote du village, il est éliminé à la place des ex aequo. Dans ce cas, il peut choisir qui pourra voter le jour suivant.`,
 };

@@ -37,10 +37,13 @@ export class GameService {
   private dayCount: WritableSignal<number> = signal(1);
 
   private cardList: CardList | undefined;
+  private needCleanAfterBouc = false;
 
   private readonly PLAYERS_KEY = 'GameService_currentPlayers';
   private readonly ROUND_KEY = 'GameService_currentRound';
   private readonly DAY_COUNT_KEY = 'GameService_dayCount';
+  private readonly CARD_LIST_KEY = 'GameService_cardList';
+  private readonly NEED_CLEAN_AFTER_BOUC_KEY = 'GameService_needCleanAfterBouc';
 
   constructor(
     private router: Router,
@@ -68,6 +71,7 @@ export class GameService {
 
   createGame(players: Player[], cardList: CardList): void {
     this.cardList = cardList;
+    this.storageService.set(this.CARD_LIST_KEY, cardList);
     this.initGame(players, cardList);
     const isAngePresent = players
       .map((player) => player.role)
@@ -85,13 +89,19 @@ export class GameService {
   submitRoundAction(
     selectedPlayers: number[],
     selectedRole?: PlayerRoleEnum,
+    isEquality?: boolean,
   ): void {
     const currentRoundRole = this.round()?.role;
     if (currentRoundRole !== undefined) {
       const handler = this.roundHandlersService.getHandler(currentRoundRole);
       if (handler !== undefined) {
         handler
-          .handleAction(this.players(), selectedPlayers, selectedRole)
+          .handleAction(
+            this.players(),
+            selectedPlayers,
+            selectedRole,
+            isEquality,
+          )
           .subscribe((newPlayers) => {
             this.setPlayers(newPlayers);
             this.nextRound();
@@ -129,6 +139,20 @@ export class GameService {
 
     if (currentRoundRole === RoundEnum.VOLEUR) {
       this.handleAfterVoleurRound();
+    }
+
+    if (currentRoundRole === RoundEnum.BOUC) {
+      this.needCleanAfterBouc = true;
+      this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, true);
+    }
+
+    if (currentRoundRole === RoundEnum.VILLAGEOIS && this.needCleanAfterBouc) {
+      this.needCleanAfterBouc = false;
+      this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, false);
+      const newPlayers = this.statusesService.cleanNoVoteAfterDay(
+        this.players(),
+      );
+      this.setPlayers(newPlayers);
     }
 
     const currentHandler =
@@ -199,23 +223,38 @@ export class GameService {
       this.storageService.get<Player[]>(this.PLAYERS_KEY),
       this.storageService.get<Round>(this.ROUND_KEY),
       this.storageService.get<number>(this.DAY_COUNT_KEY),
-    ]).subscribe(([storedPlayers, storedRound, storedDayCount]) => {
-      if (
-        storedPlayers !== null &&
-        storedRound !== null &&
-        storedDayCount !== null
-      ) {
-        this.players.set(storedPlayers);
-        this.round.set(storedRound);
-        this.dayCount.set(storedDayCount);
-      }
-    });
+      this.storageService.get<CardList>(this.CARD_LIST_KEY),
+      this.storageService.get<boolean>(this.NEED_CLEAN_AFTER_BOUC_KEY),
+    ]).subscribe(
+      ([
+        storedPlayers,
+        storedRound,
+        storedDayCount,
+        storedCardList,
+        storedNeedCleanAfterBouc,
+      ]) => {
+        if (
+          storedPlayers !== null &&
+          storedRound !== null &&
+          storedDayCount !== null
+        ) {
+          this.players.set(storedPlayers);
+          this.round.set(storedRound);
+          this.dayCount.set(storedDayCount);
+        }
+
+        this.needCleanAfterBouc = storedNeedCleanAfterBouc ?? false;
+        this.cardList = storedCardList ?? undefined;
+      },
+    );
   }
 
   private clearStorage(): void {
     this.storageService.remove(this.PLAYERS_KEY);
     this.storageService.remove(this.ROUND_KEY);
     this.storageService.remove(this.DAY_COUNT_KEY);
+    this.storageService.remove(this.CARD_LIST_KEY);
+    this.storageService.remove(this.NEED_CLEAN_AFTER_BOUC_KEY);
   }
 
   private handleVictory(victory: VictoryEnum): void {

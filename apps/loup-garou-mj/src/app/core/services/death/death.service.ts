@@ -228,6 +228,13 @@ export class DeathService {
           }
         }
         break;
+      case PlayerRoleEnum.BOUC:
+        if (deadPlayer.killedBy === undefined) {
+          this.afterDeathRoundQueue.push(RoundEnum.BOUC);
+        } else {
+          this.rolesToRemove.push(PlayerRoleEnum.BOUC);
+        }
+        break;
       default:
         this.rolesToRemove.push(deadPlayer.role);
         break;
