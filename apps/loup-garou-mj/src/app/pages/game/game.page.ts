@@ -17,6 +17,7 @@ import { HeaderComponent } from '../../core/components/header/header.component';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 import { RoundTypeEnum } from '../../core/enums/round-type.enum';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { RoundEnum } from '../../core/enums/round.enum';
 
 @Component({
   selector: 'lgmj-game',
@@ -87,6 +88,13 @@ export class GamePage {
     }
   });
 
+  protected displayEqualityButton: Signal<boolean> = computed(
+    () =>
+      this.players().some(
+        (player) => player.role === PlayerRoleEnum.BOUC && !player.isDead,
+      ) && this.round()?.role === RoundEnum.VILLAGEOIS,
+  );
+
   constructor(private gameService: GameService) {}
 
   protected onSinglePlayerChecked(event: Event) {
@@ -119,6 +127,15 @@ export class GamePage {
         ? [this.selectedPlayer() as number]
         : Array.from(this.selectedPlayers());
     this.gameService.submitRoundAction(selectedPlayers, this.selectedRole());
+    this.cleanSelection();
+  }
+
+  protected onEquality(): void {
+    this.gameService.submitRoundAction([], undefined, true);
+    this.cleanSelection();
+  }
+
+  private cleanSelection(): void {
     this.selectedPlayer.set(undefined);
     this.selectedPlayers.set(new Set());
     this.selectedRole.set(undefined);

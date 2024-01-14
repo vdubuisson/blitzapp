@@ -205,6 +205,59 @@ describe('VillageoisRoundHandler', () => {
       );
   }));
 
+  it('should kill BOUC if equality', waitForAsync(() => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    roundHandler
+      .handleAction(players, [], undefined, true)
+      .subscribe((newPlayers) => {
+        expect(newPlayers[0].isDead).toEqual(true);
+        expect(newPlayers[0].killedBy).toBeUndefined();
+      });
+  }));
+
+  it('should do nothing if no selected player', waitForAsync(() => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    roundHandler
+      .handleAction(players, [], undefined, false)
+      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
+  }));
+
   it('should return all players alive as selectable players', () => {
     const players: Player[] = [
       {
@@ -238,6 +291,72 @@ describe('VillageoisRoundHandler', () => {
     expect(round.selectablePlayers).toEqual([1, 2]);
   });
 
+  it('should return no selectable players if no player can vote', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.selectablePlayers).toEqual([]);
+  });
+
+  it('should return 0 minSelectable if no player can vote', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
+
+    expect(round.minSelectable).toEqual(0);
+  });
+
   it('should return VILLAGEOIS as round role', () => {
     const round = roundHandler.getRoundConfig([]);
 
@@ -245,13 +364,67 @@ describe('VillageoisRoundHandler', () => {
   });
 
   it('should return 1 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
 
     expect(round.maxSelectable).toEqual(1);
   });
 
   it('should return 1 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: true,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    const round = roundHandler.getRoundConfig(players);
 
     expect(round.minSelectable).toEqual(1);
   });

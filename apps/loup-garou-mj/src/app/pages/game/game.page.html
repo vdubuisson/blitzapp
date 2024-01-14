@@ -55,6 +55,15 @@
       >
         Valider
       </ion-button>
+      <ion-button
+        *ngIf="displayEqualityButton()"
+        expand="block"
+        class="ion-margin-horizontal"
+        color="medium"
+        (click)="onEquality()"
+      >
+        Egalité
+      </ion-button>
     </div>
   </div>
 </ion-content>

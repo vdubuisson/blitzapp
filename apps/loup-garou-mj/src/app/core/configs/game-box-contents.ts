@@ -15,6 +15,7 @@ export const GAME_BOX_CONTENTS: { [box: string]: PlayerRoleEnum[] } = {
     PlayerRoleEnum.SALVATEUR,
     PlayerRoleEnum.ANCIEN,
     PlayerRoleEnum.IDIOT,
+    PlayerRoleEnum.BOUC,
   ],
   [GameBoxEnum.VILLAGE]: [PlayerRoleEnum.CORBEAU, PlayerRoleEnum.LOUP_BLANC],
   [GameBoxEnum.PERSONNAGES]: [

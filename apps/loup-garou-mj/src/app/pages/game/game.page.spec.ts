@@ -372,4 +372,112 @@ describe('GamePage', () => {
 
     expect(component['selectedPlayers']().size).toEqual(0);
   });
+
+  it('should display equality button if VILLAGEOIS round and BOUC alive', () => {
+    mockPlayers$.set([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+
+    mockRound$.set({
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    });
+
+    expect(component['displayEqualityButton']()).toEqual(true);
+  });
+
+  it('should not display equality button if VILLAGEOIS round and BOUC dead', () => {
+    mockPlayers$.set([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ]);
+
+    mockRound$.set({
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    });
+
+    expect(component['displayEqualityButton']()).toEqual(false);
+  });
+
+  it('should not display equality button if not VILLAGEOIS round and BOUC alive', () => {
+    mockPlayers$.set([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+
+    mockRound$.set({
+      role: RoundEnum.CUPIDON,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: false,
+      type: RoundTypeEnum.DEFAULT,
+    });
+
+    expect(component['displayEqualityButton']()).toEqual(false);
+  });
+
+  it('should not display equality button if VILLAGEOIS round and no BOUC', () => {
+    mockPlayers$.set([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+
+    mockRound$.set({
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: [0],
+      maxSelectable: 1,
+      minSelectable: 1,
+      isDuringDay: true,
+      type: RoundTypeEnum.DEFAULT,
+    });
+
+    expect(component['displayEqualityButton']()).toEqual(false);
+  });
+
+  it('should submit equality on equality', () => {
+    jest.spyOn(gameService, 'submitRoundAction');
+
+    component['onEquality']();
+
+    expect(gameService.submitRoundAction).toHaveBeenCalledWith(
+      [],
+      undefined,
+      true,
+    );
+  });
 });

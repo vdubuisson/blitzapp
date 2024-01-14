@@ -24,9 +24,43 @@ export class VillageoisRoundHandler implements RoundHandler {
   handleAction(
     players: Player[],
     selectedPlayerIds: number[],
+    _?: PlayerRoleEnum,
+    isEquality?: boolean,
   ): Observable<Player[]> {
     const newPlayers = [...players];
-    const selectedPlayer = newPlayers.find(
+
+    if (isEquality) {
+      this.handleEquality(players);
+    } else if (selectedPlayerIds.length > 0) {
+      this.handleSelectedPlayer(players, selectedPlayerIds);
+    }
+
+    return of(newPlayers);
+  }
+
+  getRoundConfig(players: Player[]): Round {
+    const canVote = players.some(
+      (player) =>
+        !player.isDead && !player.statuses.has(PlayerStatusEnum.NO_VOTE),
+    );
+    return {
+      role: RoundEnum.VILLAGEOIS,
+      selectablePlayers: canVote ? this.getKillablePlayers(players) : [],
+      maxSelectable: 1,
+      minSelectable: canVote ? 1 : 0,
+      isDuringDay: this.isDuringDay,
+      type: this.type,
+    };
+  }
+
+  private getKillablePlayers(players: Player[]): number[] {
+    return players
+      .filter((player) => !player.isDead)
+      .map((player) => player.id);
+  }
+
+  private handleSelectedPlayer(players: Player[], selectedPlayerIds: number[]) {
+    const selectedPlayer = players.find(
       (player) => player.id === selectedPlayerIds[0],
     ) as Player;
 
@@ -41,24 +75,15 @@ export class VillageoisRoundHandler implements RoundHandler {
       selectedPlayer.isDead = true;
     }
     selectedPlayer.killedBy = PlayerRoleEnum.VILLAGEOIS;
-
-    return of(newPlayers);
   }
 
-  getRoundConfig(players: Player[]): Round {
-    return {
-      role: RoundEnum.VILLAGEOIS,
-      selectablePlayers: this.getKillablePlayers(players),
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
-    };
-  }
-
-  private getKillablePlayers(players: Player[]): number[] {
-    return players
-      .filter((player) => !player.isDead)
-      .map((player) => player.id);
+  private handleEquality(players: Player[]): void {
+    const boucPlayer = players.find(
+      (player) => player.role === PlayerRoleEnum.BOUC,
+    );
+    if (boucPlayer) {
+      boucPlayer.isDead = true;
+      boucPlayer.killedBy = undefined;
+    }
   }
 }

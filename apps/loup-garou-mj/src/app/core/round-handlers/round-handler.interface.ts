@@ -13,6 +13,7 @@ export interface RoundHandler {
     players: Player[],
     selectedPlayerIds: number[],
     selectedRole?: PlayerRoleEnum,
+    isEquality?: boolean,
   ): Observable<Player[]>;
   getRoundConfig(players: Player[], cardList?: CardList): Round;
 }

@@ -23,4 +23,5 @@ export const ROUND_NAMES: Record<RoundEnum, string> = {
   [RoundEnum.FRERES]: 'Découverte des 3 frères',
   [RoundEnum.LOUP_BLANC]: 'Attaque du loup blanc',
   [RoundEnum.VOLEUR]: 'Echange du voleur',
+  [RoundEnum.BOUC]: 'Choix des votants du bouc émissaire',
 };
