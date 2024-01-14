@@ -8,4 +8,5 @@ export const VICTORY_NAMES: Record<VictoryEnum, string> = {
   [VictoryEnum.VILLAGEOIS]: 'Villageois',
   [VictoryEnum.JOUEUR_FLUTE]: 'Joueur de flûte',
   [VictoryEnum.LOUP_BLANC]: 'Loup-garou blanc',
+  [VictoryEnum.SECTAIRE]: 'Abominable sectaire',
 };

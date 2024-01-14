@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
   ActionSheetOptions,
@@ -10,10 +17,12 @@ import { Player } from '../../models/player.model';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
 import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
-import { PlayerStatusPipe } from '../../pipes/player-status/player-status.pipe';
+import { PlayerStatusIconPipe } from '../../pipes/player-status-icon/player-status-icon.pipe';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { ROLE_TRACK_BY } from '../../utils/role.track-by';
 import { STATUS_TRACK_BY } from '../../utils/status.track-by';
+import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { PLAYER_STATUS_ORDER_CONFIG } from '../../configs/player-status-order.config';
 
 @Component({
   selector: 'lgmj-player',
@@ -23,14 +32,14 @@ import { STATUS_TRACK_BY } from '../../utils/status.track-by';
     IonicModule,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
-    PlayerStatusPipe,
+    PlayerStatusIconPipe,
     NgOptimizedImage,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss'],
 })
-export class PlayerComponent {
+export class PlayerComponent implements OnChanges {
   @Input({ required: true }) player!: Player;
 
   @Input() displayMode: PlayerDisplayModeEnum = PlayerDisplayModeEnum.DEFAULT;
@@ -72,8 +81,23 @@ export class PlayerComponent {
     header: 'CHOISIR UN RÔLE',
     buttons: [],
   };
+  protected sortedStatuses: PlayerStatusEnum[] = [];
 
   constructor(private playerRoleNamePipe: PlayerRoleNamePipe) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['player']) {
+      const playerStatuses: PlayerStatusEnum[] = Array.from(
+        this.player.statuses,
+      );
+      playerStatuses.sort(
+        (status1, status2) =>
+          PLAYER_STATUS_ORDER_CONFIG.indexOf(status1) -
+          PLAYER_STATUS_ORDER_CONFIG.indexOf(status2),
+      );
+      this.sortedStatuses = playerStatuses;
+    }
+  }
 
   protected onCheckedChange(event: Event) {
     this.checkedChange.emit((event as CheckboxCustomEvent).detail.checked);

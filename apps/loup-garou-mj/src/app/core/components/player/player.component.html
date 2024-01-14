@@ -66,8 +66,8 @@
     <div slot="end" *ngSwitchDefault>
       <span
         class="status-icon"
-        *ngFor="let status of player.statuses; trackBy: statusTrackBy"
-        >{{ status | playerStatus }}</span
+        *ngFor="let status of sortedStatuses; trackBy: statusTrackBy"
+        >{{ status | playerStatusIcon }}</span
       >
     </div>
   </ng-container>

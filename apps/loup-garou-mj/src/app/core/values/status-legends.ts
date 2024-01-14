@@ -14,4 +14,6 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.FIRST_DEATH]: `Ce joueur a survécu à une première attaque de loup-garou.`,
   [PlayerStatusEnum.NO_VOTE]: `Ce joueur ne peut pas voter pendant la journée.`,
   [PlayerStatusEnum.RUSTY_SWORD]: `Ce joueur est contaminé par l'épée rouillée du chevalier, il mourra à la fin de la journée.`,
+  [PlayerStatusEnum.BLUE_TEAM]: `Ce joueur fait partie du groupe Bleu (pour l'Abominable sectaire).`,
+  [PlayerStatusEnum.RED_TEAM]: `Ce joueur fait partie du groupe Rouge (pour l'Abominable sectaire).`,
 };

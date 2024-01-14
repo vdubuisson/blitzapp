@@ -1,6 +1,7 @@
 import { RoundEnum } from '../enums/round.enum';
 
 export const ROUNDS_ORDER_CONFIG: RoundEnum[] = [
+  RoundEnum.SECTAIRE,
   RoundEnum.VOLEUR,
   RoundEnum.CUPIDON,
   RoundEnum.VOYANTE,

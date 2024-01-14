@@ -5,13 +5,16 @@
     <div id="round-header">
       <ion-note class="ion-text-center">
         <h2 id="round-subtitle">
-          <span class="day-icon"
-            >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
-          >
-          {{ currentRound.isDuringDay ? 'Jour' : 'Nuit' }} {{ dayCount() }}
-          <span class="day-icon"
-            >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
-          >
+          <span *ngIf="isBeforeGame(); else daySubtitle">Avant-partie</span>
+          <ng-template #daySubtitle>
+            <span class="day-icon"
+              >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
+            >
+            {{ currentRound.isDuringDay ? 'Jour' : 'Nuit' }} {{ dayCount() }}
+            <span class="day-icon"
+              >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
+            >
+          </ng-template>
         </h2>
       </ion-note>
       <hr />

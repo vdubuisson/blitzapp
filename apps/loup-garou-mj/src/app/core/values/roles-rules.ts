@@ -118,4 +118,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.BOUC]: `Son objectif est d'éliminer tous les loups-garous.
 
   En cas d'égalité lors du vote du village, il est éliminé à la place des ex aequo. Dans ce cas, il peut choisir qui pourra voter le jour suivant.`,
+  [PlayerRoleEnum.SECTAIRE]: `Son objectif est d'éliminer tous les membres de l'autre groupe.
+
+  En début de partie, le maître du jeu sépare les joueurs en 2 groupes selon un critère évident (lunettes, âge, cheveux,...) et l'annonce aux joueurs.
+
+  L'Abominable sectaire gagne la partie quand il ne reste que des joueurs de son groupe en vie.`,
 };

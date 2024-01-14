@@ -1,15 +1,15 @@
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { PlayerStatusPipe } from './player-status.pipe';
+import { PlayerStatusIconPipe } from './player-status-icon.pipe';
 
 jest.mock('../../values/status-icons', () => ({
   STATUS_ICONS: { [PlayerStatusEnum.WOLF_TARGET]: 'Test' },
 }));
 
-describe('PlayerStatusPipe', () => {
-  let pipe: PlayerStatusPipe;
+describe('PlayerStatusIconPipe', () => {
+  let pipe: PlayerStatusIconPipe;
 
   beforeEach(() => {
-    pipe = new PlayerStatusPipe();
+    pipe = new PlayerStatusIconPipe();
   });
 
   it('create an instance', () => {

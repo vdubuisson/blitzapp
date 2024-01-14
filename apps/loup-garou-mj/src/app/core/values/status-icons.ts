@@ -14,6 +14,8 @@ export const STATUS_ICONS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.RAVEN]: '🪶',
   [PlayerStatusEnum.NO_VOTE]: '🤐',
   [PlayerStatusEnum.RUSTY_SWORD]: '🗡️',
+  [PlayerStatusEnum.BLUE_TEAM]: '🔵',
+  [PlayerStatusEnum.RED_TEAM]: '🔴',
   // [PlayerStatusEnum.COMEDIAN]: "🎭",
   // [PlayerStatusEnum.INFECTED]: "🩸",
 };

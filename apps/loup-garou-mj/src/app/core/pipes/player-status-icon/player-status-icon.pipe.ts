@@ -3,10 +3,10 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { STATUS_ICONS } from '../../values/status-icons';
 
 @Pipe({
-  name: 'playerStatus',
+  name: 'playerStatusIcon',
   standalone: true,
 })
-export class PlayerStatusPipe implements PipeTransform {
+export class PlayerStatusIconPipe implements PipeTransform {
   transform(status: PlayerStatusEnum): string {
     return STATUS_ICONS[status];
   }

@@ -15,6 +15,7 @@ import {
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from './victory-handlers.service';
+import { SectaireVictoryHandler } from '../../victory-handlers/sectaire/sectaire-victory.handler';
 
 class MockVictoryHandler implements VictoryHandler {
   isVictorious(_: Player[]): boolean {
@@ -201,6 +202,41 @@ describe('VictoryHandlersService', () => {
     expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
       false,
     );
+  });
+
+  it('should init SECTAIRE victory handler if there is SECTAIRE', () => {
+    service.initHandlers([PlayerRoleEnum.SECTAIRE]);
+
+    expect(service['victoryHandlers'].get(VictoryEnum.SECTAIRE)).toBeInstanceOf(
+      SectaireVictoryHandler,
+    );
+  });
+
+  it('should not init SECTAIRE victory handler if there is no SECTAIRE', () => {
+    service.initHandlers([]);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.SECTAIRE)).toEqual(false);
+  });
+
+  it('should remove SECTAIRE victory handler if SECTAIRE is dead', () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.SECTAIRE,
+        card: PlayerRoleEnum.SECTAIRE,
+        statuses: new Set(),
+        isDead: true,
+      },
+    ];
+    service['victoryHandlers'].set(
+      VictoryEnum.SECTAIRE,
+      new SectaireVictoryHandler(),
+    );
+
+    service.removeUselessHandlers(players);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.SECTAIRE)).toEqual(false);
   });
 
   it('should return victory based on victorious Handler', () => {
