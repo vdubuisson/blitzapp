@@ -58,7 +58,10 @@
           "namedChunks": true
         },
         "pages": {
-          "outputPath": "docs",
+          "outputPath": {
+            "base": "docs",
+            "browser": ""
+          },
           "baseHref": "/blitzapp/",
           "fileReplacements": [
             {
