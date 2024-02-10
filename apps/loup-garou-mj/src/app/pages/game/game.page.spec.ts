@@ -6,7 +6,7 @@ import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { Player } from '../../core/models/player.model';
 import { Round } from '../../core/models/round.model';
 import { RoundEnum } from '../../core/enums/round.enum';
-import { RadioGroupCustomEvent } from '@ionic/angular';
+import { RadioGroupCustomEvent } from '@ionic/angular/standalone';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { RoundTypeEnum } from '../../core/enums/round-type.enum';
 import { signal, WritableSignal } from '@angular/core';

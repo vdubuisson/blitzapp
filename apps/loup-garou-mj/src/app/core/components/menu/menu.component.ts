@@ -1,6 +1,5 @@
 import { Component, Signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, IonMenu } from '@ionic/angular';
 import {
   NavigationEnd,
   Router,
@@ -10,11 +9,33 @@ import {
 import { filter } from 'rxjs';
 import { GameService } from '../../services/game/game.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonItemDivider,
+  IonMenu,
+  IonRouterLink,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'lgmj-menu',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink, RouterLinkActive],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    IonRouterLink,
+    IonMenu,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonItem,
+    IonItemDivider,
+  ],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
 })

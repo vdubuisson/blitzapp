@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import {
+  IonButton,
+  IonContent,
+  ModalController,
+} from '@ionic/angular/standalone';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RouterLink } from '@angular/router';
 import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
@@ -11,11 +15,12 @@ import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-nam
   standalone: true,
   imports: [
     CommonModule,
-    IonicModule,
     RouterLink,
     NgOptimizedImage,
     PlayerRoleImagePipe,
     PlayerRoleNamePipe,
+    IonContent,
+    IonButton,
   ],
   templateUrl: './player-card-modal.component.html',
   styleUrls: ['./player-card-modal.component.scss'],

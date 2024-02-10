@@ -1,4 +1,4 @@
-import { ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular/standalone';
 import { MockService } from 'ng-mocks';
 import { of } from 'rxjs';
 import { StorageService } from '../../core/services/storage/storage.service';

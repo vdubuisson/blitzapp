@@ -1,5 +1,5 @@
 import { ModalService } from './modal.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/standalone';
 import { MockService } from 'ng-mocks';
 import { waitForAsync } from '@angular/core/testing';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';

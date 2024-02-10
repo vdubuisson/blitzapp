@@ -1,5 +1,5 @@
 import { PlayerCardModalComponent } from './player-card-modal.component';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/standalone';
 import { MockService } from 'ng-mocks';
 
 describe('PlayerCardModalComponent', () => {

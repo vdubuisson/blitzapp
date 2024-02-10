@@ -1,6 +1,17 @@
 import { Component, computed, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ItemReorderCustomEvent } from '@ionic/angular';
+import {
+  IonButton,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonReorder,
+  IonReorderGroup,
+  IonRouterLink,
+  ItemReorderCustomEvent,
+} from '@ionic/angular/standalone';
 import { Player } from '../../core/models/player.model';
 import { NewPlayerComponent } from '../../core/components/new-player/new-player.component';
 import { HeaderComponent } from '../../core/components/header/header.component';
@@ -8,16 +19,26 @@ import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
 import { RouterLink } from '@angular/router';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { addIcons } from 'ionicons';
+import { remove, warning } from 'ionicons/icons';
 
 @Component({
   selector: 'lgmj-new-game',
   standalone: true,
   imports: [
     CommonModule,
-    IonicModule,
     NewPlayerComponent,
     HeaderComponent,
     RouterLink,
+    IonRouterLink,
+    IonContent,
+    IonItem,
+    IonIcon,
+    IonList,
+    IonReorderGroup,
+    IonButton,
+    IonLabel,
+    IonReorder,
   ],
   templateUrl: './new-game.page.html',
   styleUrls: ['./new-game.page.scss'],
@@ -38,7 +59,9 @@ export class NewGamePage {
   constructor(
     private newGameService: NewGameService,
     private cardChoiceService: CardChoiceService,
-  ) {}
+  ) {
+    addIcons({ warning, remove });
+  }
 
   protected addPlayer(name: string): void {
     this.newGameService.addPlayer(name);

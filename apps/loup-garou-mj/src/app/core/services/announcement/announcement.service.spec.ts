@@ -1,4 +1,4 @@
-import { AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/standalone';
 import { MockService } from 'ng-mocks';
 import { of } from 'rxjs';
 import { StorageService } from '../storage/storage.service';

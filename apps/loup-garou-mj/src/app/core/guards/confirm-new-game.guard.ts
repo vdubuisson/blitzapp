@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { GameService } from '../services/game/game.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/standalone';
 
 export const confirmNewGameGuard = async (): Promise<boolean> => {
   const gameService = inject(GameService);
