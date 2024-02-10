@@ -5,12 +5,12 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
 import {
-  VillageoisVictoryHandler,
-  NoneVictoryHandler,
-  LoupGarouVictoryHandler,
   AmoureuxVictoryHandler,
   JoueurFluteVictoryHandler,
   LoupBlancVictoryHandler,
+  LoupGarouVictoryHandler,
+  NoneVictoryHandler,
+  VillageoisVictoryHandler,
 } from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';

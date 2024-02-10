@@ -6,7 +6,15 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, RadioGroupCustomEvent } from '@ionic/angular';
+import {
+  IonButton,
+  IonContent,
+  IonList,
+  IonNote,
+  IonRadioGroup,
+  IonText,
+  RadioGroupCustomEvent,
+} from '@ionic/angular/standalone';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { Player } from '../../core/models/player.model';
 import { Round } from '../../core/models/round.model';
@@ -24,10 +32,15 @@ import { RoundEnum } from '../../core/enums/round.enum';
   standalone: true,
   imports: [
     CommonModule,
-    IonicModule,
     RoundNamePipe,
     PlayerComponent,
     HeaderComponent,
+    IonContent,
+    IonNote,
+    IonText,
+    IonList,
+    IonRadioGroup,
+    IonButton,
   ],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],

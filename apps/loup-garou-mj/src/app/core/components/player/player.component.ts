@@ -10,9 +10,16 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
   ActionSheetOptions,
   CheckboxCustomEvent,
-  IonicModule,
+  IonCheckbox,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonRadio,
+  IonSelect,
+  IonSelectOption,
+  IonThumbnail,
   SelectCustomEvent,
-} from '@ionic/angular';
+} from '@ionic/angular/standalone';
 import { Player } from '../../models/player.model';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
@@ -23,17 +30,26 @@ import { ROLE_TRACK_BY } from '../../utils/role.track-by';
 import { STATUS_TRACK_BY } from '../../utils/status.track-by';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { PLAYER_STATUS_ORDER_CONFIG } from '../../configs/player-status-order.config';
+import { addIcons } from 'ionicons';
+import { skull } from 'ionicons/icons';
 
 @Component({
   selector: 'lgmj-player',
   standalone: true,
   imports: [
     CommonModule,
-    IonicModule,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     PlayerStatusIconPipe,
     NgOptimizedImage,
+    IonItem,
+    IonIcon,
+    IonThumbnail,
+    IonLabel,
+    IonCheckbox,
+    IonRadio,
+    IonSelect,
+    IonSelectOption,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './player.component.html',
@@ -83,7 +99,9 @@ export class PlayerComponent implements OnChanges {
   };
   protected sortedStatuses: PlayerStatusEnum[] = [];
 
-  constructor(private playerRoleNamePipe: PlayerRoleNamePipe) {}
+  constructor(private playerRoleNamePipe: PlayerRoleNamePipe) {
+    addIcons({ skull });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['player']) {

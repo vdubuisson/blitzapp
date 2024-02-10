@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController, AlertOptions } from '@ionic/angular';
+import { AlertController, AlertOptions } from '@ionic/angular/standalone';
 import { Player } from '../../models/player.model';
 import { StorageService } from '../storage/storage.service';
 import { AnnouncementEnum } from '../../enums/announcement.enum';
@@ -43,7 +43,7 @@ export class AnnouncementService {
     let message = announcements[type].message;
     if (message !== undefined && params !== undefined) {
       Object.entries(params).forEach(([key, value]) => {
-        const toReplace: string = `{{\\s*${key}\\s*}}`;
+        const toReplace = `{{\\s*${key}\\s*}}`;
         const regex = new RegExp(toReplace, 'g');
         message = (message as string).replaceAll(regex, value);
       });

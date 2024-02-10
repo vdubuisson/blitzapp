@@ -1,5 +1,5 @@
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { IonMenu } from '@ionic/angular';
+import { IonMenu } from '@ionic/angular/standalone';
 import { MockService } from 'ng-mocks';
 import { Subject } from 'rxjs';
 import { GameService } from '../../services/game/game.service';

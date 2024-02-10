@@ -4,7 +4,7 @@ import { RolesChoicePage } from './roles-choice.page';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { Router } from '@angular/router';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { CheckboxCustomEvent } from '@ionic/angular';
+import { CheckboxCustomEvent } from '@ionic/angular/standalone';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CardList } from '../../core/models/card-list.model';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';

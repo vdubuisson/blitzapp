@@ -7,17 +7,27 @@ import {
   Validators,
 } from '@angular/forms';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
-import { IonicModule, IonInput } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { add } from 'ionicons/icons';
+import {
+  IonButton,
+  IonIcon,
+  IonInput,
+  IonItem,
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'lgmj-new-player',
   standalone: true,
   imports: [
     CommonModule,
-    IonicModule,
     FormsModule,
     ReactiveFormsModule,
     PlayerRoleNamePipe,
+    IonItem,
+    IonButton,
+    IonIcon,
+    IonInput,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './new-player.component.html',
@@ -32,7 +42,9 @@ export class NewPlayerComponent {
     name: ['', Validators.required],
   });
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder) {
+    addIcons({ add });
+  }
 
   async onSubmit() {
     this.newPlayer.emit(this.playerForm.value.name as string);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/standalone';
 import { PlayerCardModalComponent } from '../../components/player-card-modal/player-card-modal.component';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { map, Observable, switchMap } from 'rxjs';

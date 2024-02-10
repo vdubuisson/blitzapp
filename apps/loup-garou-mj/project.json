@@ -6,13 +6,14 @@
   "prefix": "lgmj",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": ["{options.outputPath.base}"],
       "options": {
-        "outputPath": "dist/apps/loup-garou-mj",
+        "outputPath": {
+          "base": "dist/apps/loup-garou-mj"
+        },
         "index": "apps/loup-garou-mj/src/index.html",
-        "main": "apps/loup-garou-mj/src/main.ts",
-        "polyfills": "apps/loup-garou-mj/src/polyfills.ts",
+        "polyfills": ["apps/loup-garou-mj/src/polyfills.ts"],
         "tsConfig": "apps/loup-garou-mj/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "allowedCommonJsDependencies": ["localforage"],
@@ -30,7 +31,8 @@
             "input": "apps/loup-garou-mj/src/theme/variables.scss"
           }
         ],
-        "scripts": []
+        "scripts": [],
+        "browser": "apps/loup-garou-mj/src/main.ts"
       },
       "configurations": {
         "production": {
@@ -55,9 +57,7 @@
           "outputHashing": "all"
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
-          "vendorChunk": true,
           "extractLicenses": false,
           "sourceMap": true,
           "namedChunks": true

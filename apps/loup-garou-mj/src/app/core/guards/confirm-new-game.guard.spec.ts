@@ -1,5 +1,5 @@
 import { GameService } from '../services/game/game.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/standalone';
 import { MockService } from 'ng-mocks';
 import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';

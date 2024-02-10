@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ToastController } from '@ionic/angular';
+import {
+  IonButton,
+  IonContent,
+  ToastController,
+} from '@ionic/angular/standalone';
 import { HeaderComponent } from '../../core/components/header/header.component';
 import { StorageService } from '../../core/services/storage/storage.service';
 
 @Component({
   selector: 'lgmj-options',
   standalone: true,
-  imports: [CommonModule, IonicModule, HeaderComponent],
+  imports: [CommonModule, HeaderComponent, IonContent, IonButton],
   templateUrl: './options.page.html',
   styleUrls: ['./options.page.scss'],
 })

@@ -6,7 +6,19 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { CheckboxCustomEvent, IonicModule } from '@ionic/angular';
+import {
+  CheckboxCustomEvent,
+  IonAccordion,
+  IonAccordionGroup,
+  IonButton,
+  IonCheckbox,
+  IonContent,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonThumbnail,
+} from '@ionic/angular/standalone';
 import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
 import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
 import { HeaderComponent } from '../../core/components/header/header.component';
@@ -38,7 +50,6 @@ interface RoleForm {
   standalone: true,
   imports: [
     CommonModule,
-    IonicModule,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     GameBoxNamePipe,
@@ -46,6 +57,16 @@ interface RoleForm {
     FormsModule,
     ReactiveFormsModule,
     NgOptimizedImage,
+    IonContent,
+    IonList,
+    IonItem,
+    IonThumbnail,
+    IonLabel,
+    IonInput,
+    IonAccordionGroup,
+    IonAccordion,
+    IonCheckbox,
+    IonButton,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './roles-choice.page.html',
