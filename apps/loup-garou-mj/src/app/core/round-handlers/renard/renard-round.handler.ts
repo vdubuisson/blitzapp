@@ -1,4 +1,3 @@
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
@@ -14,6 +13,7 @@ import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 import { RoundHandlerParameters } from '../round-handler-parameters.interface';
 import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { isLoupGarou } from '../../utils/roles.utils';
 
 export class RenardRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -68,19 +68,16 @@ export class RenardRoundHandler implements RoundHandler {
     selectedPlayerIndex: number,
   ): boolean {
     const centerPlayer = players[selectedPlayerIndex];
-    // TODO handle INFECTED player
-    if (LOUPS_GAROUS_ROLES.includes(centerPlayer.role)) {
+    if (isLoupGarou(centerPlayer)) {
       return true;
     }
 
     const leftPlayer = findLeftNeighbor(players, selectedPlayerIndex) as Player;
-    // TODO handle INFECTED player
-    if (LOUPS_GAROUS_ROLES.includes(leftPlayer.role)) {
+    if (isLoupGarou(leftPlayer)) {
       return true;
     }
 
     const rightPlayer = findRightNeighbor(players, selectedPlayerIndex);
-    // TODO handle INFECTED player
-    return LOUPS_GAROUS_ROLES.includes(rightPlayer.role);
+    return isLoupGarou(rightPlayer);
   }
 }

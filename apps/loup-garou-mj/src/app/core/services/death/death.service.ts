@@ -12,7 +12,6 @@ import { AnnouncementEnum } from '../../enums/announcement.enum';
 import { StatusesService } from '../statuses/statuses.service';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
 import { findLeftNeighbor } from '../../utils/neighbor.utils';
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 
 @Injectable({
   providedIn: 'root',
@@ -218,11 +217,7 @@ export class DeathService {
             ?.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
         } else if (deadPlayer.killedBy === PlayerRoleEnum.LOUP_GAROU) {
           const chevalierIndex = players.indexOf(deadPlayer);
-          const leftPlayer = findLeftNeighbor(
-            players,
-            chevalierIndex,
-            LOUPS_GAROUS_ROLES,
-          );
+          const leftPlayer = findLeftNeighbor(players, chevalierIndex, true);
           if (leftPlayer !== undefined) {
             leftPlayer.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
           }

@@ -25,4 +25,5 @@ export enum PlayerRoleEnum {
   CHEVALIER = 'CHEVALIER',
   BOUC = 'BOUC',
   SECTAIRE = 'SECTAIRE',
+  PERE_LOUPS = 'PERE_LOUPS',
 }

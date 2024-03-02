@@ -8,6 +8,7 @@ import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 import * as neighborUtils from '../../utils/neighbor.utils';
 import { waitForAsync } from '@angular/core/testing';
 import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { PlayerStatusEnum } from '../../enums/player-status.enum';
 
 describe('MontreurOursRoundHandler', () => {
   let roundHandler: MontreurOursRoundHandler;
@@ -117,6 +118,44 @@ describe('MontreurOursRoundHandler', () => {
 
     expect(round.minSelectable).toEqual(0);
   });
+
+  it('should announce bear growl if MONTREUR_OURS is INFECTED', waitForAsync(() => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.MONTREUR_OURS,
+        card: PlayerRoleEnum.MONTREUR_OURS,
+        statuses: new Set([PlayerStatusEnum.INFECTED]),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    jest.spyOn(announcementService, 'announce');
+
+    roundHandler
+      .handleAction(mockPlayers, [])
+      .subscribe(() =>
+        expect(announcementService.announce).toHaveBeenCalledWith(
+          AnnouncementEnum.BEAR_GROWL,
+        ),
+      );
+  }));
 
   it('should announce bear growl if left neighbor is LOUP_GAROU', waitForAsync(() => {
     const mockPlayers: Player[] = [

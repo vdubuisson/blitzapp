@@ -16,4 +16,5 @@ export const STATUS_LEGENDS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.RUSTY_SWORD]: `Ce joueur est contaminé par l'épée rouillée du chevalier, il mourra à la fin de la journée.`,
   [PlayerStatusEnum.BLUE_TEAM]: `Ce joueur fait partie du groupe Bleu (pour l'Abominable sectaire).`,
   [PlayerStatusEnum.RED_TEAM]: `Ce joueur fait partie du groupe Rouge (pour l'Abominable sectaire).`,
+  [PlayerStatusEnum.INFECTED]: `Ce joueur est infecté. Il joue maintenant avec les loups-garous`,
 };

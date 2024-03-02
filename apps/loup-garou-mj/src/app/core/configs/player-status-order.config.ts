@@ -8,7 +8,7 @@ export const PLAYER_STATUS_ORDER_CONFIG: PlayerStatusEnum[] = [
   PlayerStatusEnum.NO_POWER,
   PlayerStatusEnum.HEALTH_POTION,
   PlayerStatusEnum.DEATH_POTION,
-  // PlayerStatusEnum.INFECTED,
+  PlayerStatusEnum.INFECTED,
   PlayerStatusEnum.FIRST_DEATH,
   PlayerStatusEnum.CHARMED,
   PlayerStatusEnum.CHILD_MODEL,

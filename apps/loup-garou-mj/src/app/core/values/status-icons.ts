@@ -17,5 +17,5 @@ export const STATUS_ICONS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.BLUE_TEAM]: '🔵',
   [PlayerStatusEnum.RED_TEAM]: '🔴',
   // [PlayerStatusEnum.COMEDIAN]: "🎭",
-  // [PlayerStatusEnum.INFECTED]: "🩸",
+  [PlayerStatusEnum.INFECTED]: '🩸',
 };

@@ -15,5 +15,5 @@ export enum PlayerStatusEnum {
   BLUE_TEAM = 'BLUE_TEAM',
   RED_TEAM = 'RED_TEAM',
   // COMEDIAN = 'COMEDIAN',
-  // INFECTED = 'INFECTED',
+  INFECTED = 'INFECTED',
 }

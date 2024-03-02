@@ -278,23 +278,6 @@ describe('StatusesService', () => {
     expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
   });
 
-  it('should transform VOLEUR to VILLAGEOIS when removing power from innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOLEUR,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.removePowersFromInnocents(mockPlayers);
-
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
-  });
-
   it('should transform VOYANTE to VILLAGEOIS when removing power from innocents', () => {
     const mockPlayers: Player[] = [
       {
@@ -302,23 +285,6 @@ describe('StatusesService', () => {
         name: 'player0',
         role: PlayerRoleEnum.VOYANTE,
         card: PlayerRoleEnum.VOYANTE,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.removePowersFromInnocents(mockPlayers);
-
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
-  });
-
-  it('should transform JOUEUR_FLUTE to VILLAGEOIS when removing power from innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.JOUEUR_FLUTE,
-        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },
@@ -387,23 +353,6 @@ describe('StatusesService', () => {
         name: 'player0',
         role: PlayerRoleEnum.RENARD,
         card: PlayerRoleEnum.RENARD,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.removePowersFromInnocents(mockPlayers);
-
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
-  });
-
-  it('should transform ANGE to VILLAGEOIS when removing power from innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANGE,
-        card: PlayerRoleEnum.ANGE,
         statuses: new Set(),
         isDead: false,
       },

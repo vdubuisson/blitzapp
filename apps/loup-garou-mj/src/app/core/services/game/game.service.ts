@@ -139,14 +139,15 @@ export class GameService {
 
     if (currentRoundRole === RoundEnum.VOLEUR) {
       this.handleAfterVoleurRound();
-    }
-
-    if (currentRoundRole === RoundEnum.BOUC) {
+    } else if (currentRoundRole === RoundEnum.PERE_LOUPS) {
+      this.handleAfterPereLoupRound();
+    } else if (currentRoundRole === RoundEnum.BOUC) {
       this.needCleanAfterBouc = true;
       this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, true);
-    }
-
-    if (currentRoundRole === RoundEnum.VILLAGEOIS && this.needCleanAfterBouc) {
+    } else if (
+      currentRoundRole === RoundEnum.VILLAGEOIS &&
+      this.needCleanAfterBouc
+    ) {
       this.needCleanAfterBouc = false;
       this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, false);
       const newPlayers = this.statusesService.cleanNoVoteAfterDay(
@@ -352,5 +353,17 @@ export class GameService {
 
     const players = [...this.players()];
     this.initGame(players, this.cardList as CardList);
+  }
+
+  private handleAfterPereLoupRound(): void {
+    if (this.cardList?.selectedRoles.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
+      const joueurFlute = this.players().find(
+        (player) => player.card === PlayerRoleEnum.JOUEUR_FLUTE,
+      );
+      if (joueurFlute?.role === PlayerRoleEnum.LOUP_GAROU) {
+        this.roundHandlersService.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+        this.victoryHandlersService.removeHandler(VictoryEnum.JOUEUR_FLUTE);
+      }
+    }
   }
 }

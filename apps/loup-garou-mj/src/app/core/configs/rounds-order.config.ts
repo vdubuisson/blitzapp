@@ -15,6 +15,7 @@ export const ROUNDS_ORDER_CONFIG: RoundEnum[] = [
   RoundEnum.CHIEN_LOUP,
   RoundEnum.LOUP_GAROU,
   RoundEnum.LOUP_BLANC,
+  RoundEnum.PERE_LOUPS,
   RoundEnum.GRAND_MECHANT_LOUP,
   RoundEnum.SORCIERE_HEALTH,
   RoundEnum.SORCIERE_KILL,

@@ -17,5 +17,5 @@ export const STATUS_NAMES: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.BLUE_TEAM]: 'Groupe bleu',
   [PlayerStatusEnum.RED_TEAM]: 'Groupe rouge',
   // [PlayerStatusEnum.COMEDIAN]: "Comédien",
-  // [PlayerStatusEnum.INFECTED]: "Infecté",
+  [PlayerStatusEnum.INFECTED]: 'Infecté',
 };

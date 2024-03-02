@@ -123,4 +123,9 @@ export const ROLES_RULES: Record<PlayerRoleEnum, string> = {
   En début de partie, le maître du jeu sépare les joueurs en 2 groupes selon un critère évident (lunettes, âge, cheveux,...) et l'annonce aux joueurs.
 
   L'Abominable sectaire gagne la partie quand il ne reste que des joueurs de son groupe en vie.`,
+  [PlayerRoleEnum.PERE_LOUPS]: `Son objectif est d'éliminer tous les innocents.
+
+  Une fois dans la partie, il peut décider d'infecter la victime des loups-garous. Au lieu de mourir, celle-ci devient un Loup-Garou et se réveille toutes les nuits avec les autres loups-garous.
+
+  Le personnage infecté conserve son pouvoir de personnage, mais son objectif est maintenant de faire gagner les loups-garous.`,
 };

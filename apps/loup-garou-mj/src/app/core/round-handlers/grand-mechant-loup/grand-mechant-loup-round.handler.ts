@@ -1,4 +1,3 @@
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
@@ -7,6 +6,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { isLoupGarou } from '../../utils/roles.utils';
 
 export class GrandMechantLoupRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -30,7 +30,7 @@ export class GrandMechantLoupRoundHandler implements RoundHandler {
 
   getRoundConfig(players: Player[]): Round {
     const isLoupGarouDead = players.some(
-      (player) => LOUPS_GAROUS_ROLES.includes(player.role) && player.isDead,
+      (player) => isLoupGarou(player) && player.isDead,
     );
     return {
       role: RoundEnum.GRAND_MECHANT_LOUP,
@@ -39,7 +39,7 @@ export class GrandMechantLoupRoundHandler implements RoundHandler {
         : players
             .filter(
               (player) =>
-                !LOUPS_GAROUS_ROLES.includes(player.role) &&
+                !isLoupGarou(player) &&
                 !player.isDead &&
                 !player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
             )

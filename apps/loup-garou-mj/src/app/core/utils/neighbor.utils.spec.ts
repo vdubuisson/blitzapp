@@ -131,7 +131,7 @@ describe('findLeftNeighbor', () => {
     });
   });
 
-  it('should find left neighbor with specific role', () => {
+  it('should find left neighbor with only loup-garou', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -167,9 +167,7 @@ describe('findLeftNeighbor', () => {
       },
     ];
 
-    const leftNeighbor = findLeftNeighbor(mockPlayers, 1, [
-      PlayerRoleEnum.LOUP_GAROU,
-    ]);
+    const leftNeighbor = findLeftNeighbor(mockPlayers, 1, true);
 
     expect(leftNeighbor).toEqual({
       id: 3,
