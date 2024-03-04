@@ -23,6 +23,7 @@ import { VictoryHandlersService } from '../victory-handlers/victory-handlers.ser
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { CardList } from '../../models/card-list.model';
 import { getNotPlayedRoles } from '../../utils/roles.utils';
+import { LOUPS_GAROUS_ROUNDS } from '../../configs/loups-garous-rounds';
 
 @Injectable({
   providedIn: 'root',
@@ -139,14 +140,15 @@ export class GameService {
 
     if (currentRoundRole === RoundEnum.VOLEUR) {
       this.handleAfterVoleurRound();
-    }
-
-    if (currentRoundRole === RoundEnum.BOUC) {
+    } else if (currentRoundRole === RoundEnum.PERE_LOUPS) {
+      this.handleAfterPereLoupRound();
+    } else if (currentRoundRole === RoundEnum.BOUC) {
       this.needCleanAfterBouc = true;
       this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, true);
-    }
-
-    if (currentRoundRole === RoundEnum.VILLAGEOIS && this.needCleanAfterBouc) {
+    } else if (
+      currentRoundRole === RoundEnum.VILLAGEOIS &&
+      this.needCleanAfterBouc
+    ) {
       this.needCleanAfterBouc = false;
       this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, false);
       const newPlayers = this.statusesService.cleanNoVoteAfterDay(
@@ -173,6 +175,8 @@ export class GameService {
     nextRound = this.checkLoupBlancRound(nextRound);
 
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
+
+    this.handlerAfterLoupsEvents(nextHandler);
 
     nextRound = this.handleAfterNightDeaths(
       currentHandler,
@@ -352,5 +356,35 @@ export class GameService {
 
     const players = [...this.players()];
     this.initGame(players, this.cardList as CardList);
+  }
+
+  private handleAfterPereLoupRound(): void {
+    if (this.cardList?.selectedRoles.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
+      const joueurFlute = this.players().find(
+        (player) => player.card === PlayerRoleEnum.JOUEUR_FLUTE,
+      );
+      if (joueurFlute?.role === PlayerRoleEnum.LOUP_GAROU) {
+        this.roundHandlersService.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+        this.victoryHandlersService.removeHandler(VictoryEnum.JOUEUR_FLUTE);
+      }
+    }
+  }
+
+  private handlerAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
+    const currentRole = this.round()?.role;
+    const nextRole = nextHandler?.getRoundConfig(
+      this.players(),
+      this.cardList,
+    )?.role;
+    if (
+      currentRole !== undefined &&
+      nextRole !== undefined &&
+      LOUPS_GAROUS_ROUNDS.includes(currentRole) &&
+      !LOUPS_GAROUS_ROUNDS.includes(nextRole)
+    ) {
+      let newPlayers = this.statusesService.handleWolfTarget(this.players());
+      newPlayers = this.statusesService.handleInfectedAncien(newPlayers);
+      this.players.set(newPlayers);
+    }
   }
 }

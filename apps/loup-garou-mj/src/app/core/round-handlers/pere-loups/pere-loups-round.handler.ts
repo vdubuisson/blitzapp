@@ -7,7 +7,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 
-export class SorciereHealthRoundHandler implements RoundHandler {
+export class PereLoupsRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
   readonly isDuringDay = false;
   readonly type = RoundTypeEnum.PLAYERS;
@@ -21,21 +21,26 @@ export class SorciereHealthRoundHandler implements RoundHandler {
       const selectedPlayer = newPlayers.find(
         (player) => player.id === selectedPlayerIds[0],
       ) as Player;
-      selectedPlayer.statuses.delete(PlayerStatusEnum.DEVOURED);
+      selectedPlayer.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+      selectedPlayer.statuses.add(PlayerStatusEnum.INFECTED);
       selectedPlayer.killedBy = undefined;
 
       newPlayers
-        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
-        ?.statuses.delete(PlayerStatusEnum.HEALTH_POTION);
+        .find((player) => player.role === PlayerRoleEnum.PERE_LOUPS)
+        ?.statuses.add(PlayerStatusEnum.NO_POWER);
+
+      if (selectedPlayer.role === PlayerRoleEnum.JOUEUR_FLUTE) {
+        selectedPlayer.role = PlayerRoleEnum.LOUP_GAROU;
+      }
     }
     return of(newPlayers);
   }
 
   getRoundConfig(players: Player[]): Round {
     return {
-      role: RoundEnum.SORCIERE_HEALTH,
-      selectablePlayers: this.canHeal(players)
-        ? this.getHealablePlayers(players)
+      role: RoundEnum.PERE_LOUPS,
+      selectablePlayers: this.canInfect(players)
+        ? this.getInfectablePlayers(players)
         : [],
       maxSelectable: 1,
       minSelectable: 0,
@@ -44,17 +49,17 @@ export class SorciereHealthRoundHandler implements RoundHandler {
     };
   }
 
-  private canHeal(players: Player[]): boolean {
-    return (
+  private canInfect(players: Player[]): boolean {
+    return !(
       players
-        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
-        ?.statuses.has(PlayerStatusEnum.HEALTH_POTION) ?? false
+        .find((player) => player.role === PlayerRoleEnum.PERE_LOUPS)
+        ?.statuses.has(PlayerStatusEnum.NO_POWER) ?? false
     );
   }
 
-  private getHealablePlayers(players: Player[]): number[] {
+  private getInfectablePlayers(players: Player[]): number[] {
     return players
-      .filter((player) => player.statuses.has(PlayerStatusEnum.DEVOURED))
+      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
       .map((player) => player.id);
   }
 }

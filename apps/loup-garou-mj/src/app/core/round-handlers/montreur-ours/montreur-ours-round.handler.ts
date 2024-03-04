@@ -1,4 +1,3 @@
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
@@ -12,6 +11,8 @@ import { DefaultRoundHandler } from '../default/default-round.handler';
 import { Observable } from 'rxjs';
 import { RoundHandlerParameters } from '../round-handler-parameters.interface';
 import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { isLoupGarou } from '../../utils/roles.utils';
+import { PlayerStatusEnum } from '../../enums/player-status.enum';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
   private announcementService: AnnouncementService;
@@ -29,19 +30,20 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
       (player) => player.role === PlayerRoleEnum.MONTREUR_OURS,
     );
     if (montreurOursIndex > -1) {
-      // const montreurOurs = players[montreurOursIndex];
-      // TODO If INFECTED then announce and return
+      const montreurOurs = players[montreurOursIndex];
+      if (montreurOurs.statuses.has(PlayerStatusEnum.INFECTED)) {
+        this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
+        return super.handleAction(players, selectedPlayers);
+      }
 
       const leftPlayer = findLeftNeighbor(players, montreurOursIndex) as Player;
-      // TODO handle INFECTED player
-      if (LOUPS_GAROUS_ROLES.includes(leftPlayer.role)) {
+      if (isLoupGarou(leftPlayer)) {
         this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
         return super.handleAction(players, selectedPlayers);
       }
 
       const rightPlayer = findRightNeighbor(players, montreurOursIndex);
-      // TODO handle INFECTED player
-      if (LOUPS_GAROUS_ROLES.includes(rightPlayer.role)) {
+      if (isLoupGarou(rightPlayer)) {
         this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
       }
     }

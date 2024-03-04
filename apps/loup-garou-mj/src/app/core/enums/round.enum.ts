@@ -23,4 +23,5 @@ export enum RoundEnum {
   LOUP_BLANC = 'LOUP_BLANC',
   BOUC = 'BOUC',
   SECTAIRE = 'SECTAIRE',
+  PERE_LOUPS = 'PERE_LOUPS',
 }

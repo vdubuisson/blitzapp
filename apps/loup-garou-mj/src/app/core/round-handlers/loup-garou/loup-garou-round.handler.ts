@@ -1,4 +1,3 @@
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
@@ -7,6 +6,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../round-handler.interface';
 import { Observable, of } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { isLoupGarou } from '../../utils/roles.utils';
 
 export class LoupGarouRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;
@@ -30,17 +30,14 @@ export class LoupGarouRoundHandler implements RoundHandler {
 
   getRoundConfig(players: Player[]): Round {
     const areAllLoupGarouDead = players
-      .filter((player) => LOUPS_GAROUS_ROLES.includes(player.role))
+      .filter(isLoupGarou)
       .every((player) => player.isDead);
     return {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: areAllLoupGarouDead
         ? []
         : players
-            .filter(
-              (player) =>
-                !LOUPS_GAROUS_ROLES.includes(player.role) && !player.isDead,
-            )
+            .filter((player) => !isLoupGarou(player) && !player.isDead)
             .map((player) => player.id),
       maxSelectable: 1,
       minSelectable: areAllLoupGarouDead ? 0 : 1,

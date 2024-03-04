@@ -20,3 +20,6 @@ export * from './soeurs/soeurs-round.handler';
 export * from './freres/freres-round.handler';
 export * from './loup-blanc/loup-blanc-round.handler';
 export * from './voleur/voleur-round.handler';
+export * from './bouc/bouc-round.handler';
+export * from './sectaire/sectaire-round.handler';
+export * from './pere-loups/pere-loups-round.handler';

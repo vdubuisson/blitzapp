@@ -12,7 +12,6 @@ import { AnnouncementEnum } from '../../enums/announcement.enum';
 import { StatusesService } from '../statuses/statuses.service';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
 import { findLeftNeighbor } from '../../utils/neighbor.utils';
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 
 @Injectable({
   providedIn: 'root',
@@ -56,7 +55,12 @@ export class DeathService {
   handleNewDeaths(players: Player[]): Player[] {
     this.rolesToRemove = [];
     const newPlayers = [...players];
-    this.handleWolfTarget(newPlayers);
+    newPlayers
+      .filter((player) => player.statuses.has(PlayerStatusEnum.DEVOURED))
+      .forEach((player) => {
+        player.statuses.delete(PlayerStatusEnum.DEVOURED);
+        player.isDead = true;
+      });
 
     newPlayers
       .filter((player) => player.isDead && !this.knownDeaths.has(player.id))
@@ -96,29 +100,6 @@ export class DeathService {
       this.deathsToAnnounce = [];
       this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
     }
-  }
-
-  private handleWolfTarget(players: Player[]): void {
-    players
-      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
-      .forEach((player) => {
-        player.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
-        if (
-          !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
-          player.role === PlayerRoleEnum.PETITE_FILLE
-        ) {
-          if (
-            player.role === PlayerRoleEnum.ANCIEN &&
-            !player.statuses.has(PlayerStatusEnum.FIRST_DEATH)
-          ) {
-            player.statuses.add(PlayerStatusEnum.FIRST_DEATH);
-          } else {
-            player.isDead = true;
-          }
-        } else {
-          player.killedBy = undefined;
-        }
-      });
   }
 
   private handlePlayerDeath(players: Player[], deadPlayer: Player): void {
@@ -218,11 +199,7 @@ export class DeathService {
             ?.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
         } else if (deadPlayer.killedBy === PlayerRoleEnum.LOUP_GAROU) {
           const chevalierIndex = players.indexOf(deadPlayer);
-          const leftPlayer = findLeftNeighbor(
-            players,
-            chevalierIndex,
-            LOUPS_GAROUS_ROLES,
-          );
+          const leftPlayer = findLeftNeighbor(players, chevalierIndex, true);
           if (leftPlayer !== undefined) {
             leftPlayer.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
           }

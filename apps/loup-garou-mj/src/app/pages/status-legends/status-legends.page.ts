@@ -13,6 +13,7 @@ import {
   IonItem,
   IonLabel,
 } from '@ionic/angular/standalone';
+import { PLAYER_STATUS_ORDER_CONFIG } from '../../core/configs/player-status-order.config';
 
 @Component({
   selector: 'lgmj-status-legends',
@@ -33,7 +34,11 @@ import {
 })
 export class StatusLegendsPage {
   protected legends = STATUS_LEGENDS;
-  protected statuses: PlayerStatusEnum[] = Object.values(PlayerStatusEnum);
+  protected statuses: PlayerStatusEnum[] = Object.values(PlayerStatusEnum).sort(
+    (status1, status2) =>
+      PLAYER_STATUS_ORDER_CONFIG.indexOf(status1) -
+      PLAYER_STATUS_ORDER_CONFIG.indexOf(status2),
+  );
 
   protected statusTrackBy = STATUS_TRACK_BY;
 }

@@ -1,17 +1,17 @@
 import { Player } from '../models/player.model';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
+import { isLoupGarou } from './roles.utils';
 
 export function findLeftNeighbor(
   players: Player[],
   selectedIndex: number,
-  roles?: PlayerRoleEnum[],
+  onlyLoupGarou = false,
 ): Player | undefined {
   // Search after the selectedIndex
   let leftPlayer = players.find(
     (player, index) =>
       index > selectedIndex &&
       !player.isDead &&
-      (roles === undefined || roles.includes(player.role)),
+      (!onlyLoupGarou || isLoupGarou(player)),
   );
 
   if (leftPlayer === undefined && selectedIndex > 0) {
@@ -20,7 +20,7 @@ export function findLeftNeighbor(
       (player, index) =>
         index < selectedIndex &&
         !player.isDead &&
-        (roles === undefined || roles.includes(player.role)),
+        (!onlyLoupGarou || isLoupGarou(player)),
     );
   }
 

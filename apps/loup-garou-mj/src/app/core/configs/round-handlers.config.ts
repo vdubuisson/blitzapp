@@ -1,6 +1,7 @@
 import { RoundEnum } from '../enums/round.enum';
 import {
   AmoureuxRoundHandler,
+  BoucRoundHandler,
   CapitaineRoundHandler,
   CharmedRoundHandler,
   ChasseurRoundHandler,
@@ -14,8 +15,10 @@ import {
   LoupBlancRoundHandler,
   LoupGarouRoundHandler,
   MontreurOursRoundHandler,
+  PereLoupsRoundHandler,
   RenardRoundHandler,
   SalvateurRoundHandler,
+  SectaireRoundHandler,
   SoeursRoundHandler,
   SorciereHealthRoundHandler,
   SorciereKillRoundHandler,
@@ -25,12 +28,11 @@ import {
 } from '../round-handlers';
 import { RoundHandler } from '../round-handlers/round-handler.interface';
 import { RoundHandlerParameters } from '../round-handlers/round-handler-parameters.interface';
-import { BoucRoundHandler } from '../round-handlers/bouc/bouc-round.handler';
-import { SectaireRoundHandler } from '../round-handlers/sectaire/sectaire-round.handler';
 
-export const ROUND_HANDLERS_CONFIG: {
-  [round: string]: new (p: RoundHandlerParameters) => RoundHandler;
-} = {
+export const ROUND_HANDLERS_CONFIG: Record<
+  RoundEnum,
+  new (p: RoundHandlerParameters) => RoundHandler
+> = {
   [RoundEnum.AMOUREUX]: AmoureuxRoundHandler,
   [RoundEnum.BOUC]: BoucRoundHandler,
   [RoundEnum.CAPITAINE]: CapitaineRoundHandler,
@@ -46,6 +48,7 @@ export const ROUND_HANDLERS_CONFIG: {
   [RoundEnum.LOUP_BLANC]: LoupBlancRoundHandler,
   [RoundEnum.LOUP_GAROU]: LoupGarouRoundHandler,
   [RoundEnum.MONTREUR_OURS]: MontreurOursRoundHandler,
+  [RoundEnum.PERE_LOUPS]: PereLoupsRoundHandler,
   [RoundEnum.RENARD]: RenardRoundHandler,
   [RoundEnum.SALVATEUR]: SalvateurRoundHandler,
   [RoundEnum.SECTAIRE]: SectaireRoundHandler,

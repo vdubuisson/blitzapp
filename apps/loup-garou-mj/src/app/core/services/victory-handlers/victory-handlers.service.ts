@@ -109,6 +109,10 @@ export class VictoryHandlersService {
     }
   }
 
+  removeHandler(victory: VictoryEnum) {
+    this.victoryHandlers.delete(victory);
+  }
+
   getVictory(
     players: Player[],
     isFirstDayOrNight: boolean,

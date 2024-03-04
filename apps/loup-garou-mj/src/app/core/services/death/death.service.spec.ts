@@ -181,7 +181,7 @@ describe('DeathService', () => {
     expect(storageService.remove).toHaveBeenCalledWith(service['ANNOUNCE_KEY']);
   });
 
-  it('should kill players with WOLF_TARGET status', () => {
+  it('should kill players with DEVOURED status', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -196,7 +196,7 @@ describe('DeathService', () => {
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
     ];
@@ -206,7 +206,7 @@ describe('DeathService', () => {
     expect(newPlayers[1].isDead).toEqual(true);
   });
 
-  it('should not kill players with WOLF_TARGET status and PROTECTED status', () => {
+  it('should remove DEVOURED status to players with DEVOURED status', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -221,155 +221,14 @@ describe('DeathService', () => {
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
     ];
 
     const newPlayers = service.handleNewDeaths(mockPlayers);
 
-    expect(newPlayers[1].isDead).toEqual(false);
-  });
-
-  it('should remove killedBy on players with WOLF_TARGET status and PROTECTED status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
-        isDead: false,
-        killedBy: PlayerRoleEnum.LOUP_GAROU,
-      },
-    ];
-
-    const newPlayers = service.handleNewDeaths(mockPlayers);
-
-    expect(newPlayers[1].killedBy).toBeUndefined();
-  });
-
-  it('should kill PETITE_FILLE with WOLF_TARGET status and PROTECTED status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.PETITE_FILLE,
-        card: PlayerRoleEnum.PETITE_FILLE,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleNewDeaths(mockPlayers);
-
-    expect(newPlayers[1].isDead).toEqual(true);
-  });
-
-  it('should add FIRST_DEATH status to player with WOLF_TARGET status and ANCIEN role', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleNewDeaths(mockPlayers);
-
-    expect(newPlayers[1].isDead).toEqual(false);
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.FIRST_DEATH)).toEqual(
-      true,
-    );
-  });
-
-  it('should kill player with WOLF_TARGET and FIRST_DEATH statuses and ANCIEN role', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.FIRST_DEATH,
-        ]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleNewDeaths(mockPlayers);
-
-    expect(newPlayers[1].isDead).toEqual(true);
-  });
-
-  it('should remove WOLF_TARGET status to players with WOLF_TARGET status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleNewDeaths(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.WOLF_TARGET)).toEqual(
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
       false,
     );
   });

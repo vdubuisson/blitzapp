@@ -302,4 +302,17 @@ describe('VictoryHandlersService', () => {
 
     expect(victory).toEqual(undefined);
   });
+
+  it('should remove victory handler', () => {
+    service['victoryHandlers'].set(
+      VictoryEnum.JOUEUR_FLUTE,
+      new MockVictoryHandler(),
+    );
+
+    service.removeHandler(VictoryEnum.JOUEUR_FLUTE);
+
+    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
+      false,
+    );
+  });
 });

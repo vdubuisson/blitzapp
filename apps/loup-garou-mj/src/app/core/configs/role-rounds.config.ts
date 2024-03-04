@@ -31,4 +31,5 @@ export const ROLE_ROUNDS_CONFIG: Record<PlayerRoleEnum, RoundEnum[]> = {
   [PlayerRoleEnum.CHEVALIER]: [],
   [PlayerRoleEnum.BOUC]: [RoundEnum.BOUC],
   [PlayerRoleEnum.SECTAIRE]: [RoundEnum.SECTAIRE],
+  [PlayerRoleEnum.PERE_LOUPS]: [RoundEnum.PERE_LOUPS],
 };

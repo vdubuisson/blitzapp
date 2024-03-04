@@ -1,7 +1,8 @@
 import { CardList } from '../models/card-list.model';
 import { PlayerRoleEnum } from '../enums/player-role.enum';
 import { Player } from '../models/player.model';
-import { getNotPlayedRoles } from './roles.utils';
+import { getNotPlayedRoles, isLoupGarou } from './roles.utils';
+import { PlayerStatusEnum } from '../enums/player-status.enum';
 
 describe('getNotPlayedRoles', () => {
   it('should return not played cards', () => {
@@ -48,5 +49,30 @@ describe('getNotPlayedRoles', () => {
       PlayerRoleEnum.CUPIDON,
       PlayerRoleEnum.VOYANTE,
     ]);
+  });
+});
+
+describe('isLoupGarou', () => {
+  it('should return true if player has loup-garou role', () => {
+    const result = isLoupGarou({
+      role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+    } as Player);
+    expect(result).toEqual(true);
+  });
+
+  it('should return false if player has INFECTED status', () => {
+    const result = isLoupGarou({
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set([PlayerStatusEnum.INFECTED]),
+    } as Player);
+    expect(result).toEqual(true);
+  });
+
+  it('should return false if player has not INFECTED status', () => {
+    const result = isLoupGarou({
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set(),
+    } as Player);
+    expect(result).toEqual(false);
   });
 });
