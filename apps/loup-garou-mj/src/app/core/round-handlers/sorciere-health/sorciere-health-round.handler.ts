@@ -21,7 +21,7 @@ export class SorciereHealthRoundHandler implements RoundHandler {
       const selectedPlayer = newPlayers.find(
         (player) => player.id === selectedPlayerIds[0],
       ) as Player;
-      selectedPlayer.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+      selectedPlayer.statuses.delete(PlayerStatusEnum.DEVOURED);
       selectedPlayer.killedBy = undefined;
 
       newPlayers
@@ -54,12 +54,7 @@ export class SorciereHealthRoundHandler implements RoundHandler {
 
   private getHealablePlayers(players: Player[]): number[] {
     return players
-      .filter(
-        (player) =>
-          player.statuses.has(PlayerStatusEnum.WOLF_TARGET) &&
-          (!player.statuses.has(PlayerStatusEnum.PROTECTED) ||
-            player.role === PlayerRoleEnum.PETITE_FILLE),
-      )
+      .filter((player) => player.statuses.has(PlayerStatusEnum.DEVOURED))
       .map((player) => player.id);
   }
 }

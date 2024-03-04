@@ -414,4 +414,255 @@ describe('StatusesService', () => {
 
     expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(true);
   });
+
+  it('should add DEVOURED status to players with WOLF_TARGET status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(true);
+  });
+
+  it('should not add DEVOURED status to players with WOLF_TARGET status and PROTECTED status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
+      false,
+    );
+  });
+
+  it('should remove killedBy on players with WOLF_TARGET status and PROTECTED status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].killedBy).toBeUndefined();
+  });
+
+  it('should add DEVOURED status to PETITE_FILLE with WOLF_TARGET status and PROTECTED status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.PETITE_FILLE,
+        card: PlayerRoleEnum.PETITE_FILLE,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.PROTECTED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(true);
+  });
+
+  it('should add INJURED status to player with WOLF_TARGET status and ANCIEN role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
+      false,
+    );
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INJURED)).toEqual(true);
+  });
+
+  it('should add DEVOURED status to player with WOLF_TARGET and INJURED statuses and ANCIEN role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set([
+          PlayerStatusEnum.WOLF_TARGET,
+          PlayerStatusEnum.INJURED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(true);
+  });
+
+  it('should remove WOLF_TARGET status to players with WOLF_TARGET status', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleWolfTarget(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.WOLF_TARGET)).toEqual(
+      false,
+    );
+  });
+
+  it('should add INJURED status to player with INFECTED status and ANCIEN role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set([PlayerStatusEnum.INFECTED]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleInfectedAncien(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(
+      false,
+    );
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INJURED)).toEqual(true);
+  });
+
+  it('should keep INFECTED status to player with INFECTED and INJURED statuses and ANCIEN role', () => {
+    const mockPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
+        statuses: new Set([
+          PlayerStatusEnum.INFECTED,
+          PlayerStatusEnum.INJURED,
+        ]),
+        isDead: false,
+      },
+    ];
+
+    const newPlayers = service.handleInfectedAncien(mockPlayers);
+
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(true);
+  });
 });

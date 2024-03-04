@@ -23,6 +23,7 @@ import { VictoryHandlersService } from '../victory-handlers/victory-handlers.ser
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { CardList } from '../../models/card-list.model';
 import { getNotPlayedRoles } from '../../utils/roles.utils';
+import { LOUPS_GAROUS_ROUNDS } from '../../configs/loups-garous-rounds';
 
 @Injectable({
   providedIn: 'root',
@@ -174,6 +175,8 @@ export class GameService {
     nextRound = this.checkLoupBlancRound(nextRound);
 
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
+
+    this.handlerAfterLoupsEvents(nextHandler);
 
     nextRound = this.handleAfterNightDeaths(
       currentHandler,
@@ -364,6 +367,24 @@ export class GameService {
         this.roundHandlersService.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
         this.victoryHandlersService.removeHandler(VictoryEnum.JOUEUR_FLUTE);
       }
+    }
+  }
+
+  private handlerAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
+    const currentRole = this.round()?.role;
+    const nextRole = nextHandler?.getRoundConfig(
+      this.players(),
+      this.cardList,
+    )?.role;
+    if (
+      currentRole !== undefined &&
+      nextRole !== undefined &&
+      LOUPS_GAROUS_ROUNDS.includes(currentRole) &&
+      !LOUPS_GAROUS_ROUNDS.includes(nextRole)
+    ) {
+      let newPlayers = this.statusesService.handleWolfTarget(this.players());
+      newPlayers = this.statusesService.handleInfectedAncien(newPlayers);
+      this.players.set(newPlayers);
     }
   }
 }

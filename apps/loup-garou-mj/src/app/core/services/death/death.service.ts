@@ -55,7 +55,12 @@ export class DeathService {
   handleNewDeaths(players: Player[]): Player[] {
     this.rolesToRemove = [];
     const newPlayers = [...players];
-    this.handleWolfTarget(newPlayers);
+    newPlayers
+      .filter((player) => player.statuses.has(PlayerStatusEnum.DEVOURED))
+      .forEach((player) => {
+        player.statuses.delete(PlayerStatusEnum.DEVOURED);
+        player.isDead = true;
+      });
 
     newPlayers
       .filter((player) => player.isDead && !this.knownDeaths.has(player.id))
@@ -95,29 +100,6 @@ export class DeathService {
       this.deathsToAnnounce = [];
       this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
     }
-  }
-
-  private handleWolfTarget(players: Player[]): void {
-    players
-      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
-      .forEach((player) => {
-        player.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
-        if (
-          !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
-          player.role === PlayerRoleEnum.PETITE_FILLE
-        ) {
-          if (
-            player.role === PlayerRoleEnum.ANCIEN &&
-            !player.statuses.has(PlayerStatusEnum.FIRST_DEATH)
-          ) {
-            player.statuses.add(PlayerStatusEnum.FIRST_DEATH);
-          } else {
-            player.isDead = true;
-          }
-        } else {
-          player.killedBy = undefined;
-        }
-      });
   }
 
   private handlePlayerDeath(players: Player[], deadPlayer: Player): void {

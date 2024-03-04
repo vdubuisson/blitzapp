@@ -4,7 +4,7 @@ export enum PlayerStatusEnum {
   DEATH_POTION = 'DEATH_POTION',
   CAPTAIN = 'CAPTAIN',
   LOVER = 'LOVER',
-  FIRST_DEATH = 'FIRST_DEATH',
+  INJURED = 'INJURED',
   PROTECTED = 'PROTECTED',
   NO_POWER = 'NO_POWER',
   CHARMED = 'CHARMED',
@@ -16,4 +16,5 @@ export enum PlayerStatusEnum {
   RED_TEAM = 'RED_TEAM',
   // COMEDIAN = 'COMEDIAN',
   INFECTED = 'INFECTED',
+  DEVOURED = 'DEVOURED',
 }

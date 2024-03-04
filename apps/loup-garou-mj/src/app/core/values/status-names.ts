@@ -6,7 +6,7 @@ export const STATUS_NAMES: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.DEATH_POTION]: 'Potion de mort',
   [PlayerStatusEnum.CAPTAIN]: 'Capitaine',
   [PlayerStatusEnum.LOVER]: 'Amoureux',
-  [PlayerStatusEnum.FIRST_DEATH]: 'Mort une fois',
+  [PlayerStatusEnum.INJURED]: 'Blessé',
   [PlayerStatusEnum.PROTECTED]: 'Protégé',
   [PlayerStatusEnum.NO_POWER]: 'Plus de pouvoir',
   [PlayerStatusEnum.CHARMED]: 'Charmé',
@@ -18,4 +18,5 @@ export const STATUS_NAMES: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.RED_TEAM]: 'Groupe rouge',
   // [PlayerStatusEnum.COMEDIAN]: "Comédien",
   [PlayerStatusEnum.INFECTED]: 'Infecté',
+  [PlayerStatusEnum.DEVOURED]: 'Dévoré',
 };

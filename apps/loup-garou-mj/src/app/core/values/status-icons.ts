@@ -6,7 +6,7 @@ export const STATUS_ICONS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.DEATH_POTION]: '🖤',
   [PlayerStatusEnum.CAPTAIN]: '🎖️',
   [PlayerStatusEnum.LOVER]: '💕',
-  [PlayerStatusEnum.FIRST_DEATH]: '☠️',
+  [PlayerStatusEnum.INJURED]: '🤕',
   [PlayerStatusEnum.PROTECTED]: '🛡️',
   [PlayerStatusEnum.NO_POWER]: '❌',
   [PlayerStatusEnum.CHARMED]: '🎶',
@@ -18,4 +18,5 @@ export const STATUS_ICONS: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.RED_TEAM]: '🔴',
   // [PlayerStatusEnum.COMEDIAN]: "🎭",
   [PlayerStatusEnum.INFECTED]: '🩸',
+  [PlayerStatusEnum.DEVOURED]: '☠️',
 };

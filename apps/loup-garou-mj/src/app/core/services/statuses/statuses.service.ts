@@ -74,4 +74,44 @@ export class StatusesService {
 
     return newPlayers;
   }
+
+  handleWolfTarget(players: Player[]): Player[] {
+    const newPlayers = [...players];
+    newPlayers
+      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
+      .forEach((player) => {
+        player.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+        if (
+          !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
+          player.role === PlayerRoleEnum.PETITE_FILLE
+        ) {
+          if (
+            player.role === PlayerRoleEnum.ANCIEN &&
+            !player.statuses.has(PlayerStatusEnum.INJURED)
+          ) {
+            player.statuses.add(PlayerStatusEnum.INJURED);
+          } else {
+            player.statuses.add(PlayerStatusEnum.DEVOURED);
+          }
+        } else {
+          player.killedBy = undefined;
+        }
+      });
+    return newPlayers;
+  }
+
+  handleInfectedAncien(players: Player[]): Player[] {
+    const newPlayers = [...players];
+    const ancien = newPlayers.find(
+      (player) => player.role === PlayerRoleEnum.ANCIEN,
+    );
+    if (
+      ancien?.statuses.has(PlayerStatusEnum.INFECTED) &&
+      !ancien?.statuses.has(PlayerStatusEnum.INJURED)
+    ) {
+      ancien.statuses.delete(PlayerStatusEnum.INFECTED);
+      ancien.statuses.add(PlayerStatusEnum.INJURED);
+    }
+    return newPlayers;
+  }
 }

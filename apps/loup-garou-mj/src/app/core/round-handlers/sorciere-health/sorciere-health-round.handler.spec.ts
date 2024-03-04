@@ -37,14 +37,14 @@ describe('SorciereHealthRoundHandler', () => {
     expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should remove WOLF_TARGET status to selected player', waitForAsync(() => {
+  it('should remove DEVOURED status to selected player', waitForAsync(() => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
       {
@@ -60,9 +60,9 @@ describe('SorciereHealthRoundHandler', () => {
     roundHandler
       .handleAction(players, [0])
       .subscribe((newPlayers) =>
-        expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET),
-        ).toEqual(false),
+        expect(newPlayers[0].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
+          false,
+        ),
       );
   }));
 
@@ -73,7 +73,7 @@ describe('SorciereHealthRoundHandler', () => {
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
         killedBy: PlayerRoleEnum.LOUP_GAROU,
       },
@@ -101,7 +101,7 @@ describe('SorciereHealthRoundHandler', () => {
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
       {
@@ -130,7 +130,7 @@ describe('SorciereHealthRoundHandler', () => {
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
       {
@@ -152,70 +152,14 @@ describe('SorciereHealthRoundHandler', () => {
       );
   }));
 
-  it('should return player with WOLF_TARGET status as selectable players if SORCIERE has HEALTH_POTION', () => {
+  it('should return player with DEVOURED status as selectable players if SORCIERE has HEALTH_POTION', () => {
     const players: Player[] = [
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.SORCIERE,
-        card: PlayerRoleEnum.SORCIERE,
-        statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
-        isDead: false,
-      },
-    ];
-
-    const round = roundHandler.getRoundConfig(players);
-
-    expect(round.selectablePlayers).toEqual([0]);
-  });
-
-  it('should not return player with WOLF_TARGET and PROTECTED status as selectable players', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.SORCIERE,
-        card: PlayerRoleEnum.SORCIERE,
-        statuses: new Set([PlayerStatusEnum.HEALTH_POTION]),
-        isDead: false,
-      },
-    ];
-
-    const round = roundHandler.getRoundConfig(players);
-
-    expect(round.selectablePlayers).toEqual([]);
-  });
-
-  it('should return PETITE_FILLE with WOLF_TARGET and PROTECTED status as selectable players', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.PETITE_FILLE,
-        card: PlayerRoleEnum.PETITE_FILLE,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
       {
@@ -240,7 +184,7 @@ describe('SorciereHealthRoundHandler', () => {
         name: 'player0',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
       {
