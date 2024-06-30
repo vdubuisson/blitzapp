@@ -1,25 +1,26 @@
 import { Injectable } from '@angular/core';
-import { AlertController, AlertOptions } from '@ionic/angular/standalone';
-import { Player } from '../../models/player.model';
-import { StorageService } from '../storage/storage.service';
 import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { Player } from '../../models/player.model';
+import { TextModalData } from '../../models/text-modal-data.model';
 import { announcements } from '../../values/announcements';
+import { ModalService } from '../modal/modal.service';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnnouncementService {
-  private announcementsQueue: AlertOptions[] = [];
+  private announcementsQueue: TextModalData[] = [];
   private isPresenting = false;
 
   private readonly QUEUE_KEY = 'AnnouncementService_announcementsQueue';
 
   constructor(
-    private alertController: AlertController,
     private storageService: StorageService,
+    private modalService: ModalService,
   ) {
     this.storageService
-      .get<AlertOptions[]>(this.QUEUE_KEY)
+      .get<TextModalData[]>(this.QUEUE_KEY)
       .subscribe((queue) => {
         if (queue !== null && queue.length > 0) {
           this.announcementsQueue = queue;
@@ -32,7 +33,7 @@ export class AnnouncementService {
     const playerNames = players
       .map((player) => `<li>${player.name}</li>`)
       .join('');
-    const announcement: AlertOptions = {
+    const announcement: TextModalData = {
       header: 'Morts à annoncer',
       message: `<ul>${playerNames}</ul>`,
     };
@@ -48,18 +49,15 @@ export class AnnouncementService {
         message = (message as string).replaceAll(regex, value);
       });
     }
-    const announcement: AlertOptions = {
+    const announcement: TextModalData = {
       header: announcements[type].header,
       message,
     };
     this.addAnnouncementToQueue(announcement);
   }
 
-  private addAnnouncementToQueue(announcement: AlertOptions): void {
-    this.announcementsQueue.push({
-      ...announcement,
-      buttons: ['OK'],
-    });
+  private addAnnouncementToQueue(announcement: TextModalData): void {
+    this.announcementsQueue.push(announcement);
 
     this.storageService.set(this.QUEUE_KEY, this.announcementsQueue);
 
@@ -70,17 +68,21 @@ export class AnnouncementService {
 
   private async showNextAnnouncement(): Promise<void> {
     this.isPresenting = true;
-    const alert = await this.alertController.create(
-      this.announcementsQueue.shift(),
-    );
-    alert.onDidDismiss().then(() => {
+    const announcement = this.announcementsQueue.shift();
+
+    if (announcement === undefined) {
+      this.isPresenting = false;
+      return;
+    }
+
+    this.modalService.showTextModal(announcement).subscribe(() => {
       if (this.announcementsQueue.length > 0) {
         this.showNextAnnouncement();
       } else {
         this.isPresenting = false;
       }
     });
-    await alert.present();
+
     this.storageService.set(this.QUEUE_KEY, this.announcementsQueue);
   }
 }

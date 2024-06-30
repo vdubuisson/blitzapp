@@ -1,34 +1,16 @@
-<lgmj-header title="Nouvelle partie - Rôles" />
+<div class="player-list">
+  <lgmj-player
+    *ngFor="let player of players(); trackBy: playerTrackBy"
+    [player]="player"
+    [displayMode]="playerDisplayMode"
+    [selectableRoles]="availableRoles()"
+    (roleChange)="changeRole(player.id, $event)"
+  ></lgmj-player>
+</div>
 
-<ion-content>
-  <div id="container">
-    <ion-list id="player-list">
-      <lgmj-player
-        *ngFor="let player of players(); trackBy: playerTrackBy"
-        [player]="player"
-        [displayMode]="playerDisplayMode"
-        [selectableRoles]="availableRoles()"
-        (roleChange)="changeRole(player.id, $event)"
-      />
-    </ion-list>
-
-    <div id="submit-block">
-      <ion-button
-        [disabled]="!canCreate()"
-        expand="block"
-        (click)="createGame()"
-        class="ion-margin-horizontal"
-      >
-        Démarrer
-      </ion-button>
-      <ion-button
-        routerLink="/new-game"
-        expand="block"
-        class="ion-margin-horizontal"
-        color="danger"
-      >
-        Retour
-      </ion-button>
-    </div>
-  </div>
-</ion-content>
+<div class="submit-block">
+  <button [disabled]="!canCreate()" (click)="createGame()" class="btn primary">
+    DÉMARRER
+  </button>
+  <button routerLink="/new-game" class="btn danger">RETOUR</button>
+</div>

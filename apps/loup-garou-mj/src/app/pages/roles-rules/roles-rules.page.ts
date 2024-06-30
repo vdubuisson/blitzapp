@@ -1,35 +1,21 @@
+import { NgFor, NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { ROLES_RULES } from '../../core/values/roles-rules';
-import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
+import { AccordionItemModule } from '../../core/components/accordion-item/accordion-item.module';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
-import { HeaderComponent } from '../../core/components/header/header.component';
+import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
 import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
-import {
-  IonAccordion,
-  IonAccordionGroup,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonThumbnail,
-} from '@ionic/angular/standalone';
+import { ROLES_RULES } from '../../core/values/roles-rules';
 
 @Component({
   selector: 'lgmj-roles-rules',
   standalone: true,
   imports: [
-    CommonModule,
+    NgFor,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
-    HeaderComponent,
     NgOptimizedImage,
-    IonContent,
-    IonAccordionGroup,
-    IonAccordion,
-    IonItem,
-    IonThumbnail,
-    IonLabel,
+    AccordionItemModule,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './roles-rules.page.html',

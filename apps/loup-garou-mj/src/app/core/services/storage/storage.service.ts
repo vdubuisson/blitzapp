@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, filter, from, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, filter, map, Observable, of } from 'rxjs';
 
 enum StorageActionEnum {
   SET,
@@ -23,7 +22,7 @@ export class StorageService {
   private actionQueue: StorageAction[] = [];
   private actionInProgress = false;
 
-  constructor(private storage: Storage) {
+  constructor() {
     this.init();
   }
 
@@ -42,7 +41,8 @@ export class StorageService {
   get<T>(key: string): Observable<T | null> {
     return this.isInitialized.pipe(
       filter((isInitialized) => isInitialized),
-      switchMap(() => from((this._storage as Storage).get(key))),
+      map(() => (this._storage as Storage).getItem(key)),
+      map((value) => (value ? JSON.parse(value) : null)),
     );
   }
 
@@ -58,26 +58,27 @@ export class StorageService {
   }
 
   clear(): Observable<void> {
-    return from((this._storage as Storage).clear());
+    return of((this._storage as Storage).clear());
   }
 
-  private async init() {
-    this._storage = await this.storage.create();
+  private init() {
+    this._storage = localStorage;
     this.isInitialized.next(true);
   }
 
-  private async handleNextAction(): Promise<void> {
+  private handleNextAction(): void {
     this.actionInProgress = true;
     const action = this.actionQueue.shift();
     if (action !== undefined) {
       if (action.type === StorageActionEnum.SET) {
-        await this._storage?.set(action.key, action.value);
+        const jsonValue = JSON.stringify(action.value);
+        this._storage?.setItem(action.key, jsonValue);
       } else {
-        await this._storage?.remove(action.key);
+        this._storage?.removeItem(action.key);
       }
     }
     if (this.actionQueue.length > 0) {
-      await this.handleNextAction();
+      this.handleNextAction();
     } else {
       this.actionInProgress = false;
     }

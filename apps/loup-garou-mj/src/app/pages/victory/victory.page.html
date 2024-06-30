@@ -1,24 +1,7 @@
-<lgmj-header title="Victoire" />
-
-<ion-content>
-  <div id="container">
-    <ion-note class="ion-text-center">
-      <h2 id="victory-subtitle">{{ victoryTitle }}</h2>
-    </ion-note>
-    <hr />
-    <ion-text class="ion-text-center">
-      <h1 id="victory-title">{{ victory | victoryName }}</h1>
-    </ion-text>
-
-    <ion-button class="ion-margin-horizontal" routerLink="/"
-      >Retourner à l'accueil</ion-button
-    >
-    <br />
-    <ion-button
-      class="ion-margin-horizontal"
-      (click)="replay()"
-      color="secondary"
-      >Rejouer</ion-button
-    >
-  </div>
-</ion-content>
+<div class="body">
+  <span class="victory-subtitle">{{ victoryTitle }}</span>
+  <hr />
+  <span class="victory-title">{{ victory | victoryName }}</span>
+  <button class="btn warning" (click)="replay()">REJOUER</button>
+  <button class="btn primary" routerLink="/">RETOURNER À L'ACCUEIL</button>
+</div>

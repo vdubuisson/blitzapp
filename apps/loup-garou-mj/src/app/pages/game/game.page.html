@@ -1,72 +1,49 @@
-<lgmj-header title="Partie en cours" />
-
-<ion-content>
-  <div id="container" *ngIf="round() as currentRound">
-    <div id="round-header">
-      <ion-note class="ion-text-center">
-        <h2 id="round-subtitle">
-          <span *ngIf="isBeforeGame(); else daySubtitle">Avant-partie</span>
-          <ng-template #daySubtitle>
-            <span class="day-icon"
-              >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
-            >
-            {{ currentRound.isDuringDay ? 'Jour' : 'Nuit' }} {{ dayCount() }}
-            <span class="day-icon"
-              >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
-            >
-          </ng-template>
-        </h2>
-      </ion-note>
-      <hr />
-      <ion-text class="ion-text-center"
-        ><h1 id="round-title">{{ currentRound.role | roundName }}</h1></ion-text
-      >
+<ng-container *ngIf="round() as currentRound">
+  <div class="round-header">
+    <div class="round-subtitle">
+      <span *ngIf="isBeforeGame(); else daySubtitle">Avant-partie</span>
+      <ng-template #daySubtitle>
+        <span class="day-icon"
+          >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
+        >
+        {{ currentRound.isDuringDay ? 'Jour' : 'Nuit' }} {{ dayCount() }}
+        <span class="day-icon"
+          >{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span
+        >
+      </ng-template>
     </div>
-
-    <ion-list>
-      <ion-radio-group
-        *ngIf="playerDisplayMode() === PlayerDisplayModeEnum.SELECT_SINGLE; else playerElement"
-        (ionChange)="onSinglePlayerChecked($event)"
-        [allowEmptySelection]="currentRound.minSelectable === 0"
-        [value]="selectedPlayer()"
-      >
-        <ng-container [ngTemplateOutlet]="playerElement" />
-      </ion-radio-group>
-    </ion-list>
-
-    <ng-template #playerElement>
-      <lgmj-player
-        *ngFor="let player of players(); trackBy: playerTrackBy"
-        [player]="player"
-        [displayMode]="playerDisplayMode() === PlayerDisplayModeEnum.EDIT_ROLE && !currentRound.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode()"
-        [disabled]="!currentRound.selectablePlayers.includes(player.id)"
-        [checked]="selectedPlayers().has(player.id)"
-        [noSelfRole]="true"
-        [selectableRoles]="currentRound.selectableRoles || []"
-        (checkedChange)="onMultiPlayerChecked(player.id, $event)"
-        (roleChange)="onRoleSelect($event)"
-      />
-    </ng-template>
-
-    <div id="submit-block">
-      <ion-button
-        expand="block"
-        class="ion-margin-horizontal"
-        color="success"
-        [disabled]="submitDisabled()"
-        (click)="onSubmit()"
-      >
-        Valider
-      </ion-button>
-      <ion-button
-        *ngIf="displayEqualityButton()"
-        expand="block"
-        class="ion-margin-horizontal"
-        color="medium"
-        (click)="onEquality()"
-      >
-        Egalité
-      </ion-button>
-    </div>
+    <hr />
+    <div class="round-title">{{ currentRound.role | roundName }}</div>
   </div>
-</ion-content>
+
+  <div class="player-list">
+    <lgmj-player
+      *ngFor="let player of players(); trackBy: playerTrackBy"
+      [player]="player"
+      [displayMode]="playerDisplayMode() === PlayerDisplayModeEnum.EDIT_ROLE && !currentRound.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode()"
+      [disabled]="!currentRound.selectablePlayers.includes(player.id)"
+      [checked]="playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI ? selectedPlayers().has(player.id) : selectedPlayer() === player.id"
+      [noSelfRole]="true"
+      [selectableRoles]="currentRound.selectableRoles || []"
+      (checkedChange)="onPlayerChecked(player.id, $event)"
+      (roleChange)="onRoleSelect($event)"
+    />
+  </div>
+
+  <div class="submit-block">
+    <button
+      class="btn success"
+      [disabled]="submitDisabled()"
+      (click)="onSubmit()"
+    >
+      VALIDER
+    </button>
+    <button
+      *ngIf="displayEqualityButton()"
+      class="btn warning"
+      (click)="onEquality()"
+    >
+      EGALITE
+    </button>
+  </div>
+</ng-container>

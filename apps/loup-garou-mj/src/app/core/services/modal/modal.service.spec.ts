@@ -1,25 +1,25 @@
-import { ModalService } from './modal.service';
-import { ModalController } from '@ionic/angular/standalone';
-import { MockService } from 'ng-mocks';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { waitForAsync } from '@angular/core/testing';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { MockService } from 'ng-mocks';
+import { Subject } from 'rxjs';
 import { PlayerCardModalComponent } from '../../components/player-card-modal/player-card-modal.component';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { ModalService } from './modal.service';
 
 describe('ModalService', () => {
   let service: ModalService;
 
-  let modalCtrl: ModalController;
-  let modal: HTMLIonModalElement;
+  let dialog: Dialog;
+  let dialogRef: DialogRef;
 
   beforeEach(() => {
-    modalCtrl = MockService(ModalController);
-    modal = {
-      present: () => new Promise(() => {}),
-      onDidDismiss: () => new Promise(() => {}),
-    } as HTMLIonModalElement;
-    jest.spyOn(modalCtrl, 'create').mockResolvedValue(modal);
+    dialog = MockService(Dialog);
+    dialogRef = {
+      closed: new Subject().asObservable(),
+    } as DialogRef;
+    jest.spyOn(dialog, 'open').mockReturnValue(dialogRef);
 
-    service = new ModalService(modalCtrl);
+    service = new ModalService(dialog);
   });
 
   it('should be created', () => {
@@ -28,9 +28,8 @@ describe('ModalService', () => {
 
   it('should create PlayerCardModalComponent on showPlayerCard', waitForAsync(() => {
     service.showPlayerCard(PlayerRoleEnum.VILLAGEOIS).subscribe(() => {
-      expect(modalCtrl.create).toHaveBeenCalledWith({
-        component: PlayerCardModalComponent,
-        componentProps: { card: PlayerRoleEnum.VILLAGEOIS },
+      expect(dialog.open).toHaveBeenCalledWith(PlayerCardModalComponent, {
+        data: PlayerRoleEnum.VILLAGEOIS,
       });
     });
   }));

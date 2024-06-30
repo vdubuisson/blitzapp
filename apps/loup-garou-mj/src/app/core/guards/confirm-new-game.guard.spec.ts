@@ -1,13 +1,14 @@
-import { GameService } from '../services/game/game.service';
-import { AlertController } from '@ionic/angular/standalone';
-import { MockService } from 'ng-mocks';
 import { signal, WritableSignal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { MockService } from 'ng-mocks';
+import { Observable, of } from 'rxjs';
+import { GameService } from '../services/game/game.service';
+import { ModalService } from '../services/modal/modal.service';
 import { confirmNewGameGuard } from './confirm-new-game.guard';
 
 describe('confirmNewGameGuard', () => {
   let gameService: GameService;
-  let alertController: AlertController;
+  let modalService: ModalService;
   let isGameInProgress: WritableSignal<boolean>;
 
   beforeEach(() => {
@@ -15,57 +16,49 @@ describe('confirmNewGameGuard', () => {
     gameService = {
       isGameInProgress: isGameInProgress.asReadonly(),
     } as GameService;
-    alertController = MockService(AlertController);
+    modalService = MockService(ModalService);
 
     TestBed.configureTestingModule({
       providers: [
         confirmNewGameGuard,
         { provide: GameService, useValue: gameService },
-        { provide: AlertController, useValue: alertController },
+        { provide: ModalService, useValue: modalService },
       ],
     });
   });
 
-  it('should return true if no game in progress', async () => {
-    const result = await TestBed.runInInjectionContext(() =>
-      confirmNewGameGuard(),
+  it('should return true if no game in progress', () => {
+    const result = TestBed.runInInjectionContext<Observable<boolean> | boolean>(
+      () => confirmNewGameGuard(),
     );
     expect(result).toBe(true);
   });
 
-  it('should return true if game in progress and confirm', async () => {
+  it('should return true if game in progress and confirm', waitForAsync(() => {
     isGameInProgress.set(true);
 
-    const alert = {
-      present: () => Promise.resolve(),
-      onDidDismiss: () => Promise.resolve({ role: 'confirm' }),
-    } as HTMLIonAlertElement;
+    jest.spyOn(modalService, 'showTextModal').mockReturnValue(of(true));
 
-    jest
-      .spyOn(alertController, 'create')
-      .mockReturnValue(Promise.resolve(alert));
+    (
+      TestBed.runInInjectionContext<Observable<boolean> | boolean>(() =>
+        confirmNewGameGuard(),
+      ) as Observable<boolean>
+    ).subscribe((result) => {
+      expect(result).toBe(true);
+    });
+  }));
 
-    const result = await TestBed.runInInjectionContext(() =>
-      confirmNewGameGuard(),
-    );
-    expect(result).toBe(true);
-  });
-
-  it('should return false if game in progress and cancel', async () => {
+  it('should return false if game in progress and cancel', waitForAsync(() => {
     isGameInProgress.set(true);
 
-    const alert = {
-      present: () => Promise.resolve(),
-      onDidDismiss: () => Promise.resolve({ role: 'cancel' }),
-    } as HTMLIonAlertElement;
+    jest.spyOn(modalService, 'showTextModal').mockReturnValue(of(false));
 
-    jest
-      .spyOn(alertController, 'create')
-      .mockReturnValue(Promise.resolve(alert));
-
-    const result = await TestBed.runInInjectionContext(() =>
-      confirmNewGameGuard(),
-    );
-    expect(result).toBe(false);
-  });
+    (
+      TestBed.runInInjectionContext<Observable<boolean> | boolean>(() =>
+        confirmNewGameGuard(),
+      ) as Observable<boolean>
+    ).subscribe((result) => {
+      expect(result).toBe(false);
+    });
+  }));
 });

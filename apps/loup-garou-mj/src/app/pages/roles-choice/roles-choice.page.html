@@ -1,104 +1,91 @@
-<lgmj-header title="Choix des rôles à jouer" />
-
-<ion-content>
+<div class="form-container">
   <form [formGroup]="roleCountForm" (submit)="validateRoles()">
-    <ion-list id="inputs">
-      <ion-item lines="full">
-        <ion-thumbnail slot="start">
+    <div class="form-group">
+      <img
+        [ngSrc]="loupGarouRole | playerRoleImage"
+        [alt]="loupGarouRole | playerRoleName"
+        width="55"
+        height="55"
+        class="role-img"
+      />
+      <label for="loupGarou">{{ loupGarouRole | playerRoleName }}</label>
+      <input
+        type="number"
+        formControlName="loupGarou"
+        [min]="0"
+        class="form-control"
+        (focus)="selectInput($event)"
+      />
+    </div>
+    <div class="form-group">
+      <img
+        [ngSrc]="villageoisRole | playerRoleImage"
+        [alt]="villageoisRole | playerRoleName"
+        width="55"
+        height="55"
+        class="role-img"
+      />
+      <label for="villageois">{{ villageoisRole | playerRoleName }}</label>
+      <input
+        type="number"
+        formControlName="villageois"
+        [min]="requiredVillageois()"
+        class="form-control"
+        (focus)="selectInput($event)"
+      />
+    </div>
+
+    <cdk-accordion [multi]="true">
+      <lgmj-accordion-item
+        *ngFor="let box of boxes"
+        [noInnerPadding]="true"
+        [headerColor]="'light'"
+      >
+        <ng-container header>
+          <strong>{{ box | gameBoxName | uppercase }}</strong>
+        </ng-container>
+        <label
+          [for]="box + '-' + role"
+          class="form-group"
+          *ngFor="let role of boxContents[box]; trackBy: roleTrackBy"
+        >
           <img
-            [ngSrc]="loupGarouRole | playerRoleImage"
-            [alt]="loupGarouRole | playerRoleName"
-            width="250"
-            height="250"
+            [ngSrc]="role | playerRoleImage"
+            [alt]="role | playerRoleName"
+            width="55"
+            height="55"
             class="role-img"
           />
-        </ion-thumbnail>
-        <ion-label>{{ loupGarouRole | playerRoleName }}</ion-label>
-        <ion-input
-          slot="end"
-          formControlName="loupGarou"
-          type="number"
-          [min]="0"
-          class="role-count"
-          (ionFocus)="selectInput($event)"
-        />
-      </ion-item>
-
-      <ion-item lines="none">
-        <ion-thumbnail slot="start">
-          <img
-            [ngSrc]="villageoisRole | playerRoleImage"
-            [alt]="villageoisRole | playerRoleName"
-            width="250"
-            height="250"
-            class="role-img"
+          <span>{{ role | playerRoleName }}</span>
+          <input
+            type="checkbox"
+            [id]="box + '-' + role"
+            #checkbox
+            class="form-control"
+            [value]="role"
+            [checked]="selectedRoles().has(role)"
+            (change)="onRoleCheckChange(role)"
           />
-        </ion-thumbnail>
-        <ion-label>{{ villageoisRole | playerRoleName }}</ion-label>
-        <ion-input
-          slot="end"
-          formControlName="villageois"
-          type="number"
-          [min]="requiredVillageois()"
-          class="role-count"
-          (ionFocus)="selectInput($event)"
-        />
-      </ion-item>
-    </ion-list>
+        </label>
+      </lgmj-accordion-item>
+    </cdk-accordion>
 
-    <ion-accordion-group [multiple]="true">
-      <ion-accordion *ngFor="let box of boxes" [value]="box">
-        <ion-item slot="header" color="light">
-          <ion-label
-            ><strong>{{ box | gameBoxName | uppercase }}</strong></ion-label
-          >
-        </ion-item>
-        <ion-list slot="content">
-          <ion-item
-            *ngFor="let role of boxContents[box]; trackBy: roleTrackBy"
-            lines="full"
-          >
-            <ion-checkbox
-              slot="end"
-              [value]="role"
-              [checked]="selectedRoles().has(role)"
-              (ionChange)="onRoleCheckChange($event)"
-            />
-            <ion-thumbnail slot="start">
-              <img
-                [ngSrc]="role | playerRoleImage"
-                [alt]="role | playerRoleName"
-                width="250"
-                height="250"
-                class="role-img"
-              />
-            </ion-thumbnail>
-            <ion-label>{{ role | playerRoleName }}</ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-accordion>
-    </ion-accordion-group>
-
-    <div id="submit-block">
-      <ion-button
+    <div class="submit-block">
+      <button
         [disabled]="playersCount() <= 0 || roleCountForm.invalid"
-        expand="block"
-        class="ion-margin-horizontal"
-        color="primary"
+        class="btn primary"
         type="submit"
       >
-        Valider ({{playersCount()}} joueurs)
-      </ion-button>
-      <ion-button
+        VALIDER ({{playersCount()}} JOUEURS)
+      </button>
+      <button
         [disabled]="playersCount() <= 0"
-        expand="block"
+        class="btn danger"
         (click)="deselectAll()"
-        class="ion-margin-horizontal"
-        color="danger"
         type="button"
       >
-        Désélectionner tout
-      </ion-button>
+        DÉSÉLECTIONNER TOUT
+      </button>
     </div>
   </form>
-</ion-content>
+</div>

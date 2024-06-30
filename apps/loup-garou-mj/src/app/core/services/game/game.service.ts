@@ -114,8 +114,10 @@ export class GameService {
   private initGame(players: Player[], cardList: CardList): void {
     const roles = players.map((player) => player.role);
     const notPlayedRoles = getNotPlayedRoles(players, cardList);
+    this.roundHandlersService.clearHandlers();
     this.roundHandlersService.initHandlers(roles);
     this.roundHandlersService.initDefaultHandlers(notPlayedRoles);
+    this.victoryHandlersService.clearHandlers();
     this.victoryHandlersService.initHandlers(roles);
     const sorciere = players.find(
       (player) => player.role === PlayerRoleEnum.SORCIERE,

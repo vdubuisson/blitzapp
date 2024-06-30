@@ -14,7 +14,7 @@ export default {
     ],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@ionic/*|ionicons|@stencil/core|@angular/*)/)',
+    'node_modules/(?!(@stencil/core|@angular/*|@fortawesome/*)/)',
   ],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',

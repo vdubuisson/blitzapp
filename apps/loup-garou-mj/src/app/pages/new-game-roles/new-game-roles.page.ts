@@ -1,36 +1,20 @@
+import { NgFor } from '@angular/common';
 import { Component, computed, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { PlayerComponent } from '../../core/components/player/player.component';
 import { NON_UNIQUE_ROLES } from '../../core/configs/non-unique-roles';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { Player } from '../../core/models/player.model';
-import { PlayerComponent } from '../../core/components/player/player.component';
-import { HeaderComponent } from '../../core/components/header/header.component';
-import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { NewGameService } from '../../core/services/new-game/new-game.service';
-import { RouterLink } from '@angular/router';
-import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { CardList } from '../../core/models/card-list.model';
-import {
-  IonButton,
-  IonContent,
-  IonList,
-  IonRouterLink,
-} from '@ionic/angular/standalone';
+import { Player } from '../../core/models/player.model';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { NewGameService } from '../../core/services/new-game/new-game.service';
+import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 
 @Component({
   selector: 'lgmj-new-game-roles',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    PlayerComponent,
-    HeaderComponent,
-    IonRouterLink,
-    IonContent,
-    IonList,
-    IonButton,
-  ],
+  imports: [NgFor, RouterLink, PlayerComponent],
   templateUrl: './new-game-roles.page.html',
   styleUrls: ['./new-game-roles.page.scss'],
 })

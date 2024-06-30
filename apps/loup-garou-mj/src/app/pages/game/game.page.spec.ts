@@ -1,26 +1,28 @@
+import { WritableSignal, signal } from '@angular/core';
 import { waitForAsync } from '@angular/core/testing';
-import { GameService } from '../../core/services/game/game.service';
-import { MockService } from 'ng-mocks';
-import { GamePage } from './game.page';
+import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
+import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { RoundTypeEnum } from '../../core/enums/round-type.enum';
+import { RoundEnum } from '../../core/enums/round.enum';
 import { Player } from '../../core/models/player.model';
 import { Round } from '../../core/models/round.model';
-import { RoundEnum } from '../../core/enums/round.enum';
-import { RadioGroupCustomEvent } from '@ionic/angular/standalone';
-import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
-import { RoundTypeEnum } from '../../core/enums/round-type.enum';
-import { signal, WritableSignal } from '@angular/core';
+import { GameService } from '../../core/services/game/game.service';
+import { GamePage } from './game.page';
 
 describe('GamePage', () => {
+  MockInstance.scope();
+
   let component: GamePage;
-  let gameService: GameService;
 
   let mockPlayers: Player[];
   let mockRound: Round;
   let mockPlayers$: WritableSignal<Player[]>;
   let mockRound$: WritableSignal<Round | undefined>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => MockBuilder(GamePage));
+
+  beforeEach(() => {
     mockPlayers = [
       {
         id: 0,
@@ -49,13 +51,16 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     };
     mockRound$ = signal(mockRound);
-    gameService = {
-      ...MockService(GameService),
+
+    MockInstance(GameService, () => ({
       currentPlayers: mockPlayers$.asReadonly(),
       currentRound: mockRound$.asReadonly(),
-    } as GameService;
-    component = new GamePage(gameService);
-  }));
+      currentDayCount: signal(0).asReadonly(),
+      submitRoundAction: jest.fn(),
+    }));
+
+    component = MockRender(GamePage).point.componentInstance;
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -160,7 +165,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayers'].set(new Set([0, 1, 2]));
+    component['playersMultiSelection'].setSelection(0, 1, 2);
     expect(component['submitDisabled']()).toEqual(true);
   }));
 
@@ -173,7 +178,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayers'].set(new Set([0]));
+    component['playersMultiSelection'].setSelection(0);
     expect(component['submitDisabled']()).toEqual(true);
   }));
 
@@ -238,7 +243,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayers'].set(new Set([0]));
+    component['playersMultiSelection'].setSelection(0);
     expect(component['submitDisabled']()).toEqual(false);
   }));
 
@@ -277,9 +282,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['onSinglePlayerChecked']({
-      detail: { value: 0 },
-    } as RadioGroupCustomEvent);
+    component['onPlayerChecked'](0, true);
 
     expect(component['selectedPlayer']()).toEqual(0);
   });
@@ -293,7 +296,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['onMultiPlayerChecked'](0, true);
+    component['onPlayerChecked'](0, true);
 
     expect(component['selectedPlayers']().has(0)).toEqual(true);
   });
@@ -307,47 +310,43 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayers'].set(new Set([0]));
-    component['onMultiPlayerChecked'](0, false);
+    component['playersMultiSelection'].setSelection(0);
+    component['onPlayerChecked'](0, false);
 
     expect(component['selectedPlayers']().has(0)).toEqual(false);
   });
 
   it('should submit selectedRole to GameService on submit', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
     component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
 
     component['onSubmit']();
 
-    expect(gameService.submitRoundAction).toHaveBeenCalledWith(
+    const submitRoundActionSpy = ngMocks.get(GameService).submitRoundAction;
+    expect(submitRoundActionSpy).toHaveBeenCalledWith(
       [],
       PlayerRoleEnum.LOUP_GAROU,
     );
   });
 
   it('should submit selectedPlayer to GameService on submit if SELECT_SINGLE', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
     component['selectedPlayer'].set(0);
 
     component['onSubmit']();
 
-    expect(gameService.submitRoundAction).toHaveBeenCalledWith([0], undefined);
+    const submitRoundActionSpy = ngMocks.get(GameService).submitRoundAction;
+    expect(submitRoundActionSpy).toHaveBeenCalledWith([0], undefined);
   });
 
   it('should submit selectedPlayers to GameService on submit if SELECT_MULTI', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
-    component['selectedPlayers'].set(new Set([0, 1]));
+    component['playersMultiSelection'].setSelection(0, 1);
 
     component['onSubmit']();
 
-    expect(gameService.submitRoundAction).toHaveBeenCalledWith(
-      [0, 1],
-      undefined,
-    );
+    const submitRoundActionSpy = ngMocks.get(GameService).submitRoundAction;
+    expect(submitRoundActionSpy).toHaveBeenCalledWith([0, 1], undefined);
   });
 
   it('should reset selectedRole after submit', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
     component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
 
     component['onSubmit']();
@@ -356,7 +355,6 @@ describe('GamePage', () => {
   });
 
   it('should reset selectedPlayer after submit', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
     component['selectedPlayer'].set(0);
 
     component['onSubmit']();
@@ -365,8 +363,7 @@ describe('GamePage', () => {
   });
 
   it('should reset selectedPlayers after submit', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
-    component['selectedPlayers'].set(new Set([0, 1]));
+    component['playersMultiSelection'].setSelection(0, 1);
 
     component['onSubmit']();
 
@@ -470,15 +467,10 @@ describe('GamePage', () => {
   });
 
   it('should submit equality on equality', () => {
-    jest.spyOn(gameService, 'submitRoundAction');
-
     component['onEquality']();
 
-    expect(gameService.submitRoundAction).toHaveBeenCalledWith(
-      [],
-      undefined,
-      true,
-    );
+    const submitRoundActionSpy = ngMocks.get(GameService).submitRoundAction;
+    expect(submitRoundActionSpy).toHaveBeenCalledWith([], undefined, true);
   });
 
   it('should be beforeGame if round is SECTAIRE', () => {

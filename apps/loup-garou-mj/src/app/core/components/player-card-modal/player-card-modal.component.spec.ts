@@ -1,17 +1,21 @@
-import { PlayerCardModalComponent } from './player-card-modal.component';
-import { ModalController } from '@ionic/angular/standalone';
+import { DialogRef } from '@angular/cdk/dialog';
 import { MockService } from 'ng-mocks';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerCardModalComponent } from './player-card-modal.component';
 
 describe('PlayerCardModalComponent', () => {
   let component: PlayerCardModalComponent;
 
-  let modalCtrl: ModalController;
+  let dialogRef: DialogRef<void>;
 
   beforeEach(() => {
-    modalCtrl = MockService(ModalController);
-    jest.spyOn(modalCtrl, 'dismiss');
+    dialogRef = MockService(DialogRef);
+    jest.spyOn(dialogRef, 'close');
 
-    component = new PlayerCardModalComponent(modalCtrl);
+    component = new PlayerCardModalComponent(
+      dialogRef,
+      PlayerRoleEnum.VILLAGEOIS,
+    );
   });
 
   it('should create', () => {
@@ -21,6 +25,6 @@ describe('PlayerCardModalComponent', () => {
   it('should dismiss on continue', () => {
     component.continue();
 
-    expect(modalCtrl.dismiss).toHaveBeenCalled();
+    expect(dialogRef.close).toHaveBeenCalled();
   });
 });
