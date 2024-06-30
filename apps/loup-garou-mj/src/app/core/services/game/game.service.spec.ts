@@ -8,7 +8,7 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
-import { Player } from '../../models/player.model';
+import { Player, StoredPlayer } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { DeathService } from '../death/death.service';
@@ -19,7 +19,7 @@ import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 
 import { GameService } from './game.service';
-import { CardList } from '../../models/card-list.model';
+import { CardList, StoredCardList } from '../../models/card-list.model';
 
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
@@ -46,13 +46,13 @@ describe('GameService with storage init', () => {
   let roundHandler: RoundHandler;
   let storageService: StorageService;
 
-  const mockStoredPlayers: Player[] = [
+  const mockStoredPlayers: StoredPlayer[] = [
     {
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,
       card: PlayerRoleEnum.VILLAGEOIS,
-      statuses: new Set(),
+      statuses: [],
       isDead: false,
     },
     {
@@ -60,7 +60,7 @@ describe('GameService with storage init', () => {
       name: 'player1',
       role: PlayerRoleEnum.LOUP_GAROU,
       card: PlayerRoleEnum.LOUP_GAROU,
-      statuses: new Set(),
+      statuses: [],
       isDead: false,
     },
     {
@@ -68,7 +68,7 @@ describe('GameService with storage init', () => {
       name: 'player2',
       role: PlayerRoleEnum.SORCIERE,
       card: PlayerRoleEnum.SORCIERE,
-      statuses: new Set(),
+      statuses: [],
       isDead: false,
     },
   ];
@@ -81,10 +81,10 @@ describe('GameService with storage init', () => {
     type: RoundTypeEnum.DEFAULT,
   };
   const mockStoredDayCount = 3;
-  const mockStoredCardList: CardList = {
+  const mockStoredCardList: StoredCardList = {
     villageois: 1,
     loupGarou: 1,
-    selectedRoles: new Set([PlayerRoleEnum.CUPIDON]),
+    selectedRoles: [PlayerRoleEnum.CUPIDON],
     playersNumber: 3,
   };
   const mockStoredNeedCleanAfterBouc = true;
@@ -132,7 +132,33 @@ describe('GameService with storage init', () => {
   });
 
   it('should init players from storage', () => {
-    expect(service['players']()).toEqual(mockStoredPlayers);
+    const expectedPlayers: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    expect(service['players']()).toEqual(expectedPlayers);
   });
 
   it('should init round from storage', () => {
@@ -144,7 +170,13 @@ describe('GameService with storage init', () => {
   });
 
   it('should init card list from storage', () => {
-    expect(service['cardList']).toEqual(mockStoredCardList);
+    const expectedCardList: CardList = {
+      villageois: 1,
+      loupGarou: 1,
+      selectedRoles: new Set([PlayerRoleEnum.CUPIDON]),
+      playersNumber: 3,
+    };
+    expect(service['cardList']).toEqual(expectedCardList);
   });
 
   it('should init needCleanAfterBouc from storage', () => {
@@ -1439,9 +1471,14 @@ describe('GameService', () => {
 
     service.createGame(mockPlayers, mockCardList);
 
+    const expectedStoredCardList: StoredCardList = {
+      ...mockCardList,
+      selectedRoles: Array.from(mockCardList.selectedRoles),
+    };
+
     expect(storageService.set).toHaveBeenCalledWith(
       service['CARD_LIST_KEY'],
-      mockCardList,
+      expectedStoredCardList,
     );
   });
 

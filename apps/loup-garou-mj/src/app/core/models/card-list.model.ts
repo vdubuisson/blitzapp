@@ -7,9 +7,6 @@ export interface CardList {
   playersNumber: number;
 }
 
-export interface StoredCardList {
+export interface StoredCardList extends Omit<CardList, 'selectedRoles'> {
   selectedRoles: PlayerRoleEnum[];
-  loupGarou: number;
-  villageois: number;
-  playersNumber: number;
 }

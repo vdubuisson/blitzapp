@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, of } from 'rxjs';
+import { Preferences } from '@capacitor/preferences';
+import { from, map, Observable } from 'rxjs';
 
 enum StorageActionEnum {
   SET,
@@ -16,15 +17,10 @@ interface StorageAction {
   providedIn: 'root',
 })
 export class StorageService {
-  private _storage: Storage | undefined;
-  private isInitialized = new BehaviorSubject(false);
-
   private actionQueue: StorageAction[] = [];
   private actionInProgress = false;
 
-  constructor() {
-    this.init();
-  }
+  constructor() {}
 
   set(key: string, value: unknown): void {
     this.actionQueue.push({
@@ -39,10 +35,8 @@ export class StorageService {
   }
 
   get<T>(key: string): Observable<T | null> {
-    return this.isInitialized.pipe(
-      filter((isInitialized) => isInitialized),
-      map(() => (this._storage as Storage).getItem(key)),
-      map((value) => (value ? JSON.parse(value) : null)),
+    return from(Preferences.get({ key })).pipe(
+      map(({ value }) => (value ? JSON.parse(value) : null)),
     );
   }
 
@@ -58,27 +52,22 @@ export class StorageService {
   }
 
   clear(): Observable<void> {
-    return of((this._storage as Storage).clear());
+    return from(Preferences.clear());
   }
 
-  private init() {
-    this._storage = localStorage;
-    this.isInitialized.next(true);
-  }
-
-  private handleNextAction(): void {
+  private async handleNextAction(): Promise<void> {
     this.actionInProgress = true;
     const action = this.actionQueue.shift();
     if (action !== undefined) {
       if (action.type === StorageActionEnum.SET) {
         const jsonValue = JSON.stringify(action.value);
-        this._storage?.setItem(action.key, jsonValue);
+        await Preferences.set({ key: action.key, value: jsonValue });
       } else {
-        this._storage?.removeItem(action.key);
+        await Preferences.remove({ key: action.key });
       }
     }
     if (this.actionQueue.length > 0) {
-      this.handleNextAction();
+      await this.handleNextAction();
     } else {
       this.actionInProgress = false;
     }

@@ -1,32 +1,37 @@
 import { waitForAsync } from '@angular/core/testing';
 import { StorageService } from './storage.service';
+import { Preferences } from '@capacitor/preferences';
 
 describe('StorageService', () => {
   let service: StorageService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     service = new StorageService();
-    service['_storage']?.clear();
+    await Preferences.clear();
   });
 
-  it('should set value to storage', () => {
+  it('should set value to storage', async () => {
     service.set('mockKey', 'mockValue');
 
-    const value = JSON.parse(service['_storage']?.getItem('mockKey') as string);
+    const value = JSON.parse(
+      (await Preferences.get({ key: 'mockKey' })).value as string,
+    );
 
     expect(value).toEqual('mockValue');
   });
 
-  it('should remove key from storage', () => {
-    service['_storage']?.setItem('mockKey', 'mockValue');
+  it('should remove key from storage', async () => {
+    Preferences.set({ key: 'mockKey', value: 'mockValue' });
 
     service.remove('mockKey');
 
-    expect(service['_storage']?.getItem('mockKey')).toBeNull();
+    const value = (await Preferences.get({ key: 'mockKey' })).value;
+
+    expect(value).toBeNull();
   });
 
   it('should get value from storage', waitForAsync(() => {
-    service['_storage']?.setItem('mockKey', JSON.stringify('mockValue'));
+    Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
     service.get('mockKey').subscribe((value) => {
       expect(value).toEqual('mockValue');
@@ -34,10 +39,12 @@ describe('StorageService', () => {
   }));
 
   it('should clear storage', waitForAsync(() => {
-    service['_storage']?.setItem('mockKey', 'mockValue');
+    Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
-    service.clear().subscribe(() => {
-      expect(service['_storage']?.getItem('mockKey')).toBeNull();
+    service.clear().subscribe(async () => {
+      const value = (await Preferences.get({ key: 'mockKey' })).value;
+
+      expect(value).toBeNull();
     });
   }));
 });

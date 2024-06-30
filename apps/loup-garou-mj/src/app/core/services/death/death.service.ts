@@ -3,7 +3,7 @@ import { combineLatest } from 'rxjs';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
+import { Player, StoredPlayer } from '../../models/player.model';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { StorageService } from '../storage/storage.service';
@@ -112,7 +112,13 @@ export class DeathService {
       this.KNOWN_DEATHS_KEY,
       Array.from(this.knownDeaths),
     );
-    this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
+    const storedDeathsToAnnounce: StoredPlayer[] = this.deathsToAnnounce.map(
+      (player) => ({
+        ...player,
+        statuses: Array.from(player.statuses),
+      }),
+    );
+    this.storageService.set(this.ANNOUNCE_KEY, storedDeathsToAnnounce);
     this.storageService.set(this.QUEUE_KEY, this.afterDeathRoundQueue);
   }
 
@@ -232,13 +238,17 @@ export class DeathService {
   private initFromStorage(): void {
     combineLatest([
       this.storageService.get<number[]>(this.KNOWN_DEATHS_KEY),
-      this.storageService.get<Player[]>(this.ANNOUNCE_KEY),
+      this.storageService.get<StoredPlayer[]>(this.ANNOUNCE_KEY),
       this.storageService.get<RoundEnum[]>(this.QUEUE_KEY),
-    ]).subscribe(([knownDeaths, announce, queue]) => {
+    ]).subscribe(([knownDeaths, storedAnnounce, queue]) => {
       if (knownDeaths !== null) {
         this.knownDeaths = new Set(knownDeaths);
       }
-      if (announce !== null) {
+      if (storedAnnounce !== null) {
+        const announce = storedAnnounce.map((player) => ({
+          ...player,
+          statuses: new Set(player.statuses),
+        }));
         this.deathsToAnnounce = announce;
       }
       if (queue !== null) {

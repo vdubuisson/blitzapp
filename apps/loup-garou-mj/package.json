@@ -1,3 +1,11 @@
 {
-  "name": "loup-garou-mj"
+  "name": "loup-garou-mj",
+  "devDependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/ios": "^6.0.0"
+  },
+  "dependencies": {
+    "@capacitor/preferences": "^6.0.1"
+  }
 }

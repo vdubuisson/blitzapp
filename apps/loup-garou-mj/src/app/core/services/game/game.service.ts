@@ -12,7 +12,7 @@ import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { RoundTypeEnum } from '../../enums/round-type.enum';
 import { RoundEnum } from '../../enums/round.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
-import { Player } from '../../models/player.model';
+import { Player, StoredPlayer } from '../../models/player.model';
 import { Round } from '../../models/round.model';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
@@ -21,7 +21,7 @@ import { StatusesService } from '../statuses/statuses.service';
 import { StorageService } from '../storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
-import { CardList } from '../../models/card-list.model';
+import { CardList, StoredCardList } from '../../models/card-list.model';
 import { getNotPlayedRoles } from '../../utils/roles.utils';
 import { LOUPS_GAROUS_ROUNDS } from '../../configs/loups-garous-rounds';
 
@@ -72,7 +72,11 @@ export class GameService {
 
   createGame(players: Player[], cardList: CardList): void {
     this.cardList = cardList;
-    this.storageService.set(this.CARD_LIST_KEY, cardList);
+    const storedCardList: StoredCardList = {
+      ...cardList,
+      selectedRoles: Array.from(cardList.selectedRoles),
+    };
+    this.storageService.set(this.CARD_LIST_KEY, storedCardList);
     this.initGame(players, cardList);
     const isAngePresent = players
       .map((player) => player.role)
@@ -215,7 +219,11 @@ export class GameService {
 
   private setPlayers(players: Player[]): void {
     this.players.set(players);
-    this.storageService.set(this.PLAYERS_KEY, players);
+    const storedPlayers: StoredPlayer[] = players?.map((player) => ({
+      ...player,
+      statuses: Array.from(player.statuses),
+    }));
+    this.storageService.set(this.PLAYERS_KEY, storedPlayers);
   }
 
   private nextDayCount(currentDay?: number): void {
@@ -226,10 +234,10 @@ export class GameService {
 
   private initFromStorage(): void {
     combineLatest([
-      this.storageService.get<Player[]>(this.PLAYERS_KEY),
+      this.storageService.get<StoredPlayer[]>(this.PLAYERS_KEY),
       this.storageService.get<Round>(this.ROUND_KEY),
       this.storageService.get<number>(this.DAY_COUNT_KEY),
-      this.storageService.get<CardList>(this.CARD_LIST_KEY),
+      this.storageService.get<StoredCardList>(this.CARD_LIST_KEY),
       this.storageService.get<boolean>(this.NEED_CLEAN_AFTER_BOUC_KEY),
     ]).subscribe(
       ([
@@ -244,13 +252,24 @@ export class GameService {
           storedRound !== null &&
           storedDayCount !== null
         ) {
-          this.players.set(storedPlayers);
+          const players: Player[] = storedPlayers.map((player) => ({
+            ...player,
+            statuses: new Set(player.statuses),
+          }));
+          this.players.set(players);
           this.round.set(storedRound);
           this.dayCount.set(storedDayCount);
         }
 
         this.needCleanAfterBouc = storedNeedCleanAfterBouc ?? false;
-        this.cardList = storedCardList ?? undefined;
+        const cardList: CardList | undefined =
+          storedCardList == null
+            ? undefined
+            : {
+                ...storedCardList,
+                selectedRoles: new Set(storedCardList.selectedRoles),
+              };
+        this.cardList = cardList;
       },
     );
   }
