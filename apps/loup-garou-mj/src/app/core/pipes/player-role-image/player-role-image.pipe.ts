@@ -6,7 +6,7 @@ import { PlayerRoleEnum } from '../../enums/player-role.enum';
   standalone: true,
 })
 export class PlayerRoleImagePipe implements PipeTransform {
-  private static readonly IMAGES_PATH = 'assets/images/roles/';
+  private static readonly IMAGES_PATH = 'images/roles/';
 
   transform(role: PlayerRoleEnum): string {
     return `${PlayerRoleImagePipe.IMAGES_PATH}${role.toLowerCase()}.webp`;

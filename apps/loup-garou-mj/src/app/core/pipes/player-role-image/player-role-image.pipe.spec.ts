@@ -13,6 +13,6 @@ describe('PlayerRoleImagePipe', () => {
 
   it('should return image path for role', () => {
     const path = pipe.transform(PlayerRoleEnum.VILLAGEOIS);
-    expect(path).toEqual('assets/images/roles/villageois.webp');
+    expect(path).toEqual('images/roles/villageois.webp');
   });
 });
