@@ -4,7 +4,7 @@ import {
   CdkDragHandle,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import { NgFor } from '@angular/common';
+
 import { Component, Signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -17,13 +17,11 @@ import { NewPlayerComponent } from '../../core/components/new-player/new-player.
 import { Player } from '../../core/models/player.model';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
-import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 
 @Component({
   selector: 'lgmj-new-game',
   standalone: true,
   imports: [
-    NgFor,
     NewPlayerComponent,
     RouterLink,
     FaIconComponent,
@@ -36,8 +34,6 @@ import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 })
 export class NewGamePage {
   protected players: Signal<Player[]> = this.newGameService.currentPlayers;
-
-  protected playerTrackBy = PLAYER_TRACK_BY;
 
   protected canValidate: Signal<boolean> = computed(
     () => this.players().length === this.playersCount(),

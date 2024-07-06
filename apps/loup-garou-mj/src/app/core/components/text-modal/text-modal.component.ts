@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { TextModalData } from '../../models/text-modal-data.model';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +8,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 @Component({
   selector: 'lgmj-text-modal',
   standalone: true,
-  imports: [CommonModule, FaIconComponent],
+  imports: [FaIconComponent],
   templateUrl: './text-modal.component.html',
   styleUrl: './text-modal.component.scss',
 })

@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { NgFor, NgOptimizedImage, UpperCasePipe } from '@angular/common';
+import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
 import {
   Component,
   Signal,
@@ -26,7 +26,6 @@ import { GameBoxNamePipe } from '../../core/pipes/game-box-name/game-box-name.pi
 import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
 import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
-import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
 
 interface RoleForm {
   villageois: FormControl<number | null>;
@@ -37,7 +36,6 @@ interface RoleForm {
   selector: 'lgmj-roles-choice',
   standalone: true,
   imports: [
-    NgFor,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     GameBoxNamePipe,
@@ -54,8 +52,6 @@ interface RoleForm {
 export class RolesChoicePage {
   protected boxContents = GAME_BOX_CONTENTS;
   protected boxes: GameBoxEnum[] = Object.values(GameBoxEnum);
-
-  protected roleTrackBy = ROLE_TRACK_BY;
 
   protected loupGarouRole = PlayerRoleEnum.LOUP_GAROU;
   protected villageoisRole = PlayerRoleEnum.VILLAGEOIS;

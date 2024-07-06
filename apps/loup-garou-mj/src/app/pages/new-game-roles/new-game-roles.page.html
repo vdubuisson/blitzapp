@@ -1,11 +1,12 @@
 <div class="player-list">
+  @for (player of players(); track player.id) {
   <lgmj-player
-    *ngFor="let player of players(); trackBy: playerTrackBy"
     [player]="player"
     [displayMode]="playerDisplayMode"
     [selectableRoles]="availableRoles()"
     (roleChange)="changeRole(player.id, $event)"
   ></lgmj-player>
+  }
 </div>
 
 <div class="submit-block">

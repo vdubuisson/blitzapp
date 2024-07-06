@@ -1,5 +1,6 @@
 <cdk-accordion>
-  <lgmj-accordion-item *ngFor="let role of roles; trackBy: roleTrackBy">
+  @for (role of roles; track role) {
+  <lgmj-accordion-item>
     <ng-container header>
       <img
         [ngSrc]="role | playerRoleImage"
@@ -12,4 +13,5 @@
     </ng-container>
     <span class="rule" [innerText]="rules[role]"></span>
   </lgmj-accordion-item>
+  }
 </cdk-accordion>

@@ -1,4 +1,3 @@
-import { NgFor } from '@angular/common';
 import { Component, computed, Signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlayerComponent } from '../../core/components/player/player.component';
@@ -9,12 +8,11 @@ import { CardList } from '../../core/models/card-list.model';
 import { Player } from '../../core/models/player.model';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
-import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 
 @Component({
   selector: 'lgmj-new-game-roles',
   standalone: true,
-  imports: [NgFor, RouterLink, PlayerComponent],
+  imports: [RouterLink, PlayerComponent],
   templateUrl: './new-game-roles.page.html',
   styleUrls: ['./new-game-roles.page.scss'],
 })
@@ -22,8 +20,6 @@ export class NewGameRolesPage {
   protected players: Signal<Player[]> = this.newGameService.currentPlayers;
 
   protected playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
-
-  protected playerTrackBy = PLAYER_TRACK_BY;
 
   protected canCreate: Signal<boolean> = computed(() =>
     this.canCreateGame(this.players()),

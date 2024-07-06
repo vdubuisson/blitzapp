@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, Signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -16,7 +15,7 @@ import { GameService } from '../../services/game/game.service';
 @Component({
   selector: 'lgmj-header',
   standalone: true,
-  imports: [CommonModule, FaIconComponent, RouterLink, RouterLinkActive],
+  imports: [FaIconComponent, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
