@@ -8,6 +8,7 @@ import { NewGamePage } from './new-game.page';
 import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
 import { CardList } from '../../core/models/card-list.model';
 import { signal, WritableSignal } from '@angular/core';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 describe('NewGamePage', () => {
   let component: NewGamePage;
@@ -129,11 +130,11 @@ describe('NewGamePage', () => {
 
   it('should reorder player', () => {
     jest.spyOn(newGameService, 'reorderPlayers');
-    const mockEvent: unknown = {
-      detail: { from: 0, to: 2, complete: jest.fn() },
-    };
+    const mockEvent = { previousIndex: 0, currentIndex: 2 } as CdkDragDrop<
+      Player[]
+    >;
 
-    component['reorderPlayer'](mockEvent as Event);
+    component['reorderPlayer'](mockEvent);
 
     expect(newGameService.reorderPlayers).toHaveBeenCalledWith(0, 2);
   });

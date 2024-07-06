@@ -1,14 +1,16 @@
-<form [formGroup]="playerForm" (ngSubmit)="onSubmit()">
-  <ion-item>
-    <ion-button
-      slot="start"
-      color="success"
-      shape="round"
-      [disabled]="playerForm.invalid"
-      type="submit"
-    >
-      <ion-icon slot="icon-only" name="add" />
-    </ion-button>
-    <ion-input placeholder="Nom" formControlName="name" />
-  </ion-item>
+<form [formGroup]="playerForm" (ngSubmit)="onSubmit()" class="form-group">
+  <button
+    class="btn success rounded icon-only"
+    [disabled]="playerForm.invalid"
+    type="submit"
+  >
+    <fa-icon [icon]="addIcon" />
+  </button>
+  <input
+    #input
+    class="form-control"
+    type="text"
+    placeholder="Nom"
+    formControlName="name"
+  />
 </form>

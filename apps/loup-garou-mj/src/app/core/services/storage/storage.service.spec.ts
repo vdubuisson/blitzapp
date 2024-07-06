@@ -1,45 +1,37 @@
-import { StorageService } from './storage.service';
-import { Storage } from '@ionic/storage-angular';
-import { MockService } from 'ng-mocks';
 import { waitForAsync } from '@angular/core/testing';
-import { when } from 'jest-when';
+import { StorageService } from './storage.service';
+import { Preferences } from '@capacitor/preferences';
 
 describe('StorageService', () => {
   let service: StorageService;
-  let storage: Storage;
-  let mockStorage: Storage;
 
-  beforeEach(() => {
-    storage = MockService(Storage);
-    mockStorage = MockService(Storage);
-    jest.spyOn(storage, 'create').mockResolvedValue(mockStorage);
-    service = new StorageService(storage);
+  beforeEach(async () => {
+    service = new StorageService();
+    await Preferences.clear();
   });
 
-  it('should create storage', () => {
-    expect(storage.create).toHaveBeenCalled();
-  });
-
-  it('should set value to storage', () => {
-    jest.spyOn(mockStorage, 'set');
-
+  it('should set value to storage', async () => {
     service.set('mockKey', 'mockValue');
 
-    expect(mockStorage.set).toHaveBeenCalledWith('mockKey', 'mockValue');
+    const value = JSON.parse(
+      (await Preferences.get({ key: 'mockKey' })).value as string,
+    );
+
+    expect(value).toEqual('mockValue');
   });
 
-  it('should remove key from storage', () => {
-    jest.spyOn(mockStorage, 'remove');
+  it('should remove key from storage', async () => {
+    Preferences.set({ key: 'mockKey', value: 'mockValue' });
 
     service.remove('mockKey');
 
-    expect(mockStorage.remove).toHaveBeenCalledWith('mockKey');
+    const value = (await Preferences.get({ key: 'mockKey' })).value;
+
+    expect(value).toBeNull();
   });
 
   it('should get value from storage', waitForAsync(() => {
-    when(jest.spyOn(mockStorage, 'get'))
-      .calledWith('mockKey')
-      .mockResolvedValue('mockValue');
+    Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
     service.get('mockKey').subscribe((value) => {
       expect(value).toEqual('mockValue');
@@ -47,10 +39,12 @@ describe('StorageService', () => {
   }));
 
   it('should clear storage', waitForAsync(() => {
-    when(jest.spyOn(mockStorage, 'clear')).mockResolvedValue(undefined);
+    Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
-    service.clear().subscribe(() => {
-      expect(mockStorage.clear).toHaveBeenCalled();
+    service.clear().subscribe(async () => {
+      const value = (await Preferences.get({ key: 'mockKey' })).value;
+
+      expect(value).toBeNull();
     });
   }));
 });

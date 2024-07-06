@@ -1,139 +1,101 @@
-import { when } from 'jest-when';
-import { MockService } from 'ng-mocks';
+import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
 import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { Player } from '../../models/player.model';
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerComponent } from './player.component';
 
+const MOCK_PLAYER: Player = {
+  id: 0,
+  name: 'player',
+  role: PlayerRoleEnum.VILLAGEOIS,
+  card: PlayerRoleEnum.VILLAGEOIS,
+  statuses: new Set(),
+  isDead: false,
+};
+
 describe('PlayerComponent', () => {
-  let component: PlayerComponent;
-  let playerRoleNamePipe: PlayerRoleNamePipe;
+  MockInstance.scope();
+
+  beforeEach(async () => MockBuilder(PlayerComponent));
 
   beforeEach(async () => {
-    playerRoleNamePipe = MockService(PlayerRoleNamePipe);
-    component = new PlayerComponent(playerRoleNamePipe);
+    return MockInstance(PlayerRoleNamePipe, () => ({
+      transform: (role) => {
+        switch (role) {
+          case PlayerRoleEnum.VILLAGEOIS:
+            return 'Villageois';
+          case PlayerRoleEnum.LOUP_GAROU:
+            return 'Loup';
+          case PlayerRoleEnum.CUPIDON:
+            return 'Cupidon';
+          default:
+            return '';
+        }
+      },
+    }));
   });
 
   it('should create', () => {
+    const component = MockRender(PlayerComponent, { player: MOCK_PLAYER }).point
+      .componentInstance;
     expect(component).toBeTruthy();
   });
 
   it('should sort roles alphabetically on set', () => {
-    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.VILLAGEOIS)
-      .mockReturnValue('Villageois');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.LOUP_GAROU)
-      .mockReturnValue('Loup');
-    component.player = {
-      id: 0,
-      name: 'player',
-      role: PlayerRoleEnum.VILLAGEOIS,
-      card: PlayerRoleEnum.VILLAGEOIS,
-      statuses: new Set(),
-      isDead: false,
-    };
+    const component = MockRender(PlayerComponent, {
+      player: MOCK_PLAYER,
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
+    }).point.componentInstance;
 
-    component.selectableRoles = [
-      PlayerRoleEnum.VILLAGEOIS,
-      PlayerRoleEnum.LOUP_GAROU,
-    ];
-
-    expect(component['sortedRoles']).toEqual([
+    expect(component['sortedRoles']()).toEqual([
       PlayerRoleEnum.LOUP_GAROU,
       PlayerRoleEnum.VILLAGEOIS,
     ]);
   });
 
   it('should add current role to selectable roles on set', () => {
-    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.VILLAGEOIS)
-      .mockReturnValue('Villageois');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.LOUP_GAROU)
-      .mockReturnValue('Loup');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.CUPIDON)
-      .mockReturnValue('Cupidon');
+    const component = MockRender(PlayerComponent, {
+      player: {
+        ...MOCK_PLAYER,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
+      },
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
+    }).point.componentInstance;
 
-    component.player = {
-      id: 0,
-      name: 'player',
-      role: PlayerRoleEnum.CUPIDON,
-      card: PlayerRoleEnum.CUPIDON,
-      statuses: new Set(),
-      isDead: false,
-    };
-
-    component.selectableRoles = [
-      PlayerRoleEnum.VILLAGEOIS,
-      PlayerRoleEnum.LOUP_GAROU,
-    ];
-
-    expect(component['sortedRoles'].includes(PlayerRoleEnum.CUPIDON)).toEqual(
+    expect(component['sortedRoles']().includes(PlayerRoleEnum.CUPIDON)).toEqual(
       true,
     );
   });
 
   it('should not add current role to selectable roles on set if noSelfRole', () => {
-    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.VILLAGEOIS)
-      .mockReturnValue('Villageois');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.LOUP_GAROU)
-      .mockReturnValue('Loup');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.CUPIDON)
-      .mockReturnValue('Cupidon');
+    const component = MockRender(PlayerComponent, {
+      player: {
+        ...MOCK_PLAYER,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
+      },
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
+      noSelfRole: true,
+    }).point.componentInstance;
 
-    component.player = {
-      id: 0,
-      name: 'player',
-      role: PlayerRoleEnum.CUPIDON,
-      card: PlayerRoleEnum.CUPIDON,
-      statuses: new Set(),
-      isDead: false,
-    };
-
-    component.noSelfRole = true;
-
-    component.selectableRoles = [
-      PlayerRoleEnum.VILLAGEOIS,
-      PlayerRoleEnum.LOUP_GAROU,
-    ];
-
-    expect(component['sortedRoles'].includes(PlayerRoleEnum.CUPIDON)).toEqual(
+    expect(component['sortedRoles']().includes(PlayerRoleEnum.CUPIDON)).toEqual(
       false,
     );
   });
 
   it('should not add current role NOT_SELECTED to selectable roles on set', () => {
-    const pipeTransform = jest.spyOn(playerRoleNamePipe, 'transform');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.VILLAGEOIS)
-      .mockReturnValue('Villageois');
-    when(pipeTransform)
-      .calledWith(PlayerRoleEnum.LOUP_GAROU)
-      .mockReturnValue('Loup');
-
-    component.player = {
-      id: 0,
-      name: 'player',
-      role: PlayerRoleEnum.NOT_SELECTED,
-      card: PlayerRoleEnum.NOT_SELECTED,
-      statuses: new Set(),
-      isDead: false,
-    };
-
-    component.selectableRoles = [
-      PlayerRoleEnum.VILLAGEOIS,
-      PlayerRoleEnum.LOUP_GAROU,
-    ];
+    const component = MockRender(PlayerComponent, {
+      player: {
+        ...MOCK_PLAYER,
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+      },
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
+    }).point.componentInstance;
 
     expect(
-      component['sortedRoles'].includes(PlayerRoleEnum.NOT_SELECTED),
+      component['sortedRoles']().includes(PlayerRoleEnum.NOT_SELECTED),
     ).toEqual(false);
   });
 });

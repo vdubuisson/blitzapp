@@ -1,28 +1,20 @@
 import { inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { TextModalData } from '../models/text-modal-data.model';
 import { GameService } from '../services/game/game.service';
-import { AlertController } from '@ionic/angular/standalone';
+import { ModalService } from '../services/modal/modal.service';
 
-export const confirmNewGameGuard = async (): Promise<boolean> => {
+export const confirmNewGameGuard = (): Observable<boolean> | boolean => {
   const gameService = inject(GameService);
   if (gameService.isGameInProgress()) {
-    const alertController = inject(AlertController);
-    const alert = await alertController.create({
+    const modalService = inject(ModalService);
+    const modalData: TextModalData = {
       header: 'Partie en cours',
       message:
         '<p>Une partie est déjà en cours. Êtes-vous sûr de vouloir en créer une nouvelle ?</p>',
-      buttons: [
-        {
-          text: 'Annuler',
-          role: 'cancel',
-        },
-        {
-          text: 'Nouvelle partie',
-          role: 'confirm',
-        },
-      ],
-    });
-    await alert.present();
-    return alert.onDidDismiss().then((event) => event.role === 'confirm');
+      confirmText: 'Nouvelle partie',
+    };
+    return modalService.showTextModal(modalData);
   } else {
     return true;
   }

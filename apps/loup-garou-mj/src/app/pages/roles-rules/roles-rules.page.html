@@ -1,25 +1,15 @@
-<lgmj-header title="Règles des rôles" />
-
-<ion-content>
-  <ion-accordion-group>
-    <ion-accordion *ngFor="let role of roles; trackBy: roleTrackBy">
-      <ion-item slot="header">
-        <ion-thumbnail slot="start">
-          <img
-            [ngSrc]="role | playerRoleImage"
-            [alt]="role | playerRoleName"
-            width="250"
-            height="250"
-            class="role-img"
-          />
-        </ion-thumbnail>
-        <ion-label>{{ role | playerRoleName }}</ion-label>
-      </ion-item>
-      <div
-        class="ion-padding rule"
-        slot="content"
-        [innerText]="rules[role]"
-      ></div>
-    </ion-accordion>
-  </ion-accordion-group>
-</ion-content>
+<cdk-accordion>
+  <lgmj-accordion-item *ngFor="let role of roles; trackBy: roleTrackBy">
+    <ng-container header>
+      <img
+        [ngSrc]="role | playerRoleImage"
+        [alt]="role | playerRoleName"
+        width="55"
+        height="55"
+        class="role-img"
+      />
+      <span class="role-name">{{ role | playerRoleName }}</span>
+    </ng-container>
+    <span class="rule" [innerText]="rules[role]"></span>
+  </lgmj-accordion-item>
+</cdk-accordion>

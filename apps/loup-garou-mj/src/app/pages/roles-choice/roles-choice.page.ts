@@ -1,34 +1,13 @@
+import { SelectionModel } from '@angular/cdk/collections';
+import { NgFor, NgOptimizedImage, UpperCasePipe } from '@angular/common';
 import {
   Component,
-  computed,
   Signal,
-  signal,
   WritableSignal,
+  computed,
+  signal,
 } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import {
-  CheckboxCustomEvent,
-  IonAccordion,
-  IonAccordionGroup,
-  IonButton,
-  IonCheckbox,
-  IonContent,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonThumbnail,
-} from '@ionic/angular/standalone';
-import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
-import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
-import { HeaderComponent } from '../../core/components/header/header.component';
-import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
-import { GAME_BOX_CONTENTS } from '../../core/configs/game-box-contents';
-import { GameBoxEnum } from '../../core/enums/game-box.enum';
-import { GameBoxNamePipe } from '../../core/pipes/game-box-name/game-box-name.pipe';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
-import { Router } from '@angular/router';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormControl,
@@ -37,8 +16,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AccordionItemModule } from '../../core/components/accordion-item/accordion-item.module';
+import { GAME_BOX_CONTENTS } from '../../core/configs/game-box-contents';
+import { GameBoxEnum } from '../../core/enums/game-box.enum';
+import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
 import { CardList } from '../../core/models/card-list.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { GameBoxNamePipe } from '../../core/pipes/game-box-name/game-box-name.pipe';
+import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
+import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { ROLE_TRACK_BY } from '../../core/utils/role.track-by';
 
 interface RoleForm {
   villageois: FormControl<number | null>;
@@ -49,24 +37,15 @@ interface RoleForm {
   selector: 'lgmj-roles-choice',
   standalone: true,
   imports: [
-    CommonModule,
+    NgFor,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     GameBoxNamePipe,
-    HeaderComponent,
+    UpperCasePipe,
     FormsModule,
     ReactiveFormsModule,
     NgOptimizedImage,
-    IonContent,
-    IonList,
-    IonItem,
-    IonThumbnail,
-    IonLabel,
-    IonInput,
-    IonAccordionGroup,
-    IonAccordion,
-    IonCheckbox,
-    IonButton,
+    AccordionItemModule,
   ],
   providers: [PlayerRoleNamePipe],
   templateUrl: './roles-choice.page.html',
@@ -83,9 +62,14 @@ export class RolesChoicePage {
 
   protected roleCountForm: FormGroup<RoleForm>;
 
-  protected selectedRoles: WritableSignal<Set<PlayerRoleEnum>> = signal(
-    new Set(),
-  );
+  protected selectedRoles = computed<Set<PlayerRoleEnum>>(() => {
+    const selection = this.rolesSelectionChange()?.source?.selected ?? [];
+    return new Set(selection);
+  });
+
+  private rolesSelection = new SelectionModel<PlayerRoleEnum>(true);
+  private rolesSelectionChange = toSignal(this.rolesSelection.changed);
+
   private villageoisCount: WritableSignal<number> = signal(0);
   private loupGarouCount: WritableSignal<number> = signal(0);
 
@@ -126,28 +110,17 @@ export class RolesChoicePage {
     this.listenRoleCountChange('villageois');
 
     const cardList: CardList = this.cardChoiceService.currentChosenCards();
-    this.selectedRoles.set(cardList.selectedRoles);
+    this.rolesSelection.setSelection(...cardList.selectedRoles);
     this.roleCountForm.patchValue(cardList);
   }
 
-  protected onRoleCheckChange(event: Event): void {
-    const eventDetail = (event as CheckboxCustomEvent<PlayerRoleEnum>).detail;
-    if (eventDetail.checked) {
-      this.selectedRoles.update((selectedRoles) => {
-        selectedRoles.add(eventDetail.value);
-        return new Set(selectedRoles);
-      });
-      if (eventDetail.value === PlayerRoleEnum.VOLEUR) {
-        const currentVillageois = this.roleCountForm.value.villageois ?? 0;
+  protected onRoleCheckChange(role: PlayerRoleEnum): void {
+    this.rolesSelection.toggle(role);
+    if (role === PlayerRoleEnum.VOLEUR) {
+      const currentVillageois = this.roleCountForm.value.villageois ?? 0;
+      if (this.rolesSelection.isSelected(role)) {
         this.roleCountForm.patchValue({ villageois: currentVillageois + 2 });
-      }
-    } else {
-      this.selectedRoles.update((selectedRoles) => {
-        selectedRoles.delete(eventDetail.value);
-        return new Set(selectedRoles);
-      });
-      if (eventDetail.value === PlayerRoleEnum.VOLEUR) {
-        const currentVillageois = this.roleCountForm.value.villageois ?? 0;
+      } else {
         this.roleCountForm.patchValue({
           villageois: Math.max(currentVillageois - 2, 0),
         });
@@ -167,19 +140,15 @@ export class RolesChoicePage {
   }
 
   protected deselectAll() {
-    const newSelectedRoles = new Set(this.selectedRoles());
-    newSelectedRoles.clear();
-    this.selectedRoles.set(newSelectedRoles);
+    this.rolesSelection.clear();
     this.roleCountForm.patchValue({
       villageois: 0,
       loupGarou: 0,
     });
   }
 
-  protected selectInput(event: Event): void {
-    (
-      ((event as CustomEvent).detail as FocusEvent).target as HTMLInputElement
-    ).select();
+  protected selectInput(event: FocusEvent): void {
+    (event.target as HTMLInputElement).select();
   }
 
   private listenRoleCountChange(role: string): void {

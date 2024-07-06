@@ -1,14 +1,13 @@
-import { MockService } from 'ng-mocks';
-import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
-import { RolesChoicePage } from './roles-choice.page';
-import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
-import { Router } from '@angular/router';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { CheckboxCustomEvent } from '@ionic/angular/standalone';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CardList } from '../../core/models/card-list.model';
+import { NO_ERRORS_SCHEMA, WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA, signal, WritableSignal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MockService } from 'ng-mocks';
+import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { CardList } from '../../core/models/card-list.model';
+import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
+import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { RolesChoicePage } from './roles-choice.page';
 
 describe('RolesChoicePage', () => {
   let page: RolesChoicePage;
@@ -107,20 +106,9 @@ describe('RolesChoicePage', () => {
   it('should add role on check', () => {
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: true,
-        value: PlayerRoleEnum.CHASSEUR,
-      },
-    };
-
-    page['selectedRoles'].set(new Set());
-
     expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
     expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
   });
@@ -136,18 +124,9 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: true,
-        value: PlayerRoleEnum.CHASSEUR,
-      },
-    };
-
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 1);
   });
@@ -163,18 +142,9 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: true,
-        value: PlayerRoleEnum.SOEUR,
-      },
-    };
-
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
@@ -190,18 +160,9 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: true,
-        value: PlayerRoleEnum.FRERE,
-      },
-    };
-
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.FRERE);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 3);
   });
@@ -209,20 +170,11 @@ describe('RolesChoicePage', () => {
   it('should delete role on uncheck', () => {
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: false,
-        value: PlayerRoleEnum.CHASSEUR,
-      },
-    };
-
-    page['selectedRoles'].set(new Set([PlayerRoleEnum.CHASSEUR]));
+    page['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
 
     expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
     expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
   });
@@ -238,18 +190,9 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: false,
-        value: PlayerRoleEnum.SORCIERE,
-      },
-    };
-
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.SORCIERE);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 1);
   });
@@ -265,18 +208,9 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: false,
-        value: PlayerRoleEnum.SOEUR,
-      },
-    };
-
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
@@ -292,18 +226,9 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: false,
-        value: PlayerRoleEnum.FRERE,
-      },
-    };
-
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.FRERE);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 3);
   });
@@ -311,7 +236,7 @@ describe('RolesChoicePage', () => {
   it('should clear selected roles on deselect', () => {
     createComponent();
 
-    page['selectedRoles'].set(new Set([PlayerRoleEnum.CHASSEUR]));
+    page['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
 
     expect(page['selectedRoles']().size).toEqual(1);
 
@@ -379,7 +304,7 @@ describe('RolesChoicePage', () => {
     ]);
     jest.spyOn(cardChoiceService, 'setCards');
 
-    page['selectedRoles'].set(selectedRoles);
+    page['rolesSelection'].setSelection(...selectedRoles);
 
     const expectedCardList: CardList = {
       selectedRoles,
@@ -486,16 +411,7 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: true,
-        value: PlayerRoleEnum.VOLEUR,
-      },
-    };
-
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(
       mockCards.villageois + 2,
@@ -513,16 +429,7 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: false,
-        value: PlayerRoleEnum.VOLEUR,
-      },
-    };
-
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(
       mockCards.villageois - 2,
@@ -540,16 +447,7 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: false,
-        value: PlayerRoleEnum.VOLEUR,
-      },
-    };
-
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(0);
   });
@@ -565,16 +463,7 @@ describe('RolesChoicePage', () => {
 
     createComponent();
 
-    const checkEvent = {
-      detail: {
-        checked: true,
-        value: PlayerRoleEnum.VOLEUR,
-      },
-    };
-
-    page['onRoleCheckChange'](
-      checkEvent as CheckboxCustomEvent<PlayerRoleEnum>,
-    );
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['playersCount']()).toEqual(3);
   });

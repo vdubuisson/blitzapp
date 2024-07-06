@@ -10,3 +10,7 @@ export interface Player {
   isDead: boolean;
   killedBy?: PlayerRoleEnum;
 }
+
+export interface StoredPlayer extends Omit<Player, 'statuses'> {
+  statuses: PlayerStatusEnum[];
+}

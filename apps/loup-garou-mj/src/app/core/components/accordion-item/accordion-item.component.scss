@@ -1,0 +1,24 @@
+.accordion-item-header {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  padding: var(--spacing-075) var(--spacing-1);
+
+  &.selected,
+  &.light {
+    background-color: var(--light-background-color);
+  }
+
+  .accordion-item-indicator {
+    margin-left: auto;
+  }
+}
+
+.accordion-item-content {
+  background-color: white;
+  overflow: hidden;
+
+  &-inner:not(.no-padding) {
+    padding: var(--spacing-075) var(--spacing-1);
+  }
+}

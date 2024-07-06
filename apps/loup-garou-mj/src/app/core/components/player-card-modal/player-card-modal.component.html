@@ -1,13 +1,11 @@
-<ion-content>
-  <div id="container">
-    <img
-      [ngSrc]="card | playerRoleImage"
-      [alt]="card | playerRoleName"
-      height="250"
-      width="250"
-      class="role-img"
-    />
-    <h1>{{ card | playerRoleName | uppercase }}</h1>
-    <ion-button expand="block" (click)="continue()">Continuer</ion-button>
-  </div>
-</ion-content>
+<div class="modal">
+  <img
+    [ngSrc]="card | playerRoleImage"
+    [alt]="card | playerRoleName"
+    height="250"
+    width="250"
+    class="role-img"
+  />
+  <h1>{{ card | playerRoleName | uppercase }}</h1>
+  <button class="btn primary" (click)="continue()">CONTINUER</button>
+</div>

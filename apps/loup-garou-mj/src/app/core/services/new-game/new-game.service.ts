@@ -15,7 +15,7 @@ export class NewGameService {
     //   id: 0,
     //   name: 'Valentin',
     //   role: PlayerRoleEnum.VILLAGEOIS,
-    // card: PlayerRoleEnum.VILLAGEOIS,
+    //   card: PlayerRoleEnum.VILLAGEOIS,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -23,7 +23,7 @@ export class NewGameService {
     //   id: 1,
     //   name: 'Jean-Baptiste',
     //   role: PlayerRoleEnum.LOUP_GAROU,
-    // card: PlayerRoleEnum.LOUP_GAROU,
+    //   card: PlayerRoleEnum.LOUP_GAROU,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -31,7 +31,7 @@ export class NewGameService {
     //   id: 2,
     //   name: 'Davy',
     //   role: PlayerRoleEnum.SORCIERE,
-    // card: PlayerRoleEnum.SORCIERE,
+    //   card: PlayerRoleEnum.SORCIERE,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -39,15 +39,15 @@ export class NewGameService {
     //   id: 3,
     //   name: 'Romain',
     //   role: PlayerRoleEnum.VILLAGEOIS,
-    // card: PlayerRoleEnum.VILLAGEOIS,
+    //   card: PlayerRoleEnum.VILLAGEOIS,
     //   statuses: new Set(),
     //   isDead: false,
     // },
     // {
     //   id: 4,
     //   name: 'Anne-Lise',
-    //   role: PlayerRoleEnum.CHASSEUR,
-    // card: PlayerRoleEnum.CHASSEUR,
+    //   role: PlayerRoleEnum.NOT_SELECTED,
+    //   card: PlayerRoleEnum.NOT_SELECTED,
     //   statuses: new Set(),
     //   isDead: false,
     // },
@@ -108,10 +108,10 @@ export class NewGameService {
 
   changeRole(id: number, role: PlayerRoleEnum): void {
     const currentPlayers = [...this.players()];
-    const player = currentPlayers.find((player) => player.id === id);
-    if (player !== undefined) {
-      player.role = role;
-      player.card = role;
+    const playerIndex = currentPlayers.findIndex((player) => player.id === id);
+    if (playerIndex > -1) {
+      const player = { ...currentPlayers[playerIndex], role, card: role };
+      currentPlayers[playerIndex] = player;
       this.players.set(currentPlayers);
     }
   }

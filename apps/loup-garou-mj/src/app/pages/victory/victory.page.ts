@@ -1,32 +1,14 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { VictoryEnum } from '../../core/enums/victory.enum';
 import { VictoryNamePipe } from '../../core/pipes/victory-name/victory-name.pipe';
-import { HeaderComponent } from '../../core/components/header/header.component';
 import { NewGameService } from '../../core/services/new-game/new-game.service';
-import {
-  IonButton,
-  IonContent,
-  IonNote,
-  IonRouterLink,
-  IonText,
-} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'lgmj-victory',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    VictoryNamePipe,
-    HeaderComponent,
-    IonRouterLink,
-    IonContent,
-    IonNote,
-    IonText,
-    IonButton,
-  ],
+  imports: [CommonModule, RouterLink, VictoryNamePipe],
   templateUrl: './victory.page.html',
   styleUrls: ['./victory.page.scss'],
 })

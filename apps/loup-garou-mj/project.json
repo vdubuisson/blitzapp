@@ -4,6 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/loup-garou-mj/src",
   "prefix": "lgmj",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -17,15 +18,11 @@
         "tsConfig": "apps/loup-garou-mj/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "allowedCommonJsDependencies": ["localforage"],
-        "assets": [
-          "apps/loup-garou-mj/src/assets"
-        ],
-        "styles": [
-          "apps/loup-garou-mj/src/styles.scss",
-          {
-            "input": "apps/loup-garou-mj/src/theme/variables.scss"
-          }
-        ],
+        "assets": ["apps/loup-garou-mj/src/assets"],
+        "styles": ["apps/loup-garou-mj/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["apps/loup-garou-mj/src/styles"]
+        },
         "scripts": [],
         "browser": "apps/loup-garou-mj/src/main.ts"
       },
@@ -192,6 +189,5 @@
         }
       }
     }
-  },
-  "tags": []
+  }
 }

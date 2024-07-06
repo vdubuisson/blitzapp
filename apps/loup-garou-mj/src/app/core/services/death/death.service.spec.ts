@@ -350,7 +350,7 @@ describe('DeathService', () => {
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
         card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
+        statuses: [],
         isDead: true,
       },
     ]);

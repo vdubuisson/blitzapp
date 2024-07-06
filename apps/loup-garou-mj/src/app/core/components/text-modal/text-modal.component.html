@@ -1,0 +1,19 @@
+<div class="modal">
+  <div class="modal-header">
+    <span class="modal-title" *ngIf="data.header">{{ data.header }}</span>
+    <fa-icon
+      class="close-icon"
+      [icon]="closeIcon"
+      (click)="close()"
+      size="xl"
+    />
+  </div>
+  <div class="modal-body" *ngIf="data.message">
+    <div [innerHTML]="data.message"></div>
+  </div>
+  <div class="modal-footer" *ngIf="data.confirmText">
+    <button class="btn primary" (click)="close(true)">
+      {{ data.confirmText }}
+    </button>
+  </div>
+</div>

@@ -11,7 +11,7 @@ import { ROUNDS_ORDER_CONFIG } from '../../configs/rounds-order.config';
   providedIn: 'root',
 })
 export class RoundOrchestrationService {
-  private readonly sortedRounds = ROUNDS_ORDER_CONFIG;
+  private sortedRounds = [...ROUNDS_ORDER_CONFIG];
 
   private uniqueRoundsPassed: Set<RoundEnum> = new Set();
   private beforeDeathRound: RoundEnum | undefined;
@@ -96,6 +96,13 @@ export class RoundOrchestrationService {
     } while (nextHandler === undefined);
 
     return nextRound;
+  }
+
+  setVillageoisFirst(): void {
+    const sectaireIndex = this.sortedRounds.indexOf(RoundEnum.SECTAIRE);
+    const villageoisIndex = this.sortedRounds.indexOf(RoundEnum.VILLAGEOIS);
+    this.sortedRounds.splice(villageoisIndex, 1);
+    this.sortedRounds.splice(sectaireIndex + 1, 0, RoundEnum.VILLAGEOIS);
   }
 
   private initFromStorage(): void {

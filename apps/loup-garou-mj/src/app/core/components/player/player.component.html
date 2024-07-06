@@ -1,74 +1,60 @@
-<ion-item
-  [disabled]="player.isDead || disabled"
-  [color]="player.isDead ? 'medium' : ''"
+<div
+  class="player"
+  [class.disabled]="player().isDead || disabled"
+  [class.dead]="player().isDead"
+  [class.selection]="selectionOpened"
 >
-  <ion-icon *ngIf="player.isDead; else formElement" slot="start" name="skull" />
+  @if (player().isDead) {
+    <fa-icon [icon]="deadIcon" size="xl" />
+  } @else {
+    @if (
+      displayMode() === playerDisplayModeEnum.SELECT_MULTI ||
+      displayMode() === playerDisplayModeEnum.SELECT_SINGLE
+    ) {
+      <label [for]="'input-' + player().id" class="label"></label>
+      <input
+        #checkbox
+        [id]="'input-' + player().id"
+        [type]="
+          displayMode() === playerDisplayModeEnum.SELECT_SINGLE
+            ? 'radio'
+            : 'checkbox'
+        "
+        class="form-control"
+        [checked]="checked"
+        [disabled]="disabled"
+        (change)="onCheckedChange()"
+        (click)="onCheckboxClick()"
+      />
+    }
+  }
 
-  <ion-thumbnail
-    slot="start"
-    *ngIf="player.role !== playerRoleEnum.NOT_SELECTED"
-  >
-    <img
-      [ngSrc]="player.role | playerRoleImage"
-      [alt]="player.role | playerRoleName"
-      width="250"
-      height="250"
-      class="role-img"
-    />
-  </ion-thumbnail>
+  <img
+    [ngSrc]="displayedRole() | playerRoleImage"
+    [alt]="displayedRole() | playerRoleName"
+    width="55"
+    height="55"
+    class="role-img"
+    *ngIf="displayedRole() !== playerRoleEnum.NOT_SELECTED"
+  />
 
-  <ion-label>
-    <h2>{{ player.name }}</h2>
-    <p>{{ player.role | playerRoleName }}</p>
-  </ion-label>
+  <div class="info">
+    <span class="name">{{ player().name }}</span>
+    <span class="role">{{ displayedRole() | playerRoleName }}</span>
+  </div>
 
-  <ng-container *ngTemplateOutlet="endElement" />
-</ion-item>
+  <ng-container [ngSwitch]="displayMode()">
+    <ng-container *ngSwitchCase="playerDisplayModeEnum.EDIT_ROLE">
+      <div class="label" (click)="openSelectRoleOverlay()"></div>
+      <fa-icon [icon]="selectIcon" />
+    </ng-container>
 
-<ng-template #formElement>
-  <ng-container [ngSwitch]="displayMode">
-    <!-- SELECT_MULTI mode -->
-    <ion-checkbox
-      *ngSwitchCase="playerDisplayModeEnum.SELECT_MULTI"
-      slot="start"
-      [checked]="checked"
-      (ionChange)="onCheckedChange($event)"
-    />
-
-    <!-- SELECT_SINGLE mode -->
-    <ion-radio
-      *ngSwitchCase="playerDisplayModeEnum.SELECT_SINGLE"
-      slot="start"
-      [value]="player.id"
-    />
-  </ng-container>
-</ng-template>
-
-<ng-template #endElement>
-  <ng-container [ngSwitch]="displayMode">
-    <ion-select
-      *ngSwitchCase="playerDisplayModeEnum.EDIT_ROLE"
-      placeholder="Rôle"
-      [legacy]="true"
-      interface="action-sheet"
-      [interfaceOptions]="customInterfaceOptions"
-      cancelText="Annuler"
-      [value]="player.role"
-      (ionChange)="onRoleChange($event)"
-    >
-      <ion-select-option
-        *ngFor="let role of sortedRoles; trackBy: roleTrackBy"
-        [value]="role"
-        >{{ role | playerRoleName }}</ion-select-option
-      >
-    </ion-select>
-
-    <div slot="end" *ngSwitchDefault>
+    <div *ngSwitchDefault>
       <span
         class="status-icon"
-        *ngFor="let status of sortedStatuses; trackBy: statusTrackBy"
+        *ngFor="let status of sortedStatuses(); trackBy: statusTrackBy"
         >{{ status | playerStatusIcon }}</span
       >
     </div>
   </ng-container>
-</ng-template>
+</div>

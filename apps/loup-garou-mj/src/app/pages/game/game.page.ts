@@ -1,3 +1,5 @@
+import { SelectionModel } from '@angular/cdk/collections';
+import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -5,43 +7,22 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {
-  IonButton,
-  IonContent,
-  IonList,
-  IonNote,
-  IonRadioGroup,
-  IonText,
-  RadioGroupCustomEvent,
-} from '@ionic/angular/standalone';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { PlayerComponent } from '../../core/components/player/player.component';
 import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
+import { RoundTypeEnum } from '../../core/enums/round-type.enum';
+import { RoundEnum } from '../../core/enums/round.enum';
 import { Player } from '../../core/models/player.model';
 import { Round } from '../../core/models/round.model';
-import { GameService } from '../../core/services/game/game.service';
 import { RoundNamePipe } from '../../core/pipes/round-name/round-name.pipe';
-import { PlayerComponent } from '../../core/components/player/player.component';
-import { HeaderComponent } from '../../core/components/header/header.component';
+import { GameService } from '../../core/services/game/game.service';
 import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
-import { RoundTypeEnum } from '../../core/enums/round-type.enum';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { RoundEnum } from '../../core/enums/round.enum';
 
 @Component({
   selector: 'lgmj-game',
   standalone: true,
-  imports: [
-    CommonModule,
-    RoundNamePipe,
-    PlayerComponent,
-    HeaderComponent,
-    IonContent,
-    IonNote,
-    IonText,
-    IonList,
-    IonRadioGroup,
-    IonButton,
-  ],
+  imports: [CommonModule, RoundNamePipe, PlayerComponent],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
 })
@@ -75,11 +56,18 @@ export class GamePage {
 
   protected selectedPlayer: WritableSignal<number | undefined> =
     signal(undefined);
-  protected selectedPlayers: WritableSignal<Set<number>> = signal(
-    new Set<number>(),
-  );
+  protected selectedPlayers = computed<Set<number>>(() => {
+    const selection =
+      this.playersMultiSelectionChange()?.source?.selected ?? [];
+    return new Set(selection);
+  });
   protected selectedRole: WritableSignal<PlayerRoleEnum | undefined> =
     signal(undefined);
+
+  private playersMultiSelection = new SelectionModel<number>(true);
+  private playersMultiSelectionChange = toSignal(
+    this.playersMultiSelection.changed,
+  );
 
   protected submitDisabled: Signal<boolean> = computed(() => {
     switch (this.playerDisplayMode()) {
@@ -116,23 +104,11 @@ export class GamePage {
 
   constructor(private gameService: GameService) {}
 
-  protected onSinglePlayerChecked(event: Event) {
-    if (this.playerDisplayMode() === PlayerDisplayModeEnum.SELECT_SINGLE) {
-      this.selectedPlayer.set((event as RadioGroupCustomEvent).detail.value);
-    }
-  }
-
-  protected onMultiPlayerChecked(id: number, checked: boolean): void {
+  protected onPlayerChecked(id: number, checked: boolean): void {
     if (this.playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI) {
-      this.selectedPlayers.update((previousPlayers) => {
-        const newPlayers = new Set(previousPlayers);
-        if (checked) {
-          newPlayers.add(id);
-        } else {
-          newPlayers.delete(id);
-        }
-        return newPlayers;
-      });
+      this.playersMultiSelection.toggle(id);
+    } else {
+      this.selectedPlayer.set(checked ? id : undefined);
     }
   }
 
@@ -156,7 +132,7 @@ export class GamePage {
 
   private cleanSelection(): void {
     this.selectedPlayer.set(undefined);
-    this.selectedPlayers.set(new Set());
+    this.playersMultiSelection.clear();
     this.selectedRole.set(undefined);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage-angular';
-import { BehaviorSubject, filter, from, Observable, switchMap } from 'rxjs';
+import { Preferences } from '@capacitor/preferences';
+import { from, map, Observable } from 'rxjs';
 
 enum StorageActionEnum {
   SET,
@@ -17,15 +17,10 @@ interface StorageAction {
   providedIn: 'root',
 })
 export class StorageService {
-  private _storage: Storage | undefined;
-  private isInitialized = new BehaviorSubject(false);
-
   private actionQueue: StorageAction[] = [];
   private actionInProgress = false;
 
-  constructor(private storage: Storage) {
-    this.init();
-  }
+  constructor() {}
 
   set(key: string, value: unknown): void {
     this.actionQueue.push({
@@ -40,9 +35,8 @@ export class StorageService {
   }
 
   get<T>(key: string): Observable<T | null> {
-    return this.isInitialized.pipe(
-      filter((isInitialized) => isInitialized),
-      switchMap(() => from((this._storage as Storage).get(key))),
+    return from(Preferences.get({ key })).pipe(
+      map(({ value }) => (value ? JSON.parse(value) : null)),
     );
   }
 
@@ -58,12 +52,7 @@ export class StorageService {
   }
 
   clear(): Observable<void> {
-    return from((this._storage as Storage).clear());
-  }
-
-  private async init() {
-    this._storage = await this.storage.create();
-    this.isInitialized.next(true);
+    return from(Preferences.clear());
   }
 
   private async handleNextAction(): Promise<void> {
@@ -71,9 +60,10 @@ export class StorageService {
     const action = this.actionQueue.shift();
     if (action !== undefined) {
       if (action.type === StorageActionEnum.SET) {
-        await this._storage?.set(action.key, action.value);
+        const jsonValue = JSON.stringify(action.value);
+        await Preferences.set({ key: action.key, value: jsonValue });
       } else {
-        await this._storage?.remove(action.key);
+        await Preferences.remove({ key: action.key });
       }
     }
     if (this.actionQueue.length > 0) {

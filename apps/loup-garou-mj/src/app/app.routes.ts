@@ -4,25 +4,25 @@ import { confirmNewGameGuard } from './core/guards/confirm-new-game.guard';
 export const appRoutes: Routes = [
   {
     path: 'victory',
-    title: 'LG Assistant MJ | Victoire',
+    title: 'Victoire',
     loadComponent: () =>
       import('./pages/victory/victory.page').then((m) => m.VictoryPage),
   },
   {
     path: 'game',
-    title: 'LG Assistant MJ | Partie en cours',
+    title: 'Partie en cours',
     loadComponent: () =>
       import('./pages/game/game.page').then((m) => m.GamePage),
   },
   {
     path: 'new-game',
-    title: 'LG Assistant MJ | Nouvelle partie',
+    title: 'Nouvelle partie - Joueurs',
     loadComponent: () =>
       import('./pages/new-game/new-game.page').then((m) => m.NewGamePage),
   },
   {
     path: 'new-game/roles',
-    title: 'LG Assistant MJ | Nouvelle partie | Roles',
+    title: 'Nouvelle partie - Roles',
     loadComponent: () =>
       import('./pages/new-game-roles/new-game-roles.page').then(
         (m) => m.NewGameRolesPage,
@@ -30,7 +30,7 @@ export const appRoutes: Routes = [
   },
   {
     path: 'roles-choice',
-    title: 'LG Assistant MJ | Choix des rôles à jouer',
+    title: 'Choix des rôles à jouer',
     canActivate: [confirmNewGameGuard],
     loadComponent: () =>
       import('./pages/roles-choice/roles-choice.page').then(
@@ -39,7 +39,7 @@ export const appRoutes: Routes = [
   },
   {
     path: 'roles-rules',
-    title: 'LG Assistant MJ | Règles des rôles',
+    title: 'Règles des rôles',
     loadComponent: () =>
       import('./pages/roles-rules/roles-rules.page').then(
         (m) => m.RolesRulesPage,
@@ -47,7 +47,7 @@ export const appRoutes: Routes = [
   },
   {
     path: 'status-legends',
-    title: 'LG Assistant MJ | Légende des statuts',
+    title: 'Légende des statuts',
     loadComponent: () =>
       import('./pages/status-legends/status-legends.page').then(
         (m) => m.StatusLegendsPage,
@@ -55,14 +55,14 @@ export const appRoutes: Routes = [
   },
   {
     path: 'options',
-    title: 'LG Assistant MJ | Options',
+    title: 'Options',
     loadComponent: () =>
       import('./pages/options/options.page').then((m) => m.OptionsPage),
   },
   {
     path: '',
     pathMatch: 'full',
-    title: 'LG Assistant MJ | Accueil',
+    title: 'Accueil',
     loadComponent: () =>
       import('./pages/home/home.page').then((m) => m.HomePage),
   },
