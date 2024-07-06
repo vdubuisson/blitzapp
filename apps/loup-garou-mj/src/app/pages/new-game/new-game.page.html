@@ -10,12 +10,8 @@
   cdkDropList
   (cdkDropListDropped)="reorderPlayer($event)"
 >
-  <div
-    class="player"
-    *ngFor="let player of players(); trackBy: playerTrackBy"
-    cdkDrag
-    cdkDragBoundary=".player-list"
-  >
+  @for (player of players(); track player.id) {
+  <div class="player" cdkDrag cdkDragBoundary=".player-list">
     <button
       (click)="removePlayer(player.id)"
       class="btn danger rounded icon-only"
@@ -25,6 +21,7 @@
     <span>{{ player.name }}</span>
     <fa-icon [icon]="dragIcon" class="drag" size="xl" cdkDragHandle />
   </div>
+  }
 </div>
 
 <div class="submit-block">

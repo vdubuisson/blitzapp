@@ -16,9 +16,9 @@
         [routerLinkActiveOptions]="{ exact: true }"
         >Accueil</a
       >
-      <a *ngIf="isGameInProgress()" routerLink="/game" routerLinkActive="active"
-        >Partie en cours</a
-      >
+      @if (isGameInProgress()) {
+        <a routerLink="/game" routerLinkActive="active">Partie en cours</a>
+      }
       <a routerLink="/roles-choice" routerLinkActive="active"
         >Nouvelle partie</a
       >

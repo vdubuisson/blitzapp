@@ -1,9 +1,11 @@
 <cdk-accordion>
-  <lgmj-accordion-item *ngFor="let status of statuses; trackBy: statusTrackBy">
+  @for (status of statuses; track status) {
+  <lgmj-accordion-item>
     <ng-container header>
       <span class="status-icon">{{ status | playerStatusIcon }}</span>
       <span class="status-name">{{ status | playerStatusName }}</span>
     </ng-container>
     <span class="legend" [innerText]="legends[status]"></span>
   </lgmj-accordion-item>
+  }
 </cdk-accordion>

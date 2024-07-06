@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   computed,
@@ -17,12 +17,11 @@ import { Player } from '../../core/models/player.model';
 import { Round } from '../../core/models/round.model';
 import { RoundNamePipe } from '../../core/pipes/round-name/round-name.pipe';
 import { GameService } from '../../core/services/game/game.service';
-import { PLAYER_TRACK_BY } from '../../core/utils/player.track-by';
 
 @Component({
   selector: 'lgmj-game',
   standalone: true,
-  imports: [CommonModule, RoundNamePipe, PlayerComponent],
+  imports: [RoundNamePipe, PlayerComponent],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
 })
@@ -51,8 +50,6 @@ export class GamePage {
   });
 
   protected PlayerDisplayModeEnum = PlayerDisplayModeEnum;
-
-  protected playerTrackBy = PLAYER_TRACK_BY;
 
   protected selectedPlayer: WritableSignal<number | undefined> =
     signal(undefined);

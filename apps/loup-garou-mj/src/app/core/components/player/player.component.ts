@@ -1,4 +1,4 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -26,14 +26,11 @@ import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-i
 import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { PlayerStatusIconPipe } from '../../pipes/player-status-icon/player-status-icon.pipe';
 import { SelectOverlayService } from '../../services/select-overlay/select-overlay.service';
-import { ROLE_TRACK_BY } from '../../utils/role.track-by';
-import { STATUS_TRACK_BY } from '../../utils/status.track-by';
 
 @Component({
   selector: 'lgmj-player',
   standalone: true,
   imports: [
-    CommonModule,
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
     PlayerStatusIconPipe,
@@ -63,9 +60,6 @@ export class PlayerComponent {
   @Output() roleChange = new EventEmitter<PlayerRoleEnum>();
 
   @ViewChild('checkbox') checkboxElement?: ElementRef<HTMLInputElement>;
-
-  protected roleTrackBy = ROLE_TRACK_BY;
-  protected statusTrackBy = STATUS_TRACK_BY;
 
   protected playerDisplayModeEnum = PlayerDisplayModeEnum;
   protected playerRoleEnum = PlayerRoleEnum;

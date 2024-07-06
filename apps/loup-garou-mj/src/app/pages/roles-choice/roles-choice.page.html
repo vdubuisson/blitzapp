@@ -36,19 +36,13 @@
     </div>
 
     <cdk-accordion [multi]="true">
-      <lgmj-accordion-item
-        *ngFor="let box of boxes"
-        [noInnerPadding]="true"
-        [headerColor]="'light'"
-      >
+      @for (box of boxes; track box) {
+      <lgmj-accordion-item [noInnerPadding]="true" [headerColor]="'light'">
         <ng-container header>
           <strong>{{ box | gameBoxName | uppercase }}</strong>
         </ng-container>
-        <label
-          [for]="box + '-' + role"
-          class="form-group"
-          *ngFor="let role of boxContents[box]; trackBy: roleTrackBy"
-        >
+        @for (role of boxContents[box]; track role) {
+        <label [for]="box + '-' + role" class="form-group">
           <img
             [ngSrc]="role | playerRoleImage"
             [alt]="role | playerRoleName"
@@ -67,7 +61,9 @@
             (change)="onRoleCheckChange(role)"
           />
         </label>
+        }
       </lgmj-accordion-item>
+      }
     </cdk-accordion>
 
     <div class="submit-block">

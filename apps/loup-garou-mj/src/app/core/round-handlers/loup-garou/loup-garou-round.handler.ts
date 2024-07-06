@@ -22,7 +22,6 @@ export class LoupGarouRoundHandler implements RoundHandler {
       (player) => player.id === selectedPlayerIds[0],
     );
     if (selectedPlayer !== undefined) {
-      console.log(selectedPlayer);
       selectedPlayer.statuses.add(PlayerStatusEnum.WOLF_TARGET);
       selectedPlayer.killedBy = PlayerRoleEnum.LOUP_GAROU;
     }

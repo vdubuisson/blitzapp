@@ -5,13 +5,14 @@
       <span>{{ content?.header }}</span>
     </div>
     <div class="options">
-      <span
-        class="option"
-        *ngFor="let option of content?.options; trackBy: trackByOption"
-        [class.active]="option.active"
-        (click)="selectOption(option.value)"
-        >{{ option.label }}</span
-      >
+      @for (option of content?.options; track option.value) {
+        <span
+          class="option"
+          [class.active]="option.active"
+          (click)="selectOption(option.value)"
+          >{{ option.label }}</span
+        >
+      }
     </div>
     <div class="footer">
       <span (click)="selectOption(undefined)">ANNULER</span>
