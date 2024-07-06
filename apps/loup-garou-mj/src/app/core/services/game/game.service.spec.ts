@@ -513,7 +513,7 @@ describe('GameService', () => {
     expect(router.navigate).toHaveBeenCalledWith(['game']);
   });
 
-  it('should set first round on game creation using RoundOrchestrationService if no Ange', () => {
+  it('should set first round on game creation using RoundOrchestrationService', () => {
     const mockRound: Round = {
       role: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
@@ -545,6 +545,7 @@ describe('GameService', () => {
     jest
       .spyOn(roundOrchestrationService, 'getFirstRound')
       .mockReturnValue(RoundEnum.LOUP_GAROU);
+    jest.spyOn(roundOrchestrationService, 'setVillageoisFirst');
 
     const newMockPlayers: Player[] = [
       ...mockPlayers,
@@ -560,10 +561,7 @@ describe('GameService', () => {
 
     service.createGame(newMockPlayers, mockCardList);
 
-    expect(service['round']()).toEqual(mockRound);
-    expect(roundHandlersService.getHandler).toHaveBeenCalledWith(
-      RoundEnum.VILLAGEOIS,
-    );
+    expect(roundOrchestrationService.setVillageoisFirst).toHaveBeenCalled();
   });
 
   it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {

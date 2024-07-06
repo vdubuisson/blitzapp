@@ -82,12 +82,12 @@ export class GameService {
       .map((player) => player.role)
       .includes(PlayerRoleEnum.ANGE);
     if (isAngePresent) {
-      this.setRound(RoundEnum.VILLAGEOIS);
+      this.roundOrchestrationService.setVillageoisFirst();
       this.nextDayCount(-1);
     } else {
-      this.setFirstRound();
       this.nextDayCount(0);
     }
+    this.setFirstRound();
     this.router.navigate(['game']);
   }
 

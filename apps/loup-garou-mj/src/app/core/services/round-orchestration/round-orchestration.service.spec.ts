@@ -264,4 +264,22 @@ describe('RoundOrchestrationService', () => {
 
     expect(firstRound).toEqual(RoundEnum.VOYANTE);
   });
+
+  it('should move VILLAGEOIS round after SECTAIRE on setVillageoisFirst', () => {
+    service['sortedRounds'] = [
+      RoundEnum.SECTAIRE,
+      RoundEnum.SORCIERE_HEALTH,
+      RoundEnum.LOUP_GAROU,
+      RoundEnum.VILLAGEOIS,
+    ];
+
+    service.setVillageoisFirst();
+
+    expect(service['sortedRounds']).toEqual([
+      RoundEnum.SECTAIRE,
+      RoundEnum.VILLAGEOIS,
+      RoundEnum.SORCIERE_HEALTH,
+      RoundEnum.LOUP_GAROU,
+    ]);
+  });
 });
