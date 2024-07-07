@@ -18,7 +18,7 @@ import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
 import { StatusesService } from '../statuses/statuses.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { CardList, StoredCardList } from '../../models/card-list.model';

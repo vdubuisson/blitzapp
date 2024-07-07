@@ -1,10 +1,10 @@
 import { NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
-import { AccordionItemModule } from '../../core/components/accordion-item/accordion-item.module';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { PlayerRoleImagePipe } from '../../core/pipes/player-role-image/player-role-image.pipe';
-import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
-import { ROLES_RULES } from '../../core/values/roles-rules';
+import { AccordionItemModule } from '../../components/accordion-item/accordion-item.module';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
+import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
+import { ROLES_RULES } from '../../values/roles-rules';
 
 @Component({
   selector: 'lgmj-roles-rules',

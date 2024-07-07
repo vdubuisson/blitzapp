@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { confirmNewGameGuard } from './core/guards/confirm-new-game.guard';
+import { confirmNewGameGuard } from './guards/confirm-new-game.guard';
 
 export const appRoutes: Routes = [
   {

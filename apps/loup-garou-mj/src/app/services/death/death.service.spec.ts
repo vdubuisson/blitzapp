@@ -7,7 +7,7 @@ import { RoundEnum } from '../../enums/round.enum';
 import { Player } from '../../models/player.model';
 import { AnnouncementService } from '../announcement/announcement.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
 import { DeathService } from './death.service';
 import { AnnouncementEnum } from '../../enums/announcement.enum';

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from './core/components/header/header.component';
-import { SelectOverlayComponent } from './core/components/select-overlay/select-overlay.component';
+import { HeaderComponent } from './components/header/header.component';
+import { SelectOverlayComponent } from './components/select-overlay/select-overlay.component';
 
 @Component({
   selector: 'lgmj-root',

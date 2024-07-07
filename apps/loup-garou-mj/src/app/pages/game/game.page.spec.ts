@@ -1,13 +1,13 @@
 import { WritableSignal, signal } from '@angular/core';
 import { waitForAsync } from '@angular/core/testing';
 import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
-import { PlayerDisplayModeEnum } from '../../core/enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { RoundTypeEnum } from '../../core/enums/round-type.enum';
-import { RoundEnum } from '../../core/enums/round.enum';
-import { Player } from '../../core/models/player.model';
-import { Round } from '../../core/models/round.model';
-import { GameService } from '../../core/services/game/game.service';
+import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { RoundTypeEnum } from '../../enums/round-type.enum';
+import { RoundEnum } from '../../enums/round.enum';
+import { Player } from '../../models/player.model';
+import { Round } from '../../models/round.model';
+import { GameService } from '../../services/game/game.service';
 import { GamePage } from './game.page';
 
 describe('GamePage', () => {

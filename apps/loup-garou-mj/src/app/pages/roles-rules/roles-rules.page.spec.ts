@@ -1,5 +1,5 @@
 import { MockService } from 'ng-mocks';
-import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
+import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
 import { RolesRulesPage } from './roles-rules.page';
 
 describe('RolesRulesPage', () => {

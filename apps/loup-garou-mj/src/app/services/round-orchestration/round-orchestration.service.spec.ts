@@ -8,7 +8,7 @@ import { Round } from '../../models/round.model';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 
 import { RoundOrchestrationService } from './round-orchestration.service';
 

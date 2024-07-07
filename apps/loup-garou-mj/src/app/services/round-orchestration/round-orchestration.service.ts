@@ -4,7 +4,7 @@ import { RoundEnum } from '../../enums/round.enum';
 import { RoundHandler } from '../../round-handlers/round-handler.interface';
 import { DeathService } from '../death/death.service';
 import { RoundHandlersService } from '../round-handlers/round-handlers.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 import { ROUNDS_ORDER_CONFIG } from '../../configs/rounds-order.config';
 
 @Injectable({

@@ -25,7 +25,7 @@ import {
   VoyanteRoundHandler,
 } from '../../round-handlers';
 import { AnnouncementService } from '../announcement/announcement.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageService } from '../../services/storage/storage.service';
 import { RoundHandlersService } from './round-handlers.service';
 import { ModalService } from '../modal/modal.service';
 import { DefaultRoundHandler } from '../../round-handlers/default/default-round.handler';

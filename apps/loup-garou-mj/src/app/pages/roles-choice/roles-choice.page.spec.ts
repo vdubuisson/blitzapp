@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MockService } from 'ng-mocks';
-import { PlayerRoleEnum } from '../../core/enums/player-role.enum';
-import { CardList } from '../../core/models/card-list.model';
-import { PlayerRoleNamePipe } from '../../core/pipes/player-role-name/player-role-name.pipe';
-import { CardChoiceService } from '../../core/services/card-choice/card-choice.service';
+import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { CardList } from '../../models/card-list.model';
+import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
+import { CardChoiceService } from '../../services/card-choice/card-choice.service';
 import { RolesChoicePage } from './roles-choice.page';
 
 describe('RolesChoicePage', () => {

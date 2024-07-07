@@ -1,8 +1,8 @@
 import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
 import { HeaderComponent } from './header.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GameService } from '../../services/game/game.service';
 import { signal } from '@angular/core';
+import { GameService } from '../../services/game/game.service';
 
 describe('HeaderComponent', () => {
   MockInstance.scope();
