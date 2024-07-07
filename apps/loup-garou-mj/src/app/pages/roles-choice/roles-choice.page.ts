@@ -27,10 +27,10 @@ import { PlayerRoleImagePipe } from '@/pipes/player-role-image/player-role-image
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 
-interface RoleForm {
+type RoleForm = {
   villageois: FormControl<number | null>;
   loupGarou: FormControl<number | null>;
-}
+};
 
 @Component({
   selector: 'lgmj-roles-choice',

@@ -7,11 +7,11 @@ enum StorageActionEnum {
   REMOVE,
 }
 
-interface StorageAction {
+type StorageAction = {
   type: StorageActionEnum;
   key: string;
   value?: unknown;
-}
+};
 
 @Injectable({
   providedIn: 'root',

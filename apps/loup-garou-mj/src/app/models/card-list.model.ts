@@ -1,12 +1,12 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 
-export interface CardList {
+export type CardList = {
   selectedRoles: Set<PlayerRoleEnum>;
   loupGarou: number;
   villageois: number;
   playersNumber: number;
-}
+};
 
-export interface StoredCardList extends Omit<CardList, 'selectedRoles'> {
+export type StoredCardList = Omit<CardList, 'selectedRoles'> & {
   selectedRoles: PlayerRoleEnum[];
-}
+};
