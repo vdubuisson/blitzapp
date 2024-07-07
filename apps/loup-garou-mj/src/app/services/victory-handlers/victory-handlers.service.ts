@@ -3,20 +3,18 @@ import { PlayerRoleEnum } from '../../enums/player-role.enum';
 import { PlayerStatusEnum } from '../../enums/player-status.enum';
 import { VictoryEnum } from '../../enums/victory.enum';
 import { Player } from '../../models/player.model';
-import {
-  AmoureuxVictoryHandler,
-  JoueurFluteVictoryHandler,
-  LoupBlancVictoryHandler,
-  LoupGarouVictoryHandler,
-  NoneVictoryHandler,
-  VillageoisVictoryHandler,
-} from '../../victory-handlers';
 import { VictoryHandler } from '../../victory-handlers/victory.handler';
 import { StorageService } from '../storage/storage.service';
 import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
 import { AngeVictoryHandler } from '../../victory-handlers/ange/ange-victory.handler';
 import { VICTORIES_PRIORITY_CONFIG } from '../../configs/victories-priority.config';
 import { SectaireVictoryHandler } from '../../victory-handlers/sectaire/sectaire-victory.handler';
+import { AmoureuxVictoryHandler } from '../../victory-handlers/amoureux/amoureux-victory.handler';
+import { JoueurFluteVictoryHandler } from '../../victory-handlers/joueur-flute/joueur-flute-victory.handler';
+import { LoupBlancVictoryHandler } from '../../victory-handlers/loup-blanc/loup-blanc-victory.handler';
+import { LoupGarouVictoryHandler } from '../../victory-handlers/loup-garou/loup-garou-victory.handler';
+import { NoneVictoryHandler } from '../../victory-handlers/none/none-victory.handler';
+import { VillageoisVictoryHandler } from '../../victory-handlers/villageois/villageois-victory.handler';
 
 @Injectable({
   providedIn: 'root',
