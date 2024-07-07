@@ -1,7 +1,7 @@
-import { GameBoxEnum } from '../../enums/game-box.enum';
+import { GameBoxEnum } from '@/enums/game-box.enum';
 import { GameBoxNamePipe } from './game-box-name.pipe';
 
-jest.mock('../../values/game-box-names', () => ({
+jest.mock('@/values/game-box-names', () => ({
   GAME_BOX_NAMES: { [GameBoxEnum.CORE]: 'Test' },
 }));
 

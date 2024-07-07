@@ -10,7 +10,7 @@ import {
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { filter, map, mergeMap } from 'rxjs';
-import { GameService } from '../../services/game/game.service';
+import { GameService } from '@/services/game/game.service';
 
 @Component({
   selector: 'lgmj-header',

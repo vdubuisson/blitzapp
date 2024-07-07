@@ -1,4 +1,4 @@
-import { VictoryEnum } from '../enums/victory.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 export const VICTORIES_PRIORITY_CONFIG: VictoryEnum[] = [
   VictoryEnum.NONE,

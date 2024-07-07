@@ -1,4 +1,4 @@
-import { RoundEnum } from '../enums/round.enum';
+import { RoundEnum } from '@/enums/round.enum';
 
 export const ROUNDS_ORDER_CONFIG: RoundEnum[] = [
   RoundEnum.SECTAIRE,

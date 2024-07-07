@@ -1,7 +1,7 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
 import { AmoureuxRoundHandler } from './amoureux-round.handler';
 import { waitForAsync } from '@angular/core/testing';
 

@@ -1,14 +1,14 @@
 import { MockService } from 'ng-mocks';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
-import { AnnouncementService } from '../../services/announcement/announcement.service';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { RenardRoundHandler } from './renard-round.handler';
-import * as neighborUtils from '../../utils/neighbor.utils';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import * as neighborUtils from '@/utils/neighbor.utils';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { waitForAsync } from '@angular/core/testing';
-import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 
 describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;

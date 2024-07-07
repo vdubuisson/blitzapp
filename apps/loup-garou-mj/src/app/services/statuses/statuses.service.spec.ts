@@ -1,6 +1,6 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
 import { StatusesService } from './statuses.service';
 
 describe('StatusesService', () => {

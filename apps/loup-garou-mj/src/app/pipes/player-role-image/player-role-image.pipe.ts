@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 
 @Pipe({
   name: 'playerRoleImage',

@@ -1,19 +1,16 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
-import { Round } from '../../models/round.model';
-import { AnnouncementService } from '../../services/announcement/announcement.service';
-import {
-  findLeftNeighbor,
-  findRightNeighbor,
-} from '../../utils/neighbor.utils';
-import { RoundHandler } from '../round-handler.interface';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
+import { Round } from '@/models/round.model';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
+import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { Observable, of } from 'rxjs';
-import { RoundHandlerParameters } from '../round-handler-parameters.interface';
-import { AnnouncementEnum } from '../../enums/announcement.enum';
-import { isLoupGarou } from '../../utils/roles.utils';
+import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { isLoupGarou } from '@/utils/roles.utils';
 
 export class RenardRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;

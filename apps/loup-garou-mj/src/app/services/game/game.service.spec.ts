@@ -3,23 +3,23 @@ import { Router } from '@angular/router';
 import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
 import { Observable, of } from 'rxjs';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { VictoryEnum } from '../../enums/victory.enum';
-import { Player, StoredPlayer } from '../../models/player.model';
-import { Round } from '../../models/round.model';
-import { RoundHandler } from '../../round-handlers/round-handler.interface';
-import { DeathService } from '../death/death.service';
-import { RoundHandlersService } from '../round-handlers/round-handlers.service';
-import { RoundOrchestrationService } from '../round-orchestration/round-orchestration.service';
-import { StatusesService } from '../statuses/statuses.service';
-import { StorageService } from '../../services/storage/storage.service';
-import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { Player, StoredPlayer } from '@/models/player.model';
+import { Round } from '@/models/round.model';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
+import { DeathService } from '@/services/death/death.service';
+import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
+import { RoundOrchestrationService } from '@/services/round-orchestration/round-orchestration.service';
+import { StatusesService } from '@/services/statuses/statuses.service';
+import { StorageService } from '@/services/storage/storage.service';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 
 import { GameService } from './game.service';
-import { CardList, StoredCardList } from '../../models/card-list.model';
+import { CardList, StoredCardList } from '@/models/card-list.model';
 
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;

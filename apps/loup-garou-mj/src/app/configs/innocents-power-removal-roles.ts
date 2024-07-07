@@ -1,4 +1,4 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 
 export const INNOCENTS_POWER_REMOVAL_ROLES: PlayerRoleEnum[] = [
   PlayerRoleEnum.CHASSEUR,

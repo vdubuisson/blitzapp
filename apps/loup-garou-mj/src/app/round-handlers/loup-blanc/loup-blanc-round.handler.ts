@@ -1,11 +1,11 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
-import { Round } from '../../models/round.model';
-import { RoundHandler } from '../round-handler.interface';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
+import { Round } from '@/models/round.model';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { Observable, of } from 'rxjs';
-import { isLoupGarou } from '../../utils/roles.utils';
+import { isLoupGarou } from '@/utils/roles.utils';
 
 export class LoupBlancRoundHandler implements RoundHandler {
   readonly isOnlyOnce = false;

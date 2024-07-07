@@ -1,8 +1,8 @@
-import { CardList } from '../models/card-list.model';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { Player } from '../models/player.model';
+import { CardList } from '@/models/card-list.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { Player } from '@/models/player.model';
 import { getNotPlayedRoles, isLoupGarou } from './roles.utils';
-import { PlayerStatusEnum } from '../enums/player-status.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('getNotPlayedRoles', () => {
   it('should return not played cards', () => {

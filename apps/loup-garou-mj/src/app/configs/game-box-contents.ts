@@ -1,5 +1,5 @@
-import { GameBoxEnum } from '../enums/game-box.enum';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
+import { GameBoxEnum } from '@/enums/game-box.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 
 export const GAME_BOX_CONTENTS: { [box: string]: PlayerRoleEnum[] } = {
   [GameBoxEnum.CORE]: [

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { SelectOverlayService } from '../../services/select-overlay/select-overlay.service';
+import { SelectOverlayService } from '@/services/select-overlay/select-overlay.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SelectOverlay } from '../../models/select-overlay.model';
+import { SelectOverlay } from '@/models/select-overlay.model';
 
 @Component({
   selector: 'lgmj-select-overlay',

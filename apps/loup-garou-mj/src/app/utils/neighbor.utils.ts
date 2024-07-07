@@ -1,4 +1,4 @@
-import { Player } from '../models/player.model';
+import { Player } from '@/models/player.model';
 import { isLoupGarou } from './roles.utils';
 
 export function findLeftNeighbor(

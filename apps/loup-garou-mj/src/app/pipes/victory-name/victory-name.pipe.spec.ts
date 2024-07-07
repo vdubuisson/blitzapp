@@ -1,7 +1,7 @@
-import { VictoryEnum } from '../../enums/victory.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
 import { VictoryNamePipe } from './victory-name.pipe';
 
-jest.mock('../../values/victory-names', () => ({
+jest.mock('@/values/victory-names', () => ({
   VICTORY_NAMES: { [VictoryEnum.VILLAGEOIS]: 'Test' },
 }));
 

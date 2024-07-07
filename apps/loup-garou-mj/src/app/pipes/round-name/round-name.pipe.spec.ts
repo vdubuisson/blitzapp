@@ -1,7 +1,7 @@
-import { RoundEnum } from '../../enums/round.enum';
+import { RoundEnum } from '@/enums/round.enum';
 import { RoundNamePipe } from './round-name.pipe';
 
-jest.mock('../../values/round-names', () => ({
+jest.mock('@/values/round-names', () => ({
   ROUND_NAMES: { [RoundEnum.VILLAGEOIS]: 'Test' },
 }));
 

@@ -1,13 +1,13 @@
 import { Component, computed, Signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlayerComponent } from '../../components/player/player.component';
-import { NON_UNIQUE_ROLES } from '../../configs/non-unique-roles';
-import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { CardList } from '../../models/card-list.model';
-import { Player } from '../../models/player.model';
-import { CardChoiceService } from '../../services/card-choice/card-choice.service';
-import { NewGameService } from '../../services/new-game/new-game.service';
+import { PlayerComponent } from '@/components/player/player.component';
+import { NON_UNIQUE_ROLES } from '@/configs/non-unique-roles';
+import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { CardList } from '@/models/card-list.model';
+import { Player } from '@/models/player.model';
+import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { NewGameService } from '@/services/new-game/new-game.service';
 
 @Component({
   selector: 'lgmj-new-game-roles',

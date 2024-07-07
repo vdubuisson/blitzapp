@@ -1,4 +1,4 @@
-import { PlayerStatusEnum } from '../enums/player-status.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 export const STATUS_NAMES: Record<PlayerStatusEnum, string> = {
   [PlayerStatusEnum.WOLF_TARGET]: 'Cible loups-garous',

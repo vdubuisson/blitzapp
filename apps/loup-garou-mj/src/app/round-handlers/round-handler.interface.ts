@@ -1,9 +1,9 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { RoundTypeEnum } from '../enums/round-type.enum';
-import { Player } from '../models/player.model';
-import { Round } from '../models/round.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { Player } from '@/models/player.model';
+import { Round } from '@/models/round.model';
 import { Observable } from 'rxjs';
-import { CardList } from '../models/card-list.model';
+import { CardList } from '@/models/card-list.model';
 
 export interface RoundHandler {
   readonly isOnlyOnce: boolean;

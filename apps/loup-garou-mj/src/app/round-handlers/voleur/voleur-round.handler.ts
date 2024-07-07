@@ -1,13 +1,13 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
-import { Round } from '../../models/round.model';
-import { RoundHandler } from '../round-handler.interface';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
+import { Round } from '@/models/round.model';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { Observable, of } from 'rxjs';
-import { CardList } from '../../models/card-list.model';
-import { LOUPS_GAROUS_ROLES } from '../../configs/loups-garous-roles';
-import { getNotPlayedCards } from '../../utils/cards.utils';
+import { CardList } from '@/models/card-list.model';
+import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
+import { getNotPlayedCards } from '@/utils/cards.utils';
 
 export class VoleurRoundHandler implements RoundHandler {
   readonly isOnlyOnce = true;

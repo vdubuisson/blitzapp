@@ -1,6 +1,6 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { MockService } from 'ng-mocks';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerCardModalComponent } from './player-card-modal.component';
 
 describe('PlayerCardModalComponent', () => {

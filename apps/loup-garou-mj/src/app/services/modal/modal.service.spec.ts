@@ -2,8 +2,8 @@ import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { waitForAsync } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
 import { Subject } from 'rxjs';
-import { PlayerCardModalComponent } from '../../components/player-card-modal/player-card-modal.component';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerCardModalComponent } from '@/components/player-card-modal/player-card-modal.component';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { ModalService } from './modal.service';
 
 describe('ModalService', () => {

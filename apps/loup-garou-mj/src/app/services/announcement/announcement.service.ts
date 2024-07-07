@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AnnouncementEnum } from '../../enums/announcement.enum';
-import { Player } from '../../models/player.model';
-import { TextModalData } from '../../models/text-modal-data.model';
-import { announcements } from '../../values/announcements';
-import { ModalService } from '../modal/modal.service';
-import { StorageService } from '../storage/storage.service';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { Player } from '@/models/player.model';
+import { TextModalData } from '@/models/text-modal-data.model';
+import { announcements } from '@/values/announcements';
+import { ModalService } from '@/services/modal/modal.service';
+import { StorageService } from '@/services/storage/storage.service';
 
 @Injectable({
   providedIn: 'root',

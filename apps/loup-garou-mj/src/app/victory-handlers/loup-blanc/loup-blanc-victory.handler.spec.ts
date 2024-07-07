@@ -1,5 +1,5 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { Player } from '@/models/player.model';
 import { LoupBlancVictoryHandler } from './loup-blanc-victory.handler';
 
 describe('LoupBlancVictoryHandler', () => {

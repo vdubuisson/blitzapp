@@ -2,8 +2,8 @@ import { signal, WritableSignal } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
 import { Observable, of } from 'rxjs';
-import { GameService } from '../services/game/game.service';
-import { ModalService } from '../services/modal/modal.service';
+import { GameService } from '@/services/game/game.service';
+import { ModalService } from '@/services/modal/modal.service';
 import { confirmNewGameGuard } from './confirm-new-game.guard';
 
 describe('confirmNewGameGuard', () => {

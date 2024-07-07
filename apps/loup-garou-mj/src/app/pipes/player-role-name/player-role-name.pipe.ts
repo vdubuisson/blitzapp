@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { ROLE_NAMES } from '../../values/role-names';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { ROLE_NAMES } from '@/values/role-names';
 
 @Pipe({
   name: 'playerRoleName',

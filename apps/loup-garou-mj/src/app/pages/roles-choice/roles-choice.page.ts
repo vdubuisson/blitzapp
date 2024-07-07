@@ -17,15 +17,15 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AccordionItemModule } from '../../components/accordion-item/accordion-item.module';
-import { GAME_BOX_CONTENTS } from '../../configs/game-box-contents';
-import { GameBoxEnum } from '../../enums/game-box.enum';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { CardList } from '../../models/card-list.model';
-import { GameBoxNamePipe } from '../../pipes/game-box-name/game-box-name.pipe';
-import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
-import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
-import { CardChoiceService } from '../../services/card-choice/card-choice.service';
+import { AccordionItemModule } from '@/components/accordion-item/accordion-item.module';
+import { GAME_BOX_CONTENTS } from '@/configs/game-box-contents';
+import { GameBoxEnum } from '@/enums/game-box.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { CardList } from '@/models/card-list.model';
+import { GameBoxNamePipe } from '@/pipes/game-box-name/game-box-name.pipe';
+import { PlayerRoleImagePipe } from '@/pipes/player-role-image/player-role-image.pipe';
+import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
+import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 
 interface RoleForm {
   villageois: FormControl<number | null>;

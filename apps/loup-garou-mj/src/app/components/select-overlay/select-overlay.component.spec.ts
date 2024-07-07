@@ -1,7 +1,7 @@
 import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
 import { Subject } from 'rxjs';
-import { SelectOverlay } from '../../models/select-overlay.model';
-import { SelectOverlayService } from '../../services/select-overlay/select-overlay.service';
+import { SelectOverlay } from '@/models/select-overlay.model';
+import { SelectOverlayService } from '@/services/select-overlay/select-overlay.service';
 import { SelectOverlayComponent } from './select-overlay.component';
 
 describe('SelectOverlayComponent', () => {

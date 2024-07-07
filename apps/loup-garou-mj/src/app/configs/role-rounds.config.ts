@@ -1,5 +1,5 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { RoundEnum } from '../enums/round.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundEnum } from '@/enums/round.enum';
 
 export const ROLE_ROUNDS_CONFIG: Record<PlayerRoleEnum, RoundEnum[]> = {
   [PlayerRoleEnum.NOT_SELECTED]: [],

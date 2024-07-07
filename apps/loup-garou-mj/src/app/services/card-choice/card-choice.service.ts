@@ -1,6 +1,6 @@
 import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { StorageService } from '../storage/storage.service';
-import { CardList, StoredCardList } from '../../models/card-list.model';
+import { StorageService } from '@/services/storage/storage.service';
+import { CardList, StoredCardList } from '@/models/card-list.model';
 
 @Injectable({
   providedIn: 'root',

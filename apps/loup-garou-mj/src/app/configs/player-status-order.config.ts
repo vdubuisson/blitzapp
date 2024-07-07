@@ -1,4 +1,4 @@
-import { PlayerStatusEnum } from '../enums/player-status.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 export const PLAYER_STATUS_ORDER_CONFIG: PlayerStatusEnum[] = [
   PlayerStatusEnum.WOLF_TARGET,

@@ -1,5 +1,5 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { Player } from '../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { Player } from '@/models/player.model';
 import { findLeftNeighbor, findRightNeighbor } from './neighbor.utils';
 
 describe('findLeftNeighbor', () => {

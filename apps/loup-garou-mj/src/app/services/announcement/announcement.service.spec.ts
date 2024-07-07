@@ -1,7 +1,7 @@
 import { MockService } from 'ng-mocks';
 import { of } from 'rxjs';
-import { ModalService } from '../modal/modal.service';
-import { StorageService } from '../storage/storage.service';
+import { ModalService } from '@/services/modal/modal.service';
+import { StorageService } from '@/services/storage/storage.service';
 import { AnnouncementService } from './announcement.service';
 
 describe('AnnouncementService', () => {

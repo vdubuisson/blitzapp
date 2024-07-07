@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
 
 @Injectable({
   providedIn: 'root',

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { RoundEnum } from '../../enums/round.enum';
-import { ROUND_NAMES } from '../../values/round-names';
+import { RoundEnum } from '@/enums/round.enum';
+import { ROUND_NAMES } from '@/values/round-names';
 
 @Pipe({
   name: 'roundName',

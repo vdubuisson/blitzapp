@@ -1,4 +1,4 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 
 export const LOUPS_GAROUS_ROLES: PlayerRoleEnum[] = [
   PlayerRoleEnum.LOUP_GAROU,

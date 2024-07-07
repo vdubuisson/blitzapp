@@ -1,19 +1,19 @@
 import { MockService } from 'ng-mocks';
 import { of } from 'rxjs';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { VictoryEnum } from '../../enums/victory.enum';
-import { Player } from '../../models/player.model';
-import { VictoryHandler } from '../../victory-handlers/victory.handler';
-import { StorageService } from '../storage/storage.service';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { Player } from '@/models/player.model';
+import { VictoryHandler } from '@/victory-handlers/victory.handler';
+import { StorageService } from '@/services/storage/storage.service';
 import { VictoryHandlersService } from './victory-handlers.service';
-import { SectaireVictoryHandler } from '../../victory-handlers/sectaire/sectaire-victory.handler';
-import { AmoureuxVictoryHandler } from '../../victory-handlers/amoureux/amoureux-victory.handler';
-import { JoueurFluteVictoryHandler } from '../../victory-handlers/joueur-flute/joueur-flute-victory.handler';
-import { LoupBlancVictoryHandler } from '../../victory-handlers/loup-blanc/loup-blanc-victory.handler';
-import { LoupGarouVictoryHandler } from '../../victory-handlers/loup-garou/loup-garou-victory.handler';
-import { NoneVictoryHandler } from '../../victory-handlers/none/none-victory.handler';
-import { VillageoisVictoryHandler } from '../../victory-handlers/villageois/villageois-victory.handler';
+import { SectaireVictoryHandler } from '@/victory-handlers/sectaire/sectaire-victory.handler';
+import { AmoureuxVictoryHandler } from '@/victory-handlers/amoureux/amoureux-victory.handler';
+import { JoueurFluteVictoryHandler } from '@/victory-handlers/joueur-flute/joueur-flute-victory.handler';
+import { LoupBlancVictoryHandler } from '@/victory-handlers/loup-blanc/loup-blanc-victory.handler';
+import { LoupGarouVictoryHandler } from '@/victory-handlers/loup-garou/loup-garou-victory.handler';
+import { NoneVictoryHandler } from '@/victory-handlers/none/none-victory.handler';
+import { VillageoisVictoryHandler } from '@/victory-handlers/villageois/villageois-victory.handler';
 
 class MockVictoryHandler implements VictoryHandler {
   isVictorious(_: Player[]): boolean {

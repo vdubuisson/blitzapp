@@ -13,10 +13,10 @@ import {
   faMinus,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
-import { NewPlayerComponent } from '../../components/new-player/new-player.component';
-import { Player } from '../../models/player.model';
-import { CardChoiceService } from '../../services/card-choice/card-choice.service';
-import { NewGameService } from '../../services/new-game/new-game.service';
+import { NewPlayerComponent } from '@/components/new-player/new-player.component';
+import { Player } from '@/models/player.model';
+import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { NewGameService } from '@/services/new-game/new-game.service';
 
 @Component({
   selector: 'lgmj-new-game',

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { VictoryEnum } from '../../enums/victory.enum';
-import { VICTORY_NAMES } from '../../values/victory-names';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { VICTORY_NAMES } from '@/values/victory-names';
 
 @Pipe({
   name: 'victoryName',

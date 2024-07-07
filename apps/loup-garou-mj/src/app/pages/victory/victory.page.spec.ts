@@ -1,6 +1,6 @@
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockService } from 'ng-mocks';
-import { NewGameService } from '../../services/new-game/new-game.service';
+import { NewGameService } from '@/services/new-game/new-game.service';
 import { VictoryPage } from './victory.page';
 
 describe('VictoryPage', () => {

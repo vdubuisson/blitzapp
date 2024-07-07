@@ -1,10 +1,10 @@
 import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
-import { GameService } from '../game/game.service';
-import { CardChoiceService } from '../card-choice/card-choice.service';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { GameService } from '@/services/game/game.service';
+import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 
 @Injectable({
   providedIn: 'root',

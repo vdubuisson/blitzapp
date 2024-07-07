@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { RoundHandler } from '../../round-handlers/round-handler.interface';
-import { AnnouncementService } from '../announcement/announcement.service';
-import { StorageService } from '../../services/storage/storage.service';
-import { ROLE_ROUNDS_CONFIG } from '../../configs/role-rounds.config';
-import { ModalService } from '../modal/modal.service';
-import { ROUND_HANDLERS_CONFIG } from '../../configs/round-handlers.config';
-import { DefaultRoundHandler } from '../../round-handlers/default/default-round.handler';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
+import { StorageService } from '@/services/storage/storage.service';
+import { ROLE_ROUNDS_CONFIG } from '@/configs/role-rounds.config';
+import { ModalService } from '@/services/modal/modal.service';
+import { ROUND_HANDLERS_CONFIG } from '@/configs/round-handlers.config';
+import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
 
 @Injectable({
   providedIn: 'root',

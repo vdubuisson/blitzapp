@@ -16,16 +16,16 @@ import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faSkull, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { take } from 'rxjs';
-import { PLAYER_STATUS_ORDER_CONFIG } from '../../configs/player-status-order.config';
-import { PlayerDisplayModeEnum } from '../../enums/player-display-mode.enum';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
-import { SelectOverlay } from '../../models/select-overlay.model';
-import { PlayerRoleImagePipe } from '../../pipes/player-role-image/player-role-image.pipe';
-import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
-import { PlayerStatusIconPipe } from '../../pipes/player-status-icon/player-status-icon.pipe';
-import { SelectOverlayService } from '../../services/select-overlay/select-overlay.service';
+import { PLAYER_STATUS_ORDER_CONFIG } from '@/configs/player-status-order.config';
+import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { SelectOverlay } from '@/models/select-overlay.model';
+import { PlayerRoleImagePipe } from '@/pipes/player-role-image/player-role-image.pipe';
+import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
+import { PlayerStatusIconPipe } from '@/pipes/player-status-icon/player-status-icon.pipe';
+import { SelectOverlayService } from '@/services/select-overlay/select-overlay.service';
 
 @Component({
   selector: 'lgmj-player',

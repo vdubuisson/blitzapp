@@ -1,4 +1,4 @@
-import { AnnouncementEnum } from '../enums/announcement.enum';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 
 export const announcements: Record<
   AnnouncementEnum,

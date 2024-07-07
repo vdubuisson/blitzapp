@@ -1,6 +1,6 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
 import { SectaireVictoryHandler } from './sectaire-victory.handler';
 
 describe('SectaireVictoryHandler', () => {

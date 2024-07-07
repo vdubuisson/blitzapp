@@ -1,4 +1,4 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 
 export const ROLE_NAMES: Record<PlayerRoleEnum, string> = {
   [PlayerRoleEnum.NOT_SELECTED]: '',

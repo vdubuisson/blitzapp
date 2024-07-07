@@ -1,14 +1,14 @@
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MockService } from 'ng-mocks';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
-import { GameService } from '../game/game.service';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { GameService } from '@/services/game/game.service';
 
 import { NewGameService } from './new-game.service';
-import { CardChoiceService } from '../card-choice/card-choice.service';
-import { CardList } from '../../models/card-list.model';
+import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { CardList } from '@/models/card-list.model';
 import { signal, WritableSignal } from '@angular/core';
 
 describe('NewGameService', () => {

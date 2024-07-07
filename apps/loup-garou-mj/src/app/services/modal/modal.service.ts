@@ -2,10 +2,10 @@ import { Dialog } from '@angular/cdk/dialog';
 import { ComponentType } from '@angular/cdk/portal';
 import { Injectable } from '@angular/core';
 import { first, map, Observable } from 'rxjs';
-import { PlayerCardModalComponent } from '../../components/player-card-modal/player-card-modal.component';
-import { TextModalComponent } from '../../components/text-modal/text-modal.component';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { TextModalData } from '../../models/text-modal-data.model';
+import { PlayerCardModalComponent } from '@/components/player-card-modal/player-card-modal.component';
+import { TextModalComponent } from '@/components/text-modal/text-modal.component';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { TextModalData } from '@/models/text-modal-data.model';
 
 @Injectable({
   providedIn: 'root',

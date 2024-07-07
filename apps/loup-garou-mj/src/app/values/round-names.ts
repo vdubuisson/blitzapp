@@ -1,4 +1,4 @@
-import { RoundEnum } from '../enums/round.enum';
+import { RoundEnum } from '@/enums/round.enum';
 
 export const ROUND_NAMES: Record<RoundEnum, string> = {
   [RoundEnum.CUPIDON]: 'Tir de Cupidon',

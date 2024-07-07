@@ -1,6 +1,6 @@
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { Player } from '../../models/player.model';
-import { VictoryHandler } from '../victory.handler';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { VictoryHandler } from '@/victory-handlers/victory.handler';
 
 export class AmoureuxVictoryHandler implements VictoryHandler {
   isVictorious(players: Player[]): boolean {

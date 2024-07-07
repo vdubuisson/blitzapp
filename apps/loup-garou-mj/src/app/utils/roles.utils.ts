@@ -1,8 +1,8 @@
-import { Player } from '../models/player.model';
-import { CardList } from '../models/card-list.model';
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { LOUPS_GAROUS_ROLES } from '../configs/loups-garous-roles';
-import { PlayerStatusEnum } from '../enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { CardList } from '@/models/card-list.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 export function getNotPlayedRoles(
   players: Player[],

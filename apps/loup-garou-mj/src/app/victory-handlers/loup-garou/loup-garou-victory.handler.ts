@@ -1,6 +1,6 @@
-import { Player } from '../../models/player.model';
-import { VictoryHandler } from '../victory.handler';
-import { isLoupGarou } from '../../utils/roles.utils';
+import { Player } from '@/models/player.model';
+import { VictoryHandler } from '@/victory-handlers/victory.handler';
+import { isLoupGarou } from '@/utils/roles.utils';
 
 export class LoupGarouVictoryHandler implements VictoryHandler {
   isVictorious(players: Player[]): boolean {

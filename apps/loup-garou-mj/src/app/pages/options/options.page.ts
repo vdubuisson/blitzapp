@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { StorageService } from '../../services/storage/storage.service';
-import { ModalService } from '../../services/modal/modal.service';
+import { StorageService } from '@/services/storage/storage.service';
+import { ModalService } from '@/services/modal/modal.service';
 import { switchMap } from 'rxjs';
 
 @Component({

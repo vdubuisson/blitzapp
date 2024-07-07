@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TextModalData } from '../models/text-modal-data.model';
-import { GameService } from '../services/game/game.service';
-import { ModalService } from '../services/modal/modal.service';
+import { TextModalData } from '@/models/text-modal-data.model';
+import { GameService } from '@/services/game/game.service';
+import { ModalService } from '@/services/modal/modal.service';
 
 export const confirmNewGameGuard = (): Observable<boolean> | boolean => {
   const gameService = inject(GameService);

@@ -1,4 +1,4 @@
-import { VictoryEnum } from '../enums/victory.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 export const VICTORY_NAMES: Record<VictoryEnum, string> = {
   [VictoryEnum.NONE]: 'Tout le monde est mort',

@@ -1,4 +1,4 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerRoleImagePipe } from './player-role-image.pipe';
 
 describe('PlayerRoleImagePipe', () => {

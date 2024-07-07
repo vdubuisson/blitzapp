@@ -1,7 +1,7 @@
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { PlayerStatusNamePipe } from './player-status-name.pipe';
 
-jest.mock('../../values/status-names', () => ({
+jest.mock('@/values/status-names', () => ({
   STATUS_NAMES: { [PlayerStatusEnum.WOLF_TARGET]: 'Test' },
 }));
 

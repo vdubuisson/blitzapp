@@ -1,14 +1,14 @@
 import { when } from 'jest-when';
 import { MockService } from 'ng-mocks';
 import { Observable, of } from 'rxjs';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
-import { Round } from '../../models/round.model';
-import { RoundHandler } from '../../round-handlers/round-handler.interface';
-import { DeathService } from '../death/death.service';
-import { RoundHandlersService } from '../round-handlers/round-handlers.service';
-import { StorageService } from '../../services/storage/storage.service';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
+import { Round } from '@/models/round.model';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
+import { DeathService } from '@/services/death/death.service';
+import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
+import { StorageService } from '@/services/storage/storage.service';
 
 import { RoundOrchestrationService } from './round-orchestration.service';
 

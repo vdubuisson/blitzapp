@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { combineLatest } from 'rxjs';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player, StoredPlayer } from '../../models/player.model';
-import { AnnouncementService } from '../announcement/announcement.service';
-import { RoundHandlersService } from '../round-handlers/round-handlers.service';
-import { StorageService } from '../../services/storage/storage.service';
-import { VictoryHandlersService } from '../victory-handlers/victory-handlers.service';
-import { AnnouncementEnum } from '../../enums/announcement.enum';
-import { StatusesService } from '../statuses/statuses.service';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '../../configs/innocents-power-removal-roles';
-import { findLeftNeighbor } from '../../utils/neighbor.utils';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player, StoredPlayer } from '@/models/player.model';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
+import { StorageService } from '@/services/storage/storage.service';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { StatusesService } from '@/services/statuses/statuses.service';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
+import { findLeftNeighbor } from '@/utils/neighbor.utils';
+import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 
 @Injectable({
   providedIn: 'root',

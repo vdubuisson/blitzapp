@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { TextModalData } from '../../models/text-modal-data.model';
+import { TextModalData } from '@/models/text-modal-data.model';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 

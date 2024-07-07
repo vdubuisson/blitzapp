@@ -1,6 +1,6 @@
-import { PlayerRoleEnum } from '../enums/player-role.enum';
-import { RoundTypeEnum } from '../enums/round-type.enum';
-import { RoundEnum } from '../enums/round.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
 
 export interface Round {
   role: RoundEnum;

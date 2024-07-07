@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { VictoryEnum } from '../../enums/victory.enum';
-import { VictoryNamePipe } from '../../pipes/victory-name/victory-name.pipe';
-import { NewGameService } from '../../services/new-game/new-game.service';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { VictoryNamePipe } from '@/pipes/victory-name/victory-name.pipe';
+import { NewGameService } from '@/services/new-game/new-game.service';
 
 @Component({
   selector: 'lgmj-victory',

@@ -1,7 +1,7 @@
 import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { Player } from '../../models/player.model';
-import { PlayerRoleNamePipe } from '../../pipes/player-role-name/player-role-name.pipe';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { Player } from '@/models/player.model';
+import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 import { PlayerComponent } from './player.component';
 
 const MOCK_PLAYER: Player = {

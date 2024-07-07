@@ -1,13 +1,13 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
 import { VillageoisRoundHandler } from './villageois-round.handler';
 import { waitForAsync } from '@angular/core/testing';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { AnnouncementService } from '../../services/announcement/announcement.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { MockService } from 'ng-mocks';
-import { AnnouncementEnum } from '../../enums/announcement.enum';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 
 describe('VillageoisRoundHandler', () => {
   let roundHandler: VillageoisRoundHandler;

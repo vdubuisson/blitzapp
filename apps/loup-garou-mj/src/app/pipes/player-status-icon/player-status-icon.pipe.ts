@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { PlayerStatusEnum } from '../../enums/player-status.enum';
-import { STATUS_ICONS } from '../../values/status-icons';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { STATUS_ICONS } from '@/values/status-icons';
 
 @Pipe({
   name: 'playerStatusIcon',

@@ -1,11 +1,11 @@
 import { MockService } from 'ng-mocks';
 import { when } from 'jest-when';
 import { CardChoiceService } from './card-choice.service';
-import { StorageService } from '../storage/storage.service';
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { StorageService } from '@/services/storage/storage.service';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { of } from 'rxjs';
 import { waitForAsync } from '@angular/core/testing';
-import { CardList, StoredCardList } from '../../models/card-list.model';
+import { CardList, StoredCardList } from '@/models/card-list.model';
 
 describe('CardChoiceService', () => {
   let service: CardChoiceService;

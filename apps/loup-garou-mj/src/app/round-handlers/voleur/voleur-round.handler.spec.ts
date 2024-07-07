@@ -1,9 +1,9 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
 import { VoleurRoundHandler } from './voleur-round.handler';
-import { CardList } from '../../models/card-list.model';
+import { CardList } from '@/models/card-list.model';
 import { waitForAsync } from '@angular/core/testing';
 
 describe('VoleurRoundHandler', () => {

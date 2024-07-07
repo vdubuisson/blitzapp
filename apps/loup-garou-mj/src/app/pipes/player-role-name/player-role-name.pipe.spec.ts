@@ -1,7 +1,7 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerRoleNamePipe } from './player-role-name.pipe';
 
-jest.mock('../../values/role-names', () => ({
+jest.mock('@/values/role-names', () => ({
   ROLE_NAMES: { [PlayerRoleEnum.VILLAGEOIS]: 'Test' },
 }));
 

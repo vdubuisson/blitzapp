@@ -20,7 +20,21 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@/components/*": ["apps/loup-garou-mj/src/app/components/*"],
+      "@/configs/*": ["apps/loup-garou-mj/src/app/configs/*"],
+      "@/enums/*": ["apps/loup-garou-mj/src/app/enums/*"],
+      "@/guards/*": ["apps/loup-garou-mj/src/app/guards/*"],
+      "@/models/*": ["apps/loup-garou-mj/src/app/models/*"],
+      "@/pages/*": ["apps/loup-garou-mj/src/app/pages/*"],
+      "@/pipes/*": ["apps/loup-garou-mj/src/app/pipes/*"],
+      "@/round-handlers/*": ["apps/loup-garou-mj/src/app/round-handlers/*"],
+      "@/services/*": ["apps/loup-garou-mj/src/app/services/*"],
+      "@/utils/*": ["apps/loup-garou-mj/src/app/utils/*"],
+      "@/values/*": ["apps/loup-garou-mj/src/app/values/*"],
+      "@/victory-handlers/*": ["apps/loup-garou-mj/src/app/victory-handlers/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

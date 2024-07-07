@@ -1,9 +1,9 @@
-import { PlayerRoleEnum } from '../../enums/player-role.enum';
-import { RoundTypeEnum } from '../../enums/round-type.enum';
-import { RoundEnum } from '../../enums/round.enum';
-import { Player } from '../../models/player.model';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
 import { VoyanteRoundHandler } from './voyante-round.handler';
-import { ModalService } from '../../services/modal/modal.service';
+import { ModalService } from '@/services/modal/modal.service';
 import { MockService } from 'ng-mocks';
 import { of } from 'rxjs';
 import { waitForAsync } from '@angular/core/testing';

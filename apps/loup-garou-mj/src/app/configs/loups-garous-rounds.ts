@@ -1,4 +1,4 @@
-import { RoundEnum } from '../enums/round.enum';
+import { RoundEnum } from '@/enums/round.enum';
 
 export const LOUPS_GAROUS_ROUNDS: RoundEnum[] = [
   RoundEnum.LOUP_GAROU,
