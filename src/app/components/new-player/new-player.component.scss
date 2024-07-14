@@ -1,0 +1,17 @@
+.form-group {
+  align-items: center;
+  border-bottom: 1px solid var(--light-border-color);
+  display: flex;
+  gap: var(--spacing-2);
+  padding: var(--spacing-1);
+
+  .form-control {
+    border: none;
+    flex-grow: 1;
+    font-size: var(--font-size-m);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+}

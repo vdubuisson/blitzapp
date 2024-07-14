@@ -1,0 +1,87 @@
+<div class="form-container">
+  <form [formGroup]="roleCountForm" (submit)="validateRoles()">
+    <div class="form-group">
+      <img
+        [ngSrc]="loupGarouRole | playerRoleImage"
+        [alt]="loupGarouRole | playerRoleName"
+        width="55"
+        height="55"
+        class="role-img"
+      />
+      <label for="loupGarou">{{ loupGarouRole | playerRoleName }}</label>
+      <input
+        type="number"
+        formControlName="loupGarou"
+        [min]="0"
+        class="form-control"
+        (focus)="selectInput($event)"
+      />
+    </div>
+    <div class="form-group">
+      <img
+        [ngSrc]="villageoisRole | playerRoleImage"
+        [alt]="villageoisRole | playerRoleName"
+        width="55"
+        height="55"
+        class="role-img"
+      />
+      <label for="villageois">{{ villageoisRole | playerRoleName }}</label>
+      <input
+        type="number"
+        formControlName="villageois"
+        [min]="requiredVillageois()"
+        class="form-control"
+        (focus)="selectInput($event)"
+      />
+    </div>
+
+    <cdk-accordion [multi]="true">
+      @for (box of boxes; track box) {
+      <lgmj-accordion-item [noInnerPadding]="true" [headerColor]="'light'">
+        <ng-container header>
+          <strong>{{ box | gameBoxName | uppercase }}</strong>
+        </ng-container>
+        @for (role of boxContents[box]; track role) {
+        <label [for]="box + '-' + role" class="form-group">
+          <img
+            [ngSrc]="role | playerRoleImage"
+            [alt]="role | playerRoleName"
+            width="55"
+            height="55"
+            class="role-img"
+          />
+          <span>{{ role | playerRoleName }}</span>
+          <input
+            type="checkbox"
+            [id]="box + '-' + role"
+            #checkbox
+            class="form-control"
+            [value]="role"
+            [checked]="selectedRoles().has(role)"
+            (change)="onRoleCheckChange(role)"
+          />
+        </label>
+        }
+      </lgmj-accordion-item>
+      }
+    </cdk-accordion>
+
+    <div class="submit-block">
+      <button
+        [disabled]="playersCount() <= 0 || roleCountForm.invalid"
+        class="btn primary"
+        type="submit"
+      >
+        VALIDER ({{playersCount()}} JOUEURS)
+      </button>
+      <button
+        [disabled]="playersCount() <= 0"
+        class="btn danger"
+        (click)="deselectAll()"
+        type="button"
+      >
+        DÉSÉLECTIONNER TOUT
+      </button>
+    </div>
+  </form>
+</div>

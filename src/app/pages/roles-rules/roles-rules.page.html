@@ -1,0 +1,17 @@
+<cdk-accordion>
+  @for (role of roles; track role) {
+  <lgmj-accordion-item>
+    <ng-container header>
+      <img
+        [ngSrc]="role | playerRoleImage"
+        [alt]="role | playerRoleName"
+        width="55"
+        height="55"
+        class="role-img"
+      />
+      <span class="role-name">{{ role | playerRoleName }}</span>
+    </ng-container>
+    <span class="rule" [innerText]="rules[role]"></span>
+  </lgmj-accordion-item>
+  }
+</cdk-accordion>

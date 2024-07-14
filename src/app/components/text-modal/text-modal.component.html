@@ -1,0 +1,25 @@
+<div class="modal">
+  <div class="modal-header">
+    @if (data.header) {
+      <span class="modal-title">{{ data.header }}</span>
+    }
+    <fa-icon
+      class="close-icon"
+      [icon]="closeIcon"
+      (click)="close()"
+      size="xl"
+    />
+  </div>
+  @if (data.message) {
+    <div class="modal-body">
+      <div [innerHTML]="data.message"></div>
+    </div>
+  }
+  @if (data.confirmText) {
+    <div class="modal-footer">
+      <button class="btn primary" (click)="close(true)">
+        {{ data.confirmText }}
+      </button>
+    </div>
+  }
+</div>

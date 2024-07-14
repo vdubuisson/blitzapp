@@ -1,0 +1,11 @@
+<div class="modal">
+  <img
+    [ngSrc]="card | playerRoleImage"
+    [alt]="card | playerRoleName"
+    height="250"
+    width="250"
+    class="role-img"
+  />
+  <h1>{{ card | playerRoleName | uppercase }}</h1>
+  <button class="btn primary" (click)="continue()">CONTINUER</button>
+</div>

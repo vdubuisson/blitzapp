@@ -1,0 +1,25 @@
+.modal {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+
+  img.role-img {
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+  }
+
+  .btn {
+    bottom: var(--spacing-2);
+    position: absolute;
+    width: 80%;
+  }
+}

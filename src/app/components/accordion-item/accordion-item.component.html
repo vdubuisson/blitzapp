@@ -1,0 +1,25 @@
+<div
+  class="accordion-item-header"
+  (click)="toggle()"
+  (keyup.enter)="toggle()"
+  [class.selected]="expanded"
+  [class]="headerColor()"
+  tabindex="0"
+>
+  <ng-content select="[header]" />
+  <fa-icon
+    class="accordion-item-indicator"
+    [icon]="expanded ? openedIcon : closedIcon"
+  />
+</div>
+<div
+  class="accordion-item-content"
+  [@slideOpen]="expanded ? 'opened' : 'closed'"
+>
+  <div
+    class="accordion-item-content-inner"
+    [class.no-padding]="noInnerPadding()"
+  >
+    <ng-content />
+  </div>
+</div>

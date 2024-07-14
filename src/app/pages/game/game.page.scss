@@ -1,0 +1,30 @@
+.round-header {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-1);
+  position: sticky;
+  top: var(--header-height);
+  z-index: 1;
+
+  .round-subtitle {
+    font-size: var(--font-size-m);
+    font-weight: var(--font-weight-light);
+    text-transform: uppercase;
+
+    .day-icon {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  .round-title {
+    font-size: var(--font-size-l);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  hr {
+    width: 15%;
+  }
+}

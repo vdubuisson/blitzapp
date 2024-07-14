@@ -1,0 +1,16 @@
+<form [formGroup]="playerForm" (ngSubmit)="onSubmit()" class="form-group">
+  <button
+    class="btn success rounded icon-only"
+    [disabled]="playerForm.invalid"
+    type="submit"
+  >
+    <fa-icon [icon]="addIcon" />
+  </button>
+  <input
+    #input
+    class="form-control"
+    type="text"
+    placeholder="Nom"
+    formControlName="name"
+  />
+</form>

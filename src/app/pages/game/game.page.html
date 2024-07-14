@@ -1,0 +1,41 @@
+@if (round(); as currentRound) {
+<div class="round-header">
+  <div class="round-subtitle">
+    @if (isBeforeGame()) {
+    <span>Avant-partie</span>
+    } @else {
+    <span class="day-icon">{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span>
+    {{ currentRound.isDuringDay ? 'Jour' : 'Nuit' }} {{ dayCount() }}
+    <span class="day-icon">{{ currentRound.isDuringDay ? '☀️' : '🌙' }}</span>
+    }
+  </div>
+  <hr />
+  <div class="round-title">{{ currentRound.role | roundName }}</div>
+</div>
+<div class="player-list">
+  @for (player of players(); track player.id) {
+  <lgmj-player
+    [player]="player"
+    [displayMode]="playerDisplayMode() === PlayerDisplayModeEnum.EDIT_ROLE && !currentRound.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode()"
+    [disabled]="!currentRound.selectablePlayers.includes(player.id)"
+    [checked]="playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI ? selectedPlayers().has(player.id) : selectedPlayer() === player.id"
+    [noSelfRole]="true"
+    [selectableRoles]="currentRound.selectableRoles || []"
+    (checkedChange)="onPlayerChecked(player.id, $event)"
+    (roleChange)="onRoleSelect($event)"
+  />
+  }
+</div>
+<div class="submit-block">
+  <button
+    class="btn success"
+    [disabled]="submitDisabled()"
+    (click)="onSubmit()"
+  >
+    VALIDER
+  </button>
+  @if (displayEqualityButton()) {
+  <button class="btn warning" (click)="onEquality()">EGALITE</button>
+  }
+</div>
+}

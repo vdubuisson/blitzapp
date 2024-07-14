@@ -1,0 +1,62 @@
+<div
+  class="player"
+  [class.disabled]="player().isDead || disabled"
+  [class.dead]="player().isDead"
+  [class.selection]="selectionOpened"
+>
+  @if (player().isDead) {
+    <fa-icon [icon]="deadIcon" size="xl" />
+  } @else {
+    @if (
+      displayMode() === playerDisplayModeEnum.SELECT_MULTI ||
+      displayMode() === playerDisplayModeEnum.SELECT_SINGLE
+    ) {
+      <label [for]="'input-' + player().id" class="label"></label>
+      <input
+        #checkbox
+        [id]="'input-' + player().id"
+        [type]="
+          displayMode() === playerDisplayModeEnum.SELECT_SINGLE
+            ? 'radio'
+            : 'checkbox'
+        "
+        class="form-control"
+        [checked]="checked"
+        [disabled]="disabled"
+        (change)="onCheckedChange()"
+        (click)="onCheckboxClick()"
+      />
+    }
+  }
+
+  @if (displayedRole() !== playerRoleEnum.NOT_SELECTED) {
+    <img
+      [ngSrc]="displayedRole() | playerRoleImage"
+      [alt]="displayedRole() | playerRoleName"
+      width="55"
+      height="55"
+      class="role-img"
+    />
+  }
+
+  <div class="info">
+    <span class="name">{{ player().name }}</span>
+    <span class="role">{{ displayedRole() | playerRoleName }}</span>
+  </div>
+
+  @if (displayMode() === playerDisplayModeEnum.EDIT_ROLE) {
+    <div
+      class="label"
+      (click)="openSelectRoleOverlay()"
+      (keyup.enter)="openSelectRoleOverlay()"
+      tabindex="0"
+    ></div>
+    <fa-icon [icon]="selectIcon" />
+  } @else {
+    <div>
+      @for (status of sortedStatuses(); track status) {
+        <span class="status-icon">{{ status | playerStatusIcon }}</span>
+      }
+    </div>
+  }
+</div>
