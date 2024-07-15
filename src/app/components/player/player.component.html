@@ -1,8 +1,8 @@
 <div
   class="player"
-  [class.disabled]="player().isDead || disabled"
+  [class.disabled]="player().isDead || disabled()"
   [class.dead]="player().isDead"
-  [class.selection]="selectionOpened"
+  [class.selection]="selectionOpened()"
 >
   @if (player().isDead) {
     <fa-icon [icon]="deadIcon" size="xl" />
@@ -21,8 +21,8 @@
             : 'checkbox'
         "
         class="form-control"
-        [checked]="checked"
-        [disabled]="disabled"
+        [checked]="checked()"
+        [disabled]="disabled()"
         (change)="onCheckedChange()"
         (click)="onCheckboxClick()"
       />
@@ -33,8 +33,8 @@
     <img
       [ngSrc]="displayedRole() | playerRoleImage"
       [alt]="displayedRole() | playerRoleName"
-      width="55"
-      height="55"
+      [width]="55"
+      [height]="55"
       class="role-img"
     />
   }

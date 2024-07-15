@@ -1,9 +1,8 @@
-import { Component, Inject } from '@angular/core';
-
-import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TextModalData } from '@/models/text-modal-data.model';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'lgmj-text-modal',
@@ -11,14 +10,13 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
   imports: [FaIconComponent],
   templateUrl: './text-modal.component.html',
   styleUrl: './text-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextModalComponent {
-  protected readonly closeIcon = faXmark;
+  private readonly dialogRef = inject<DialogRef<boolean>>(DialogRef);
+  protected readonly data = inject<TextModalData>(DIALOG_DATA);
 
-  constructor(
-    private dialogRef: DialogRef<boolean>,
-    @Inject(DIALOG_DATA) public data: TextModalData,
-  ) {}
+  protected readonly closeIcon = faXmark;
 
   close(confirm = false) {
     this.dialogRef.close(confirm);

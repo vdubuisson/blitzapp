@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { StorageService } from '@/services/storage/storage.service';
 import { ModalService } from '@/services/modal/modal.service';
 import { switchMap } from 'rxjs';
@@ -6,14 +6,12 @@ import { switchMap } from 'rxjs';
 @Component({
   selector: 'lgmj-options',
   standalone: true,
-  imports: [],
   templateUrl: './options.page.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OptionsPage {
-  constructor(
-    private storageService: StorageService,
-    private modalService: ModalService,
-  ) {}
+  private readonly storageService = inject(StorageService);
+  private readonly modalService = inject(ModalService);
 
   protected clear(): void {
     this.storageService

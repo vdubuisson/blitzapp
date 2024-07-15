@@ -1,6 +1,6 @@
-import { WritableSignal, signal } from '@angular/core';
+import { Component, WritableSignal, input, model, output, signal } from '@angular/core';
 import { waitForAsync } from '@angular/core/testing';
-import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
+import { MockBuilder, MockInstance, MockRender, MockReset, ngMocks } from 'ng-mocks';
 import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
@@ -9,10 +9,24 @@ import { Player } from '@/models/player.model';
 import { Round } from '@/models/round.model';
 import { GameService } from '@/services/game/game.service';
 import { GamePage } from './game.page';
+import { PlayerComponent } from '@/components/player/player.component';
+
+@Component({
+  selector: 'lgmj-player',
+  standalone: true,
+  template: ''
+})
+export class PlayerComponentStub {
+  readonly player = input.required<Player>();
+  readonly displayMode = input<PlayerDisplayModeEnum>(PlayerDisplayModeEnum.DEFAULT);
+  readonly disabled = input(false);
+  readonly noSelfRole = input<boolean>(false);
+  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
+  readonly checked = model(false);
+  readonly roleChange = output<PlayerRoleEnum>();
+}
 
 describe('GamePage', () => {
-  MockInstance.scope();
-
   let component: GamePage;
 
   let mockPlayers: Player[];
@@ -20,9 +34,11 @@ describe('GamePage', () => {
   let mockPlayers$: WritableSignal<Player[]>;
   let mockRound$: WritableSignal<Round | undefined>;
 
-  beforeEach(async () => MockBuilder(GamePage));
+  ngMocks.faster();
 
-  beforeEach(() => {
+  beforeAll(async () => MockBuilder(GamePage).replace(PlayerComponent, PlayerComponentStub).mock(GameService));
+
+  beforeAll(() => {
     mockPlayers = [
       {
         id: 0,
@@ -58,12 +74,15 @@ describe('GamePage', () => {
       currentDayCount: signal(0).asReadonly(),
       submitRoundAction: jest.fn(),
     }));
+  });
 
+  beforeEach(() => {
     component = MockRender(GamePage).point.componentInstance;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+
   });
 
   it('should get players from GameService', waitForAsync(() => {
@@ -498,4 +517,6 @@ describe('GamePage', () => {
 
     expect(component['isBeforeGame']()).toEqual(false);
   });
+
+  afterAll(MockReset);
 });

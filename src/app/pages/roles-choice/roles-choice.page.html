@@ -4,14 +4,14 @@
       <img
         [ngSrc]="loupGarouRole | playerRoleImage"
         [alt]="loupGarouRole | playerRoleName"
-        width="55"
-        height="55"
+        [width]="55"
+        [height]="55"
         class="role-img"
       />
       <label for="loupGarou">{{ loupGarouRole | playerRoleName }}</label>
       <input
         type="number"
-        formControlName="loupGarou"
+        [formControl]="roleCountForm.controls.loupGarou"
         [min]="0"
         class="form-control"
         (focus)="selectInput($event)"
@@ -21,14 +21,14 @@
       <img
         [ngSrc]="villageoisRole | playerRoleImage"
         [alt]="villageoisRole | playerRoleName"
-        width="55"
-        height="55"
+        [width]="55"
+        [height]="55"
         class="role-img"
       />
       <label for="villageois">{{ villageoisRole | playerRoleName }}</label>
       <input
         type="number"
-        formControlName="villageois"
+        [formControl]="roleCountForm.controls.villageois"
         [min]="requiredVillageois()"
         class="form-control"
         (focus)="selectInput($event)"
@@ -46,8 +46,8 @@
           <img
             [ngSrc]="role | playerRoleImage"
             [alt]="role | playerRoleName"
-            width="55"
-            height="55"
+            [width]="55"
+            [height]="55"
             class="role-img"
           />
           <span>{{ role | playerRoleName }}</span>
