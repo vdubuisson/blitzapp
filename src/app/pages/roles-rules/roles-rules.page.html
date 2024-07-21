@@ -5,8 +5,8 @@
       <img
         [ngSrc]="role | playerRoleImage"
         [alt]="role | playerRoleName"
-        width="55"
-        height="55"
+        [width]="55"
+        [height]="55"
         class="role-img"
       />
       <span class="role-name">{{ role | playerRoleName }}</span>

@@ -1,26 +1,33 @@
 import { waitForAsync } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
+import {
+  MockBuilder,
+  MockedComponentFixture,
+  MockRender,
+  ngMocks,
+} from 'ng-mocks';
 import { NewPlayerComponent } from './new-player.component';
 
 describe('NewPlayerComponent', () => {
-  let component: NewPlayerComponent;
+  let fixture: MockedComponentFixture<NewPlayerComponent>;
 
-  let formBuilder: FormBuilder;
+  ngMocks.faster();
 
-  beforeEach(async () => {
-    formBuilder = new FormBuilder();
-    component = new NewPlayerComponent(formBuilder);
-  });
+  beforeAll(async () => MockBuilder(NewPlayerComponent).keep(FormBuilder));
+
+  beforeAll(() => (fixture = MockRender(NewPlayerComponent)));
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.point.componentInstance).toBeTruthy();
   });
 
   it('should emit name on submit', waitForAsync(() => {
+    const component = fixture.point.componentInstance;
+
     component['playerForm'].setValue({ name: 'Name' });
     component.onSubmit();
 
-    component.newPlayer.asObservable().subscribe((newPlayer) => {
+    component.newPlayer.subscribe((newPlayer) => {
       expect(newPlayer).toEqual('Name');
       expect(component['playerForm'].reset).toHaveBeenCalled();
     });

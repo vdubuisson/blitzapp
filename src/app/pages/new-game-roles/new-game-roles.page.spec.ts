@@ -1,5 +1,11 @@
 import { waitForAsync } from '@angular/core/testing';
-import { MockService } from 'ng-mocks';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Player } from '@/models/player.model';
 import { NewGameService } from '@/services/new-game/new-game.service';
@@ -7,17 +13,46 @@ import { NewGameService } from '@/services/new-game/new-game.service';
 import { NewGameRolesPage } from './new-game-roles.page';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { CardList } from '@/models/card-list.model';
-import { signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
+import { PlayerComponent } from '@/components/player/player.component';
+
+@Component({
+  selector: 'lgmj-player',
+  standalone: true,
+  template: '',
+})
+export class PlayerStubComponent {
+  readonly player = input.required<Player>();
+  readonly displayMode = input<PlayerDisplayModeEnum>(
+    PlayerDisplayModeEnum.DEFAULT,
+  );
+  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
+  readonly roleChange = output<PlayerRoleEnum>();
+}
 
 describe('NewGameRolesPage', () => {
   let component: NewGameRolesPage;
-  let newGameService: NewGameService;
-  let cardChoiceService: CardChoiceService;
 
   let mockPlayers$: WritableSignal<Player[]>;
   let mockCards: WritableSignal<CardList>;
 
-  beforeEach(waitForAsync(() => {
+  ngMocks.faster();
+
+  beforeAll(async () =>
+    MockBuilder(NewGameRolesPage)
+      .replace(PlayerComponent, PlayerStubComponent)
+      .mock(NewGameService)
+      .mock(CardChoiceService),
+  );
+
+  beforeAll(() => {
     mockPlayers$ = signal([]);
     mockCards = signal({
       selectedRoles: new Set(),
@@ -25,16 +60,21 @@ describe('NewGameRolesPage', () => {
       loupGarou: 0,
       playersNumber: 0,
     });
-    newGameService = {
-      ...MockService(NewGameService),
-      currentPlayers: mockPlayers$.asReadonly(),
-    } as NewGameService;
-    cardChoiceService = {
-      currentChosenCards: mockCards.asReadonly(),
-    } as CardChoiceService;
 
-    component = new NewGameRolesPage(newGameService, cardChoiceService);
-  }));
+    MockInstance(NewGameService, () => ({
+      currentPlayers: mockPlayers$.asReadonly(),
+      createGame: jest.fn(),
+      changeRole: jest.fn(),
+    }));
+
+    MockInstance(CardChoiceService, () => ({
+      currentChosenCards: mockCards.asReadonly(),
+    }));
+  });
+
+  beforeAll(() => {
+    component = MockRender(NewGameRolesPage).point.componentInstance;
+  });
 
   it('should get players from NewGameService', waitForAsync(() => {
     const mockPlayers: Player[] = [
@@ -61,7 +101,7 @@ describe('NewGameRolesPage', () => {
   }));
 
   it('should create game', () => {
-    jest.spyOn(newGameService, 'createGame');
+    const newGameService = ngMocks.get(NewGameService);
 
     component['createGame']();
 
@@ -69,7 +109,7 @@ describe('NewGameRolesPage', () => {
   });
 
   it('should change role', () => {
-    jest.spyOn(newGameService, 'changeRole');
+    const newGameService = ngMocks.get(NewGameService);
 
     component['changeRole'](0, PlayerRoleEnum.SORCIERE);
 
@@ -80,7 +120,7 @@ describe('NewGameRolesPage', () => {
   });
 
   it('should affect last role to players without role if only 1 available', () => {
-    jest.spyOn(newGameService, 'changeRole');
+    const newGameService = ngMocks.get(NewGameService);
 
     mockCards.set({
       villageois: 3,
@@ -591,4 +631,6 @@ describe('NewGameRolesPage', () => {
       component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
     ).toEqual(false);
   }));
+
+  afterAll(MockReset);
 });

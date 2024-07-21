@@ -1,10 +1,15 @@
-import { Component, computed, Signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlayerComponent } from '@/components/player/player.component';
 import { NON_UNIQUE_ROLES } from '@/configs/non-unique-roles';
 import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { CardList } from '@/models/card-list.model';
 import { Player } from '@/models/player.model';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { NewGameService } from '@/services/new-game/new-game.service';
@@ -14,24 +19,24 @@ import { NewGameService } from '@/services/new-game/new-game.service';
   standalone: true,
   imports: [RouterLink, PlayerComponent],
   templateUrl: './new-game-roles.page.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewGameRolesPage {
-  protected players: Signal<Player[]> = this.newGameService.currentPlayers;
+  private readonly newGameService = inject(NewGameService);
+  private readonly cardChoiceService = inject(CardChoiceService);
 
-  protected playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
+  protected readonly players: Signal<Player[]> =
+    this.newGameService.currentPlayers;
 
-  protected canCreate: Signal<boolean> = computed(() =>
+  protected readonly playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
+
+  protected readonly canCreate: Signal<boolean> = computed(() =>
     this.canCreateGame(this.players()),
   );
 
-  protected availableRoles: Signal<PlayerRoleEnum[]> = computed(() =>
+  protected readonly availableRoles: Signal<PlayerRoleEnum[]> = computed(() =>
     this.getAvailableRoles(this.players()),
   );
-
-  constructor(
-    private newGameService: NewGameService,
-    private cardChoiceService: CardChoiceService,
-  ) {}
 
   protected changeRole(id: number, role: PlayerRoleEnum): void {
     this.newGameService.changeRole(id, role);
@@ -45,15 +50,14 @@ export class NewGameRolesPage {
   }
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
-    const cardsToPlay: Signal<CardList> =
-      this.cardChoiceService.currentChosenCards;
+    const cardsToPlay = this.cardChoiceService.currentChosenCards();
     const usedRoles = new Set(players.map((player) => player.role));
-    let availableRoles = Array.from(cardsToPlay().selectedRoles).filter(
+    let availableRoles = Array.from(cardsToPlay.selectedRoles).filter(
       (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role),
     );
 
     if (
-      cardsToPlay().villageois >
+      cardsToPlay.villageois >
       players.filter((player) => player.role === PlayerRoleEnum.VILLAGEOIS)
         .length
     ) {
@@ -61,7 +65,7 @@ export class NewGameRolesPage {
     }
 
     if (
-      cardsToPlay().loupGarou >
+      cardsToPlay.loupGarou >
       players.filter((player) => player.role === PlayerRoleEnum.LOUP_GAROU)
         .length
     ) {

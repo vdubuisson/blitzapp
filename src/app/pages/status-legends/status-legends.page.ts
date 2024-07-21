@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AccordionItemModule } from '@/components/accordion-item/accordion-item.module';
 import { PLAYER_STATUS_ORDER_CONFIG } from '@/configs/player-status-order.config';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
@@ -12,10 +12,13 @@ import { STATUS_LEGENDS } from '@/values/status-legends';
   imports: [PlayerStatusIconPipe, PlayerStatusNamePipe, AccordionItemModule],
   templateUrl: './status-legends.page.html',
   styleUrls: ['./status-legends.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusLegendsPage {
-  protected legends = STATUS_LEGENDS;
-  protected statuses: PlayerStatusEnum[] = Object.values(PlayerStatusEnum).sort(
+  protected readonly legends = STATUS_LEGENDS;
+  protected readonly statuses: PlayerStatusEnum[] = Object.values(
+    PlayerStatusEnum,
+  ).toSorted(
     (status1, status2) =>
       PLAYER_STATUS_ORDER_CONFIG.indexOf(status1) -
       PLAYER_STATUS_ORDER_CONFIG.indexOf(status2),

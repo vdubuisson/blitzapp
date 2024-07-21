@@ -1,4 +1,10 @@
-import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Player } from '@/models/player.model';
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
@@ -14,12 +20,12 @@ const MOCK_PLAYER: Player = {
 };
 
 describe('PlayerComponent', () => {
-  MockInstance.scope();
+  ngMocks.faster();
 
-  beforeEach(async () => MockBuilder(PlayerComponent));
+  beforeAll(async () => MockBuilder(PlayerComponent));
 
-  beforeEach(async () => {
-    return MockInstance(PlayerRoleNamePipe, () => ({
+  beforeAll(() => {
+    MockInstance(PlayerRoleNamePipe, () => ({
       transform: (role) => {
         switch (role) {
           case PlayerRoleEnum.VILLAGEOIS:
@@ -98,4 +104,6 @@ describe('PlayerComponent', () => {
       component['sortedRoles']().includes(PlayerRoleEnum.NOT_SELECTED),
     ).toEqual(false);
   });
+
+  afterAll(MockReset);
 });

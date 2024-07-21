@@ -4,8 +4,13 @@ import {
   CdkDragHandle,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-
-import { Component, Signal, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  computed,
+  inject,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
@@ -31,26 +36,26 @@ import { NewGameService } from '@/services/new-game/new-game.service';
   ],
   templateUrl: './new-game.page.html',
   styleUrls: ['./new-game.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewGamePage {
-  protected players: Signal<Player[]> = this.newGameService.currentPlayers;
+  private readonly newGameService = inject(NewGameService);
+  private readonly cardChoiceService = inject(CardChoiceService);
 
-  protected canValidate: Signal<boolean> = computed(
+  protected readonly players: Signal<Player[]> =
+    this.newGameService.currentPlayers;
+
+  protected readonly canValidate: Signal<boolean> = computed(
     () => this.players().length === this.playersCount(),
   );
 
-  protected playersCount: Signal<number> = computed(
+  protected readonly playersCount: Signal<number> = computed(
     () => this.cardChoiceService.currentChosenCards().playersNumber,
   );
 
-  protected dangerIcon = faTriangleExclamation;
-  protected removeIcon = faMinus;
-  protected dragIcon = faGripLines;
-
-  constructor(
-    private newGameService: NewGameService,
-    private cardChoiceService: CardChoiceService,
-  ) {}
+  protected readonly dangerIcon = faTriangleExclamation;
+  protected readonly removeIcon = faMinus;
+  protected readonly dragIcon = faGripLines;
 
   protected addPlayer(name: string): void {
     this.newGameService.addPlayer(name);

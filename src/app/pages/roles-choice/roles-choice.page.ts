@@ -1,22 +1,3 @@
-import { SelectionModel } from '@angular/cdk/collections';
-import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
-import {
-  Component,
-  Signal,
-  WritableSignal,
-  computed,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Router } from '@angular/router';
 import { AccordionItemModule } from '@/components/accordion-item/accordion-item.module';
 import { GAME_BOX_CONTENTS } from '@/configs/game-box-contents';
 import { GameBoxEnum } from '@/enums/game-box.enum';
@@ -26,11 +7,34 @@ import { GameBoxNamePipe } from '@/pipes/game-box-name/game-box-name.pipe';
 import { PlayerRoleImagePipe } from '@/pipes/player-role-image/player-role-image.pipe';
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { SelectionModel } from '@angular/cdk/collections';
+import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  Signal,
+  WritableSignal,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router } from '@angular/router';
 
-interface RoleForm {
+type RoleForm = {
   villageois: FormControl<number | null>;
   loupGarou: FormControl<number | null>;
-}
+};
 
 @Component({
   selector: 'lgmj-roles-choice',
@@ -48,28 +52,32 @@ interface RoleForm {
   providers: [PlayerRoleNamePipe],
   templateUrl: './roles-choice.page.html',
   styleUrls: ['./roles-choice.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RolesChoicePage {
-  protected boxContents = GAME_BOX_CONTENTS;
-  protected boxes: GameBoxEnum[] = Object.values(GameBoxEnum);
+export class RolesChoicePage implements OnInit {
+  private readonly playerRoleNamePipe = inject(PlayerRoleNamePipe);
+  private readonly cardChoiceService = inject(CardChoiceService);
+  private readonly router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
 
-  protected loupGarouRole = PlayerRoleEnum.LOUP_GAROU;
-  protected villageoisRole = PlayerRoleEnum.VILLAGEOIS;
+  protected readonly boxContents = GAME_BOX_CONTENTS;
+  protected readonly boxes: GameBoxEnum[] = Object.values(GameBoxEnum);
 
-  protected roleCountForm: FormGroup<RoleForm>;
+  protected readonly loupGarouRole = PlayerRoleEnum.LOUP_GAROU;
+  protected readonly villageoisRole = PlayerRoleEnum.VILLAGEOIS;
 
-  protected selectedRoles = computed<Set<PlayerRoleEnum>>(() => {
+  protected readonly selectedRoles = computed<Set<PlayerRoleEnum>>(() => {
     const selection = this.rolesSelectionChange()?.source?.selected ?? [];
     return new Set(selection);
   });
 
-  private rolesSelection = new SelectionModel<PlayerRoleEnum>(true);
-  private rolesSelectionChange = toSignal(this.rolesSelection.changed);
+  private readonly rolesSelection = new SelectionModel<PlayerRoleEnum>(true);
+  private readonly rolesSelectionChange = toSignal(this.rolesSelection.changed);
 
-  private villageoisCount: WritableSignal<number> = signal(0);
-  private loupGarouCount: WritableSignal<number> = signal(0);
+  private readonly villageoisCount: WritableSignal<number> = signal(0);
+  private readonly loupGarouCount: WritableSignal<number> = signal(0);
 
-  protected playersCount: Signal<number> = computed(
+  protected readonly playersCount: Signal<number> = computed(
     () =>
       this.selectedRoles().size +
       this.villageoisCount() +
@@ -79,16 +87,31 @@ export class RolesChoicePage {
       (this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0),
   );
 
-  protected requiredVillageois: Signal<number> = computed(() =>
+  protected readonly requiredVillageois: Signal<number> = computed(() =>
     this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0,
   );
 
-  constructor(
-    private playerRoleNamePipe: PlayerRoleNamePipe,
-    private cardChoiceService: CardChoiceService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-  ) {
+  protected readonly roleCountForm: FormGroup<RoleForm> =
+    this.formBuilder.group({
+      loupGarou: [0, Validators.min(0)],
+      villageois: [0, Validators.min(this.requiredVillageois())],
+    });
+
+  private readonly roleCountFormChanges = toSignal(
+    this.roleCountForm.valueChanges,
+  );
+
+  constructor() {
+    effect(
+      () => {
+        this.villageoisCount.set(this.roleCountFormChanges()?.villageois ?? 0);
+        this.loupGarouCount.set(this.roleCountFormChanges()?.loupGarou ?? 0);
+      },
+      { allowSignalWrites: true },
+    );
+  }
+
+  ngOnInit(): void {
     Object.values(this.boxContents).forEach((roles) => {
       roles.sort((a, b) =>
         this.playerRoleNamePipe
@@ -96,14 +119,6 @@ export class RolesChoicePage {
           .localeCompare(this.playerRoleNamePipe.transform(b)),
       );
     });
-
-    this.roleCountForm = this.formBuilder.group({
-      loupGarou: [0, Validators.min(0)],
-      villageois: [0, Validators.min(this.requiredVillageois())],
-    });
-
-    this.listenRoleCountChange('loupGarou');
-    this.listenRoleCountChange('villageois');
 
     const cardList: CardList = this.cardChoiceService.currentChosenCards();
     this.rolesSelection.setSelection(...cardList.selectedRoles);
@@ -145,18 +160,5 @@ export class RolesChoicePage {
 
   protected selectInput(event: FocusEvent): void {
     (event.target as HTMLInputElement).select();
-  }
-
-  private listenRoleCountChange(role: string): void {
-    this.roleCountForm
-      .get(role)
-      ?.valueChanges.pipe(takeUntilDestroyed())
-      .subscribe((newValue) => {
-        if (role === 'villageois') {
-          this.villageoisCount.set(newValue ?? 0);
-        } else {
-          this.loupGarouCount.set(newValue ?? 0);
-        }
-      });
   }
 }

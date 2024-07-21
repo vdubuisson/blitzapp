@@ -1,30 +1,41 @@
-import { NO_ERRORS_SCHEMA, WritableSignal, signal } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MockService } from 'ng-mocks';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { CardList } from '@/models/card-list.model';
-import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { WritableSignal, signal } from '@angular/core';
+import { waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import {
+  MockBuilder,
+  MockedComponentFixture,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { RolesChoicePage } from './roles-choice.page';
+import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 
 describe('RolesChoicePage', () => {
   let page: RolesChoicePage;
-  let fixture: ComponentFixture<RolesChoicePage>;
-
-  let playerRoleNamePipe: PlayerRoleNamePipe;
-  let cardChoiceService: CardChoiceService;
-  let router: Router;
+  let fixture: MockedComponentFixture<RolesChoicePage>;
 
   let currentChosenCards: WritableSignal<CardList>;
 
   function createComponent() {
-    fixture = TestBed.createComponent(RolesChoicePage);
-    page = fixture.componentInstance;
+    fixture = MockRender(RolesChoicePage);
+    page = fixture.point.componentInstance;
   }
 
-  beforeEach(async () => {
+  ngMocks.faster();
+
+  beforeAll(() =>
+    MockBuilder(RolesChoicePage)
+      .mock(CardChoiceService)
+      .mock(Router)
+      .mock(PlayerRoleNamePipe),
+  );
+
+  beforeAll(async () => {
     currentChosenCards = signal({
       selectedRoles: new Set([]),
       villageois: 1,
@@ -32,24 +43,18 @@ describe('RolesChoicePage', () => {
       playersNumber: 3,
     });
 
-    playerRoleNamePipe = MockService(PlayerRoleNamePipe);
-    cardChoiceService = {
-      ...MockService(CardChoiceService),
+    MockInstance(CardChoiceService, () => ({
       currentChosenCards: currentChosenCards.asReadonly(),
-    } as CardChoiceService;
-    router = MockService(Router);
+      setCards: jest.fn(),
+    }));
 
-    jest.spyOn(playerRoleNamePipe, 'transform').mockReturnValue('');
+    MockInstance(Router, () => ({
+      navigate: jest.fn(),
+    }));
 
-    await TestBed.configureTestingModule({
-      schemas: [NO_ERRORS_SCHEMA],
-      imports: [RolesChoicePage, ReactiveFormsModule, FormsModule],
-      providers: [
-        { provide: PlayerRoleNamePipe, useValue: playerRoleNamePipe },
-        { provide: CardChoiceService, useValue: cardChoiceService },
-        { provide: Router, useValue: router },
-      ],
-    }).compileComponents();
+    MockInstance(PlayerRoleNamePipe, () => ({
+      transform: () => '',
+    }));
   });
 
   it('should create page', () => {
@@ -269,7 +274,7 @@ describe('RolesChoicePage', () => {
     });
   });
 
-  it('should reset playersCount on deselect', () => {
+  it('should reset playersCount on deselect', async () => {
     const mockCards = {
       selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
@@ -283,6 +288,8 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']()).not.toEqual(0);
 
     page['deselectAll']();
+
+    await fixture.whenStable();
 
     expect(page['playersCount']()).toEqual(0);
   });
@@ -302,7 +309,6 @@ describe('RolesChoicePage', () => {
       PlayerRoleEnum.CHASSEUR,
       PlayerRoleEnum.CUPIDON,
     ]);
-    jest.spyOn(cardChoiceService, 'setCards');
 
     page['rolesSelection'].setSelection(...selectedRoles);
 
@@ -315,20 +321,22 @@ describe('RolesChoicePage', () => {
 
     page['validateRoles']();
 
+    const cardChoiceService = ngMocks.get(CardChoiceService);
+
     expect(cardChoiceService.setCards).toHaveBeenCalledWith(expectedCardList);
   }));
 
   it('should navigate to /new-game on validate', () => {
     createComponent();
 
-    jest.spyOn(router, 'navigate');
-
     page['validateRoles']();
+
+    const router = ngMocks.get(Router);
 
     expect(router.navigate).toHaveBeenCalledWith(['new-game']);
   });
 
-  it('should increment playersCount on villageois form increase', () => {
+  it('should increment playersCount on villageois form increase', async () => {
     const mockCards = {
       selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
@@ -343,10 +351,12 @@ describe('RolesChoicePage', () => {
 
     page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois + 2);
 
+    await fixture.whenStable();
+
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
 
-  it('should increment playersCount on loupGarou form increase', () => {
+  it('should increment playersCount on loupGarou form increase', async () => {
     const mockCards = {
       selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
@@ -361,10 +371,12 @@ describe('RolesChoicePage', () => {
 
     page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou + 2);
 
+    await fixture.whenStable();
+
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
 
-  it('should decrement playersCount on villageois form decrease', () => {
+  it('should decrement playersCount on villageois form decrease', async () => {
     const mockCards = {
       selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 3,
@@ -379,10 +391,12 @@ describe('RolesChoicePage', () => {
 
     page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois - 2);
 
+    await fixture.whenStable();
+
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
 
-  it('should decrement playersCount on loupGarou form decrease', () => {
+  it('should decrement playersCount on loupGarou form decrease', async () => {
     const mockCards = {
       selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
@@ -396,6 +410,8 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
     page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou - 2);
+
+    await fixture.whenStable();
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
@@ -452,7 +468,7 @@ describe('RolesChoicePage', () => {
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(0);
   });
 
-  it('should ignore 2 villageois in playersCount when VOLEUR checked', () => {
+  it('should ignore 2 villageois in playersCount when VOLEUR checked', async () => {
     const mockCards = {
       selectedRoles: new Set([]),
       villageois: 1,
@@ -465,6 +481,10 @@ describe('RolesChoicePage', () => {
 
     page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
+    await fixture.whenStable();
+
     expect(page['playersCount']()).toEqual(3);
   });
+
+  afterAll(MockReset);
 });

@@ -1,9 +1,10 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EventEmitter,
-  Output,
-  ViewChild,
+  inject,
+  output,
+  viewChild,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -20,23 +21,25 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
   imports: [FormsModule, ReactiveFormsModule, FaIconComponent],
   templateUrl: './new-player.component.html',
   styleUrls: ['./new-player.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewPlayerComponent {
-  @Output() newPlayer = new EventEmitter<string>();
+  readonly newPlayer = output<string>();
 
-  @ViewChild('input') inputElement?: ElementRef<HTMLInputElement>;
+  private readonly formBuilder = inject(FormBuilder);
 
-  protected playerForm = this.formBuilder.group({
+  private readonly inputElement =
+    viewChild<ElementRef<HTMLInputElement>>('input');
+
+  protected readonly playerForm = this.formBuilder.group({
     name: ['', Validators.required],
   });
 
-  protected addIcon = faPlus;
+  protected readonly addIcon = faPlus;
 
-  constructor(private formBuilder: FormBuilder) {}
-
-  async onSubmit() {
+  onSubmit() {
     this.newPlayer.emit(this.playerForm.value.name as string);
     this.playerForm.reset();
-    this.inputElement?.nativeElement.focus();
+    this.inputElement()?.nativeElement.focus();
   }
 }

@@ -1,17 +1,35 @@
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { MockService } from 'ng-mocks';
 import { NewGameService } from '@/services/new-game/new-game.service';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { VictoryPage } from './victory.page';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { provideLocationMocks } from '@angular/common/testing';
 
 describe('VictoryPage', () => {
   let component: VictoryPage;
-  let route: unknown;
-  let newGameService: NewGameService;
 
-  beforeEach(() => {
-    route = { snapshot: { queryParamMap: convertToParamMap({}) } };
-    newGameService = MockService(NewGameService);
-    component = new VictoryPage(route as ActivatedRoute, newGameService);
+  ngMocks.faster();
+
+  beforeAll(() =>
+    MockBuilder(VictoryPage)
+      .mock(NewGameService)
+      .provide(provideLocationMocks()),
+  );
+
+  beforeAll(() => {
+    MockInstance(NewGameService, () => ({
+      replay: jest.fn(),
+    }));
+  });
+
+  beforeAll(() => {
+    component = MockRender(VictoryPage, { victory: VictoryEnum.NONE }).point
+      .componentInstance;
   });
 
   it('should create', () => {
@@ -19,10 +37,12 @@ describe('VictoryPage', () => {
   });
 
   it('should replay', () => {
-    jest.spyOn(newGameService, 'replay');
+    const newGameService = ngMocks.get(NewGameService);
 
     component['replay']();
 
     expect(newGameService.replay).toHaveBeenCalled();
   });
+
+  afterAll(MockReset);
 });

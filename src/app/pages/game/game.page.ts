@@ -1,8 +1,9 @@
 import { SelectionModel } from '@angular/cdk/collections';
-
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   signal,
   Signal,
   WritableSignal,
@@ -24,49 +25,53 @@ import { GameService } from '@/services/game/game.service';
   imports: [RoundNamePipe, PlayerComponent],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GamePage {
-  protected players: Signal<Player[]> = computed(() =>
+  private readonly gameService = inject(GameService);
+
+  protected readonly players: Signal<Player[]> = computed(() =>
     this.gameService.currentPlayers().map((player) => ({ ...player })),
   );
-  protected round: Signal<Round | undefined> = this.gameService.currentRound;
-  protected dayCount: Signal<number> = this.gameService.currentDayCount;
+  protected readonly round: Signal<Round | undefined> =
+    this.gameService.currentRound;
+  protected readonly dayCount: Signal<number> =
+    this.gameService.currentDayCount;
 
-  protected playerDisplayMode: Signal<PlayerDisplayModeEnum> = computed(() => {
-    if (this.round() !== undefined) {
-      const currentRound = this.round() as Round;
-      if (currentRound.type === RoundTypeEnum.ROLES) {
-        return PlayerDisplayModeEnum.EDIT_ROLE;
-      } else if (currentRound.maxSelectable > 1) {
-        return PlayerDisplayModeEnum.SELECT_MULTI;
-      } else if (currentRound.maxSelectable === 1) {
-        return PlayerDisplayModeEnum.SELECT_SINGLE;
+  protected readonly playerDisplayMode: Signal<PlayerDisplayModeEnum> =
+    computed(() => {
+      if (this.round() !== undefined) {
+        const currentRound = this.round() as Round;
+        if (currentRound.type === RoundTypeEnum.ROLES) {
+          return PlayerDisplayModeEnum.EDIT_ROLE;
+        } else if (currentRound.maxSelectable > 1) {
+          return PlayerDisplayModeEnum.SELECT_MULTI;
+        } else if (currentRound.maxSelectable === 1) {
+          return PlayerDisplayModeEnum.SELECT_SINGLE;
+        } else {
+          return PlayerDisplayModeEnum.DEFAULT;
+        }
       } else {
         return PlayerDisplayModeEnum.DEFAULT;
       }
-    } else {
-      return PlayerDisplayModeEnum.DEFAULT;
-    }
-  });
+    });
 
-  protected PlayerDisplayModeEnum = PlayerDisplayModeEnum;
-
-  protected selectedPlayer: WritableSignal<number | undefined> =
+  protected readonly selectedPlayer: WritableSignal<number | undefined> =
     signal(undefined);
-  protected selectedPlayers = computed<Set<number>>(() => {
+  protected readonly selectedPlayers = computed<Set<number>>(() => {
     const selection =
       this.playersMultiSelectionChange()?.source?.selected ?? [];
     return new Set(selection);
   });
-  protected selectedRole: WritableSignal<PlayerRoleEnum | undefined> =
+  protected readonly selectedRole: WritableSignal<PlayerRoleEnum | undefined> =
     signal(undefined);
 
-  private playersMultiSelection = new SelectionModel<number>(true);
-  private playersMultiSelectionChange = toSignal(
+  private readonly playersMultiSelection = new SelectionModel<number>(true);
+  private readonly playersMultiSelectionChange = toSignal(
     this.playersMultiSelection.changed,
   );
 
-  protected submitDisabled: Signal<boolean> = computed(() => {
+  protected readonly submitDisabled: Signal<boolean> = computed(() => {
     switch (this.playerDisplayMode()) {
       case PlayerDisplayModeEnum.SELECT_SINGLE:
         return (
@@ -88,18 +93,18 @@ export class GamePage {
     }
   });
 
-  protected displayEqualityButton: Signal<boolean> = computed(
+  protected readonly displayEqualityButton: Signal<boolean> = computed(
     () =>
       this.players().some(
         (player) => player.role === PlayerRoleEnum.BOUC && !player.isDead,
       ) && this.round()?.role === RoundEnum.VILLAGEOIS,
   );
 
-  protected isBeforeGame: Signal<boolean> = computed(
+  protected readonly isBeforeGame: Signal<boolean> = computed(
     () => this.round()?.role === RoundEnum.SECTAIRE,
   );
 
-  constructor(private gameService: GameService) {}
+  protected readonly PlayerDisplayModeEnum = PlayerDisplayModeEnum;
 
   protected onPlayerChecked(id: number, checked: boolean): void {
     if (this.playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI) {

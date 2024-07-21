@@ -1,25 +1,36 @@
-import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
 import { StorageService } from '@/services/storage/storage.service';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
+import { of } from 'rxjs';
 import { OptionsPage } from './options.page';
-import { ModalService } from '@/services/modal/modal.service';
 
 describe('OptionsPage', () => {
   let page: OptionsPage;
-  let storageService: StorageService;
-  let modalService: ModalService;
 
-  beforeEach(() => {
-    storageService = MockService(StorageService);
-    modalService = MockService(ModalService);
-    page = new OptionsPage(storageService, modalService);
+  beforeAll(() => MockBuilder(OptionsPage).mock(StorageService));
+
+  beforeAll(() => {
+    MockInstance(StorageService, () => ({
+      clear: jest.fn().mockReturnValue(of(undefined)),
+    }));
+  });
+
+  beforeAll(() => {
+    page = MockRender(OptionsPage).point.componentInstance;
   });
 
   it('should clear storage', () => {
-    jest.spyOn(storageService, 'clear').mockReturnValue(of(undefined));
+    const storageService = ngMocks.get(StorageService);
 
     page['clear']();
 
     expect(storageService.clear).toHaveBeenCalled();
   });
+
+  afterAll(MockReset);
 });

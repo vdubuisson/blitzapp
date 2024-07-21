@@ -1,7 +1,7 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
-export interface Player {
+export type Player = {
   id: number;
   name: string;
   role: PlayerRoleEnum;
@@ -9,7 +9,7 @@ export interface Player {
   statuses: Set<PlayerStatusEnum>;
   isDead: boolean;
   killedBy?: PlayerRoleEnum;
-}
+};
 
 export type StoredPlayer = Omit<Player, 'statuses'> & {
   statuses: PlayerStatusEnum[];

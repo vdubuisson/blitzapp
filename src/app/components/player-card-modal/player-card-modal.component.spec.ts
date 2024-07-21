@@ -1,30 +1,44 @@
-import { DialogRef } from '@angular/cdk/dialog';
-import { MockService } from 'ng-mocks';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import {
+  MockBuilder,
+  MockedComponentFixture,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { PlayerCardModalComponent } from './player-card-modal.component';
 
 describe('PlayerCardModalComponent', () => {
-  let component: PlayerCardModalComponent;
+  let fixture: MockedComponentFixture<PlayerCardModalComponent>;
 
-  let dialogRef: DialogRef<void>;
+  ngMocks.faster();
 
-  beforeEach(() => {
-    dialogRef = MockService(DialogRef);
-    jest.spyOn(dialogRef, 'close');
+  beforeAll(() =>
+    MockBuilder(PlayerCardModalComponent).mock(DialogRef).mock(DIALOG_DATA),
+  );
 
-    component = new PlayerCardModalComponent(
-      dialogRef,
-      PlayerRoleEnum.VILLAGEOIS,
-    );
+  beforeAll(() => {
+    MockInstance(DialogRef, () => ({
+      close: jest.fn(),
+    }));
+    fixture = MockRender(PlayerCardModalComponent);
   });
 
   it('should create', () => {
+    const component = fixture.point.componentInstance;
     expect(component).toBeTruthy();
   });
 
   it('should dismiss on continue', () => {
+    const component = fixture.point.componentInstance;
+
     component.continue();
+
+    const dialogRef = ngMocks.get(DialogRef);
 
     expect(dialogRef.close).toHaveBeenCalled();
   });
+
+  afterAll(MockReset);
 });

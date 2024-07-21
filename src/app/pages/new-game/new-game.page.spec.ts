@@ -1,36 +1,63 @@
-import { waitForAsync } from '@angular/core/testing';
-import { MockService } from 'ng-mocks';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Player } from '@/models/player.model';
 import { NewGameService } from '@/services/new-game/new-game.service';
-
-import { NewGamePage } from './new-game.page';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { waitForAsync } from '@angular/core/testing';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
+import { NewPlayerComponent } from '@/components/new-player/new-player.component';
 import { CardList } from '@/models/card-list.model';
-import { signal, WritableSignal } from '@angular/core';
+import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Component, output, signal, WritableSignal } from '@angular/core';
+import { NewGamePage } from './new-game.page';
+
+@Component({
+  selector: 'lgmj-new-player',
+  standalone: true,
+  template: '',
+})
+class NewPlayerStubComponent {
+  readonly newPlayer = output<string>();
+}
 
 describe('NewGamePage', () => {
   let component: NewGamePage;
-  let newGameService: NewGameService;
-  let cardChoiceService: CardChoiceService;
   let mockPlayers$: WritableSignal<Player[]>;
-  let mockCardList: WritableSignal<CardList | undefined>;
+  let mockCardList: WritableSignal<CardList>;
 
-  beforeEach(waitForAsync(() => {
+  ngMocks.faster();
+
+  beforeAll(async () =>
+    MockBuilder(NewGamePage)
+      .mock(NewGameService)
+      .mock(CardChoiceService)
+      .replace(NewPlayerComponent, NewPlayerStubComponent),
+  );
+
+  beforeAll(() => {
     mockPlayers$ = signal([]);
     mockCardList = signal({ playersNumber: 0 } as CardList);
-    newGameService = {
-      ...MockService(NewGameService),
-      currentPlayers: mockPlayers$.asReadonly(),
-    } as NewGameService;
-    cardChoiceService = {
-      ...MockService(CardChoiceService),
-      currentChosenCards: mockCardList.asReadonly(),
-    } as CardChoiceService;
 
-    component = new NewGamePage(newGameService, cardChoiceService);
-  }));
+    MockInstance(NewGameService, () => ({
+      currentPlayers: mockPlayers$.asReadonly(),
+      addPlayer: jest.fn(),
+      removePlayer: jest.fn(),
+      reorderPlayers: jest.fn(),
+    }));
+
+    MockInstance(CardChoiceService, () => ({
+      currentChosenCards: mockCardList.asReadonly(),
+    }));
+  });
+
+  beforeAll(() => {
+    component = MockRender(NewGamePage).point.componentInstance;
+  });
 
   it('should get players from NewGameService', waitForAsync(() => {
     const mockPlayers: Player[] = [
@@ -113,7 +140,7 @@ describe('NewGamePage', () => {
   }));
 
   it('should add player', () => {
-    jest.spyOn(newGameService, 'addPlayer');
+    const newGameService = ngMocks.get(NewGameService);
 
     component['addPlayer']('player0');
 
@@ -121,7 +148,7 @@ describe('NewGamePage', () => {
   });
 
   it('should remove player', () => {
-    jest.spyOn(newGameService, 'removePlayer');
+    const newGameService = ngMocks.get(NewGameService);
 
     component['removePlayer'](0);
 
@@ -129,7 +156,8 @@ describe('NewGamePage', () => {
   });
 
   it('should reorder player', () => {
-    jest.spyOn(newGameService, 'reorderPlayers');
+    const newGameService = ngMocks.get(NewGameService);
+
     const mockEvent = { previousIndex: 0, currentIndex: 2 } as CdkDragDrop<
       Player[]
     >;
@@ -138,4 +166,6 @@ describe('NewGamePage', () => {
 
     expect(newGameService.reorderPlayers).toHaveBeenCalledWith(0, 2);
   });
+
+  afterAll(MockReset);
 });

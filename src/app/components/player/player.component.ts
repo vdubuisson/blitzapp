@@ -1,15 +1,16 @@
 import { NgOptimizedImage } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
   computed,
+  inject,
   input,
+  model,
+  output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -41,30 +42,39 @@ import { SelectOverlayService } from '@/services/select-overlay/select-overlay.s
   providers: [PlayerRoleNamePipe],
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerComponent {
-  player = input.required<Player>();
+  readonly player = input.required<Player>();
 
-  displayMode = input<PlayerDisplayModeEnum>(PlayerDisplayModeEnum.DEFAULT);
+  readonly displayMode = input<PlayerDisplayModeEnum>(
+    PlayerDisplayModeEnum.DEFAULT,
+  );
 
-  @Input() disabled = false;
+  readonly disabled = input(false);
 
-  @Input() checked = false;
+  readonly noSelfRole = input<boolean>(false);
 
-  noSelfRole = input<boolean>(false);
+  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
 
-  selectableRoles = input<PlayerRoleEnum[]>([]);
+  readonly checked = model(false);
 
-  @Output() checkedChange = new EventEmitter<boolean>();
+  readonly roleChange = output<PlayerRoleEnum>();
 
-  @Output() roleChange = new EventEmitter<PlayerRoleEnum>();
+  private readonly checkboxElement =
+    viewChild<ElementRef<HTMLInputElement>>('checkbox');
 
-  @ViewChild('checkbox') checkboxElement?: ElementRef<HTMLInputElement>;
+  private readonly playerRoleNamePipe = inject(PlayerRoleNamePipe);
+  private readonly selectOverlayService = inject(SelectOverlayService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  protected playerDisplayModeEnum = PlayerDisplayModeEnum;
-  protected playerRoleEnum = PlayerRoleEnum;
+  protected readonly playerDisplayModeEnum = PlayerDisplayModeEnum;
+  protected readonly playerRoleEnum = PlayerRoleEnum;
 
-  protected sortedRoles = computed<PlayerRoleEnum[]>(() => {
+  protected readonly deadIcon = faSkull;
+  protected readonly selectIcon = faSortDown;
+
+  protected readonly sortedRoles = computed<PlayerRoleEnum[]>(() => {
     const sortedRoles = [...this.selectableRoles()];
     if (
       !this.noSelfRole() &&
@@ -81,19 +91,15 @@ export class PlayerComponent {
     return sortedRoles;
   });
 
-  protected sortedStatuses = computed<PlayerStatusEnum[]>(() => {
-    const playerStatuses: PlayerStatusEnum[] = Array.from(
-      this.player().statuses,
-    );
-    playerStatuses.sort(
+  protected readonly sortedStatuses = computed<PlayerStatusEnum[]>(() =>
+    Array.from(this.player().statuses).toSorted(
       (status1, status2) =>
         PLAYER_STATUS_ORDER_CONFIG.indexOf(status1) -
         PLAYER_STATUS_ORDER_CONFIG.indexOf(status2),
-    );
-    return playerStatuses;
-  });
+    ),
+  );
 
-  protected displayedRole = computed<PlayerRoleEnum>(() => {
+  protected readonly displayedRole = computed<PlayerRoleEnum>(() => {
     if (
       this.displayMode() === PlayerDisplayModeEnum.EDIT_ROLE &&
       this.selectedRole() !== undefined
@@ -104,29 +110,20 @@ export class PlayerComponent {
     }
   });
 
-  private selectedRole = signal<PlayerRoleEnum | undefined>(undefined);
+  private readonly selectedRole = signal<PlayerRoleEnum | undefined>(undefined);
 
-  protected deadIcon = faSkull;
-  protected selectIcon = faSortDown;
-
-  protected selectionOpened = false;
-
-  constructor(
-    private playerRoleNamePipe: PlayerRoleNamePipe,
-    private selectOverlayService: SelectOverlayService,
-    private destroyRef: DestroyRef,
-  ) {}
+  protected readonly selectionOpened = signal(false);
 
   protected onCheckedChange() {
-    this.checkedChange.emit(this.checkboxElement?.nativeElement.checked);
+    this.checked.set(this.checkboxElement()?.nativeElement.checked ?? false);
   }
 
   protected onCheckboxClick() {
     if (
-      this.checked &&
+      this.checked() &&
       this.displayMode() === PlayerDisplayModeEnum.SELECT_SINGLE
     ) {
-      this.checkedChange.emit(false);
+      this.checked.set(false);
     }
   }
 
@@ -142,13 +139,13 @@ export class PlayerComponent {
     this.selectOverlayService.selectedValue
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe((role) => {
-        this.selectionOpened = false;
+        this.selectionOpened.set(false);
         this.selectedRole.set(role as PlayerRoleEnum);
         if (role !== undefined) {
           this.roleChange.emit(role as PlayerRoleEnum);
         }
       });
     this.selectOverlayService.openOverlay(selectOverlay);
-    this.selectionOpened = true;
+    this.selectionOpened.set(true);
   }
 }
