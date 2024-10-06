@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { Player } from '@/models/player.model';
 import { TextModalData } from '@/models/text-modal-data.model';
@@ -10,23 +10,31 @@ import { StorageService } from '@/services/storage/storage.service';
   providedIn: 'root',
 })
 export class AnnouncementService {
-  private announcementsQueue: TextModalData[] = [];
+  private readonly storageService = inject(StorageService);
+  private readonly modalService = inject(ModalService);
+
+  private announcementsQueue = signal<TextModalData[]>([]);
   private isPresenting = false;
+  private isInitialized = signal<boolean>(false);
 
   private readonly QUEUE_KEY = 'AnnouncementService_announcementsQueue';
 
-  constructor(
-    private storageService: StorageService,
-    private modalService: ModalService,
-  ) {
+  constructor() {
     this.storageService
       .get<TextModalData[]>(this.QUEUE_KEY)
       .subscribe((queue) => {
         if (queue !== null && queue.length > 0) {
-          this.announcementsQueue = queue;
+          this.announcementsQueue.set(queue);
           this.showNextAnnouncement();
         }
+        this.isInitialized.set(true);
       });
+
+    effect(() => {
+      if (this.isInitialized()) {
+        this.storageService.set(this.QUEUE_KEY, this.announcementsQueue());
+      }
+    });
   }
 
   announceDeaths(players: Player[]): void {
@@ -57,9 +65,7 @@ export class AnnouncementService {
   }
 
   private addAnnouncementToQueue(announcement: TextModalData): void {
-    this.announcementsQueue.push(announcement);
-
-    this.storageService.set(this.QUEUE_KEY, this.announcementsQueue);
+    this.announcementsQueue.update((queue) => [...queue, announcement]);
 
     if (!this.isPresenting) {
       this.showNextAnnouncement();
@@ -68,7 +74,8 @@ export class AnnouncementService {
 
   private async showNextAnnouncement(): Promise<void> {
     this.isPresenting = true;
-    const announcement = this.announcementsQueue.shift();
+    const announcement = this.announcementsQueue()[0];
+    this.announcementsQueue.update((queue) => queue.slice(1));
 
     if (announcement === undefined) {
       this.isPresenting = false;
@@ -76,13 +83,11 @@ export class AnnouncementService {
     }
 
     this.modalService.showTextModal(announcement).subscribe(() => {
-      if (this.announcementsQueue.length > 0) {
+      if (this.announcementsQueue().length > 0) {
         this.showNextAnnouncement();
       } else {
         this.isPresenting = false;
       }
     });
-
-    this.storageService.set(this.QUEUE_KEY, this.announcementsQueue);
   }
 }

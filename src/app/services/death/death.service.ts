@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { combineLatest } from 'rxjs';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
@@ -17,6 +17,12 @@ import { VictoryHandlersService } from '@/services/victory-handlers/victory-hand
   providedIn: 'root',
 })
 export class DeathService {
+  private readonly roundHandlersService = inject(RoundHandlersService);
+  private readonly victoryHandlersService = inject(VictoryHandlersService);
+  private readonly announcementService = inject(AnnouncementService);
+  private readonly storageService = inject(StorageService);
+  private readonly statusesService = inject(StatusesService);
+
   private knownDeaths = new Set<number>();
   private deathsToAnnounce: Player[] = [];
   private afterDeathRoundQueue: RoundEnum[] = [];
@@ -26,13 +32,7 @@ export class DeathService {
   private readonly ANNOUNCE_KEY = 'DeathService_deathsToAnnounce';
   private readonly QUEUE_KEY = 'DeathService_afterDeathRoundQueue';
 
-  constructor(
-    private roundHandlersService: RoundHandlersService,
-    private victoryHandlersService: VictoryHandlersService,
-    private announcementService: AnnouncementService,
-    private storageService: StorageService,
-    private statusesService: StatusesService,
-  ) {
+  constructor() {
     this.initFromStorage();
   }
 

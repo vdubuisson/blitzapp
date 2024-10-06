@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { combineLatest } from 'rxjs';
 import { RoundEnum } from '@/enums/round.enum';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
@@ -11,6 +11,10 @@ import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
   providedIn: 'root',
 })
 export class RoundOrchestrationService {
+  private readonly roundHandlersService = inject(RoundHandlersService);
+  private readonly deathService = inject(DeathService);
+  private readonly storageService = inject(StorageService);
+
   private sortedRounds = [...ROUNDS_ORDER_CONFIG];
 
   private uniqueRoundsPassed = new Set<RoundEnum>();
@@ -21,11 +25,7 @@ export class RoundOrchestrationService {
   private readonly BEFORE_DEATH_KEY =
     'RoundOrchestrationService_beforeDeathRound';
 
-  constructor(
-    private roundHandlersService: RoundHandlersService,
-    private deathService: DeathService,
-    private storageService: StorageService,
-  ) {
+  constructor() {
     this.initFromStorage();
   }
 

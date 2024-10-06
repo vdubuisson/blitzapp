@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
@@ -13,17 +13,17 @@ import { DefaultRoundHandler } from '@/round-handlers/default/default-round.hand
   providedIn: 'root',
 })
 export class RoundHandlersService {
+  private readonly announcementService = inject(AnnouncementService);
+  private readonly modalService = inject(ModalService);
+  private readonly storageService = inject(StorageService);
+
   private readonly roundHandlers = new Map<RoundEnum, RoundHandler>();
 
   private readonly HANDLERS_KEY = 'RoundHandlersService_handlers';
   private readonly DEFAULT_HANDLERS_KEY =
     'RoundHandlersService_defaultHandlers';
 
-  constructor(
-    private announcementService: AnnouncementService,
-    private modalService: ModalService,
-    private storageService: StorageService,
-  ) {
+  constructor() {
     this.initFromStorage();
   }
 

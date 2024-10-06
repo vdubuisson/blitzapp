@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { ComponentType } from '@angular/cdk/portal';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { first, map, Observable } from 'rxjs';
 import { PlayerCardModalComponent } from '@/components/player-card-modal/player-card-modal.component';
 import { TextModalComponent } from '@/components/text-modal/text-modal.component';
@@ -11,7 +11,7 @@ import { TextModalData } from '@/models/text-modal-data.model';
   providedIn: 'root',
 })
 export class ModalService {
-  constructor(private dialog: Dialog) {}
+  private readonly dialog = inject(Dialog);
 
   showPlayerCard(card: PlayerRoleEnum): Observable<void> {
     return this.showModal<void>(

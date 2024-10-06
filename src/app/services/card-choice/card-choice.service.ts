@@ -1,4 +1,10 @@
-import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  inject,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { StorageService } from '@/services/storage/storage.service';
 import { CardList, StoredCardList } from '@/models/card-list.model';
 
@@ -6,7 +12,9 @@ import { CardList, StoredCardList } from '@/models/card-list.model';
   providedIn: 'root',
 })
 export class CardChoiceService {
-  private cards: WritableSignal<CardList> = signal({
+  private readonly storageService = inject(StorageService);
+
+  private readonly cards: WritableSignal<CardList> = signal({
     villageois: 0,
     loupGarou: 0,
     playersNumber: 0,
@@ -19,7 +27,7 @@ export class CardChoiceService {
 
   private readonly CARDS_KEY = 'CardChoiceService_cards';
 
-  constructor(private storageService: StorageService) {
+  constructor() {
     this.initFromStorage();
   }
 

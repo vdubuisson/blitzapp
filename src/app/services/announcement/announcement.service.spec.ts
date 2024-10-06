@@ -1,22 +1,30 @@
-import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
-import { ModalService } from '@/services/modal/modal.service';
 import { StorageService } from '@/services/storage/storage.service';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
+import { of } from 'rxjs';
 import { AnnouncementService } from './announcement.service';
 
 describe('AnnouncementService', () => {
   let service: AnnouncementService;
-  let modalService: ModalService;
-  let storageService: StorageService;
 
-  beforeEach(() => {
-    modalService = MockService(ModalService);
-    storageService = MockService(StorageService);
-    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
-    service = new AnnouncementService(storageService, modalService);
+  ngMocks.faster();
+
+  beforeAll(() => MockBuilder(AnnouncementService).mock(StorageService));
+
+  beforeAll(() => {
+    MockInstance(StorageService, 'get', () => of(null));
+
+    service = MockRender(AnnouncementService).point.componentInstance;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  afterAll(MockReset);
 });

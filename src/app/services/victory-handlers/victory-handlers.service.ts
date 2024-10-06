@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
@@ -20,13 +20,15 @@ import { VillageoisVictoryHandler } from '@/victory-handlers/villageois/villageo
   providedIn: 'root',
 })
 export class VictoryHandlersService {
+  private readonly storageService = inject(StorageService);
+
   private readonly victoryHandlers = new Map<VictoryEnum, VictoryHandler>();
 
   private readonly victoryPriorities = VICTORIES_PRIORITY_CONFIG;
 
   private readonly HANDLERS_KEY = 'VictoryHandlersService_handlers';
 
-  constructor(private storageService: StorageService) {
+  constructor() {
     this.initFromStorage();
   }
 

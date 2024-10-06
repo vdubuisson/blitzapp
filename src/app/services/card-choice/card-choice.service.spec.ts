@@ -1,16 +1,20 @@
-import { MockService } from 'ng-mocks';
-import { when } from 'jest-when';
-import { CardChoiceService } from './card-choice.service';
-import { StorageService } from '@/services/storage/storage.service';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { of } from 'rxjs';
-import { waitForAsync } from '@angular/core/testing';
 import { CardList, StoredCardList } from '@/models/card-list.model';
+import { StorageService } from '@/services/storage/storage.service';
+import { waitForAsync } from '@angular/core/testing';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
+import { of } from 'rxjs';
+import { CardChoiceService } from './card-choice.service';
 
 describe('CardChoiceService', () => {
   let service: CardChoiceService;
 
-  let storageService: StorageService;
   const mockCards: CardList = {
     selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.SORCIERE]),
     villageois: 4,
@@ -18,15 +22,24 @@ describe('CardChoiceService', () => {
     playersNumber: 6,
   };
 
-  beforeEach(() => {
-    storageService = MockService(StorageService);
+  ngMocks.faster();
 
-    const storageGetSpy = jest.spyOn(storageService, 'get');
-    when(storageGetSpy)
-      .calledWith('CardChoiceService_cards')
-      .mockReturnValue(of(mockCards));
+  beforeAll(() => MockBuilder(CardChoiceService).mock(StorageService));
 
-    service = new CardChoiceService(storageService);
+  beforeAll(() => {
+    MockInstance(
+      StorageService,
+      () =>
+        ({
+          get: (key: string) =>
+            key === 'CardChoiceService_cards' ? of(mockCards) : of(null),
+          set: jest.fn(),
+        }) as Partial<StorageService>,
+    );
+  });
+
+  beforeAll(() => {
+    service = MockRender(CardChoiceService).point.componentInstance;
   });
 
   it('should init from storage', () => {
@@ -70,13 +83,15 @@ describe('CardChoiceService', () => {
       loupGarou: 1,
       playersNumber: 5,
     };
-    jest.spyOn(storageService, 'set');
 
     service.setCards(newMockCards);
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
       'CardChoiceService_cards',
       expectedCards,
     );
   });
+
+  afterAll(MockReset);
 });

@@ -1,4 +1,10 @@
-import { MockService } from 'ng-mocks';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { of } from 'rxjs';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
@@ -23,14 +29,15 @@ class MockVictoryHandler implements VictoryHandler {
 
 describe('VictoryHandlersService', () => {
   let service: VictoryHandlersService;
-  let storageService: StorageService;
+
+  ngMocks.faster();
+
+  beforeAll(() => MockBuilder(VictoryHandlersService).mock(StorageService));
+
+  beforeAll(() => MockInstance(StorageService, 'get', () => of(null)));
 
   beforeEach(() => {
-    storageService = MockService(StorageService);
-
-    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
-
-    service = new VictoryHandlersService(storageService);
+    service = MockRender(VictoryHandlersService).point.componentInstance;
   });
 
   it('should init VILLAGEOIS victory handler', () => {
@@ -313,4 +320,6 @@ describe('VictoryHandlersService', () => {
       false,
     );
   });
+
+  afterAll(MockReset);
 });

@@ -1,5 +1,6 @@
 import {
   computed,
+  inject,
   Injectable,
   Signal,
   signal,
@@ -29,6 +30,16 @@ import { LOUPS_GAROUS_ROUNDS } from '@/configs/loups-garous-rounds';
   providedIn: 'root',
 })
 export class GameService {
+  private readonly router = inject(Router);
+  private readonly roundHandlersService = inject(RoundHandlersService);
+  private readonly victoryHandlersService = inject(VictoryHandlersService);
+  private readonly roundOrchestrationService = inject(
+    RoundOrchestrationService,
+  );
+  private readonly deathService = inject(DeathService);
+  private readonly statusesService = inject(StatusesService);
+  private readonly storageService = inject(StorageService);
+
   isGameInProgress: Signal<boolean> = computed(
     () => this.round() !== undefined,
   );
@@ -46,15 +57,7 @@ export class GameService {
   private readonly CARD_LIST_KEY = 'GameService_cardList';
   private readonly NEED_CLEAN_AFTER_BOUC_KEY = 'GameService_needCleanAfterBouc';
 
-  constructor(
-    private router: Router,
-    private roundHandlersService: RoundHandlersService,
-    private victoryHandlersService: VictoryHandlersService,
-    private roundOrchestrationService: RoundOrchestrationService,
-    private deathService: DeathService,
-    private statusesService: StatusesService,
-    private storageService: StorageService,
-  ) {
+  constructor() {
     this.initFromStorage();
   }
 

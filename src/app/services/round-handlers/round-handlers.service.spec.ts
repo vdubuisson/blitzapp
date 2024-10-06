@@ -1,12 +1,5 @@
-import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundEnum } from '@/enums/round.enum';
-import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { StorageService } from '@/services/storage/storage.service';
-import { RoundHandlersService } from './round-handlers.service';
-import { ModalService } from '@/services/modal/modal.service';
-import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
 import { AmoureuxRoundHandler } from '@/round-handlers/amoureux/amoureux-round.handler';
 import { CapitaineRoundHandler } from '@/round-handlers/capitaine/capitaine-round.handler';
 import { CharmedRoundHandler } from '@/round-handlers/charmed/charmed-round.handler';
@@ -14,6 +7,7 @@ import { ChasseurRoundHandler } from '@/round-handlers/chasseur/chasseur-round.h
 import { ChienLoupRoundHandler } from '@/round-handlers/chien-loup/chien-loup-round.handler';
 import { CorbeauRoundHandler } from '@/round-handlers/corbeau/corbeau-round.handler';
 import { CupidonRoundHandler } from '@/round-handlers/cupidon/cupidon-round.handler';
+import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
 import { EnfantSauvageRoundHandler } from '@/round-handlers/enfant-sauvage/enfant-sauvage-round.handler';
 import { FreresRoundHandler } from '@/round-handlers/freres/freres-round.handler';
 import { GrandMechantLoupRoundHandler } from '@/round-handlers/grand-mechant-loup/grand-mechant-loup-round.handler';
@@ -27,24 +21,40 @@ import { SorciereHealthRoundHandler } from '@/round-handlers/sorciere-health/sor
 import { SorciereKillRoundHandler } from '@/round-handlers/sorciere-kill/sorciere-kill-round.handler';
 import { VillageoisRoundHandler } from '@/round-handlers/villageois/villageois-round.handler';
 import { VoyanteRoundHandler } from '@/round-handlers/voyante/voyante-round.handler';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
+import { ModalService } from '@/services/modal/modal.service';
+import { StorageService } from '@/services/storage/storage.service';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
+import { of } from 'rxjs';
+import { RoundHandlersService } from './round-handlers.service';
 
 describe('RoundHandlersService', () => {
+  ngMocks.faster();
   let service: RoundHandlersService;
-  let announcementService: AnnouncementService;
-  let modalService: ModalService;
-  let storageService: StorageService;
+
+  beforeAll(() =>
+    MockBuilder(RoundHandlersService)
+      .mock(StorageService)
+      .mock(AnnouncementService)
+      .mock(ModalService),
+  );
+
+  beforeAll(() => {
+    MockInstance(StorageService, 'get', jest.fn().mockReturnValue(of(null)));
+  });
+
+  beforeAll(() => {
+    service = MockRender(RoundHandlersService).point.componentInstance;
+  });
 
   beforeEach(() => {
-    announcementService = MockService(AnnouncementService);
-    storageService = MockService(StorageService);
-
-    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
-
-    service = new RoundHandlersService(
-      announcementService,
-      modalService,
-      storageService,
-    );
+    service['roundHandlers'].clear();
   });
 
   it('should be created', () => {
@@ -60,6 +70,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for VILLAGEOIS round', () => {
+    const announcementService = ngMocks.get(AnnouncementService);
     const roundHandler = new VillageoisRoundHandler({ announcementService });
     service['roundHandlers'].set(RoundEnum.VILLAGEOIS, roundHandler);
 
@@ -298,6 +309,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for VOYANTE round', () => {
+    const modalService = ngMocks.get(ModalService);
     const roundHandler = new VoyanteRoundHandler({ modalService });
     service['roundHandlers'].set(RoundEnum.VOYANTE, roundHandler);
 
@@ -307,6 +319,8 @@ describe('RoundHandlersService', () => {
   });
 
   it('should remove handler VOYANTE for VOYANTE role', () => {
+    const modalService = ngMocks.get(ModalService);
+
     service['roundHandlers'].set(
       RoundEnum.VOYANTE,
       new VoyanteRoundHandler({ modalService }),
@@ -548,6 +562,8 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for MONTREUR_OURS round', () => {
+    const announcementService = ngMocks.get(AnnouncementService);
+
     const roundHandler = new MontreurOursRoundHandler({ announcementService });
     service['roundHandlers'].set(RoundEnum.MONTREUR_OURS, roundHandler);
 
@@ -557,6 +573,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should remove handler MONTREUR_OURS for MONTREUR_OURS role', () => {
+    const announcementService = ngMocks.get(AnnouncementService);
     service['roundHandlers'].set(
       RoundEnum.MONTREUR_OURS,
       new MontreurOursRoundHandler({ announcementService }),
@@ -584,6 +601,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should return handler for RENARD round', () => {
+    const announcementService = ngMocks.get(AnnouncementService);
     const roundHandler = new RenardRoundHandler({ announcementService });
     service['roundHandlers'].set(RoundEnum.RENARD, roundHandler);
 
@@ -593,6 +611,7 @@ describe('RoundHandlersService', () => {
   });
 
   it('should remove handler RENARD for RENARD role', () => {
+    const announcementService = ngMocks.get(AnnouncementService);
     service['roundHandlers'].set(
       RoundEnum.RENARD,
       new RenardRoundHandler({ announcementService }),
@@ -706,4 +725,6 @@ describe('RoundHandlersService', () => {
       DefaultRoundHandler,
     );
   });
+
+  afterAll(MockReset);
 });

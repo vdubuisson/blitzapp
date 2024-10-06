@@ -1,5 +1,10 @@
-import { when } from 'jest-when';
-import { MockService } from 'ng-mocks';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { of } from 'rxjs';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
@@ -17,11 +22,6 @@ import * as neighborUtils from '@/utils/neighbor.utils';
 
 describe('DeathService with storage init', () => {
   let service: DeathService;
-  let roundHandlersService: RoundHandlersService;
-  let victoryHandlersService: VictoryHandlersService;
-  let announcementService: AnnouncementService;
-  let storageService: StorageService;
-  let statusesService: StatusesService;
 
   const mockStoredKnownDeaths: number[] = [0, 1, 2];
   const mockStoredAnnounce: Player[] = [
@@ -36,32 +36,32 @@ describe('DeathService with storage init', () => {
   ];
   const mockStoredQueue: RoundEnum[] = [RoundEnum.CHASSEUR];
 
-  beforeEach(() => {
-    roundHandlersService = MockService(RoundHandlersService);
-    victoryHandlersService = MockService(VictoryHandlersService);
-    announcementService = MockService(AnnouncementService);
-    storageService = MockService(StorageService);
-    statusesService = MockService(StatusesService);
+  ngMocks.faster();
 
-    const storageGetSpy = jest.spyOn(storageService, 'get');
-    when(storageGetSpy)
-      .calledWith('DeathService_knownDeaths')
-      .mockReturnValue(of(mockStoredKnownDeaths));
-    when(storageGetSpy)
-      .calledWith('DeathService_deathsToAnnounce')
-      .mockReturnValue(of(mockStoredAnnounce));
-    when(storageGetSpy)
-      .calledWith('DeathService_afterDeathRoundQueue')
-      .mockReturnValue(of(mockStoredQueue));
+  beforeAll(() => MockBuilder(DeathService).mock(StorageService));
 
-    service = new DeathService(
-      roundHandlersService,
-      victoryHandlersService,
-      announcementService,
-      storageService,
-      statusesService,
+  beforeAll(() => {
+    MockInstance(
+      StorageService,
+      () =>
+        ({
+          get: (key: string) => {
+            switch (key) {
+              case 'DeathService_knownDeaths':
+                return of(mockStoredKnownDeaths);
+              case 'DeathService_deathsToAnnounce':
+                return of(mockStoredAnnounce);
+              case 'DeathService_afterDeathRoundQueue':
+                return of(mockStoredQueue);
+              default:
+                return of(null);
+            }
+          },
+        }) as Partial<StorageService>,
     );
   });
+
+  beforeAll(() => (service = MockRender(DeathService).point.componentInstance));
 
   it('should init known deaths from storage', () => {
     expect(service['knownDeaths']).toEqual(new Set(mockStoredKnownDeaths));
@@ -74,33 +74,52 @@ describe('DeathService with storage init', () => {
   it('should init after death queue from storage', () => {
     expect(service['afterDeathRoundQueue']).toEqual(mockStoredQueue);
   });
+
+  afterAll(MockReset);
 });
 
 describe('DeathService', () => {
   let service: DeathService;
-  let roundHandlersService: RoundHandlersService;
-  let victoryHandlersService: VictoryHandlersService;
-  let announcementService: AnnouncementService;
-  let storageService: StorageService;
-  let statusesService: StatusesService;
 
-  beforeEach(() => {
-    roundHandlersService = MockService(RoundHandlersService);
-    victoryHandlersService = MockService(VictoryHandlersService);
-    announcementService = MockService(AnnouncementService);
-    storageService = MockService(StorageService);
-    statusesService = MockService(StatusesService);
+  ngMocks.faster();
 
-    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
+  beforeAll(() =>
+    MockBuilder(DeathService)
+      .mock(RoundHandlersService)
+      .mock(VictoryHandlersService)
+      .mock(AnnouncementService)
+      .mock(StorageService)
+      .mock(StatusesService),
+  );
 
-    service = new DeathService(
-      roundHandlersService,
-      victoryHandlersService,
-      announcementService,
-      storageService,
-      statusesService,
-    );
+  beforeAll(() => {
+    MockInstance(StorageService, () => ({
+      get: () => of(null),
+      set: jest.fn(),
+      remove: jest.fn(),
+    }));
+
+    MockInstance(RoundHandlersService, () => ({
+      removeHandlers: jest.fn(),
+    }));
+
+    MockInstance(StatusesService, () => ({
+      removePowersFromInnocents: jest.fn(),
+    }));
+
+    MockInstance(VictoryHandlersService, () => ({
+      removeUselessHandlers: jest.fn(),
+    }));
+
+    MockInstance(AnnouncementService, () => ({
+      announceDeaths: jest.fn(),
+      announce: jest.fn(),
+    }));
   });
+
+  beforeEach(
+    () => (service = MockRender(DeathService).point.componentInstance),
+  );
 
   it('should return next after-death round', () => {
     service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR, RoundEnum.CAPITAINE];
@@ -112,11 +131,11 @@ describe('DeathService', () => {
   });
 
   it('should save after-death round', () => {
-    jest.spyOn(storageService, 'set');
     service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR, RoundEnum.CAPITAINE];
 
     service.getNextAfterDeathRound();
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
       RoundEnum.CAPITAINE,
     ]);
@@ -131,10 +150,9 @@ describe('DeathService', () => {
   });
 
   it('should remove known deaths from storage on reset', () => {
-    jest.spyOn(storageService, 'remove');
-
     service.reset();
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.remove).toHaveBeenCalledWith(
       service['KNOWN_DEATHS_KEY'],
     );
@@ -149,10 +167,9 @@ describe('DeathService', () => {
   });
 
   it('should remove afterDeathRoundQueue from storage on reset', () => {
-    jest.spyOn(storageService, 'remove');
-
     service.reset();
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.remove).toHaveBeenCalledWith(service['QUEUE_KEY']);
   });
 
@@ -174,10 +191,9 @@ describe('DeathService', () => {
   });
 
   it('should remove deathsToAnnounce from storage on reset', () => {
-    jest.spyOn(storageService, 'remove');
-
     service.reset();
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.remove).toHaveBeenCalledWith(service['ANNOUNCE_KEY']);
   });
 
@@ -259,7 +275,6 @@ describe('DeathService', () => {
   });
 
   it('should add dead player id to known deaths on storage', () => {
-    jest.spyOn(storageService, 'set');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -281,6 +296,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
       service['KNOWN_DEATHS_KEY'],
       [0],
@@ -322,7 +338,6 @@ describe('DeathService', () => {
   });
 
   it('should add dead player to deaths to announce on storage', () => {
-    jest.spyOn(storageService, 'set');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -344,6 +359,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(service['ANNOUNCE_KEY'], [
       {
         id: 0,
@@ -382,7 +398,6 @@ describe('DeathService', () => {
   });
 
   it('should add CAPITAINE round to after-death rounds', () => {
-    jest.spyOn(storageService, 'set');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -404,6 +419,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const storageService = ngMocks.get(StorageService);
     expect(
       service['afterDeathRoundQueue'].includes(RoundEnum.CAPITAINE),
     ).toEqual(true);
@@ -413,7 +429,6 @@ describe('DeathService', () => {
   });
 
   it('should not add CAPITAINE round to after-death rounds if it was IDIOT role', () => {
-    jest.spyOn(storageService, 'set');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -573,7 +588,6 @@ describe('DeathService', () => {
   });
 
   it('should remove LOUP_GAROU handlers if no more LOUP_GAROU', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -595,13 +609,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith(
       expect.arrayContaining([PlayerRoleEnum.LOUP_GAROU]),
     );
   });
 
   it('should not remove LOUP_GAROU handlers if no more LOUP_GAROU but GRAND_MECHANT_LOUP still alive', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -631,13 +645,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
 
   it('should remove GRAND_MECHANT_LOUP handlers if some LOUP_GAROU is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -667,13 +681,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
 
   it('should remove GRAND_MECHANT_LOUP handlers if GRAND_MECHANT_LOUP is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -703,13 +717,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
     ]);
   });
 
   it('should add CHASSEUR round to the beginning of after-death rounds', () => {
-    jest.spyOn(storageService, 'set');
     service['afterDeathRoundQueue'] = [RoundEnum.CAPITAINE];
 
     const mockPlayers: Player[] = [
@@ -733,6 +747,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const storageService = ngMocks.get(StorageService);
     expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.CHASSEUR);
     expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
       RoundEnum.CHASSEUR,
@@ -741,7 +756,6 @@ describe('DeathService', () => {
   });
 
   it('should remove CUPIDON handlers if CUPIDON is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -763,13 +777,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.CUPIDON,
     ]);
   });
 
   it('should remove SORCIERE handlers if SORCIERE is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -791,13 +805,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SORCIERE,
     ]);
   });
 
   it('should remove VOYANTE handlers if VOYANTE is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -819,13 +833,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VOYANTE,
     ]);
   });
 
   it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -847,13 +861,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.JOUEUR_FLUTE,
     ]);
   });
 
   it('should remove CORBEAU handlers if CORBEAU is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -875,13 +889,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.CORBEAU,
     ]);
   });
 
   it('should remove ENFANT_SAUVAGE handlers if ENFANT_SAUVAGE is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -903,13 +917,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.ENFANT_SAUVAGE,
     ]);
   });
 
   it('should remove SALVATEUR handlers if SALVATEUR is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -931,13 +945,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SALVATEUR,
     ]);
   });
 
   it('should remove MONTREUR_OURS handlers if MONTREUR_OURS is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -959,13 +973,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.MONTREUR_OURS,
     ]);
   });
 
   it('should remove RENARD handlers if RENARD is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -987,13 +1001,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.RENARD,
     ]);
   });
 
   it('should remove CHIEN_LOUP handlers if CHIEN_LOUP is dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1015,13 +1029,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.CHIEN_LOUP,
     ]);
   });
 
   it('should remove SOEUR handlers if all SOEUR are dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1051,6 +1065,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SOEUR,
       PlayerRoleEnum.SOEUR,
@@ -1058,7 +1073,6 @@ describe('DeathService', () => {
   });
 
   it('should not remove SOEUR handlers if some SOEUR is alive', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1088,11 +1102,11 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
   });
 
   it('should remove FRERE handlers if all FRERE are dead', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1122,6 +1136,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.FRERE,
       PlayerRoleEnum.FRERE,
@@ -1129,7 +1144,6 @@ describe('DeathService', () => {
   });
 
   it('should not remove FRERE handlers if some FRERE is alive', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1159,11 +1173,11 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
   });
 
   it('should remove power from innocents if ANCIEN killed by innocents', () => {
-    jest.spyOn(statusesService, 'removePowersFromInnocents');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1186,13 +1200,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const statusesService = ngMocks.get(StatusesService);
     expect(statusesService.removePowersFromInnocents).toHaveBeenCalledWith(
       mockPlayers,
     );
   });
 
   it('should not remove power from innocents if ANCIEN not killed by innocents', () => {
-    jest.spyOn(statusesService, 'removePowersFromInnocents');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1215,11 +1229,11 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const statusesService = ngMocks.get(StatusesService);
     expect(statusesService.removePowersFromInnocents).toHaveBeenCalledTimes(0);
   });
 
   it('should remove innocents handlers if ANCIEN killed by innocents', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1242,13 +1256,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith(
       INNOCENTS_POWER_REMOVAL_ROLES,
     );
   });
 
   it('should not remove innocents handlers if ANCIEN not killed by innocents', () => {
-    jest.spyOn(roundHandlersService, 'removeHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1271,6 +1285,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
     expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
   });
 
@@ -1334,7 +1349,6 @@ describe('DeathService', () => {
   });
 
   it('should remove useless victory handlers on deaths handle', () => {
-    jest.spyOn(victoryHandlersService, 'removeUselessHandlers');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1356,13 +1370,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const victoryHandlersService = ngMocks.get(VictoryHandlersService);
     expect(victoryHandlersService.removeUselessHandlers).toHaveBeenCalledWith(
       mockPlayers,
     );
   });
 
   it('should announce deaths if there are some', () => {
-    jest.spyOn(announcementService, 'announceDeaths');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1378,13 +1392,13 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announceDeaths).toHaveBeenCalledWith(
       mockPlayers,
     );
   });
 
   it('should announce ANCIEN killed by innocents if killed by CHASSEUR', () => {
-    jest.spyOn(announcementService, 'announce');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1401,13 +1415,13 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announce).toHaveBeenCalledWith(
       AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
   it('should announce ANCIEN killed by innocents if killed by SORCIERE', () => {
-    jest.spyOn(announcementService, 'announce');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1424,13 +1438,13 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announce).toHaveBeenCalledWith(
       AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
   it('should announce ANCIEN killed by innocents if killed by VILLAGEOIS', () => {
-    jest.spyOn(announcementService, 'announce');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1447,13 +1461,13 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announce).toHaveBeenCalledWith(
       AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
   it('should not announce ANCIEN killed by innocents if not killed by innocent', () => {
-    jest.spyOn(announcementService, 'announce');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1469,11 +1483,11 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announce).toHaveBeenCalledTimes(0);
   });
 
   it('should announce player killed by CHEVALIER if present', () => {
-    jest.spyOn(announcementService, 'announce');
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1490,6 +1504,7 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announce).toHaveBeenCalledWith(
       AnnouncementEnum.WOLF_KILLED_BY_CHEVALIER,
       { playerName: 'player0' },
@@ -1497,12 +1512,11 @@ describe('DeathService', () => {
   });
 
   it('should not announce deaths if there are none', () => {
-    jest.spyOn(announcementService, 'announceDeaths');
-
     service['deathsToAnnounce'] = [];
 
     service.announceDeaths();
 
+    const announcementService = ngMocks.get(AnnouncementService);
     expect(announcementService.announceDeaths).toHaveBeenCalledTimes(0);
   });
 
@@ -1524,7 +1538,6 @@ describe('DeathService', () => {
   });
 
   it('should clear deaths to announce from storage after announce', () => {
-    jest.spyOn(storageService, 'set');
     service['deathsToAnnounce'] = [
       {
         id: 0,
@@ -1538,6 +1551,7 @@ describe('DeathService', () => {
 
     service.announceDeaths();
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
       service['ANNOUNCE_KEY'],
       [],
@@ -1545,7 +1559,6 @@ describe('DeathService', () => {
   });
 
   it('should add BOUC round to the after-death rounds', () => {
-    jest.spyOn(storageService, 'set');
     service['afterDeathRoundQueue'] = [];
 
     const mockPlayers: Player[] = [
@@ -1570,9 +1583,12 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
+    const storageService = ngMocks.get(StorageService);
     expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.BOUC);
     expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
       RoundEnum.BOUC,
     ]);
   });
+
+  afterAll(MockReset);
 });

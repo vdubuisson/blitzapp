@@ -1,6 +1,12 @@
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { MockService } from 'ng-mocks';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
@@ -13,26 +19,40 @@ import { signal, WritableSignal } from '@angular/core';
 
 describe('NewGameService', () => {
   let service: NewGameService;
-  let gameService: GameService;
-  let router: Router;
-  let cardChoiceService: CardChoiceService;
-  let currentCards: WritableSignal<CardList | undefined>;
+  let currentCards: WritableSignal<CardList>;
   let currentPlayers: WritableSignal<Player[]>;
 
-  beforeEach(() => {
-    currentPlayers = signal([]);
-    gameService = {
-      ...MockService(GameService),
-      currentPlayers: currentPlayers.asReadonly(),
-    } as GameService;
-    router = MockService(Router);
-    currentCards = signal(undefined);
-    cardChoiceService = {
-      ...MockService(CardChoiceService),
-      currentChosenCards: currentCards.asReadonly(),
-    } as CardChoiceService;
+  ngMocks.faster();
 
-    service = new NewGameService(gameService, router, cardChoiceService);
+  beforeAll(() =>
+    MockBuilder(NewGameService)
+      .mock(GameService)
+      .mock(CardChoiceService)
+      .mock(Router),
+  );
+
+  beforeAll(() => {
+    currentPlayers = signal([]);
+    MockInstance(GameService, () => ({
+      currentPlayers: currentPlayers.asReadonly(),
+      createGame: jest.fn(),
+    }));
+    currentCards = signal({
+      villageois: 0,
+      loupGarou: 0,
+      playersNumber: 0,
+      selectedRoles: new Set(),
+    });
+    MockInstance(CardChoiceService, () => ({
+      currentChosenCards: currentCards.asReadonly(),
+    }));
+    MockInstance(Router, () => ({
+      navigate: jest.fn(),
+    }));
+  });
+
+  beforeAll(() => {
+    service = MockRender(NewGameService).point.componentInstance;
   });
 
   it('should return players', waitForAsync(() => {
@@ -232,7 +252,7 @@ describe('NewGameService', () => {
   });
 
   it('should navigate to /roles-choice on replay', () => {
-    jest.spyOn(router, 'navigate');
+    const router = ngMocks.get(Router);
 
     service.replay();
 
@@ -311,10 +331,9 @@ describe('NewGameService', () => {
     service['players'].set(mockPlayers);
     currentCards.set(mockCardList);
 
-    jest.spyOn(gameService, 'createGame');
-
     service.createGame();
 
+    const gameService = ngMocks.get(GameService);
     expect(gameService.createGame).toHaveBeenCalledWith(
       mockPlayers,
       mockCardList,
@@ -354,4 +373,6 @@ describe('NewGameService', () => {
 
     expect(service['players']()).toEqual([]);
   });
+
+  afterAll(MockReset);
 });

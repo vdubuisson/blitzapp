@@ -1,6 +1,3 @@
-import { when } from 'jest-when';
-import { MockService } from 'ng-mocks';
-import { Observable, of } from 'rxjs';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
@@ -9,10 +6,16 @@ import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { StorageService } from '@/services/storage/storage.service';
+import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
+import { Observable, of } from 'rxjs';
 
 import { RoundOrchestrationService } from './round-orchestration.service';
 
 class MockRoundHandler implements RoundHandler {
+  constructor(isOnlyOnce = false) {
+    this.isOnlyOnce = isOnlyOnce;
+  }
+
   isOnlyOnce = false;
   isDuringDay = false;
   type = RoundTypeEnum.DEFAULT;
@@ -26,31 +29,40 @@ class MockRoundHandler implements RoundHandler {
 
 describe('RoundOrchestrationService with storage init', () => {
   let service: RoundOrchestrationService;
-  let roundHandlersService: RoundHandlersService;
-  let deathService: DeathService;
-  let storageService: StorageService;
 
   const mockStoredUniqueRoundsPassed: RoundEnum[] = [RoundEnum.CUPIDON];
   const mockStoredBeforeDeathRound: RoundEnum = RoundEnum.SORCIERE_KILL;
 
+  MockInstance.scope();
+
+  beforeEach(() =>
+    MockBuilder(RoundOrchestrationService)
+      .mock(StorageService)
+      .mock(RoundHandlersService)
+      .mock(DeathService),
+  );
+
   beforeEach(() => {
-    roundHandlersService = MockService(RoundHandlersService);
-    deathService = MockService(DeathService);
-    storageService = MockService(StorageService);
-
-    const storageGetSpy = jest.spyOn(storageService, 'get');
-    when(storageGetSpy)
-      .calledWith('RoundOrchestrationService_uniqueRoundsPassed')
-      .mockReturnValue(of(mockStoredUniqueRoundsPassed));
-    when(storageGetSpy)
-      .calledWith('RoundOrchestrationService_beforeDeathRound')
-      .mockReturnValue(of(mockStoredBeforeDeathRound));
-
-    service = new RoundOrchestrationService(
-      roundHandlersService,
-      deathService,
-      storageService,
+    MockInstance(
+      StorageService,
+      () =>
+        ({
+          get: (key: string) => {
+            switch (key) {
+              case 'RoundOrchestrationService_uniqueRoundsPassed':
+                return of(mockStoredUniqueRoundsPassed);
+              case 'RoundOrchestrationService_beforeDeathRound':
+                return of(mockStoredBeforeDeathRound);
+              default:
+                return of(null);
+            }
+          },
+        }) as Partial<StorageService>,
     );
+  });
+
+  beforeEach(() => {
+    service = MockRender(RoundOrchestrationService).point.componentInstance;
   });
 
   it('should init unique rounds passed from storage', () => {
@@ -66,22 +78,32 @@ describe('RoundOrchestrationService with storage init', () => {
 
 describe('RoundOrchestrationService', () => {
   let service: RoundOrchestrationService;
-  let roundHandlersService: RoundHandlersService;
-  let deathService: DeathService;
-  let storageService: StorageService;
+
+  MockInstance.scope();
+
+  beforeEach(() =>
+    MockBuilder(RoundOrchestrationService)
+      .mock(StorageService)
+      .mock(RoundHandlersService)
+      .mock(DeathService),
+  );
 
   beforeEach(() => {
-    roundHandlersService = MockService(RoundHandlersService);
-    deathService = MockService(DeathService);
-    storageService = MockService(StorageService);
+    MockInstance(StorageService, () => ({
+      get: () => of(null),
+      remove: jest.fn(),
+      set: jest.fn(),
+    }));
+    MockInstance(RoundHandlersService, () => ({
+      getHandler: jest.fn(),
+    }));
+    MockInstance(DeathService, () => ({
+      getNextAfterDeathRound: jest.fn(),
+    }));
+  });
 
-    jest.spyOn(storageService, 'get').mockReturnValue(of(null));
-
-    service = new RoundOrchestrationService(
-      roundHandlersService,
-      deathService,
-      storageService,
-    );
+  beforeEach(() => {
+    service = MockRender(RoundOrchestrationService).point.componentInstance;
   });
 
   it('should be created', () => {
@@ -97,20 +119,21 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should remove unique rounds passed from storage on reset', () => {
-    jest.spyOn(storageService, 'remove');
-
     service.resetRounds();
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.remove).toHaveBeenCalledWith(
       service['UNIQUE_ROUNDS_KEY'],
     );
   });
 
   it('should return next available round', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.LOUP_GAROU)
-      .mockReturnValue(new MockRoundHandler());
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) =>
+        round === RoundEnum.LOUP_GAROU ? new MockRoundHandler() : undefined,
+      );
 
     const nextRound = service.getNextRound(RoundEnum.VOYANTE);
 
@@ -118,10 +141,12 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should return next available round when end of rounds', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VOYANTE)
-      .mockReturnValue(new MockRoundHandler());
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) =>
+        round === RoundEnum.VOYANTE ? new MockRoundHandler() : undefined,
+      );
 
     const nextRound = service.getNextRound(RoundEnum.VILLAGEOIS);
 
@@ -129,10 +154,14 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should return next after-death round when there is one', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VILLAGEOIS)
-      .mockReturnValue(new MockRoundHandler());
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) =>
+        round === RoundEnum.VILLAGEOIS ? new MockRoundHandler() : undefined,
+      );
+
+    const deathService = ngMocks.get(DeathService);
     jest
       .spyOn(deathService, 'getNextAfterDeathRound')
       .mockReturnValue(RoundEnum.CHASSEUR);
@@ -143,10 +172,14 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should use round before after-death round as current after after-death rounds', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VILLAGEOIS)
-      .mockReturnValue(new MockRoundHandler());
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) =>
+        round === RoundEnum.VILLAGEOIS ? new MockRoundHandler() : undefined,
+      );
+
+    const deathService = ngMocks.get(DeathService);
     jest
       .spyOn(deathService, 'getNextAfterDeathRound')
       .mockReturnValueOnce(RoundEnum.CHASSEUR);
@@ -158,13 +191,22 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should continue round chain correctly after after-death rounds', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VILLAGEOIS)
-      .mockReturnValue(new MockRoundHandler());
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.LOUP_GAROU)
-      .mockReturnValue(new MockRoundHandler());
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) => {
+        switch (round) {
+          case RoundEnum.VILLAGEOIS:
+            return new MockRoundHandler();
+          case RoundEnum.LOUP_GAROU:
+            return new MockRoundHandler();
+          default:
+            return undefined;
+        }
+      });
+
+    const deathService = ngMocks.get(DeathService);
+
     jest
       .spyOn(deathService, 'getNextAfterDeathRound')
       .mockReturnValueOnce(RoundEnum.CHASSEUR);
@@ -178,16 +220,19 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should add current round to unique list if onlyOnce', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    const mockCupidonHandler = new MockRoundHandler();
-    mockCupidonHandler.isOnlyOnce = true;
-
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VOYANTE)
-      .mockReturnValue(new MockRoundHandler());
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.CUPIDON)
-      .mockReturnValue(mockCupidonHandler);
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) => {
+        switch (round) {
+          case RoundEnum.VOYANTE:
+            return new MockRoundHandler();
+          case RoundEnum.CUPIDON:
+            return new MockRoundHandler(true);
+          default:
+            return undefined;
+        }
+      });
 
     service.getNextRound(RoundEnum.CUPIDON);
 
@@ -195,20 +240,23 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should add current round to unique list on storage if onlyOnce', () => {
-    jest.spyOn(storageService, 'set');
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    const mockCupidonHandler = new MockRoundHandler();
-    mockCupidonHandler.isOnlyOnce = true;
-
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VOYANTE)
-      .mockReturnValue(new MockRoundHandler());
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.CUPIDON)
-      .mockReturnValue(mockCupidonHandler);
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) => {
+        switch (round) {
+          case RoundEnum.VOYANTE:
+            return new MockRoundHandler();
+          case RoundEnum.CUPIDON:
+            return new MockRoundHandler(true);
+          default:
+            return undefined;
+        }
+      });
 
     service.getNextRound(RoundEnum.CUPIDON);
 
+    const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
       service['UNIQUE_ROUNDS_KEY'],
       [RoundEnum.CUPIDON],
@@ -216,16 +264,19 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should not add current round to unique list if not onlyOnce', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    const mockVoyanteHandler = new MockRoundHandler();
-    mockVoyanteHandler.isOnlyOnce = true;
-
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.AMOUREUX)
-      .mockReturnValue(new MockRoundHandler());
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.CUPIDON)
-      .mockReturnValue(mockVoyanteHandler);
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) => {
+        switch (round) {
+          case RoundEnum.AMOUREUX:
+            return new MockRoundHandler();
+          case RoundEnum.CUPIDON:
+            return new MockRoundHandler(true);
+          default:
+            return undefined;
+        }
+      });
 
     service.getNextRound(RoundEnum.VOYANTE);
 
@@ -233,19 +284,20 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should not return unique round if already passed', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    const mockCupidonHandler = new MockRoundHandler();
-    mockCupidonHandler.isOnlyOnce = true;
-
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VOYANTE)
-      .mockReturnValue(new MockRoundHandler());
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VILLAGEOIS)
-      .mockReturnValue(new MockRoundHandler());
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.CUPIDON)
-      .mockReturnValue(mockCupidonHandler);
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) => {
+        switch (round) {
+          case RoundEnum.VOYANTE:
+          case RoundEnum.VILLAGEOIS:
+            return new MockRoundHandler();
+          case RoundEnum.CUPIDON:
+            return new MockRoundHandler(true);
+          default:
+            return undefined;
+        }
+      });
 
     service['uniqueRoundsPassed'] = new Set([RoundEnum.CUPIDON]);
 
@@ -255,10 +307,17 @@ describe('RoundOrchestrationService', () => {
   });
 
   it('should return first round with handler', () => {
-    const getHandlerSpy = jest.spyOn(roundHandlersService, 'getHandler');
-    when(getHandlerSpy)
-      .calledWith(RoundEnum.VOYANTE)
-      .mockReturnValue(new MockRoundHandler());
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) => {
+        switch (round) {
+          case RoundEnum.VOYANTE:
+            return new MockRoundHandler();
+          default:
+            return undefined;
+        }
+      });
 
     const firstRound = service.getFirstRound();
 
