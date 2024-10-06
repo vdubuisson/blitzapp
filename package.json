@@ -38,7 +38,7 @@
     "@eslint/compat": "^1.1.1",
     "@types/jest": "^29.5.12",
     "@types/jest-when": "^3.5.5",
-    "angular-eslint": "18.3.0",
+    "angular-eslint": "18.3.1",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.0",
@@ -55,6 +55,6 @@
     "stylelint-prettier": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.0",
-    "typescript-eslint": "~8.1.0"
+    "typescript-eslint": "~8.8.0"
   }
 }
