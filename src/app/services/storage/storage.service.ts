@@ -17,7 +17,7 @@ type StorageAction = {
   providedIn: 'root',
 })
 export class StorageService {
-  private actionQueue: StorageAction[] = [];
+  private readonly actionQueue: StorageAction[] = [];
   private actionInProgress = false;
 
   set(key: string, value: unknown): void {

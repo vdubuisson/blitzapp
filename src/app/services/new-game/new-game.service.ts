@@ -1,16 +1,10 @@
-import {
-  inject,
-  Injectable,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { Router } from '@angular/router';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
-import { GameService } from '@/services/game/game.service';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { GameService } from '@/services/game/game.service';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +14,7 @@ export class NewGameService {
   private readonly router = inject(Router);
   private readonly cardChoiceService = inject(CardChoiceService);
 
-  private players: WritableSignal<Player[]> = signal([
+  private readonly players: WritableSignal<Player[]> = signal([
     // {
     //   id: 0,
     //   name: 'Valentin',
@@ -63,9 +57,7 @@ export class NewGameService {
     // },
   ]);
 
-  get currentPlayers(): Signal<Player[]> {
-    return this.players.asReadonly();
-  }
+  readonly currentPlayers = this.players.asReadonly();
 
   addPlayer(name: string): void {
     const currentPlayers = this.players();

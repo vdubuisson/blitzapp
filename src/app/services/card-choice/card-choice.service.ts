@@ -1,10 +1,4 @@
-import {
-  inject,
-  Injectable,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { StorageService } from '@/services/storage/storage.service';
 import { CardList, StoredCardList } from '@/models/card-list.model';
 
@@ -21,9 +15,7 @@ export class CardChoiceService {
     selectedRoles: new Set(),
   });
 
-  get currentChosenCards(): Signal<CardList> {
-    return this.cards.asReadonly();
-  }
+  readonly currentChosenCards = this.cards.asReadonly();
 
   private readonly CARDS_KEY = 'CardChoiceService_cards';
 

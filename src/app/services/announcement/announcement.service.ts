@@ -13,9 +13,10 @@ export class AnnouncementService {
   private readonly storageService = inject(StorageService);
   private readonly modalService = inject(ModalService);
 
-  private announcementsQueue = signal<TextModalData[]>([]);
+  private readonly announcementsQueue = signal<TextModalData[]>([]);
+  private readonly isInitialized = signal<boolean>(false);
+
   private isPresenting = false;
-  private isInitialized = signal<boolean>(false);
 
   private readonly QUEUE_KEY = 'AnnouncementService_announcementsQueue';
 

@@ -40,13 +40,13 @@ export class GameService {
   private readonly statusesService = inject(StatusesService);
   private readonly storageService = inject(StorageService);
 
-  isGameInProgress: Signal<boolean> = computed(
+  readonly isGameInProgress: Signal<boolean> = computed(
     () => this.round() !== undefined,
   );
 
-  private players: WritableSignal<Player[]> = signal([]);
-  private round: WritableSignal<Round | undefined> = signal(undefined);
-  private dayCount: WritableSignal<number> = signal(1);
+  private readonly players: WritableSignal<Player[]> = signal([]);
+  private readonly round: WritableSignal<Round | undefined> = signal(undefined);
+  private readonly dayCount: WritableSignal<number> = signal(1);
 
   private cardList: CardList | undefined;
   private needCleanAfterBouc = false;
@@ -57,20 +57,12 @@ export class GameService {
   private readonly CARD_LIST_KEY = 'GameService_cardList';
   private readonly NEED_CLEAN_AFTER_BOUC_KEY = 'GameService_needCleanAfterBouc';
 
+  readonly currentPlayers = this.players.asReadonly();
+  readonly currentRound = this.round.asReadonly();
+  readonly currentDayCount = this.dayCount.asReadonly();
+
   constructor() {
     this.initFromStorage();
-  }
-
-  get currentPlayers(): Signal<Player[]> {
-    return this.players.asReadonly();
-  }
-
-  get currentRound(): Signal<Round | undefined> {
-    return this.round.asReadonly();
-  }
-
-  get currentDayCount(): Signal<number> {
-    return this.dayCount.asReadonly();
   }
 
   createGame(players: Player[], cardList: CardList): void {
