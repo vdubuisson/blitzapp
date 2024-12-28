@@ -24,14 +24,14 @@
     width: 100vw;
     z-index: 20;
 
-    .header {
+    header {
       border-bottom: 1px solid var(--light-border-color);
       font-size: var(--font-size-l);
       font-weight: var(--font-weight-light);
       padding: var(--spacing-1);
     }
 
-    .footer {
+    footer {
       border-top: 1px solid var(--light-border-color);
       font-size: var(--font-size-s);
       font-weight: var(--font-weight-light);
@@ -39,8 +39,9 @@
     }
 
     .options {
-      display: flex;
-      flex-direction: column;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
 
       .option {
         color: var(--main-text-color);

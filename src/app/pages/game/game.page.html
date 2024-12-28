@@ -1,5 +1,5 @@
 @if (round(); as currentRound) {
-<div class="round-header">
+<header>
   <div class="round-subtitle">
     @if (isBeforeGame()) {
     <span>Avant-partie</span>
@@ -11,8 +11,8 @@
   </div>
   <hr />
   <div class="round-title">{{ currentRound.role | roundName }}</div>
-</div>
-<div class="player-list">
+</header>
+<main class="player-list">
   @for (player of players(); track player.id) {
   <lgmj-player
     [player]="player"
@@ -25,8 +25,8 @@
     (roleChange)="onRoleSelect($event)"
   />
   }
-</div>
-<div class="submit-block">
+</main>
+<section class="submit-block">
   <button
     class="btn success"
     [disabled]="submitDisabled()"
@@ -37,5 +37,5 @@
   @if (displayEqualityButton()) {
   <button class="btn warning" (click)="onEquality()">EGALITE</button>
   }
-</div>
+</section>
 }

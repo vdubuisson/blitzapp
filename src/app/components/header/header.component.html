@@ -1,7 +1,7 @@
-<div class="header">
+<header>
   <fa-icon [icon]="menuIcon" size="lg" (click)="openMenu()" />
   <h1>{{ title() }}</h1>
-</div>
+</header>
 
 <div class="menu-overlay" [class.hidden]="isMenuHidden()">
   <div
@@ -10,31 +10,41 @@
     (keyup.enter)="closeMenu()"
     tabindex="0"
   ></div>
-  <div class="menu">
-    <div class="header">
+  <nav>
+    <header>
       <span>Menu</span>
-    </div>
-    <div class="content">
-      <a
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >Accueil</a
-      >
+    </header>
+    <menu>
+      <li>
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Accueil</a
+        >
+      </li>
       @if (isGameInProgress()) {
-        <a routerLink="/game" routerLinkActive="active">Partie en cours</a>
+        <li>
+          <a routerLink="/game" routerLinkActive="active">Partie en cours</a>
+        </li>
       }
-      <a routerLink="/roles-choice" routerLinkActive="active"
-        >Nouvelle partie</a
-      >
-      <a routerLink="/roles-rules" routerLinkActive="active"
-        >Règles des rôles</a
-      >
-      <a routerLink="/status-legends" routerLinkActive="active"
-        >Légende des statuts</a
-      >
-      <div class="divider"></div>
-      <a routerLink="/options" routerLinkActive="active">Options</a>
-    </div>
-  </div>
+      <li>
+        <a routerLink="/roles-choice" routerLinkActive="active"
+          >Nouvelle partie</a
+        >
+      </li>
+      <li>
+        <a routerLink="/roles-rules" routerLinkActive="active"
+          >Règles des rôles</a
+        >
+      </li>
+      <li>
+        <a routerLink="/status-legends" routerLinkActive="active"
+          >Légende des statuts</a
+        >
+      </li>
+      <li><div class="divider"></div></li>
+      <li><a routerLink="/options" routerLinkActive="active">Options</a></li>
+    </menu>
+  </nav>
 </div>

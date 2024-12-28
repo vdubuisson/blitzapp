@@ -1,5 +1,5 @@
 <div class="modal">
-  <div class="modal-header">
+  <header>
     @if (data.header) {
       <span class="modal-title">{{ data.header }}</span>
     }
@@ -9,17 +9,17 @@
       (click)="close()"
       size="xl"
     />
-  </div>
+  </header>
   @if (data.message) {
     <div class="modal-body">
       <div [innerHTML]="data.message"></div>
     </div>
   }
   @if (data.confirmText) {
-    <div class="modal-footer">
+    <footer>
       <button class="btn primary" (click)="close(true)">
         {{ data.confirmText }}
       </button>
-    </div>
+    </footer>
   }
 </div>

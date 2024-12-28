@@ -1,4 +1,4 @@
-<div class="select-overlay" [class.hidden]="isHidden()">
+<section class="select-overlay" [class.hidden]="isHidden()">
   <div
     class="backdrop"
     (click)="selectOption(undefined)"
@@ -6,28 +6,29 @@
     tabindex="0"
   ></div>
   <div class="select">
-    <div class="header">
+    <header>
       <span>{{ content()?.header }}</span>
-    </div>
-    <div class="options">
+    </header>
+    <ul class="options">
       @for (option of content()?.options; track option.value) {
-        <span
+        <li
           class="option"
           [class.active]="option.active"
           (click)="selectOption(option.value)"
           (keyup.enter)="selectOption(option.value)"
           tabindex="0"
-          >{{ option.label }}</span
         >
+          {{ option.label }}
+        </li>
       }
-    </div>
-    <div class="footer">
+    </ul>
+    <footer>
       <span
         (click)="selectOption(undefined)"
         (keyup.enter)="selectOption(undefined)"
         tabindex="0"
         >ANNULER</span
       >
-    </div>
+    </footer>
   </div>
-</div>
+</section>

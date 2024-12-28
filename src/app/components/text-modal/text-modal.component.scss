@@ -4,7 +4,7 @@
   max-width: 80vw;
   padding: var(--spacing-1);
 
-  .modal-header {
+  header {
     align-items: center;
     display: flex;
     gap: var(--spacing-2);
@@ -20,7 +20,7 @@
     padding-top: var(--spacing-1);
   }
 
-  .modal-footer {
+  footer {
     display: flex;
     justify-content: flex-end;
   }

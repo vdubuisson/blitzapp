@@ -1,4 +1,4 @@
-.header {
+header {
   align-items: center;
   background-color: white;
   box-shadow:
@@ -37,7 +37,7 @@
     transition: opacity 0.3s ease-in-out;
   }
 
-  .menu {
+  nav {
     box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
     height: 100%;
     max-width: 80vw;
@@ -48,7 +48,11 @@
     transform: translateX(0);
     transition: transform 0.3s ease-in-out;
 
-    .content {
+    menu {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+
       a {
         border-bottom: 1px solid var(--light-border-color);
         color: var(--main-text-color);
@@ -75,10 +79,10 @@
       opacity: 0;
     }
 
-    .menu {
+    nav {
       transform: translateX(calc(-100% - 12px));
 
-      .header {
+      header {
         box-shadow: none;
       }
     }
