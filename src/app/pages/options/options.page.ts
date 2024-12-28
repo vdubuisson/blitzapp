@@ -9,7 +9,7 @@ import { switchMap } from 'rxjs';
   templateUrl: './options.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OptionsPage {
+export default class OptionsPage {
   private readonly storageService = inject(StorageService);
   private readonly modalService = inject(ModalService);
 

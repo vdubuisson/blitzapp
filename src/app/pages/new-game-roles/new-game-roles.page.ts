@@ -16,12 +16,11 @@ import { NewGameService } from '@/services/new-game/new-game.service';
 
 @Component({
   selector: 'lgmj-new-game-roles',
-  standalone: true,
   imports: [RouterLink, PlayerComponent],
   templateUrl: './new-game-roles.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NewGameRolesPage {
+export default class NewGameRolesPage {
   private readonly newGameService = inject(NewGameService);
   private readonly cardChoiceService = inject(CardChoiceService);
 

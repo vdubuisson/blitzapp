@@ -17,7 +17,6 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'lgmj-new-player',
-  standalone: true,
   imports: [FormsModule, ReactiveFormsModule, FaIconComponent],
   templateUrl: './new-player.component.html',
   styleUrls: ['./new-player.component.scss'],

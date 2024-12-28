@@ -38,7 +38,6 @@ type RoleForm = {
 
 @Component({
   selector: 'lgmj-roles-choice',
-  standalone: true,
   imports: [
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
@@ -54,7 +53,7 @@ type RoleForm = {
   styleUrls: ['./roles-choice.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RolesChoicePage implements OnInit {
+export default class RolesChoicePage implements OnInit {
   private readonly playerRoleNamePipe = inject(PlayerRoleNamePipe);
   private readonly cardChoiceService = inject(CardChoiceService);
   private readonly router = inject(Router);

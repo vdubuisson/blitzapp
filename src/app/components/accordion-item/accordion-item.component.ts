@@ -12,7 +12,6 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'lgmj-accordion-item',
-  standalone: true,
   imports: [FaIconComponent],
   providers: [{ provide: CDK_ACCORDION, useValue: undefined }],
   templateUrl: './accordion-item.component.html',

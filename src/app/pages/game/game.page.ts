@@ -21,13 +21,12 @@ import { GameService } from '@/services/game/game.service';
 
 @Component({
   selector: 'lgmj-game',
-  standalone: true,
   imports: [RoundNamePipe, PlayerComponent],
   templateUrl: './game.page.html',
   styleUrls: ['./game.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GamePage {
+export default class GamePage {
   private readonly gameService = inject(GameService);
 
   protected readonly players: Signal<Player[]> = computed(() =>

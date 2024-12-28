@@ -8,13 +8,12 @@ import { STATUS_LEGENDS } from '@/values/status-legends';
 
 @Component({
   selector: 'lgmj-status-legends',
-  standalone: true,
   imports: [PlayerStatusIconPipe, PlayerStatusNamePipe, AccordionItemModule],
   templateUrl: './status-legends.page.html',
   styleUrls: ['./status-legends.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatusLegendsPage {
+export default class StatusLegendsPage {
   protected readonly legends = STATUS_LEGENDS;
   protected readonly statuses: PlayerStatusEnum[] = Object.values(
     PlayerStatusEnum,

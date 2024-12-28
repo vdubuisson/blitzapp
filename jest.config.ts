@@ -3,11 +3,17 @@
  * https://jestjs.io/docs/configuration
  */
 
+import presets from 'jest-preset-angular/presets';
 import type { Config } from 'jest';
 import { compilerOptions } from './tsconfig.json';
 import { pathsToModuleNameMapper } from 'ts-jest';
 
+const presetConfig = presets.createCjsPreset({
+  tsconfig: 'tsconfig.spec.json',
+});
+
 const config: Config = {
+  ...presetConfig,
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -106,7 +112,7 @@ const config: Config = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  preset: 'jest-preset-angular',
+  // preset: 'jest-preset-angular',
 
   // Run tests from one or more projects
   // projects: undefined,

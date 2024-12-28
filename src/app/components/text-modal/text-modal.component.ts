@@ -6,7 +6,6 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'lgmj-text-modal',
-  standalone: true,
   imports: [FaIconComponent],
   templateUrl: './text-modal.component.html',
   styleUrl: './text-modal.component.scss',

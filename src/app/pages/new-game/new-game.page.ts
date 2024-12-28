@@ -25,7 +25,6 @@ import { NewGameService } from '@/services/new-game/new-game.service';
 
 @Component({
   selector: 'lgmj-new-game',
-  standalone: true,
   imports: [
     NewPlayerComponent,
     RouterLink,
@@ -38,7 +37,7 @@ import { NewGameService } from '@/services/new-game/new-game.service';
   styleUrls: ['./new-game.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NewGamePage {
+export default class NewGamePage {
   private readonly newGameService = inject(NewGameService);
   private readonly cardChoiceService = inject(CardChoiceService);
 

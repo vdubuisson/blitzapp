@@ -8,7 +8,6 @@ import { ROLES_RULES } from '@/values/roles-rules';
 
 @Component({
   selector: 'lgmj-roles-rules',
-  standalone: true,
   imports: [
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,
@@ -20,7 +19,7 @@ import { ROLES_RULES } from '@/values/roles-rules';
   styleUrls: ['./roles-rules.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RolesRulesPage {
+export default class RolesRulesPage {
   private readonly playerRoleNamePipe = inject(PlayerRoleNamePipe);
 
   protected readonly rules = ROLES_RULES;

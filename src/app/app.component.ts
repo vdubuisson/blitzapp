@@ -5,7 +5,6 @@ import { SelectOverlayComponent } from '@/components/select-overlay/select-overl
 
 @Component({
   selector: 'lgmj-root',
-  standalone: true,
   imports: [HeaderComponent, RouterOutlet, SelectOverlayComponent],
   templateUrl: './app.component.html',
 })

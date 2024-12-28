@@ -7,7 +7,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 @Component({
   selector: 'lgmj-player-card-modal',
-  standalone: true,
   imports: [
     UpperCasePipe,
     NgOptimizedImage,

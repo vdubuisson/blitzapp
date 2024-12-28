@@ -30,7 +30,6 @@ import { SelectOverlayService } from '@/services/select-overlay/select-overlay.s
 
 @Component({
   selector: 'lgmj-player',
-  standalone: true,
   imports: [
     PlayerRoleNamePipe,
     PlayerRoleImagePipe,

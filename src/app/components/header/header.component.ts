@@ -21,7 +21,6 @@ import { GameService } from '@/services/game/game.service';
 
 @Component({
   selector: 'lgmj-header',
-  standalone: true,
   imports: [FaIconComponent, RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
