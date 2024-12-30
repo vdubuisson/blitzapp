@@ -1,4 +1,4 @@
-import { StatusLegendsPage } from './status-legends.page';
+import StatusLegendsPage from './status-legends.page';
 
 describe('StatusLegendsPage', () => {
   let page: StatusLegendsPage;

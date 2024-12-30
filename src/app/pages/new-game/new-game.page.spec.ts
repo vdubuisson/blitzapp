@@ -14,7 +14,7 @@ import { CardList } from '@/models/card-list.model';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, output, signal, WritableSignal } from '@angular/core';
-import { NewGamePage } from './new-game.page';
+import NewGamePage from './new-game.page';
 
 @Component({
   selector: 'lgmj-new-player',

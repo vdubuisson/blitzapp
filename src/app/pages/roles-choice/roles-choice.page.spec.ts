@@ -12,7 +12,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { RolesChoicePage } from './roles-choice.page';
+import RolesChoicePage from './roles-choice.page';
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 
 describe('RolesChoicePage', () => {

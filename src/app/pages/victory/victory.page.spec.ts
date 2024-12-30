@@ -6,7 +6,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { VictoryPage } from './victory.page';
+import VictoryPage from './victory.page';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { provideLocationMocks } from '@angular/common/testing';
 

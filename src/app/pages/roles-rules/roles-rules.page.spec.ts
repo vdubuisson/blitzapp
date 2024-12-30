@@ -1,6 +1,6 @@
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 import { MockBuilder, MockInstance, MockRender, ngMocks } from 'ng-mocks';
-import { RolesRulesPage } from './roles-rules.page';
+import RolesRulesPage from './roles-rules.page';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('RolesRulesPage', () => {

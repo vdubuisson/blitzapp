@@ -7,7 +7,7 @@ import {
   ngMocks,
 } from 'ng-mocks';
 import { of } from 'rxjs';
-import { OptionsPage } from './options.page';
+import OptionsPage from './options.page';
 
 describe('OptionsPage', () => {
   let page: OptionsPage;

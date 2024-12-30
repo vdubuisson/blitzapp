@@ -10,7 +10,7 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Player } from '@/models/player.model';
 import { NewGameService } from '@/services/new-game/new-game.service';
 
-import { NewGameRolesPage } from './new-game-roles.page';
+import NewGameRolesPage from './new-game-roles.page';
 import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { CardList } from '@/models/card-list.model';
 import {

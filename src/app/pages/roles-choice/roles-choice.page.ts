@@ -14,11 +14,8 @@ import {
   Component,
   OnInit,
   Signal,
-  WritableSignal,
   computed,
-  effect,
   inject,
-  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -73,19 +70,6 @@ export default class RolesChoicePage implements OnInit {
   private readonly rolesSelection = new SelectionModel<PlayerRoleEnum>(true);
   private readonly rolesSelectionChange = toSignal(this.rolesSelection.changed);
 
-  private readonly villageoisCount: WritableSignal<number> = signal(0);
-  private readonly loupGarouCount: WritableSignal<number> = signal(0);
-
-  protected readonly playersCount: Signal<number> = computed(
-    () =>
-      this.selectedRoles().size +
-      this.villageoisCount() +
-      this.loupGarouCount() +
-      (this.selectedRoles().has(PlayerRoleEnum.SOEUR) ? 1 : 0) +
-      (this.selectedRoles().has(PlayerRoleEnum.FRERE) ? 2 : 0) -
-      (this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0),
-  );
-
   protected readonly requiredVillageois: Signal<number> = computed(() =>
     this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0,
   );
@@ -100,15 +84,22 @@ export default class RolesChoicePage implements OnInit {
     this.roleCountForm.valueChanges,
   );
 
-  constructor() {
-    effect(
-      () => {
-        this.villageoisCount.set(this.roleCountFormChanges()?.villageois ?? 0);
-        this.loupGarouCount.set(this.roleCountFormChanges()?.loupGarou ?? 0);
-      },
-      { allowSignalWrites: true },
-    );
-  }
+  private readonly villageoisCount: Signal<number> = computed(
+    () => this.roleCountFormChanges()?.villageois ?? 0,
+  );
+  private readonly loupGarouCount: Signal<number> = computed(
+    () => this.roleCountFormChanges()?.loupGarou ?? 0,
+  );
+
+  protected readonly playersCount: Signal<number> = computed(
+    () =>
+      this.selectedRoles().size +
+      this.villageoisCount() +
+      this.loupGarouCount() +
+      (this.selectedRoles().has(PlayerRoleEnum.SOEUR) ? 1 : 0) +
+      (this.selectedRoles().has(PlayerRoleEnum.FRERE) ? 2 : 0) -
+      (this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0),
+  );
 
   ngOnInit(): void {
     Object.values(this.boxContents).forEach((roles) => {

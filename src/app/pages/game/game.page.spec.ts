@@ -21,7 +21,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { Round } from '@/models/round.model';
 import { GameService } from '@/services/game/game.service';
-import { GamePage } from './game.page';
+import GamePage from './game.page';
 import { PlayerComponent } from '@/components/player/player.component';
 
 @Component({
