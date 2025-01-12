@@ -41,10 +41,6 @@ export class GameService {
   private readonly deathService = inject(DeathService);
   private readonly statusesService = inject(StatusesService);
 
-  readonly isGameInProgress: Signal<boolean> = computed(
-    () => this.round() !== undefined,
-  );
-
   private readonly players: WritableSignal<Player[]> =
     inject(CurrentPlayersStore).state;
   private readonly round: WritableSignal<Round | null> =
@@ -57,6 +53,10 @@ export class GameService {
 
   private readonly cardList: Signal<CardList> =
     inject(CardChoiceStore).state.asReadonly();
+
+  readonly isGameInProgress: Signal<boolean> = computed(
+    () => this.round() !== null,
+  );
 
   createGame(players: Player[]): void {
     const cardList = this.cardList();

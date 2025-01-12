@@ -1,28 +1,28 @@
-import { RoundEnum } from '@/enums/round.enum';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { RoundTypeEnum } from '@/enums/round-type.enum';
-import { ModalService } from '@/services/modal/modal.service';
-import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { map, Observable } from 'rxjs';
+import { RoundTypeEnum } from '@/enums/round-type.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
 import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
+import { ModalService } from '@/services/modal/modal.service';
+import { map, Observable, of } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class VoyanteRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = false;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.PLAYERS;
-
-  private modalService: ModalService;
+export class VoyanteRoundHandler extends DefaultRoundHandler {
+  private readonly modalService: ModalService;
 
   constructor({ modalService }: RoundHandlerParameters) {
+    super(RoundEnum.VOYANTE, false, false, RoundTypeEnum.PLAYERS);
     this.modalService = modalService as ModalService;
   }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
+    if (selectedPlayerIds.length === 0) {
+      return of(players);
+    }
+
     const selectedPlayerCard = (
       players.find((player) => player.id === selectedPlayerIds[0]) as Player
     ).card;
@@ -31,16 +31,13 @@ export class VoyanteRoundHandler implements RoundHandler {
       .pipe(map(() => [...players]));
   }
 
-  getRoundConfig(players: Player[]): Round {
-    return {
-      role: RoundEnum.VOYANTE,
-      selectablePlayers: players
-        .filter((player) => player.role !== PlayerRoleEnum.VOYANTE)
-        .map((player) => player.id),
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
-    };
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return players.filter(
+      (player) => player.role !== PlayerRoleEnum.VOYANTE && !player.isDead,
+    );
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
   }
 }

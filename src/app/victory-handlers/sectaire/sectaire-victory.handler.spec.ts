@@ -6,7 +6,7 @@ import { SectaireVictoryHandler } from './sectaire-victory.handler';
 describe('SectaireVictoryHandler', () => {
   let victoryHandler: SectaireVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new SectaireVictoryHandler();
   });
 

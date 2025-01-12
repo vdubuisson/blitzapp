@@ -5,7 +5,7 @@ import { LoupBlancVictoryHandler } from './loup-blanc-victory.handler';
 describe('LoupBlancVictoryHandler', () => {
   let victoryHandler: LoupBlancVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new LoupBlancVictoryHandler();
   });
 

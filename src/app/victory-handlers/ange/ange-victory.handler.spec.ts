@@ -5,7 +5,7 @@ import { AngeVictoryHandler } from './ange-victory.handler';
 describe('AngeVictoryHandler', () => {
   let victoryHandler: AngeVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new AngeVictoryHandler();
   });
 

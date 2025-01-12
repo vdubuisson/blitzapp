@@ -1,89 +1,89 @@
+import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { Observable, of } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class VillageoisRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = false;
-  readonly isDuringDay = true;
-  readonly type = RoundTypeEnum.PLAYERS;
-
+export class VillageoisRoundHandler extends DefaultRoundHandler {
   private announcementService: AnnouncementService;
 
   constructor({ announcementService }: RoundHandlerParameters) {
+    super(RoundEnum.VILLAGEOIS, false, true, RoundTypeEnum.PLAYERS);
     this.announcementService = announcementService as AnnouncementService;
   }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     selectedPlayerIds: number[],
     _?: PlayerRoleEnum,
     isEquality?: boolean,
   ): Observable<Player[]> {
-    const newPlayers = [...players];
-
     if (isEquality) {
-      this.handleEquality(players);
-    } else if (selectedPlayerIds.length > 0) {
-      this.handleSelectedPlayer(players, selectedPlayerIds);
+      const newPlayers = this.handleEquality(players);
+      return of(newPlayers);
     }
 
-    return of(newPlayers);
+    return super.handleAction(players, selectedPlayerIds);
   }
 
-  getRoundConfig(players: Player[]): Round {
-    const canVote = players.some(
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return this.canVote(players)
+      ? players.filter((player) => !player.isDead)
+      : [];
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override getMinSelectable(players: Player[]): number {
+    return this.canVote(players) ? 1 : 0;
+  }
+
+  protected override affectSelectedPlayer(player: Player): Player {
+    const newPlayer: Player = {
+      ...player,
+      statuses: new Set(player.statuses),
+    };
+    // TODO handle if INFECTED
+    if (
+      newPlayer.role === PlayerRoleEnum.IDIOT &&
+      newPlayer.killedBy === undefined
+    ) {
+      newPlayer.statuses.add(PlayerStatusEnum.NO_VOTE);
+      this.announcementService.announce(AnnouncementEnum.IDIOT_PARDONED);
+    } else {
+      newPlayer.isDead = true;
+    }
+    newPlayer.killedBy = PlayerRoleEnum.VILLAGEOIS;
+
+    return newPlayer;
+  }
+
+  private canVote(players: Player[]): boolean {
+    return players.some(
       (player) =>
         !player.isDead && !player.statuses.has(PlayerStatusEnum.NO_VOTE),
     );
-    return {
-      role: RoundEnum.VILLAGEOIS,
-      selectablePlayers: canVote ? this.getKillablePlayers(players) : [],
-      maxSelectable: 1,
-      minSelectable: canVote ? 1 : 0,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
-    };
   }
 
-  private getKillablePlayers(players: Player[]): number[] {
-    return players
-      .filter((player) => !player.isDead)
-      .map((player) => player.id);
-  }
-
-  private handleSelectedPlayer(players: Player[], selectedPlayerIds: number[]) {
-    const selectedPlayer = players.find(
-      (player) => player.id === selectedPlayerIds[0],
-    ) as Player;
-
-    // TODO handle if INFECTED
-    if (
-      selectedPlayer.role === PlayerRoleEnum.IDIOT &&
-      selectedPlayer.killedBy === undefined
-    ) {
-      selectedPlayer.statuses.add(PlayerStatusEnum.NO_VOTE);
-      this.announcementService.announce(AnnouncementEnum.IDIOT_PARDONED);
-    } else {
-      selectedPlayer.isDead = true;
-    }
-    selectedPlayer.killedBy = PlayerRoleEnum.VILLAGEOIS;
-  }
-
-  private handleEquality(players: Player[]): void {
-    const boucPlayer = players.find(
+  private handleEquality(players: Player[]): Player[] {
+    const newPlayers = [...players];
+    const boucIndex = newPlayers.findIndex(
       (player) => player.role === PlayerRoleEnum.BOUC,
     );
-    if (boucPlayer) {
-      boucPlayer.isDead = true;
-      boucPlayer.killedBy = undefined;
+    if (boucIndex > -1) {
+      newPlayers[boucIndex] = {
+        ...newPlayers[boucIndex],
+        isDead: true,
+        killedBy: undefined,
+      };
     }
+    return newPlayers;
   }
 }

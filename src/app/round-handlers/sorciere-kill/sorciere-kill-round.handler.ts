@@ -3,43 +3,55 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class SorciereKillRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = false;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.PLAYERS;
+export class SorciereKillRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.SORCIERE_KILL, false, false, RoundTypeEnum.PLAYERS);
+  }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
-    const newPlayers = [...players];
-    if (selectedPlayerIds.length > 0) {
-      const selectedPlayer = newPlayers.find(
-        (player) => player.id === selectedPlayerIds[0],
-      ) as Player;
-      selectedPlayer.isDead = true;
-      selectedPlayer.killedBy = PlayerRoleEnum.SORCIERE;
-      newPlayers
-        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
-        ?.statuses.delete(PlayerStatusEnum.DEATH_POTION);
-    }
-    return of(newPlayers);
+    return super.handleAction(players, selectedPlayerIds).pipe(
+      map((newPlayers) => {
+        if (selectedPlayerIds.length > 0) {
+          const sorciereIndex = newPlayers.findIndex(
+            (player) => player.role === PlayerRoleEnum.SORCIERE,
+          );
+          if (sorciereIndex > -1) {
+            const newStatuses = new Set(newPlayers[sorciereIndex].statuses);
+            newStatuses.delete(PlayerStatusEnum.DEATH_POTION);
+            newPlayers[sorciereIndex] = {
+              ...newPlayers[sorciereIndex],
+              statuses: newStatuses,
+            };
+          }
+        }
+        return newPlayers;
+      }),
+    );
   }
 
-  getRoundConfig(players: Player[]): Round {
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return this.canKill(players)
+      ? players.filter(
+          (player) => player.role !== PlayerRoleEnum.SORCIERE && !player.isDead,
+        )
+      : [];
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override affectSelectedPlayer(player: Player): Player {
     return {
-      role: RoundEnum.SORCIERE_KILL,
-      selectablePlayers: this.canKill(players)
-        ? this.getKillablePlayers(players)
-        : [],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
+      ...player,
+      isDead: true,
+      killedBy: PlayerRoleEnum.SORCIERE,
     };
   }
 
@@ -49,13 +61,5 @@ export class SorciereKillRoundHandler implements RoundHandler {
         .find((player) => player.role === PlayerRoleEnum.SORCIERE)
         ?.statuses.has(PlayerStatusEnum.DEATH_POTION) ?? false
     );
-  }
-
-  private getKillablePlayers(players: Player[]): number[] {
-    return players
-      .filter(
-        (player) => player.role !== PlayerRoleEnum.SORCIERE && !player.isDead,
-      )
-      .map((player) => player.id);
   }
 }

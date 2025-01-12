@@ -1,48 +1,40 @@
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { isLoupGarou } from '@/utils/roles.utils';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class LoupGarouRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = false;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.PLAYERS;
-
-  handleAction(
-    players: Player[],
-    selectedPlayerIds: number[],
-  ): Observable<Player[]> {
-    const newPlayers = [...players];
-    const selectedPlayer = newPlayers.find(
-      (player) => player.id === selectedPlayerIds[0],
-    );
-    if (selectedPlayer !== undefined) {
-      selectedPlayer.statuses.add(PlayerStatusEnum.WOLF_TARGET);
-      selectedPlayer.killedBy = PlayerRoleEnum.LOUP_GAROU;
-    }
-    return of(newPlayers);
+export class LoupGarouRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.LOUP_GAROU, false, false, RoundTypeEnum.PLAYERS);
   }
 
-  getRoundConfig(players: Player[]): Round {
-    const areAllLoupGarouDead = players
-      .filter(isLoupGarou)
-      .every((player) => player.isDead);
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    const areAllLoupGarouDead = this.areAllLoupGarouDead(players);
+    return areAllLoupGarouDead
+      ? []
+      : players.filter((player) => !isLoupGarou(player) && !player.isDead);
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override getMinSelectable(players: Player[]): number {
+    return this.areAllLoupGarouDead(players) ? 0 : 1;
+  }
+
+  protected override affectSelectedPlayer(player: Player): Player {
     return {
-      role: RoundEnum.LOUP_GAROU,
-      selectablePlayers: areAllLoupGarouDead
-        ? []
-        : players
-            .filter((player) => !isLoupGarou(player) && !player.isDead)
-            .map((player) => player.id),
-      maxSelectable: 1,
-      minSelectable: areAllLoupGarouDead ? 0 : 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
+      ...player,
+      statuses: new Set([...player.statuses, PlayerStatusEnum.WOLF_TARGET]),
+      killedBy: PlayerRoleEnum.LOUP_GAROU,
     };
+  }
+
+  private areAllLoupGarouDead(players: Player[]): boolean {
+    return players.filter(isLoupGarou).every((player) => player.isDead);
   }
 }

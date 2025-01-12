@@ -8,7 +8,7 @@ import { waitForAsync } from '@angular/core/testing';
 describe('CharmedRoundHandler', () => {
   let roundHandler: CharmedRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new CharmedRoundHandler();
   });
 

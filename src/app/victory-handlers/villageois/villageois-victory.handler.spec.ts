@@ -5,7 +5,7 @@ import { VillageoisVictoryHandler } from './villageois-victory.handler';
 describe('VillageoisVictoryHandler', () => {
   let victoryHandler: VillageoisVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new VillageoisVictoryHandler();
   });
 

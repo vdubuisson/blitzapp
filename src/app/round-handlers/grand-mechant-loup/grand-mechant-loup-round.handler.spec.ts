@@ -9,7 +9,7 @@ import { waitForAsync } from '@angular/core/testing';
 describe('GrandMechantLoupRoundHandler', () => {
   let roundHandler: GrandMechantLoupRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new GrandMechantLoupRoundHandler();
   });
 

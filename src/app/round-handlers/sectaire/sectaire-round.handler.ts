@@ -1,40 +1,42 @@
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { Observable, of } from 'rxjs';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class SectaireRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = true;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.PLAYERS;
+export class SectaireRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.SECTAIRE, true, false, RoundTypeEnum.PLAYERS);
+  }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
-    const newPlayers = [...players];
-
-    newPlayers.forEach((player) => {
+    const newPlayers = players.map((player) => {
       const isSelected = selectedPlayerIds.includes(player.id);
-      player.statuses.add(
-        isSelected ? PlayerStatusEnum.BLUE_TEAM : PlayerStatusEnum.RED_TEAM,
-      );
+      return {
+        ...player,
+        statuses: new Set([
+          ...player.statuses,
+          isSelected ? PlayerStatusEnum.BLUE_TEAM : PlayerStatusEnum.RED_TEAM,
+        ]),
+      };
     });
 
     return of(newPlayers);
   }
 
-  getRoundConfig(players: Player[]): Round {
-    return {
-      role: RoundEnum.SECTAIRE,
-      selectablePlayers: players.map((player) => player.id),
-      maxSelectable: players.length - 1,
-      minSelectable: 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
-    };
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return players;
+  }
+
+  protected override getMaxSelectable(players: Player[]): number {
+    return players.length - 1;
+  }
+
+  protected override getMinSelectable(_: Player[]): number {
+    return 1;
   }
 }

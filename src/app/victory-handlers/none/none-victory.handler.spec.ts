@@ -5,7 +5,7 @@ import { NoneVictoryHandler } from './none-victory.handler';
 describe('NoneVictoryHandler', () => {
   let victoryHandler: NoneVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new NoneVictoryHandler();
   });
 

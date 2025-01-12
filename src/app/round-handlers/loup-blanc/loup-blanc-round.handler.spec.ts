@@ -8,7 +8,7 @@ import { waitForAsync } from '@angular/core/testing';
 describe('LoupBlancRoundHandler', () => {
   let roundHandler: LoupBlancRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new LoupBlancRoundHandler();
   });
 

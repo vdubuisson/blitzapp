@@ -14,7 +14,7 @@ describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
   let announcementService: AnnouncementService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     announcementService = MockService(AnnouncementService);
     roundHandler = new RenardRoundHandler({ announcementService });
   });

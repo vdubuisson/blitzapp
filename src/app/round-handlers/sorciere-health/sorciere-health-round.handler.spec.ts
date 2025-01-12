@@ -9,7 +9,7 @@ import { waitForAsync } from '@angular/core/testing';
 describe('SorciereHealthRoundHandler', () => {
   let roundHandler: SorciereHealthRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new SorciereHealthRoundHandler();
   });
 

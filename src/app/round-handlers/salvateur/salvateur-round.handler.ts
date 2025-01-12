@@ -2,42 +2,57 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class SalvateurRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = false;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.PLAYERS;
+export class SalvateurRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.SALVATEUR, false, false, RoundTypeEnum.PLAYERS);
+  }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
-    const newPlayers = [...players];
-    newPlayers
-      .find((player) => player.statuses.has(PlayerStatusEnum.PROTECTED))
-      ?.statuses.delete(PlayerStatusEnum.PROTECTED);
-    newPlayers
-      .find((player) => player.id === selectedPlayerIds[0])
-      ?.statuses.add(PlayerStatusEnum.PROTECTED);
-    return of(newPlayers);
+    return super.handleAction(players, selectedPlayerIds).pipe(
+      map((newPlayers) => {
+        const oldProtectedIndex = newPlayers.findIndex(
+          (player) =>
+            player.statuses.has(PlayerStatusEnum.PROTECTED) &&
+            !selectedPlayerIds.includes(player.id),
+        );
+        if (oldProtectedIndex > -1) {
+          const newStatuses = new Set(newPlayers[oldProtectedIndex].statuses);
+          newStatuses.delete(PlayerStatusEnum.PROTECTED);
+          newPlayers[oldProtectedIndex] = {
+            ...newPlayers[oldProtectedIndex],
+            statuses: newStatuses,
+          };
+        }
+        return newPlayers;
+      }),
+    );
   }
 
-  getRoundConfig(players: Player[]): Round {
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return players.filter(
+      (player) =>
+        !player.isDead && !player.statuses.has(PlayerStatusEnum.PROTECTED),
+    );
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override getMinSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override affectSelectedPlayer(player: Player): Player {
     return {
-      role: RoundEnum.SALVATEUR,
-      selectablePlayers: players
-        .filter(
-          (player) =>
-            !player.isDead && !player.statuses.has(PlayerStatusEnum.PROTECTED),
-        )
-        .map((player) => player.id),
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
+      ...player,
+      statuses: new Set([...player.statuses, PlayerStatusEnum.PROTECTED]),
     };
   }
 }

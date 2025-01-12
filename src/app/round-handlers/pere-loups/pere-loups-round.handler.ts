@@ -3,49 +3,72 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class PereLoupsRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = false;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.PLAYERS;
+export class PereLoupsRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.PERE_LOUPS, false, false, RoundTypeEnum.PLAYERS);
+  }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
-    const newPlayers = [...players];
-    if (selectedPlayerIds.length > 0) {
-      const selectedPlayer = newPlayers.find(
-        (player) => player.id === selectedPlayerIds[0],
-      ) as Player;
-      selectedPlayer.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
-      selectedPlayer.statuses.add(PlayerStatusEnum.INFECTED);
-      selectedPlayer.killedBy = undefined;
+    return super.handleAction(players, selectedPlayerIds).pipe(
+      map((newPlayers) => {
+        if (selectedPlayerIds.length > 0) {
+          const pereLoupsIndex = newPlayers.findIndex(
+            (player) => player.role === PlayerRoleEnum.PERE_LOUPS,
+          );
+          if (pereLoupsIndex > -1) {
+            newPlayers[pereLoupsIndex] = {
+              ...newPlayers[pereLoupsIndex],
+              statuses: new Set([
+                ...newPlayers[pereLoupsIndex].statuses,
+                PlayerStatusEnum.NO_POWER,
+              ]),
+            };
+          }
 
-      newPlayers
-        .find((player) => player.role === PlayerRoleEnum.PERE_LOUPS)
-        ?.statuses.add(PlayerStatusEnum.NO_POWER);
-
-      if (selectedPlayer.role === PlayerRoleEnum.JOUEUR_FLUTE) {
-        selectedPlayer.role = PlayerRoleEnum.LOUP_GAROU;
-      }
-    }
-    return of(newPlayers);
+          const selectedPlayerIndex = newPlayers.findIndex(
+            (player) => player.id === selectedPlayerIds[0],
+          );
+          if (
+            selectedPlayerIndex > -1 &&
+            newPlayers[selectedPlayerIndex].role === PlayerRoleEnum.JOUEUR_FLUTE
+          ) {
+            newPlayers[selectedPlayerIndex] = {
+              ...newPlayers[selectedPlayerIndex],
+              role: PlayerRoleEnum.LOUP_GAROU,
+            };
+          }
+        }
+        return newPlayers;
+      }),
+    );
   }
 
-  getRoundConfig(players: Player[]): Round {
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return this.canInfect(players)
+      ? players.filter((player) =>
+          player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
+        )
+      : [];
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override affectSelectedPlayer(player: Player): Player {
+    const newStatuses = new Set(player.statuses);
+    newStatuses.delete(PlayerStatusEnum.WOLF_TARGET);
+    newStatuses.add(PlayerStatusEnum.INFECTED);
     return {
-      role: RoundEnum.PERE_LOUPS,
-      selectablePlayers: this.canInfect(players)
-        ? this.getInfectablePlayers(players)
-        : [],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
+      ...player,
+      statuses: newStatuses,
+      killedBy: undefined,
     };
   }
 
@@ -55,11 +78,5 @@ export class PereLoupsRoundHandler implements RoundHandler {
         .find((player) => player.role === PlayerRoleEnum.PERE_LOUPS)
         ?.statuses.has(PlayerStatusEnum.NO_POWER) ?? false
     );
-  }
-
-  private getInfectablePlayers(players: Player[]): number[] {
-    return players
-      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
-      .map((player) => player.id);
   }
 }

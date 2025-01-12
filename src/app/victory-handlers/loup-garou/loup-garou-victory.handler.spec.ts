@@ -5,7 +5,7 @@ import { LoupGarouVictoryHandler } from './loup-garou-victory.handler';
 describe('LoupGarouVictoryHandler', () => {
   let victoryHandler: LoupGarouVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new LoupGarouVictoryHandler();
   });
 

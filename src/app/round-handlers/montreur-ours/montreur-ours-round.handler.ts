@@ -5,24 +5,21 @@ import { Player } from '@/models/player.model';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { isLoupGarou } from '@/utils/roles.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
-  private announcementService: AnnouncementService;
+  private readonly announcementService: AnnouncementService;
 
   constructor({ announcementService }: RoundHandlerParameters) {
     super(RoundEnum.MONTREUR_OURS, false, true, RoundTypeEnum.AUTO);
     this.announcementService = announcementService as AnnouncementService;
   }
 
-  override handleAction(
-    players: Player[],
-    selectedPlayers: number[],
-  ): Observable<Player[]> {
+  override handleAction(players: Player[], _: number[]): Observable<Player[]> {
     const montreurOursIndex = players.findIndex(
       (player) => player.role === PlayerRoleEnum.MONTREUR_OURS,
     );
@@ -30,13 +27,13 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
       const montreurOurs = players[montreurOursIndex];
       if (montreurOurs.statuses.has(PlayerStatusEnum.INFECTED)) {
         this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
-        return super.handleAction(players, selectedPlayers);
+        return of([...players]);
       }
 
       const leftPlayer = findLeftNeighbor(players, montreurOursIndex) as Player;
       if (isLoupGarou(leftPlayer)) {
         this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
-        return super.handleAction(players, selectedPlayers);
+        return of([...players]);
       }
 
       const rightPlayer = findRightNeighbor(players, montreurOursIndex);
@@ -44,6 +41,6 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
         this.announcementService.announce(AnnouncementEnum.BEAR_GROWL);
       }
     }
-    return super.handleAction(players, selectedPlayers);
+    return of([...players]);
   }
 }

@@ -13,7 +13,7 @@ describe('VoyanteRoundHandler', () => {
 
   let modalService: ModalService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     modalService = MockService(ModalService);
     jest.spyOn(modalService, 'showPlayerCard').mockReturnValue(of(undefined));
 
@@ -96,7 +96,7 @@ describe('VoyanteRoundHandler', () => {
     });
   }));
 
-  it('should return all players except VOYANTE as selectable players', () => {
+  it('should return all alive players except VOYANTE as selectable players', () => {
     const players: Player[] = [
       {
         id: 0,
@@ -126,7 +126,7 @@ describe('VoyanteRoundHandler', () => {
 
     const round = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([0, 2]);
+    expect(round.selectablePlayers).toEqual([2]);
   });
 
   it('should return VOYANTE as round role', () => {
@@ -141,9 +141,9 @@ describe('VoyanteRoundHandler', () => {
     expect(round.maxSelectable).toEqual(1);
   });
 
-  it('should return 1 as minSelectable players', () => {
+  it('should return 0 as minSelectable players', () => {
     const round = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(1);
+    expect(round.minSelectable).toEqual(0);
   });
 });

@@ -1,36 +1,45 @@
+import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
-import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
 import { CardList } from '@/models/card-list.model';
-import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
+import { Player } from '@/models/player.model';
 import { getNotPlayedCards } from '@/utils/cards.utils';
+import { Observable, of } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class VoleurRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = true;
-  readonly isDuringDay = false;
-  readonly type = RoundTypeEnum.ROLES;
+export class VoleurRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.VOLEUR, true, false, RoundTypeEnum.ROLES);
+  }
 
-  handleAction(
+  override handleAction(
     players: Player[],
     _: number[],
     selectedRole?: PlayerRoleEnum,
   ): Observable<Player[]> {
     const newPlayers = [...players];
-    const voleur = newPlayers.find(
+    const voleurIndex = newPlayers.findIndex(
       (player) => player.card === PlayerRoleEnum.VOLEUR,
     );
-    if (voleur !== undefined && selectedRole !== undefined) {
-      voleur.role = selectedRole;
-      voleur.card = selectedRole;
+    if (voleurIndex > -1 && selectedRole !== undefined) {
+      newPlayers[voleurIndex] = {
+        ...newPlayers[voleurIndex],
+        role: selectedRole,
+        card: selectedRole,
+      };
     }
     return of(newPlayers);
   }
 
-  getRoundConfig(players: Player[], cardList?: CardList): Round {
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return players.filter((player) => player.role === PlayerRoleEnum.VOLEUR);
+  }
+
+  protected override getSelectableRoles(
+    players: Player[],
+    cardList: CardList,
+  ): PlayerRoleEnum[] {
     if (cardList === undefined) {
       throw new Error('VoleurRoundHandler need cardList');
     }
@@ -44,18 +53,16 @@ export class VoleurRoundHandler implements RoundHandler {
       LOUPS_GAROUS_ROLES.includes(card),
     );
 
-    return {
-      role: RoundEnum.VOLEUR,
-      selectablePlayers: players
-        .filter((player) => player.role === PlayerRoleEnum.VOLEUR)
-        .map((player) => player.id),
-      selectableRoles: mustChange
-        ? notPlayedCards
-        : [...notPlayedCards, PlayerRoleEnum.VOLEUR],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
-    };
+    return mustChange
+      ? notPlayedCards
+      : [...notPlayedCards, PlayerRoleEnum.VOLEUR];
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override getMinSelectable(_: Player[]): number {
+    return 1;
   }
 }

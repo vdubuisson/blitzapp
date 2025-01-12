@@ -6,7 +6,7 @@ import { AmoureuxVictoryHandler } from './amoureux-victory.handler';
 describe('AmoureuxVictoryHandler', () => {
   let victoryHandler: AmoureuxVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new AmoureuxVictoryHandler();
   });
 

@@ -2,44 +2,32 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { Observable, of } from 'rxjs';
+import { DefaultRoundHandler } from '../default/default-round.handler';
 
-export class ChasseurRoundHandler implements RoundHandler {
-  readonly isOnlyOnce = true;
-  readonly isDuringDay = true;
-  readonly type = RoundTypeEnum.PLAYERS;
-
-  handleAction(
-    players: Player[],
-    selectedPlayerIds: number[],
-  ): Observable<Player[]> {
-    const newPlayers = [...players];
-    const selectedPlayer = newPlayers.find(
-      (player) => player.id === selectedPlayerIds[0],
-    ) as Player;
-    selectedPlayer.isDead = true;
-    selectedPlayer.killedBy = PlayerRoleEnum.CHASSEUR;
-    return of(newPlayers);
+export class ChasseurRoundHandler extends DefaultRoundHandler {
+  constructor() {
+    super(RoundEnum.CHASSEUR, true, true, RoundTypeEnum.PLAYERS);
   }
 
-  getRoundConfig(players: Player[]): Round {
+  protected override getSelectablePlayers(players: Player[]): Player[] {
+    return players.filter(
+      (player) => player.role !== PlayerRoleEnum.CHASSEUR && !player.isDead,
+    );
+  }
+
+  protected override getMaxSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override getMinSelectable(_: Player[]): number {
+    return 1;
+  }
+
+  protected override affectSelectedPlayer(player: Player): Player {
     return {
-      role: RoundEnum.CHASSEUR,
-      selectablePlayers: this.getKillablePlayers(players),
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: this.isDuringDay,
-      type: this.type,
+      ...player,
+      isDead: true,
+      killedBy: PlayerRoleEnum.CHASSEUR,
     };
-  }
-
-  private getKillablePlayers(players: Player[]): number[] {
-    return players
-      .filter(
-        (player) => player.role !== PlayerRoleEnum.CHASSEUR && !player.isDead,
-      )
-      .map((player) => player.id);
   }
 }

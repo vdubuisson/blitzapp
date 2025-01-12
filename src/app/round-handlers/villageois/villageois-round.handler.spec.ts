@@ -13,7 +13,7 @@ describe('VillageoisRoundHandler', () => {
   let roundHandler: VillageoisRoundHandler;
   let announcementService: AnnouncementService;
 
-  beforeEach(() => {
+  beforeAll(() => {
     announcementService = MockService(AnnouncementService);
     roundHandler = new VillageoisRoundHandler({ announcementService });
   });

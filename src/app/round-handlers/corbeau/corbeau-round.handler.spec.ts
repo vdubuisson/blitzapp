@@ -9,7 +9,7 @@ import { waitForAsync } from '@angular/core/testing';
 describe('CorbeauRoundHandler', () => {
   let roundHandler: CorbeauRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new CorbeauRoundHandler();
   });
 

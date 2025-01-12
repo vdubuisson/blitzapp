@@ -9,7 +9,7 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 describe('BoucRoundHandler', () => {
   let roundHandler: BoucRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new BoucRoundHandler();
   });
 

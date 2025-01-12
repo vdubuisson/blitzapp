@@ -6,7 +6,7 @@ import { JoueurFluteVictoryHandler } from './joueur-flute-victory.handler';
 describe('JoueurFluteVictoryHandler', () => {
   let victoryHandler: JoueurFluteVictoryHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     victoryHandler = new JoueurFluteVictoryHandler();
   });
 

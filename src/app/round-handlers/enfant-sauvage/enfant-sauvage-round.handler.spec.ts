@@ -9,7 +9,7 @@ import { waitForAsync } from '@angular/core/testing';
 describe('EnfantSauvageRoundHandler', () => {
   let roundHandler: EnfantSauvageRoundHandler;
 
-  beforeEach(() => {
+  beforeAll(() => {
     roundHandler = new EnfantSauvageRoundHandler();
   });
 
