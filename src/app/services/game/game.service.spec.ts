@@ -3,14 +3,13 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
-import { Player, StoredPlayer } from '@/models/player.model';
+import { Player } from '@/models/player.model';
 import { Round } from '@/models/round.model';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '@/services/round-orchestration/round-orchestration.service';
 import { StatusesService } from '@/services/statuses/statuses.service';
-import { StorageService } from '@/services/storage/storage.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -23,7 +22,12 @@ import {
 } from 'ng-mocks';
 import { Observable, of } from 'rxjs';
 
-import { CardList, StoredCardList } from '@/models/card-list.model';
+import { CardList } from '@/models/card-list.model';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
+import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
+import { signal } from '@angular/core';
 import { GameService } from './game.service';
 
 class MockRoundHandler implements RoundHandler {
@@ -40,151 +44,6 @@ class MockRoundHandler implements RoundHandler {
   }
 }
 
-describe('GameService with storage init', () => {
-  let service: GameService;
-
-  ngMocks.faster();
-
-  const mockStoredPlayers: StoredPlayer[] = [
-    {
-      id: 0,
-      name: 'player0',
-      role: PlayerRoleEnum.VILLAGEOIS,
-      card: PlayerRoleEnum.VILLAGEOIS,
-      statuses: [],
-      isDead: false,
-    },
-    {
-      id: 1,
-      name: 'player1',
-      role: PlayerRoleEnum.LOUP_GAROU,
-      card: PlayerRoleEnum.LOUP_GAROU,
-      statuses: [],
-      isDead: false,
-    },
-    {
-      id: 2,
-      name: 'player2',
-      role: PlayerRoleEnum.SORCIERE,
-      card: PlayerRoleEnum.SORCIERE,
-      statuses: [],
-      isDead: false,
-    },
-  ];
-  const mockStoredRound: Round = {
-    role: RoundEnum.VILLAGEOIS,
-    selectablePlayers: [],
-    maxSelectable: 0,
-    minSelectable: 0,
-    isDuringDay: true,
-    type: RoundTypeEnum.DEFAULT,
-  };
-  const mockStoredDayCount = 3;
-  const mockStoredCardList: StoredCardList = {
-    villageois: 1,
-    loupGarou: 1,
-    selectedRoles: [PlayerRoleEnum.CUPIDON],
-    playersNumber: 3,
-  };
-  const mockStoredNeedCleanAfterBouc = true;
-
-  beforeAll(() =>
-    MockBuilder(GameService)
-      .mock(Router)
-      .mock(RoundHandlersService)
-      .mock(VictoryHandlersService)
-      .mock(RoundOrchestrationService)
-      .mock(DeathService)
-      .mock(StatusesService)
-      .mock(MockRoundHandler)
-      .mock(StorageService),
-  );
-
-  beforeAll(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    MockInstance(StorageService, 'get', (key: string): Observable<any> => {
-      switch (key) {
-        case 'GameService_currentPlayers':
-          return of(mockStoredPlayers);
-        case 'GameService_currentRound':
-          return of(mockStoredRound);
-        case 'GameService_dayCount':
-          return of(mockStoredDayCount);
-        case 'GameService_cardList':
-          return of(mockStoredCardList);
-        case 'GameService_needCleanAfterBouc':
-          return of(mockStoredNeedCleanAfterBouc);
-        default:
-          return of(null);
-      }
-    });
-
-    MockInstance(
-      RoundHandlersService,
-      'getHandler',
-      () => new MockRoundHandler(),
-    );
-  });
-
-  beforeAll(() => {
-    service = MockRender(GameService).point.componentInstance;
-  });
-
-  it('should init players from storage', () => {
-    const expectedPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.SORCIERE,
-        card: PlayerRoleEnum.SORCIERE,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    expect(service['players']()).toEqual(expectedPlayers);
-  });
-
-  it('should init round from storage', () => {
-    expect(service['round']()).toEqual(mockStoredRound);
-  });
-
-  it('should init day count from storage', () => {
-    expect(service['dayCount']()).toEqual(mockStoredDayCount);
-  });
-
-  it('should init card list from storage', () => {
-    const expectedCardList: CardList = {
-      villageois: 1,
-      loupGarou: 1,
-      selectedRoles: new Set([PlayerRoleEnum.CUPIDON]),
-      playersNumber: 3,
-    };
-    expect(service['cardList']).toEqual(expectedCardList);
-  });
-
-  it('should init needCleanAfterBouc from storage', () => {
-    expect(service['needCleanAfterBouc']).toEqual(mockStoredNeedCleanAfterBouc);
-  });
-
-  afterAll(MockReset);
-});
-
 describe('GameService on victory', () => {
   let service: GameService;
   let mockCurrentRoundConfig: Round;
@@ -200,7 +59,10 @@ describe('GameService on victory', () => {
       .mock(DeathService)
       .mock(StatusesService)
       .mock(MockRoundHandler)
-      .mock(StorageService),
+      .mock(CurrentPlayersStore)
+      .mock(CurrentRoundStore)
+      .mock(CardChoiceStore)
+      .mock(NeedCleanAfterBoucStore),
   );
 
   beforeAll(() => {
@@ -217,11 +79,6 @@ describe('GameService on victory', () => {
     const mockNextRoundHandler = new MockRoundHandler();
     mockNextRoundHandler.isDuringDay = true;
     mockNextRoundHandler.getRoundConfig = () => ({}) as Round;
-
-    MockInstance(StorageService, () => ({
-      remove: jest.fn(),
-      get: () => of(null),
-    }));
 
     MockInstance(RoundHandlersService, () => ({
       clearHandlers: jest.fn(),
@@ -251,6 +108,11 @@ describe('GameService on victory', () => {
       clearHandlers: jest.fn(),
       getVictory: () => VictoryEnum.LOUP_GAROU,
     }));
+
+    MockInstance(CurrentPlayersStore, 'state', signal([]));
+    MockInstance(CurrentRoundStore, 'state', signal(null));
+    MockInstance(CardChoiceStore, 'state', signal({} as CardList));
+    MockInstance(NeedCleanAfterBoucStore, 'state', signal(false));
   });
 
   beforeEach(() => {
@@ -290,52 +152,6 @@ describe('GameService on victory', () => {
     expect(victoryHandlersService.clearHandlers).toHaveBeenCalled();
   });
 
-  it('should remove players from storage on victory', () => {
-    const storageService = ngMocks.get(StorageService);
-
-    service.submitRoundAction([]);
-
-    expect(storageService.remove).toHaveBeenCalledWith(service['PLAYERS_KEY']);
-  });
-
-  it('should remove round from storage on victory', () => {
-    const storageService = ngMocks.get(StorageService);
-
-    service.submitRoundAction([]);
-
-    expect(storageService.remove).toHaveBeenCalledWith(service['ROUND_KEY']);
-  });
-
-  it('should remove day count from storage on victory', () => {
-    const storageService = ngMocks.get(StorageService);
-
-    service.submitRoundAction([]);
-
-    expect(storageService.remove).toHaveBeenCalledWith(
-      service['DAY_COUNT_KEY'],
-    );
-  });
-
-  it('should remove card list from storage on victory', () => {
-    const storageService = ngMocks.get(StorageService);
-
-    service.submitRoundAction([]);
-
-    expect(storageService.remove).toHaveBeenCalledWith(
-      service['CARD_LIST_KEY'],
-    );
-  });
-
-  it('should remove needCleanAfterBouc from storage on victory', () => {
-    const storageService = ngMocks.get(StorageService);
-
-    service.submitRoundAction([]);
-
-    expect(storageService.remove).toHaveBeenCalledWith(
-      service['NEED_CLEAN_AFTER_BOUC_KEY'],
-    );
-  });
-
   afterAll(MockReset);
 });
 
@@ -347,7 +163,6 @@ describe('GameService', () => {
   let roundOrchestrationService: RoundOrchestrationService;
   let deathService: DeathService;
   let statusesService: StatusesService;
-  let storageService: StorageService;
 
   let mockPlayers: Player[];
   let mockCardList: CardList;
@@ -364,7 +179,10 @@ describe('GameService', () => {
       .mock(DeathService)
       .mock(StatusesService)
       .mock(MockRoundHandler)
-      .mock(StorageService),
+      .mock(CurrentPlayersStore)
+      .mock(CurrentRoundStore)
+      .mock(CardChoiceStore)
+      .mock(NeedCleanAfterBoucStore),
   );
 
   beforeAll(() => {
@@ -402,11 +220,6 @@ describe('GameService', () => {
     };
     mockRoundHandler = new MockRoundHandler();
 
-    MockInstance(StorageService, () => ({
-      get: () => of(null),
-      set: jest.fn(),
-    }));
-
     MockInstance(RoundHandlersService, () => ({
       getHandler: () => mockRoundHandler,
       initHandlers: jest.fn(),
@@ -439,9 +252,17 @@ describe('GameService', () => {
     MockInstance(DeathService, () => ({
       announceDeaths: jest.fn(),
     }));
+
+    MockInstance(CurrentPlayersStore, 'state', signal([]));
+    MockInstance(CurrentRoundStore, 'state', signal(null));
+    MockInstance(CardChoiceStore, 'state', signal(mockCardList));
+    MockInstance(NeedCleanAfterBoucStore, 'state', signal(false));
   });
 
   beforeEach(() => {
+    ngMocks.get(CurrentPlayersStore).state.set([]);
+    ngMocks.get(CurrentRoundStore).state.set(null);
+
     service = MockRender(GameService).point.componentInstance;
     router = ngMocks.get(Router);
     roundHandlersService = ngMocks.get(RoundHandlersService);
@@ -449,7 +270,6 @@ describe('GameService', () => {
     roundOrchestrationService = ngMocks.get(RoundOrchestrationService);
     deathService = ngMocks.get(DeathService);
     statusesService = ngMocks.get(StatusesService);
-    storageService = ngMocks.get(StorageService);
   });
 
   afterAll(MockReset);
@@ -458,34 +278,8 @@ describe('GameService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return players', waitForAsync(() => {
-    service['players'].set(mockPlayers);
-
-    expect(service.currentPlayers()).toEqual(mockPlayers);
-  }));
-
-  it('should return round', waitForAsync(() => {
-    const mockRound: Round = {
-      role: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    service['round'].set(mockRound);
-
-    expect(service.currentRound()).toEqual(mockRound);
-  }));
-
-  it('should return day count', waitForAsync(() => {
-    service['dayCount'].set(2);
-
-    expect(service.currentDayCount()).toEqual(2);
-  }));
-
   it('should init round handlers on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(roundHandlersService.initHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
@@ -495,7 +289,7 @@ describe('GameService', () => {
   });
 
   it('should init victory handlers on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(victoryHandlersService.initHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
@@ -505,7 +299,7 @@ describe('GameService', () => {
   });
 
   it('should set players on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(service['players']()).toEqual(mockPlayers);
   });
@@ -513,7 +307,7 @@ describe('GameService', () => {
   it('should set day count to 1 on game creation if no Ange', () => {
     service['dayCount'].set(2);
 
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(service['dayCount']()).toEqual(1);
   });
@@ -533,13 +327,13 @@ describe('GameService', () => {
       },
     ];
 
-    service.createGame(newMockPlayers, mockCardList);
+    service.createGame(newMockPlayers);
 
     expect(service['dayCount']()).toEqual(0);
   });
 
   it('should navigate to /game on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(router.navigate).toHaveBeenCalledWith(['game']);
   });
@@ -558,7 +352,7 @@ describe('GameService', () => {
       .spyOn(roundOrchestrationService, 'getFirstRound')
       .mockReturnValue(RoundEnum.LOUP_GAROU);
 
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(service['round']()).toEqual(mockRound);
   });
@@ -590,13 +384,13 @@ describe('GameService', () => {
       },
     ];
 
-    service.createGame(newMockPlayers, mockCardList);
+    service.createGame(newMockPlayers);
 
     expect(roundOrchestrationService.setVillageoisFirst).toHaveBeenCalled();
   });
 
   it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(
       service['players']()[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
@@ -604,7 +398,7 @@ describe('GameService', () => {
   });
 
   it('should add DEATH_POTION status to player with role SORCIERE on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(
       service['players']()[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
@@ -1252,49 +1046,6 @@ describe('GameService', () => {
     expect(service['dayCount']()).toEqual(2);
   });
 
-  it('should save new day count to storage after day', () => {
-    const mockCurrentRoundConfig: Round = {
-      role: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: true,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as Round;
-
-    jest.spyOn(statusesService, 'cleanStatusesAfterDay').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersService, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VILLAGEOIS:
-            return mockCurrentRoundHandler;
-          case RoundEnum.LOUP_GAROU:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrationService, 'getNextRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
-
-    service['round'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(storageService.set).toHaveBeenCalledWith(
-      service['DAY_COUNT_KEY'],
-      2,
-    );
-  });
-
   it('should clear and reinit handlers after VOLEUR round', waitForAsync(() => {
     const mockCurrentRoundConfig: Round = {
       role: RoundEnum.VOLEUR,
@@ -1347,7 +1098,7 @@ describe('GameService', () => {
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
     service['round'].set(mockCurrentRoundConfig);
-    service['cardList'] = mockCardList;
+    ngMocks.get(CardChoiceStore).state.set(mockCardList);
 
     service.submitRoundAction([]);
 
@@ -1415,10 +1166,10 @@ describe('GameService', () => {
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
     service['round'].set(mockCurrentRoundConfig);
-    service['cardList'] = {
+    ngMocks.get(CardChoiceStore).state.set({
       ...mockCardList,
       selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.JOUEUR_FLUTE]),
-    };
+    });
 
     service.submitRoundAction([]);
 
@@ -1482,10 +1233,10 @@ describe('GameService', () => {
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
     service['round'].set(mockCurrentRoundConfig);
-    service['cardList'] = {
+    ngMocks.get(CardChoiceStore).state.set({
       ...mockCardList,
       selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.JOUEUR_FLUTE]),
-    };
+    });
 
     service.submitRoundAction([]);
 
@@ -1494,25 +1245,11 @@ describe('GameService', () => {
   }));
 
   it('should init default round handlers on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
+    service.createGame(mockPlayers);
 
     expect(roundHandlersService.initDefaultHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VOLEUR,
     ]);
-  });
-
-  it('should store card list on game creation', () => {
-    service.createGame(mockPlayers, mockCardList);
-
-    const expectedStoredCardList: StoredCardList = {
-      ...mockCardList,
-      selectedRoles: Array.from(mockCardList.selectedRoles),
-    };
-
-    expect(storageService.set).toHaveBeenCalledWith(
-      service['CARD_LIST_KEY'],
-      expectedStoredCardList,
-    );
   });
 
   it('should return game in progress if current round', () => {
@@ -1529,7 +1266,7 @@ describe('GameService', () => {
   });
 
   it('should return game not in progress if no current round', () => {
-    service['round'].set(undefined);
+    service['round'].set(null);
 
     expect(service.isGameInProgress()).toBe(false);
   });
@@ -1586,73 +1323,11 @@ describe('GameService', () => {
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
     service['round'].set(mockCurrentRoundConfig);
-    service['cardList'] = mockCardList;
+    ngMocks.get(CardChoiceStore).state.set(mockCardList);
 
     service.submitRoundAction([]);
 
-    expect(service['needCleanAfterBouc']).toEqual(true);
-  }));
-
-  it('should store needCleanAfterBouc to true after BOUC round', waitForAsync(() => {
-    const mockCurrentRoundConfig: Round = {
-      role: RoundEnum.BOUC,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: true,
-      type: RoundTypeEnum.PLAYERS,
-    };
-    const mockNewPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.BOUC,
-        card: PlayerRoleEnum.BOUC,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as Round;
-
-    jest
-      .spyOn(roundHandlersService, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.BOUC:
-            return mockCurrentRoundHandler;
-          case RoundEnum.LOUP_GAROU:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrationService, 'getNextRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
-
-    service['round'].set(mockCurrentRoundConfig);
-    service['cardList'] = mockCardList;
-
-    service.submitRoundAction([]);
-
-    expect(storageService.set).toHaveBeenCalledWith(
-      service['NEED_CLEAN_AFTER_BOUC_KEY'],
-      true,
-    );
+    expect(service['needCleanAfterBouc']()).toEqual(true);
   }));
 
   it('should clean no vote after VILLAGEOIS round if need clean', waitForAsync(() => {
@@ -1707,8 +1382,8 @@ describe('GameService', () => {
     jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
 
     service['round'].set(mockCurrentRoundConfig);
-    service['cardList'] = mockCardList;
-    service['needCleanAfterBouc'] = true;
+    ngMocks.get(CardChoiceStore).state.set(mockCardList);
+    service['needCleanAfterBouc'].set(true);
 
     const mockNewPlayersAfterClean: Player[] = [
       {
@@ -1742,10 +1417,6 @@ describe('GameService', () => {
     service.submitRoundAction([]);
 
     expect(service['players']()).toEqual(mockNewPlayersAfterClean);
-    expect(service['needCleanAfterBouc']).toEqual(false);
-    expect(storageService.set).toHaveBeenCalledWith(
-      service['NEED_CLEAN_AFTER_BOUC_KEY'],
-      false,
-    );
+    expect(service['needCleanAfterBouc']()).toEqual(false);
   }));
 });

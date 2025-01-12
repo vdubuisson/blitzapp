@@ -1,39 +1,27 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { Player } from '@/models/player.model';
 import { TextModalData } from '@/models/text-modal-data.model';
-import { announcements } from '@/values/announcements';
 import { ModalService } from '@/services/modal/modal.service';
-import { StorageService } from '@/services/storage/storage.service';
+import { AnnouncementsQueueStore } from '@/stores/announcements-queue/announcements-queue.store';
+import { announcements } from '@/values/announcements';
+import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnnouncementService {
-  private readonly storageService = inject(StorageService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly modalService = inject(ModalService);
 
-  private readonly announcementsQueue = signal<TextModalData[]>([]);
-  private readonly isInitialized = signal<boolean>(false);
+  private readonly announcementsQueue = inject(AnnouncementsQueueStore).state;
 
-  private isPresenting = false;
-
-  private readonly QUEUE_KEY = 'AnnouncementService_announcementsQueue';
+  private readonly isPresenting = signal(false);
 
   constructor() {
-    this.storageService
-      .get<TextModalData[]>(this.QUEUE_KEY)
-      .subscribe((queue) => {
-        if (queue !== null && queue.length > 0) {
-          this.announcementsQueue.set(queue);
-          this.showNextAnnouncement();
-        }
-        this.isInitialized.set(true);
-      });
-
     effect(() => {
-      if (this.isInitialized()) {
-        this.storageService.set(this.QUEUE_KEY, this.announcementsQueue());
+      if (this.announcementsQueue().length > 0 && !this.isPresenting()) {
+        this.showNextAnnouncement();
       }
     });
   }
@@ -67,28 +55,24 @@ export class AnnouncementService {
 
   private addAnnouncementToQueue(announcement: TextModalData): void {
     this.announcementsQueue.update((queue) => [...queue, announcement]);
-
-    if (!this.isPresenting) {
-      this.showNextAnnouncement();
-    }
   }
 
-  private async showNextAnnouncement(): Promise<void> {
-    this.isPresenting = true;
+  private showNextAnnouncement(): void {
+    this.isPresenting.set(true);
     const announcement = this.announcementsQueue()[0];
-    this.announcementsQueue.update((queue) => queue.slice(1));
 
     if (announcement === undefined) {
-      this.isPresenting = false;
+      this.isPresenting.set(false);
       return;
     }
 
-    this.modalService.showTextModal(announcement).subscribe(() => {
-      if (this.announcementsQueue().length > 0) {
-        this.showNextAnnouncement();
-      } else {
-        this.isPresenting = false;
-      }
-    });
+    this.announcementsQueue.update((queue) => queue.slice(1));
+
+    this.modalService
+      .showTextModal(announcement)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.isPresenting.set(false);
+      });
   }
 }

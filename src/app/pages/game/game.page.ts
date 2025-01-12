@@ -18,6 +18,9 @@ import { Player } from '@/models/player.model';
 import { Round } from '@/models/round.model';
 import { RoundNamePipe } from '@/pipes/round-name/round-name.pipe';
 import { GameService } from '@/services/game/game.service';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
+import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { DayCountStore } from '@/stores/day-count/day-count.store';
 
 @Component({
   selector: 'lgmj-game',
@@ -29,17 +32,16 @@ import { GameService } from '@/services/game/game.service';
 export default class GamePage {
   private readonly gameService = inject(GameService);
 
-  protected readonly players: Signal<Player[]> = computed(() =>
-    this.gameService.currentPlayers().map((player) => ({ ...player })),
-  );
-  protected readonly round: Signal<Round | undefined> =
-    this.gameService.currentRound;
+  protected readonly players: Signal<Player[]> =
+    inject(CurrentPlayersStore).state.asReadonly();
+  protected readonly round: Signal<Round | null> =
+    inject(CurrentRoundStore).state.asReadonly();
   protected readonly dayCount: Signal<number> =
-    this.gameService.currentDayCount;
+    inject(DayCountStore).state.asReadonly();
 
   protected readonly playerDisplayMode: Signal<PlayerDisplayModeEnum> =
     computed(() => {
-      if (this.round() !== undefined) {
+      if (this.round() !== null) {
         const currentRound = this.round() as Round;
         if (currentRound.type === RoundTypeEnum.ROLES) {
           return PlayerDisplayModeEnum.EDIT_ROLE;

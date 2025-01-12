@@ -1,30 +1,32 @@
-import {
-  computed,
-  inject,
-  Injectable,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { combineLatest } from 'rxjs';
+import { LOUPS_GAROUS_ROUNDS } from '@/configs/loups-garous-rounds';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
-import { Player, StoredPlayer } from '@/models/player.model';
+import { CardList } from '@/models/card-list.model';
+import { Player } from '@/models/player.model';
 import { Round } from '@/models/round.model';
+import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '@/services/round-orchestration/round-orchestration.service';
 import { StatusesService } from '@/services/statuses/statuses.service';
-import { StorageService } from '@/services/storage/storage.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
-import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { CardList, StoredCardList } from '@/models/card-list.model';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
+import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { DayCountStore } from '@/stores/day-count/day-count.store';
+import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 import { getNotPlayedRoles } from '@/utils/roles.utils';
-import { LOUPS_GAROUS_ROUNDS } from '@/configs/loups-garous-rounds';
+import {
+  computed,
+  inject,
+  Injectable,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -38,40 +40,26 @@ export class GameService {
   );
   private readonly deathService = inject(DeathService);
   private readonly statusesService = inject(StatusesService);
-  private readonly storageService = inject(StorageService);
 
   readonly isGameInProgress: Signal<boolean> = computed(
     () => this.round() !== undefined,
   );
 
-  private readonly players: WritableSignal<Player[]> = signal([]);
-  private readonly round: WritableSignal<Round | undefined> = signal(undefined);
-  private readonly dayCount: WritableSignal<number> = signal(1);
+  private readonly players: WritableSignal<Player[]> =
+    inject(CurrentPlayersStore).state;
+  private readonly round: WritableSignal<Round | null> =
+    inject(CurrentRoundStore).state;
+  private readonly dayCount: WritableSignal<number> =
+    inject(DayCountStore).state;
+  private readonly needCleanAfterBouc: WritableSignal<boolean> = inject(
+    NeedCleanAfterBoucStore,
+  ).state;
 
-  private cardList: CardList | undefined;
-  private needCleanAfterBouc = false;
+  private readonly cardList: Signal<CardList> =
+    inject(CardChoiceStore).state.asReadonly();
 
-  private readonly PLAYERS_KEY = 'GameService_currentPlayers';
-  private readonly ROUND_KEY = 'GameService_currentRound';
-  private readonly DAY_COUNT_KEY = 'GameService_dayCount';
-  private readonly CARD_LIST_KEY = 'GameService_cardList';
-  private readonly NEED_CLEAN_AFTER_BOUC_KEY = 'GameService_needCleanAfterBouc';
-
-  readonly currentPlayers = this.players.asReadonly();
-  readonly currentRound = this.round.asReadonly();
-  readonly currentDayCount = this.dayCount.asReadonly();
-
-  constructor() {
-    this.initFromStorage();
-  }
-
-  createGame(players: Player[], cardList: CardList): void {
-    this.cardList = cardList;
-    const storedCardList: StoredCardList = {
-      ...cardList,
-      selectedRoles: Array.from(cardList.selectedRoles),
-    };
-    this.storageService.set(this.CARD_LIST_KEY, storedCardList);
+  createGame(players: Player[]): void {
+    const cardList = this.cardList();
     this.initGame(players, cardList);
     const isAngePresent = players
       .map((player) => player.role)
@@ -144,14 +132,12 @@ export class GameService {
     } else if (currentRoundRole === RoundEnum.PERE_LOUPS) {
       this.handleAfterPereLoupRound();
     } else if (currentRoundRole === RoundEnum.BOUC) {
-      this.needCleanAfterBouc = true;
-      this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, true);
+      this.needCleanAfterBouc.set(true);
     } else if (
       currentRoundRole === RoundEnum.VILLAGEOIS &&
-      this.needCleanAfterBouc
+      this.needCleanAfterBouc()
     ) {
-      this.needCleanAfterBouc = false;
-      this.storageService.set(this.NEED_CLEAN_AFTER_BOUC_KEY, false);
+      this.needCleanAfterBouc.set(false);
       const newPlayers = this.statusesService.cleanNoVoteAfterDay(
         this.players(),
       );
@@ -203,9 +189,11 @@ export class GameService {
   private setRound(role: RoundEnum): void {
     const handler = this.roundHandlersService.getHandler(role);
     if (handler !== undefined) {
-      const roundConfig = handler.getRoundConfig(this.players(), this.cardList);
+      const roundConfig = handler.getRoundConfig(
+        this.players(),
+        this.cardList(),
+      );
       this.round.set(roundConfig);
-      this.storageService.set(this.ROUND_KEY, roundConfig);
       if (handler.type === RoundTypeEnum.AUTO) {
         this.submitRoundAction([]);
       }
@@ -213,73 +201,17 @@ export class GameService {
   }
 
   private setPlayers(players: Player[]): void {
-    this.players.set(players);
-    const storedPlayers: StoredPlayer[] = players?.map((player) => ({
-      ...player,
-      statuses: Array.from(player.statuses),
-    }));
-    this.storageService.set(this.PLAYERS_KEY, storedPlayers);
+    this.players.set([...players]);
   }
 
   private nextDayCount(currentDay?: number): void {
     const nextDay = (currentDay ?? this.dayCount()) + 1;
     this.dayCount.set(nextDay);
-    this.storageService.set(this.DAY_COUNT_KEY, nextDay);
-  }
-
-  private initFromStorage(): void {
-    combineLatest([
-      this.storageService.get<StoredPlayer[]>(this.PLAYERS_KEY),
-      this.storageService.get<Round>(this.ROUND_KEY),
-      this.storageService.get<number>(this.DAY_COUNT_KEY),
-      this.storageService.get<StoredCardList>(this.CARD_LIST_KEY),
-      this.storageService.get<boolean>(this.NEED_CLEAN_AFTER_BOUC_KEY),
-    ]).subscribe(
-      ([
-        storedPlayers,
-        storedRound,
-        storedDayCount,
-        storedCardList,
-        storedNeedCleanAfterBouc,
-      ]) => {
-        if (
-          storedPlayers !== null &&
-          storedRound !== null &&
-          storedDayCount !== null
-        ) {
-          const players: Player[] = storedPlayers.map((player) => ({
-            ...player,
-            statuses: new Set(player.statuses),
-          }));
-          this.players.set(players);
-          this.round.set(storedRound);
-          this.dayCount.set(storedDayCount);
-        }
-
-        this.needCleanAfterBouc = storedNeedCleanAfterBouc ?? false;
-        const cardList: CardList | undefined =
-          storedCardList == null
-            ? undefined
-            : {
-                ...storedCardList,
-                selectedRoles: new Set(storedCardList.selectedRoles),
-              };
-        this.cardList = cardList;
-      },
-    );
-  }
-
-  private clearStorage(): void {
-    this.storageService.remove(this.PLAYERS_KEY);
-    this.storageService.remove(this.ROUND_KEY);
-    this.storageService.remove(this.DAY_COUNT_KEY);
-    this.storageService.remove(this.CARD_LIST_KEY);
-    this.storageService.remove(this.NEED_CLEAN_AFTER_BOUC_KEY);
   }
 
   private handleVictory(victory: VictoryEnum): void {
-    this.round.set(undefined);
-    this.clearStorage();
+    this.round.set(null);
+    this.needCleanAfterBouc.set(false);
     this.roundOrchestrationService.resetRounds();
     this.deathService.reset();
     this.roundHandlersService.clearHandlers();
@@ -371,11 +303,11 @@ export class GameService {
     this.victoryHandlersService.clearHandlers();
 
     const players = [...this.players()];
-    this.initGame(players, this.cardList as CardList);
+    this.initGame(players, this.cardList());
   }
 
   private handleAfterPereLoupRound(): void {
-    if (this.cardList?.selectedRoles.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
+    if (this.cardList().selectedRoles.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
       const joueurFlute = this.players().find(
         (player) => player.card === PlayerRoleEnum.JOUEUR_FLUTE,
       );
@@ -390,7 +322,7 @@ export class GameService {
     const currentRole = this.round()?.role;
     const nextRole = nextHandler?.getRoundConfig(
       this.players(),
-      this.cardList,
+      this.cardList(),
     )?.role;
     if (
       currentRole !== undefined &&

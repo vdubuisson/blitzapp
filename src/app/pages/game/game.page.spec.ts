@@ -23,6 +23,9 @@ import { Round } from '@/models/round.model';
 import { GameService } from '@/services/game/game.service';
 import GamePage from './game.page';
 import { PlayerComponent } from '@/components/player/player.component';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
+import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { DayCountStore } from '@/stores/day-count/day-count.store';
 
 @Component({
   selector: 'lgmj-player',
@@ -47,14 +50,17 @@ describe('GamePage', () => {
   let mockPlayers: Player[];
   let mockRound: Round;
   let mockPlayers$: WritableSignal<Player[]>;
-  let mockRound$: WritableSignal<Round | undefined>;
+  let mockRound$: WritableSignal<Round | null>;
 
   ngMocks.faster();
 
   beforeAll(async () =>
     MockBuilder(GamePage)
       .replace(PlayerComponent, PlayerStubComponent)
-      .mock(GameService),
+      .mock(GameService)
+      .mock(CurrentPlayersStore)
+      .mock(CurrentRoundStore)
+      .mock(DayCountStore),
   );
 
   beforeAll(() => {
@@ -88,11 +94,11 @@ describe('GamePage', () => {
     mockRound$ = signal(mockRound);
 
     MockInstance(GameService, () => ({
-      currentPlayers: mockPlayers$.asReadonly(),
-      currentRound: mockRound$.asReadonly(),
-      currentDayCount: signal(0).asReadonly(),
       submitRoundAction: jest.fn(),
     }));
+    MockInstance(CurrentPlayersStore, 'state', mockPlayers$);
+    MockInstance(CurrentRoundStore, 'state', mockRound$);
+    MockInstance(DayCountStore, 'state', signal(0));
   });
 
   beforeEach(() => {

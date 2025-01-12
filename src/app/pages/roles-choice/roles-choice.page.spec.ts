@@ -1,7 +1,8 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { CardList } from '@/models/card-list.model';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
-import { WritableSignal, signal } from '@angular/core';
+import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
+import { signal, WritableSignal } from '@angular/core';
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
@@ -13,7 +14,6 @@ import {
   ngMocks,
 } from 'ng-mocks';
 import RolesChoicePage from './roles-choice.page';
-import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 
 describe('RolesChoicePage', () => {
   let page: RolesChoicePage;
@@ -30,7 +30,7 @@ describe('RolesChoicePage', () => {
 
   beforeAll(() =>
     MockBuilder(RolesChoicePage)
-      .mock(CardChoiceService)
+      .mock(CardChoiceStore)
       .mock(Router)
       .mock(PlayerRoleNamePipe),
   );
@@ -43,9 +43,8 @@ describe('RolesChoicePage', () => {
       playersNumber: 3,
     });
 
-    MockInstance(CardChoiceService, () => ({
-      currentChosenCards: currentChosenCards.asReadonly(),
-      setCards: jest.fn(),
+    MockInstance(CardChoiceStore, () => ({
+      state: currentChosenCards,
     }));
 
     MockInstance(Router, () => ({
@@ -321,9 +320,9 @@ describe('RolesChoicePage', () => {
 
     page['validateRoles']();
 
-    const cardChoiceService = ngMocks.get(CardChoiceService);
+    const cardChoiceService = ngMocks.get(CardChoiceStore);
 
-    expect(cardChoiceService.setCards).toHaveBeenCalledWith(expectedCardList);
+    expect(cardChoiceService.state()).toEqual(expectedCardList);
   }));
 
   it('should navigate to /new-game on validate', () => {

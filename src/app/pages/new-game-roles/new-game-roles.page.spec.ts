@@ -11,7 +11,6 @@ import { Player } from '@/models/player.model';
 import { NewGameService } from '@/services/new-game/new-game.service';
 
 import NewGameRolesPage from './new-game-roles.page';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { CardList } from '@/models/card-list.model';
 import {
   Component,
@@ -22,6 +21,7 @@ import {
 } from '@angular/core';
 import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
 import { PlayerComponent } from '@/components/player/player.component';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 
 @Component({
   selector: 'lgmj-player',
@@ -49,7 +49,7 @@ describe('NewGameRolesPage', () => {
     MockBuilder(NewGameRolesPage)
       .replace(PlayerComponent, PlayerStubComponent)
       .mock(NewGameService)
-      .mock(CardChoiceService),
+      .mock(CardChoiceStore),
   );
 
   beforeAll(() => {
@@ -67,8 +67,8 @@ describe('NewGameRolesPage', () => {
       changeRole: jest.fn(),
     }));
 
-    MockInstance(CardChoiceService, () => ({
-      currentChosenCards: mockCards.asReadonly(),
+    MockInstance(CardChoiceStore, () => ({
+      state: mockCards,
     }));
   });
 

@@ -1,17 +1,18 @@
-import { inject, Injectable } from '@angular/core';
-import { combineLatest } from 'rxjs';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundEnum } from '@/enums/round.enum';
-import { Player, StoredPlayer } from '@/models/player.model';
+import { Player } from '@/models/player.model';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { StorageService } from '@/services/storage/storage.service';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
-import { StatusesService } from '@/services/statuses/statuses.service';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
-import { findLeftNeighbor } from '@/utils/neighbor.utils';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
+import { StatusesService } from '@/services/statuses/statuses.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
+import { DeathsToAnnounceStore } from '@/stores/deaths-to-announce/deaths-to-announce.store';
+import { KnownDeathsStore } from '@/stores/known-deaths/known-deaths.store';
+import { findLeftNeighbor } from '@/utils/neighbor.utils';
+import { inject, Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -20,36 +21,27 @@ export class DeathService {
   private readonly roundHandlersService = inject(RoundHandlersService);
   private readonly victoryHandlersService = inject(VictoryHandlersService);
   private readonly announcementService = inject(AnnouncementService);
-  private readonly storageService = inject(StorageService);
   private readonly statusesService = inject(StatusesService);
 
-  private knownDeaths = new Set<number>();
-  private deathsToAnnounce: Player[] = [];
-  private afterDeathRoundQueue: RoundEnum[] = [];
+  private readonly knownDeaths = inject(KnownDeathsStore).state;
+  private readonly deathsToAnnounce = inject(DeathsToAnnounceStore).state;
+  private readonly afterDeathRoundQueue = inject(AfterDeathRoundQueueStore)
+    .state;
   private rolesToRemove: PlayerRoleEnum[] = [];
 
-  private readonly KNOWN_DEATHS_KEY = 'DeathService_knownDeaths';
-  private readonly ANNOUNCE_KEY = 'DeathService_deathsToAnnounce';
-  private readonly QUEUE_KEY = 'DeathService_afterDeathRoundQueue';
-
-  constructor() {
-    this.initFromStorage();
-  }
-
   getNextAfterDeathRound(): RoundEnum | undefined {
-    const afterDeathRound = this.afterDeathRoundQueue.shift();
-    this.storageService.set(this.QUEUE_KEY, this.afterDeathRoundQueue);
+    const afterDeathRound = this.afterDeathRoundQueue()[0];
+    if (afterDeathRound !== undefined) {
+      this.afterDeathRoundQueue.update((queue) => queue.slice(1));
+    }
     return afterDeathRound;
   }
 
   reset(): void {
-    this.knownDeaths.clear();
-    this.deathsToAnnounce = [];
+    this.knownDeaths.set(new Set());
+    this.deathsToAnnounce.set([]);
     this.rolesToRemove = [];
-    this.afterDeathRoundQueue = [];
-    this.storageService.remove(this.KNOWN_DEATHS_KEY);
-    this.storageService.remove(this.ANNOUNCE_KEY);
-    this.storageService.remove(this.QUEUE_KEY);
+    this.afterDeathRoundQueue.set([]);
   }
 
   handleNewDeaths(players: Player[]): Player[] {
@@ -63,7 +55,7 @@ export class DeathService {
       });
 
     newPlayers
-      .filter((player) => player.isDead && !this.knownDeaths.has(player.id))
+      .filter((player) => player.isDead && !this.knownDeaths().has(player.id))
       .forEach((player) => this.handlePlayerDeath(newPlayers, player));
 
     if (this.rolesToRemove.length > 0) {
@@ -75,8 +67,8 @@ export class DeathService {
   }
 
   announceDeaths(): void {
-    if (this.deathsToAnnounce.length > 0) {
-      const deadByChevalier = this.deathsToAnnounce.find(
+    if (this.deathsToAnnounce().length > 0) {
+      const deadByChevalier = this.deathsToAnnounce().find(
         (player) => player.killedBy === PlayerRoleEnum.CHEVALIER,
       );
       if (deadByChevalier !== undefined) {
@@ -85,8 +77,8 @@ export class DeathService {
           { playerName: deadByChevalier.name },
         );
       }
-      this.announcementService.announceDeaths(this.deathsToAnnounce);
-      const deadAncienPlayer = this.deathsToAnnounce.find(
+      this.announcementService.announceDeaths(this.deathsToAnnounce());
+      const deadAncienPlayer = this.deathsToAnnounce().find(
         (player) => player.role === PlayerRoleEnum.ANCIEN,
       );
       if (
@@ -97,29 +89,21 @@ export class DeathService {
           AnnouncementEnum.ANCIEN_KILLED_BY_INNOCENTS,
         );
       }
-      this.deathsToAnnounce = [];
-      this.storageService.set(this.ANNOUNCE_KEY, this.deathsToAnnounce);
+      this.deathsToAnnounce.set([]);
     }
   }
 
   private handlePlayerDeath(players: Player[], deadPlayer: Player): void {
-    this.knownDeaths.add(deadPlayer.id);
-    this.deathsToAnnounce.push(deadPlayer);
+    this.knownDeaths.update((knownDeaths) => {
+      knownDeaths.add(deadPlayer.id);
+      return new Set(knownDeaths);
+    });
+    this.deathsToAnnounce.update((deathsToAnnounce) => [
+      ...deathsToAnnounce,
+      deadPlayer,
+    ]);
     this.handlePlayerDeathStatuses(players, deadPlayer);
     this.handlePlayerDeathRole(players, deadPlayer);
-
-    this.storageService.set(
-      this.KNOWN_DEATHS_KEY,
-      Array.from(this.knownDeaths),
-    );
-    const storedDeathsToAnnounce: StoredPlayer[] = this.deathsToAnnounce.map(
-      (player) => ({
-        ...player,
-        statuses: Array.from(player.statuses),
-      }),
-    );
-    this.storageService.set(this.ANNOUNCE_KEY, storedDeathsToAnnounce);
-    this.storageService.set(this.QUEUE_KEY, this.afterDeathRoundQueue);
   }
 
   private handlePlayerDeathStatuses(
@@ -131,7 +115,10 @@ export class DeathService {
       deadPlayer.role !== PlayerRoleEnum.IDIOT
     ) {
       deadPlayer.statuses.delete(PlayerStatusEnum.CAPTAIN);
-      this.afterDeathRoundQueue.push(RoundEnum.CAPITAINE);
+      this.afterDeathRoundQueue.update((queue) => [
+        ...queue,
+        RoundEnum.CAPITAINE,
+      ]);
     }
     if (deadPlayer.statuses.has(PlayerStatusEnum.LOVER)) {
       const otherLivingLover = players.find(
@@ -172,7 +159,10 @@ export class DeathService {
         this.rolesToRemove.push(PlayerRoleEnum.GRAND_MECHANT_LOUP);
         break;
       case PlayerRoleEnum.CHASSEUR:
-        this.afterDeathRoundQueue.unshift(RoundEnum.CHASSEUR);
+        this.afterDeathRoundQueue.update((queue) => [
+          RoundEnum.CHASSEUR,
+          ...queue,
+        ]);
         break;
       case PlayerRoleEnum.SOEUR:
         if (
@@ -213,7 +203,10 @@ export class DeathService {
         break;
       case PlayerRoleEnum.BOUC:
         if (deadPlayer.killedBy === undefined) {
-          this.afterDeathRoundQueue.push(RoundEnum.BOUC);
+          this.afterDeathRoundQueue.update((queue) => [
+            ...queue,
+            RoundEnum.BOUC,
+          ]);
         } else {
           this.rolesToRemove.push(PlayerRoleEnum.BOUC);
         }
@@ -233,27 +226,5 @@ export class DeathService {
         PlayerRoleEnum.VILLAGEOIS,
       ].includes(player.killedBy)
     );
-  }
-
-  private initFromStorage(): void {
-    combineLatest([
-      this.storageService.get<number[]>(this.KNOWN_DEATHS_KEY),
-      this.storageService.get<StoredPlayer[]>(this.ANNOUNCE_KEY),
-      this.storageService.get<RoundEnum[]>(this.QUEUE_KEY),
-    ]).subscribe(([knownDeaths, storedAnnounce, queue]) => {
-      if (knownDeaths !== null) {
-        this.knownDeaths = new Set(knownDeaths);
-      }
-      if (storedAnnounce !== null) {
-        const announce = storedAnnounce.map((player) => ({
-          ...player,
-          statuses: new Set(player.statuses),
-        }));
-        this.deathsToAnnounce = announce;
-      }
-      if (queue !== null) {
-        this.afterDeathRoundQueue = queue;
-      }
-    });
   }
 }

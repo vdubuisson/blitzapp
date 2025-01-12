@@ -1,3 +1,18 @@
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { Player } from '@/models/player.model';
+import { AnnouncementService } from '@/services/announcement/announcement.service';
+import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
+import { StatusesService } from '@/services/statuses/statuses.service';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
+import { DeathsToAnnounceStore } from '@/stores/deaths-to-announce/deaths-to-announce.store';
+import { KnownDeathsStore } from '@/stores/known-deaths/known-deaths.store';
+import * as neighborUtils from '@/utils/neighbor.utils';
+import { signal } from '@angular/core';
 import {
   MockBuilder,
   MockInstance,
@@ -5,78 +20,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { of } from 'rxjs';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { RoundEnum } from '@/enums/round.enum';
-import { Player } from '@/models/player.model';
-import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
-import { StorageService } from '@/services/storage/storage.service';
-import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { DeathService } from './death.service';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
-import { StatusesService } from '@/services/statuses/statuses.service';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
-import * as neighborUtils from '@/utils/neighbor.utils';
-
-describe('DeathService with storage init', () => {
-  let service: DeathService;
-
-  const mockStoredKnownDeaths: number[] = [0, 1, 2];
-  const mockStoredAnnounce: Player[] = [
-    {
-      id: 0,
-      name: 'player0',
-      role: PlayerRoleEnum.VILLAGEOIS,
-      card: PlayerRoleEnum.VILLAGEOIS,
-      statuses: new Set(),
-      isDead: true,
-    },
-  ];
-  const mockStoredQueue: RoundEnum[] = [RoundEnum.CHASSEUR];
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(DeathService).mock(StorageService));
-
-  beforeAll(() => {
-    MockInstance(
-      StorageService,
-      () =>
-        ({
-          get: (key: string) => {
-            switch (key) {
-              case 'DeathService_knownDeaths':
-                return of(mockStoredKnownDeaths);
-              case 'DeathService_deathsToAnnounce':
-                return of(mockStoredAnnounce);
-              case 'DeathService_afterDeathRoundQueue':
-                return of(mockStoredQueue);
-              default:
-                return of(null);
-            }
-          },
-        }) as Partial<StorageService>,
-    );
-  });
-
-  beforeAll(() => (service = MockRender(DeathService).point.componentInstance));
-
-  it('should init known deaths from storage', () => {
-    expect(service['knownDeaths']).toEqual(new Set(mockStoredKnownDeaths));
-  });
-
-  it('should init deaths to announce from storage', () => {
-    expect(service['deathsToAnnounce']).toEqual(mockStoredAnnounce);
-  });
-
-  it('should init after death queue from storage', () => {
-    expect(service['afterDeathRoundQueue']).toEqual(mockStoredQueue);
-  });
-
-  afterAll(MockReset);
-});
 
 describe('DeathService', () => {
   let service: DeathService;
@@ -88,17 +32,13 @@ describe('DeathService', () => {
       .mock(RoundHandlersService)
       .mock(VictoryHandlersService)
       .mock(AnnouncementService)
-      .mock(StorageService)
-      .mock(StatusesService),
+      .mock(StatusesService)
+      .mock(KnownDeathsStore)
+      .mock(DeathsToAnnounceStore)
+      .mock(AfterDeathRoundQueueStore),
   );
 
   beforeAll(() => {
-    MockInstance(StorageService, () => ({
-      get: () => of(null),
-      set: jest.fn(),
-      remove: jest.fn(),
-    }));
-
     MockInstance(RoundHandlersService, () => ({
       removeHandlers: jest.fn(),
     }));
@@ -115,6 +55,19 @@ describe('DeathService', () => {
       announceDeaths: jest.fn(),
       announce: jest.fn(),
     }));
+
+    MockInstance(
+      KnownDeathsStore,
+      () => ({ state: signal(new Set()) }) as Partial<KnownDeathsStore>,
+    );
+    MockInstance(
+      DeathsToAnnounceStore,
+      () => ({ state: signal([]) }) as Partial<DeathsToAnnounceStore>,
+    );
+    MockInstance(
+      AfterDeathRoundQueueStore,
+      () => ({ state: signal([]) }) as Partial<AfterDeathRoundQueueStore>,
+    );
   });
 
   beforeEach(
@@ -122,59 +75,39 @@ describe('DeathService', () => {
   );
 
   it('should return next after-death round', () => {
-    service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR, RoundEnum.CAPITAINE];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([
+      RoundEnum.CHASSEUR,
+      RoundEnum.CAPITAINE,
+    ]);
 
     const nextAfterDeathRound = service.getNextAfterDeathRound();
 
     expect(nextAfterDeathRound).toEqual(RoundEnum.CHASSEUR);
-    expect(service['afterDeathRoundQueue']).toEqual([RoundEnum.CAPITAINE]);
-  });
-
-  it('should save after-death round', () => {
-    service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR, RoundEnum.CAPITAINE];
-
-    service.getNextAfterDeathRound();
-
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
-      RoundEnum.CAPITAINE,
-    ]);
+    expect(afterDeathRoundQueueStore.state()).toEqual([RoundEnum.CAPITAINE]);
   });
 
   it('should clear known deaths on reset', () => {
-    service['knownDeaths'] = new Set([0, 1]);
+    const knownDeathsStore = ngMocks.get(KnownDeathsStore);
+    knownDeathsStore.state.set(new Set([0, 1]));
 
     service.reset();
 
-    expect(service['knownDeaths'].size).toEqual(0);
-  });
-
-  it('should remove known deaths from storage on reset', () => {
-    service.reset();
-
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.remove).toHaveBeenCalledWith(
-      service['KNOWN_DEATHS_KEY'],
-    );
+    expect(knownDeathsStore.state().size).toEqual(0);
   });
 
   it('should empty afterDeathRoundQueue on reset', () => {
-    service['afterDeathRoundQueue'] = [RoundEnum.CHASSEUR];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([RoundEnum.CHASSEUR]);
 
     service.reset();
 
-    expect(service['afterDeathRoundQueue'].length).toEqual(0);
-  });
-
-  it('should remove afterDeathRoundQueue from storage on reset', () => {
-    service.reset();
-
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.remove).toHaveBeenCalledWith(service['QUEUE_KEY']);
+    expect(afterDeathRoundQueueStore.state().length).toEqual(0);
   });
 
   it('should empty deathsToAnnounce on reset', () => {
-    service['deathsToAnnounce'] = [
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    deathsToAnnounceStore.state.set([
       {
         id: 0,
         name: 'player0',
@@ -183,18 +116,11 @@ describe('DeathService', () => {
         statuses: new Set(),
         isDead: true,
       },
-    ];
+    ]);
 
     service.reset();
 
-    expect(service['deathsToAnnounce'].length).toEqual(0);
-  });
-
-  it('should remove deathsToAnnounce from storage on reset', () => {
-    service.reset();
-
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.remove).toHaveBeenCalledWith(service['ANNOUNCE_KEY']);
+    expect(deathsToAnnounceStore.state().length).toEqual(0);
   });
 
   it('should kill players with DEVOURED status', () => {
@@ -250,6 +176,7 @@ describe('DeathService', () => {
   });
 
   it('should add dead player id to known deaths', () => {
+    const knownDeathsStore = ngMocks.get(KnownDeathsStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -269,41 +196,17 @@ describe('DeathService', () => {
       },
     ];
 
-    service.handleNewDeaths(mockPlayers);
-
-    expect(service['knownDeaths'].has(0)).toEqual(true);
-  });
-
-  it('should add dead player id to known deaths on storage', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
+    knownDeathsStore.state.set(new Set());
 
     service.handleNewDeaths(mockPlayers);
 
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.set).toHaveBeenCalledWith(
-      service['KNOWN_DEATHS_KEY'],
-      [0],
-    );
+    expect(knownDeathsStore.state().has(0)).toEqual(true);
   });
 
   it('should add dead player to deaths to announce', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    deathsToAnnounceStore.state.set([]);
+
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -325,48 +228,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(service['deathsToAnnounce']).toEqual([
+    expect(deathsToAnnounceStore.state()).toEqual([
       {
         id: 0,
         name: 'player0',
         role: PlayerRoleEnum.LOUP_GAROU,
         card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
-        isDead: true,
-      },
-    ]);
-  });
-
-  it('should add dead player to deaths to announce on storage', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.set).toHaveBeenCalledWith(service['ANNOUNCE_KEY'], [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: [],
         isDead: true,
       },
     ]);
@@ -416,16 +284,14 @@ describe('DeathService', () => {
         isDead: true,
       },
     ];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([]);
 
     service.handleNewDeaths(mockPlayers);
 
-    const storageService = ngMocks.get(StorageService);
     expect(
-      service['afterDeathRoundQueue'].includes(RoundEnum.CAPITAINE),
+      afterDeathRoundQueueStore.state().includes(RoundEnum.CAPITAINE),
     ).toEqual(true);
-    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
-      RoundEnum.CAPITAINE,
-    ]);
   });
 
   it('should not add CAPITAINE round to after-death rounds if it was IDIOT role', () => {
@@ -447,11 +313,13 @@ describe('DeathService', () => {
         isDead: true,
       },
     ];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([]);
 
     service.handleNewDeaths(mockPlayers);
 
     expect(
-      service['afterDeathRoundQueue'].includes(RoundEnum.CAPITAINE),
+      afterDeathRoundQueueStore.state().includes(RoundEnum.CAPITAINE),
     ).toEqual(false);
   });
 
@@ -515,10 +383,12 @@ describe('DeathService', () => {
         isDead: true,
       },
     ];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([]);
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.CHASSEUR);
+    expect(afterDeathRoundQueueStore.state()[0]).toEqual(RoundEnum.CHASSEUR);
   });
 
   it('should change alive ENFANT_SAUVAGE to LOUP_GAROU on CHILD_MODEL death', () => {
@@ -724,7 +594,8 @@ describe('DeathService', () => {
   });
 
   it('should add CHASSEUR round to the beginning of after-death rounds', () => {
-    service['afterDeathRoundQueue'] = [RoundEnum.CAPITAINE];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([RoundEnum.CAPITAINE]);
 
     const mockPlayers: Player[] = [
       {
@@ -747,12 +618,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    const storageService = ngMocks.get(StorageService);
-    expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.CHASSEUR);
-    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
-      RoundEnum.CHASSEUR,
-      RoundEnum.CAPITAINE,
-    ]);
+    expect(afterDeathRoundQueueStore.state()[0]).toEqual(RoundEnum.CHASSEUR);
   });
 
   it('should remove CUPIDON handlers if CUPIDON is dead', () => {
@@ -1377,6 +1243,7 @@ describe('DeathService', () => {
   });
 
   it('should announce deaths if there are some', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1388,7 +1255,7 @@ describe('DeathService', () => {
       },
     ];
 
-    service['deathsToAnnounce'] = mockPlayers;
+    deathsToAnnounceStore.state.set(mockPlayers);
 
     service.announceDeaths();
 
@@ -1399,6 +1266,7 @@ describe('DeathService', () => {
   });
 
   it('should announce ANCIEN killed by innocents if killed by CHASSEUR', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1411,7 +1279,7 @@ describe('DeathService', () => {
       },
     ];
 
-    service['deathsToAnnounce'] = mockPlayers;
+    deathsToAnnounceStore.state.set(mockPlayers);
 
     service.announceDeaths();
 
@@ -1422,6 +1290,7 @@ describe('DeathService', () => {
   });
 
   it('should announce ANCIEN killed by innocents if killed by SORCIERE', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1434,7 +1303,7 @@ describe('DeathService', () => {
       },
     ];
 
-    service['deathsToAnnounce'] = mockPlayers;
+    deathsToAnnounceStore.state.set(mockPlayers);
 
     service.announceDeaths();
 
@@ -1445,6 +1314,7 @@ describe('DeathService', () => {
   });
 
   it('should announce ANCIEN killed by innocents if killed by VILLAGEOIS', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1457,7 +1327,7 @@ describe('DeathService', () => {
       },
     ];
 
-    service['deathsToAnnounce'] = mockPlayers;
+    deathsToAnnounceStore.state.set(mockPlayers);
 
     service.announceDeaths();
 
@@ -1468,6 +1338,7 @@ describe('DeathService', () => {
   });
 
   it('should not announce ANCIEN killed by innocents if not killed by innocent', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1479,7 +1350,7 @@ describe('DeathService', () => {
       },
     ];
 
-    service['deathsToAnnounce'] = mockPlayers;
+    deathsToAnnounceStore.state.set(mockPlayers);
 
     service.announceDeaths();
 
@@ -1488,6 +1359,7 @@ describe('DeathService', () => {
   });
 
   it('should announce player killed by CHEVALIER if present', () => {
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -1500,7 +1372,7 @@ describe('DeathService', () => {
       },
     ];
 
-    service['deathsToAnnounce'] = mockPlayers;
+    deathsToAnnounceStore.state.set(mockPlayers);
 
     service.announceDeaths();
 
@@ -1512,7 +1384,8 @@ describe('DeathService', () => {
   });
 
   it('should not announce deaths if there are none', () => {
-    service['deathsToAnnounce'] = [];
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    deathsToAnnounceStore.state.set([]);
 
     service.announceDeaths();
 
@@ -1521,7 +1394,8 @@ describe('DeathService', () => {
   });
 
   it('should clear deaths to announce after announce', () => {
-    service['deathsToAnnounce'] = [
+    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    deathsToAnnounceStore.state.set([
       {
         id: 0,
         name: 'player0',
@@ -1530,36 +1404,16 @@ describe('DeathService', () => {
         statuses: new Set(),
         isDead: true,
       },
-    ];
+    ]);
 
     service.announceDeaths();
 
-    expect(service['deathsToAnnounce'].length).toEqual(0);
-  });
-
-  it('should clear deaths to announce from storage after announce', () => {
-    service['deathsToAnnounce'] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOYANTE,
-        card: PlayerRoleEnum.VOYANTE,
-        statuses: new Set(),
-        isDead: true,
-      },
-    ];
-
-    service.announceDeaths();
-
-    const storageService = ngMocks.get(StorageService);
-    expect(storageService.set).toHaveBeenCalledWith(
-      service['ANNOUNCE_KEY'],
-      [],
-    );
+    expect(deathsToAnnounceStore.state().length).toEqual(0);
   });
 
   it('should add BOUC round to the after-death rounds', () => {
-    service['afterDeathRoundQueue'] = [];
+    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    afterDeathRoundQueueStore.state.set([]);
 
     const mockPlayers: Player[] = [
       {
@@ -1583,11 +1437,7 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    const storageService = ngMocks.get(StorageService);
-    expect(service['afterDeathRoundQueue'][0]).toEqual(RoundEnum.BOUC);
-    expect(storageService.set).toHaveBeenCalledWith(service['QUEUE_KEY'], [
-      RoundEnum.BOUC,
-    ]);
+    expect(afterDeathRoundQueueStore.state()[0]).toEqual(RoundEnum.BOUC);
   });
 
   afterAll(MockReset);

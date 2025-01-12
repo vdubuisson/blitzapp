@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
-import { combineLatest } from 'rxjs';
+import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
 import { RoundEnum } from '@/enums/round.enum';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
-import { StorageService } from '@/services/storage/storage.service';
-import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
+import { BeforeDeathRoundStore } from '@/stores/before-death-round/before-death-round.store';
+import { UniqueRoundsPassedStore } from '@/stores/unique-rounds-passed/unique-rounds-passed.store';
+import { inject, Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -13,47 +13,33 @@ import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
 export class RoundOrchestrationService {
   private readonly roundHandlersService = inject(RoundHandlersService);
   private readonly deathService = inject(DeathService);
-  private readonly storageService = inject(StorageService);
 
   private sortedRounds = [...ROUNDS_ORDER_CONFIG];
 
-  private uniqueRoundsPassed = new Set<RoundEnum>();
-  private beforeDeathRound: RoundEnum | undefined;
-
-  private readonly UNIQUE_ROUNDS_KEY =
-    'RoundOrchestrationService_uniqueRoundsPassed';
-  private readonly BEFORE_DEATH_KEY =
-    'RoundOrchestrationService_beforeDeathRound';
-
-  constructor() {
-    this.initFromStorage();
-  }
+  private readonly uniqueRoundsPassed = inject(UniqueRoundsPassedStore).state;
+  private readonly beforeDeathRound = inject(BeforeDeathRoundStore).state;
 
   resetRounds(): void {
-    this.uniqueRoundsPassed.clear();
-    this.storageService.remove(this.UNIQUE_ROUNDS_KEY);
+    this.uniqueRoundsPassed.set(new Set());
   }
 
   getNextRound(currentRound: RoundEnum): RoundEnum {
     const currentHandler = this.roundHandlersService.getHandler(currentRound);
     if (currentHandler?.isOnlyOnce) {
-      this.uniqueRoundsPassed.add(currentRound);
-      this.storageService.set(
-        this.UNIQUE_ROUNDS_KEY,
-        Array.from(this.uniqueRoundsPassed),
+      this.uniqueRoundsPassed.update(
+        (state) => new Set([...state, currentRound]),
       );
     }
 
     const firstAfterDeathRound = this.deathService.getNextAfterDeathRound();
     if (firstAfterDeathRound !== undefined) {
-      this.beforeDeathRound = currentRound;
-      this.storageService.set(this.BEFORE_DEATH_KEY, this.beforeDeathRound);
+      this.beforeDeathRound.set(currentRound);
       return firstAfterDeathRound;
     }
-    if (this.beforeDeathRound) {
-      currentRound = this.beforeDeathRound;
-      this.beforeDeathRound = undefined;
-      this.storageService.remove(this.BEFORE_DEATH_KEY);
+    const currentBeforeDeathRound = this.beforeDeathRound();
+    if (currentBeforeDeathRound) {
+      currentRound = currentBeforeDeathRound;
+      this.beforeDeathRound.set(null);
     }
 
     const currentIndex = this.sortedRounds.indexOf(currentRound);
@@ -71,11 +57,11 @@ export class RoundOrchestrationService {
         nextIndex = 0;
       }
     } while (
-      (nextHandler === undefined || this.uniqueRoundsPassed.has(nextRound)) &&
+      (nextHandler === undefined || this.uniqueRoundsPassed().has(nextRound)) &&
       nextIndex !== currentIndex
     );
 
-    if (nextHandler === undefined || this.uniqueRoundsPassed.has(nextRound)) {
+    if (nextHandler === undefined || this.uniqueRoundsPassed().has(nextRound)) {
       throw new Error('No next round found');
     }
 
@@ -103,19 +89,5 @@ export class RoundOrchestrationService {
     const villageoisIndex = this.sortedRounds.indexOf(RoundEnum.VILLAGEOIS);
     this.sortedRounds.splice(villageoisIndex, 1);
     this.sortedRounds.splice(sectaireIndex + 1, 0, RoundEnum.VILLAGEOIS);
-  }
-
-  private initFromStorage(): void {
-    combineLatest([
-      this.storageService.get<RoundEnum[]>(this.UNIQUE_ROUNDS_KEY),
-      this.storageService.get<RoundEnum>(this.BEFORE_DEATH_KEY),
-    ]).subscribe(([storedUniqueRounds, storedBeforeDeath]) => {
-      if (storedUniqueRounds !== null) {
-        this.uniqueRoundsPassed = new Set(storedUniqueRounds);
-      }
-      if (storedBeforeDeath !== null) {
-        this.beforeDeathRound = storedBeforeDeath;
-      }
-    });
   }
 }

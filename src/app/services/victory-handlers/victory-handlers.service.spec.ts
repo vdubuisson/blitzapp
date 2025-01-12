@@ -1,3 +1,17 @@
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { Player } from '@/models/player.model';
+import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
+import { AmoureuxVictoryHandler } from '@/victory-handlers/amoureux/amoureux-victory.handler';
+import { JoueurFluteVictoryHandler } from '@/victory-handlers/joueur-flute/joueur-flute-victory.handler';
+import { LoupBlancVictoryHandler } from '@/victory-handlers/loup-blanc/loup-blanc-victory.handler';
+import { LoupGarouVictoryHandler } from '@/victory-handlers/loup-garou/loup-garou-victory.handler';
+import { NoneVictoryHandler } from '@/victory-handlers/none/none-victory.handler';
+import { SectaireVictoryHandler } from '@/victory-handlers/sectaire/sectaire-victory.handler';
+import { VictoryHandler } from '@/victory-handlers/victory.handler';
+import { VillageoisVictoryHandler } from '@/victory-handlers/villageois/villageois-victory.handler';
+import { signal } from '@angular/core';
 import {
   MockBuilder,
   MockInstance,
@@ -5,21 +19,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { of } from 'rxjs';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { VictoryEnum } from '@/enums/victory.enum';
-import { Player } from '@/models/player.model';
-import { VictoryHandler } from '@/victory-handlers/victory.handler';
-import { StorageService } from '@/services/storage/storage.service';
 import { VictoryHandlersService } from './victory-handlers.service';
-import { SectaireVictoryHandler } from '@/victory-handlers/sectaire/sectaire-victory.handler';
-import { AmoureuxVictoryHandler } from '@/victory-handlers/amoureux/amoureux-victory.handler';
-import { JoueurFluteVictoryHandler } from '@/victory-handlers/joueur-flute/joueur-flute-victory.handler';
-import { LoupBlancVictoryHandler } from '@/victory-handlers/loup-blanc/loup-blanc-victory.handler';
-import { LoupGarouVictoryHandler } from '@/victory-handlers/loup-garou/loup-garou-victory.handler';
-import { NoneVictoryHandler } from '@/victory-handlers/none/none-victory.handler';
-import { VillageoisVictoryHandler } from '@/victory-handlers/villageois/villageois-victory.handler';
 
 class MockVictoryHandler implements VictoryHandler {
   isVictorious(_: Player[]): boolean {
@@ -32,9 +32,13 @@ describe('VictoryHandlersService', () => {
 
   ngMocks.faster();
 
-  beforeAll(() => MockBuilder(VictoryHandlersService).mock(StorageService));
+  beforeAll(() =>
+    MockBuilder(VictoryHandlersService).mock(VictoryHandlersStore),
+  );
 
-  beforeAll(() => MockInstance(StorageService, 'get', () => of(null)));
+  beforeAll(() => {
+    MockInstance(VictoryHandlersStore, 'state', signal(new Set<VictoryEnum>()));
+  });
 
   beforeEach(() => {
     service = MockRender(VictoryHandlersService).point.componentInstance;
@@ -258,6 +262,7 @@ describe('VictoryHandlersService', () => {
       .spyOn(mockVillageoisVictoryHandler, 'isVictorious')
       .mockReturnValue(false);
 
+    service['victoryHandlers'].clear();
     service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
       mockAmoureuxVictoryHandler,
@@ -290,6 +295,7 @@ describe('VictoryHandlersService', () => {
       .spyOn(mockVillageoisVictoryHandler, 'isVictorious')
       .mockReturnValue(false);
 
+    service['victoryHandlers'].clear();
     service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
       mockAmoureuxVictoryHandler,

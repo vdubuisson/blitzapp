@@ -6,7 +6,7 @@ import { CardList } from '@/models/card-list.model';
 import { GameBoxNamePipe } from '@/pipes/game-box-name/game-box-name.pipe';
 import { PlayerRoleImagePipe } from '@/pipes/player-role-image/player-role-image.pipe';
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import { SelectionModel } from '@angular/cdk/collections';
 import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
 import {
@@ -52,7 +52,7 @@ type RoleForm = {
 })
 export default class RolesChoicePage implements OnInit {
   private readonly playerRoleNamePipe = inject(PlayerRoleNamePipe);
-  private readonly cardChoiceService = inject(CardChoiceService);
+  private readonly cardChoiceState = inject(CardChoiceStore).state;
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
 
@@ -110,7 +110,7 @@ export default class RolesChoicePage implements OnInit {
       );
     });
 
-    const cardList: CardList = this.cardChoiceService.currentChosenCards();
+    const cardList: CardList = this.cardChoiceState();
     this.rolesSelection.setSelection(...cardList.selectedRoles);
     this.roleCountForm.patchValue(cardList);
   }
@@ -136,7 +136,7 @@ export default class RolesChoicePage implements OnInit {
       villageois: this.roleCountForm.value.villageois ?? 0,
       loupGarou: this.roleCountForm.value.loupGarou ?? 0,
     };
-    this.cardChoiceService.setCards(cardList);
+    this.cardChoiceState.set(cardList);
     this.router.navigate(['new-game']);
   }
 

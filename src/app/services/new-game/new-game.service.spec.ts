@@ -1,3 +1,7 @@
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { Player } from '@/models/player.model';
+import { GameService } from '@/services/game/game.service';
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
@@ -7,19 +11,13 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { Player } from '@/models/player.model';
-import { GameService } from '@/services/game/game.service';
 
-import { NewGameService } from './new-game.service';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
-import { CardList } from '@/models/card-list.model';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
 import { signal, WritableSignal } from '@angular/core';
+import { NewGameService } from './new-game.service';
 
 describe('NewGameService', () => {
   let service: NewGameService;
-  let currentCards: WritableSignal<CardList>;
   let currentPlayers: WritableSignal<Player[]>;
 
   ngMocks.faster();
@@ -27,25 +25,16 @@ describe('NewGameService', () => {
   beforeAll(() =>
     MockBuilder(NewGameService)
       .mock(GameService)
-      .mock(CardChoiceService)
-      .mock(Router),
+      .mock(Router)
+      .mock(CurrentPlayersStore),
   );
 
   beforeAll(() => {
     currentPlayers = signal([]);
     MockInstance(GameService, () => ({
-      currentPlayers: currentPlayers.asReadonly(),
       createGame: jest.fn(),
     }));
-    currentCards = signal({
-      villageois: 0,
-      loupGarou: 0,
-      playersNumber: 0,
-      selectedRoles: new Set(),
-    });
-    MockInstance(CardChoiceService, () => ({
-      currentChosenCards: currentCards.asReadonly(),
-    }));
+    MockInstance(CurrentPlayersStore, 'state', currentPlayers);
     MockInstance(Router, () => ({
       navigate: jest.fn(),
     }));
@@ -321,23 +310,13 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
-    const mockCardList: CardList = {
-      selectedRoles: new Set(),
-      loupGarou: 1,
-      villageois: 1,
-      playersNumber: 2,
-    };
 
     service['players'].set(mockPlayers);
-    currentCards.set(mockCardList);
 
     service.createGame();
 
     const gameService = ngMocks.get(GameService);
-    expect(gameService.createGame).toHaveBeenCalledWith(
-      mockPlayers,
-      mockCardList,
-    );
+    expect(gameService.createGame).toHaveBeenCalledWith(mockPlayers);
   });
 
   it('should reset players on create game', () => {
@@ -359,15 +338,8 @@ describe('NewGameService', () => {
         isDead: false,
       },
     ];
-    const mockCardList: CardList = {
-      selectedRoles: new Set(),
-      loupGarou: 1,
-      villageois: 1,
-      playersNumber: 2,
-    };
 
     service['players'].set(mockPlayers);
-    currentCards.set(mockCardList);
 
     service.createGame();
 

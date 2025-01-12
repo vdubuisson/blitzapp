@@ -34,6 +34,7 @@
       "@/pipes/*": ["src/app/pipes/*"],
       "@/round-handlers/*": ["src/app/round-handlers/*"],
       "@/services/*": ["src/app/services/*"],
+      "@/stores/*": ["src/app/stores/*"],
       "@/utils/*": ["src/app/utils/*"],
       "@/values/*": ["src/app/values/*"],
       "@/victory-handlers/*": ["src/app/victory-handlers/*"]

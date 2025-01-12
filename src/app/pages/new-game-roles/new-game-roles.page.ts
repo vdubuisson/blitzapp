@@ -11,8 +11,8 @@ import { NON_UNIQUE_ROLES } from '@/configs/non-unique-roles';
 import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Player } from '@/models/player.model';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { NewGameService } from '@/services/new-game/new-game.service';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 
 @Component({
   selector: 'lgmj-new-game-roles',
@@ -22,7 +22,7 @@ import { NewGameService } from '@/services/new-game/new-game.service';
 })
 export default class NewGameRolesPage {
   private readonly newGameService = inject(NewGameService);
-  private readonly cardChoiceService = inject(CardChoiceService);
+  private readonly cardChoiceState = inject(CardChoiceStore).state.asReadonly();
 
   protected readonly players: Signal<Player[]> =
     this.newGameService.currentPlayers;
@@ -49,7 +49,7 @@ export default class NewGameRolesPage {
   }
 
   private getAvailableRoles(players: Player[]): PlayerRoleEnum[] {
-    const cardsToPlay = this.cardChoiceService.currentChosenCards();
+    const cardsToPlay = this.cardChoiceState();
     const usedRoles = new Set(players.map((player) => player.role));
     let availableRoles = Array.from(cardsToPlay.selectedRoles).filter(
       (role) => NON_UNIQUE_ROLES.includes(role) || !usedRoles.has(role),

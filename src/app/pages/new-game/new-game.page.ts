@@ -1,3 +1,7 @@
+import { NewPlayerComponent } from '@/components/new-player/new-player.component';
+import { Player } from '@/models/player.model';
+import { NewGameService } from '@/services/new-game/new-game.service';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -18,10 +22,6 @@ import {
   faMinus,
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
-import { NewPlayerComponent } from '@/components/new-player/new-player.component';
-import { Player } from '@/models/player.model';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
-import { NewGameService } from '@/services/new-game/new-game.service';
 
 @Component({
   selector: 'lgmj-new-game',
@@ -39,7 +39,7 @@ import { NewGameService } from '@/services/new-game/new-game.service';
 })
 export default class NewGamePage {
   private readonly newGameService = inject(NewGameService);
-  private readonly cardChoiceService = inject(CardChoiceService);
+  private readonly cardChoiceState = inject(CardChoiceStore).state.asReadonly();
 
   protected readonly players: Signal<Player[]> =
     this.newGameService.currentPlayers;
@@ -49,7 +49,7 @@ export default class NewGamePage {
   );
 
   protected readonly playersCount: Signal<number> = computed(
-    () => this.cardChoiceService.currentChosenCards().playersNumber,
+    () => this.cardChoiceState().playersNumber,
   );
 
   protected readonly dangerIcon = faTriangleExclamation;

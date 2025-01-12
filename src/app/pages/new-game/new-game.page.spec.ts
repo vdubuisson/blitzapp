@@ -11,10 +11,10 @@ import {
 } from 'ng-mocks';
 import { NewPlayerComponent } from '@/components/new-player/new-player.component';
 import { CardList } from '@/models/card-list.model';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, output, signal, WritableSignal } from '@angular/core';
 import NewGamePage from './new-game.page';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 
 @Component({
   selector: 'lgmj-new-player',
@@ -35,7 +35,7 @@ describe('NewGamePage', () => {
   beforeAll(async () =>
     MockBuilder(NewGamePage)
       .mock(NewGameService)
-      .mock(CardChoiceService)
+      .mock(CardChoiceStore)
       .replace(NewPlayerComponent, NewPlayerStubComponent),
   );
 
@@ -50,8 +50,8 @@ describe('NewGamePage', () => {
       reorderPlayers: jest.fn(),
     }));
 
-    MockInstance(CardChoiceService, () => ({
-      currentChosenCards: mockCardList.asReadonly(),
+    MockInstance(CardChoiceStore, () => ({
+      state: mockCardList,
     }));
   });
 

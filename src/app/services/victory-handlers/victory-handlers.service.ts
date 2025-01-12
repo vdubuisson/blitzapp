@@ -1,81 +1,57 @@
-import { inject, Injectable } from '@angular/core';
+import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
+import { VICTORIES_PRIORITY_CONFIG } from '@/configs/victories-priority.config';
+import { VICTORY_HANDLERS_CONFIG } from '@/configs/victory-handlers.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { Player } from '@/models/player.model';
+import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
 import { VictoryHandler } from '@/victory-handlers/victory.handler';
-import { StorageService } from '@/services/storage/storage.service';
-import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
-import { AngeVictoryHandler } from '@/victory-handlers/ange/ange-victory.handler';
-import { VICTORIES_PRIORITY_CONFIG } from '@/configs/victories-priority.config';
-import { SectaireVictoryHandler } from '@/victory-handlers/sectaire/sectaire-victory.handler';
-import { AmoureuxVictoryHandler } from '@/victory-handlers/amoureux/amoureux-victory.handler';
-import { JoueurFluteVictoryHandler } from '@/victory-handlers/joueur-flute/joueur-flute-victory.handler';
-import { LoupBlancVictoryHandler } from '@/victory-handlers/loup-blanc/loup-blanc-victory.handler';
-import { LoupGarouVictoryHandler } from '@/victory-handlers/loup-garou/loup-garou-victory.handler';
-import { NoneVictoryHandler } from '@/victory-handlers/none/none-victory.handler';
-import { VillageoisVictoryHandler } from '@/victory-handlers/villageois/villageois-victory.handler';
+import { inject, Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VictoryHandlersService {
-  private readonly storageService = inject(StorageService);
-
   private readonly victoryHandlers = new Map<VictoryEnum, VictoryHandler>();
+
+  private readonly victoryHandlersState = inject(VictoryHandlersStore).state;
 
   private readonly victoryPriorities = VICTORIES_PRIORITY_CONFIG;
 
-  private readonly HANDLERS_KEY = 'VictoryHandlersService_handlers';
-
   constructor() {
-    this.initFromStorage();
+    this.victoryHandlersState().forEach((victory) =>
+      this.createVictoryHandler(victory),
+    );
   }
 
   initHandlers(roles: PlayerRoleEnum[]): void {
-    this.storageService.set(this.HANDLERS_KEY, roles);
-
+    this.victoryHandlers.clear();
     const rolesSet = new Set<PlayerRoleEnum>(roles);
 
-    this.victoryHandlers.set(VictoryEnum.NONE, new NoneVictoryHandler());
-    this.victoryHandlers.set(
-      VictoryEnum.VILLAGEOIS,
-      new VillageoisVictoryHandler(),
-    );
+    this.createVictoryHandler(VictoryEnum.NONE);
+    this.createVictoryHandler(VictoryEnum.VILLAGEOIS);
 
     if (LOUPS_GAROUS_ROLES.some((role) => rolesSet.has(role))) {
-      this.victoryHandlers.set(
-        VictoryEnum.LOUP_GAROU,
-        new LoupGarouVictoryHandler(),
-      );
+      this.createVictoryHandler(VictoryEnum.LOUP_GAROU);
     }
     if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
-      this.victoryHandlers.set(
-        VictoryEnum.AMOUREUX,
-        new AmoureuxVictoryHandler(),
-      );
+      this.createVictoryHandler(VictoryEnum.AMOUREUX);
     }
     if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
-      this.victoryHandlers.set(
-        VictoryEnum.JOUEUR_FLUTE,
-        new JoueurFluteVictoryHandler(),
-      );
+      this.createVictoryHandler(VictoryEnum.JOUEUR_FLUTE);
     }
     if (rolesSet.has(PlayerRoleEnum.LOUP_BLANC)) {
-      this.victoryHandlers.set(
-        VictoryEnum.LOUP_BLANC,
-        new LoupBlancVictoryHandler(),
-      );
+      this.createVictoryHandler(VictoryEnum.LOUP_BLANC);
     }
     if (rolesSet.has(PlayerRoleEnum.ANGE)) {
-      this.victoryHandlers.set(VictoryEnum.ANGE, new AngeVictoryHandler());
+      this.createVictoryHandler(VictoryEnum.ANGE);
     }
     if (rolesSet.has(PlayerRoleEnum.SECTAIRE)) {
-      this.victoryHandlers.set(
-        VictoryEnum.SECTAIRE,
-        new SectaireVictoryHandler(),
-      );
+      this.createVictoryHandler(VictoryEnum.SECTAIRE);
     }
+
+    this.syncState();
   }
 
   removeUselessHandlers(players: Player[]): void {
@@ -107,10 +83,13 @@ export class VictoryHandlersService {
     ) {
       this.victoryHandlers.delete(VictoryEnum.SECTAIRE);
     }
+
+    this.syncState();
   }
 
   removeHandler(victory: VictoryEnum) {
     this.victoryHandlers.delete(victory);
+    this.syncState();
   }
 
   getVictory(
@@ -130,16 +109,16 @@ export class VictoryHandlersService {
 
   clearHandlers(): void {
     this.victoryHandlers.clear();
-    this.storageService.remove(this.HANDLERS_KEY);
+    this.syncState();
   }
 
-  private initFromStorage(): void {
-    this.storageService
-      .get<PlayerRoleEnum[]>(this.HANDLERS_KEY)
-      .subscribe((storedRoles) => {
-        if (storedRoles !== null) {
-          this.initHandlers(storedRoles);
-        }
-      });
+  private createVictoryHandler(victory: VictoryEnum): void {
+    if (VICTORY_HANDLERS_CONFIG[victory] !== undefined) {
+      this.victoryHandlers.set(victory, new VICTORY_HANDLERS_CONFIG[victory]());
+    }
+  }
+
+  private syncState(): void {
+    this.victoryHandlersState.set(new Set(this.victoryHandlers.keys()));
   }
 }

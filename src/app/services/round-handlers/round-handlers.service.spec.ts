@@ -23,7 +23,9 @@ import { VillageoisRoundHandler } from '@/round-handlers/villageois/villageois-r
 import { VoyanteRoundHandler } from '@/round-handlers/voyante/voyante-round.handler';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { ModalService } from '@/services/modal/modal.service';
-import { StorageService } from '@/services/storage/storage.service';
+import { DefaultRoundHandlersStore } from '@/stores/default-round-handlers/default-round-handlers.store';
+import { RoundHandlersStore } from '@/stores/round-handlers/round-handlers.store';
+import { signal } from '@angular/core';
 import {
   MockBuilder,
   MockInstance,
@@ -31,7 +33,6 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { of } from 'rxjs';
 import { RoundHandlersService } from './round-handlers.service';
 
 describe('RoundHandlersService', () => {
@@ -40,13 +41,19 @@ describe('RoundHandlersService', () => {
 
   beforeAll(() =>
     MockBuilder(RoundHandlersService)
-      .mock(StorageService)
       .mock(AnnouncementService)
-      .mock(ModalService),
+      .mock(ModalService)
+      .mock(RoundHandlersStore)
+      .mock(DefaultRoundHandlersStore),
   );
 
   beforeAll(() => {
-    MockInstance(StorageService, 'get', jest.fn().mockReturnValue(of(null)));
+    MockInstance(RoundHandlersStore, 'state', signal(new Set<RoundEnum>()));
+    MockInstance(
+      DefaultRoundHandlersStore,
+      'state',
+      signal(new Set<RoundEnum>()),
+    );
   });
 
   beforeAll(() => {

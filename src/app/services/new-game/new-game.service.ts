@@ -1,8 +1,8 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
-import { CardChoiceService } from '@/services/card-choice/card-choice.service';
 import { GameService } from '@/services/game/game.service';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
 export class NewGameService {
   private readonly gameService = inject(GameService);
   private readonly router = inject(Router);
-  private readonly cardChoiceService = inject(CardChoiceService);
+  private readonly currentGamePlayers =
+    inject(CurrentPlayersStore).state.asReadonly();
 
   private readonly players: WritableSignal<Player[]> = signal([
     // {
@@ -88,7 +89,7 @@ export class NewGameService {
   }
 
   replay(): void {
-    const players = this.gameService.currentPlayers();
+    const players = this.currentGamePlayers();
 
     const newPlayers = [...players].map((player) => ({
       ...player,
@@ -113,8 +114,7 @@ export class NewGameService {
   }
 
   createGame(): void {
-    const cardList = this.cardChoiceService.currentChosenCards();
-    this.gameService.createGame(this.players(), cardList);
+    this.gameService.createGame(this.players());
     this.players.set([]);
   }
 
