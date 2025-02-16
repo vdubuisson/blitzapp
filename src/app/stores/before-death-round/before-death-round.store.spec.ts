@@ -34,8 +34,8 @@ describe('BeforeDeathRoundStore without storage', () => {
     () => (service = MockRender(BeforeDeathRoundStore).point.componentInstance),
   );
 
-  it('should init state with default value undefined', () => {
-    expect(service.state()).toEqual(undefined);
+  it('should init state with default value', () => {
+    expect(service.state()).toEqual(null);
   });
 
   it('should store new value to storage', () => {
