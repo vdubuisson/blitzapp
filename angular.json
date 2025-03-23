@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "aot": true,
             "outputPath": "dist/loup-garou-mj",
             "index": "src/index.html",
             "browser": "src/main.ts",
