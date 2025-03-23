@@ -32,6 +32,11 @@ export class RoundHandlersService {
     );
   }
 
+  /**
+   * Initializes the round handlers based on the provided player roles.
+   *
+   * @param roles - Player roles present in the game.
+   */
   initHandlers(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
 
@@ -46,6 +51,11 @@ export class RoundHandlersService {
     });
   }
 
+  /**
+   * Initializes the default round handlers based on the provided player roles.
+   *
+   * @param roles - Player roles not played in the game.
+   */
   initDefaultHandlers(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
     rolesSet.forEach((role) => {
@@ -55,10 +65,21 @@ export class RoundHandlersService {
     });
   }
 
+  /**
+   * Retrieves the round handler for a specific round.
+   *
+   * @param round - The round for which to retrieve the handler.
+   * @returns The corresponding round handler or undefined if not found.
+   */
   getHandler(round: RoundEnum): RoundHandler | undefined {
     return this.roundHandlers.get(round);
   }
 
+  /**
+   * Removes round handlers for the specified player roles.
+   *
+   * @param roles - The player roles for which to remove the handlers.
+   */
   removeHandlers(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
     rolesSet.forEach((role) => {
@@ -80,6 +101,9 @@ export class RoundHandlersService {
     });
   }
 
+  /**
+   * Clears all round handlers.
+   */
   clearHandlers(): void {
     this.roundHandlers.clear();
     this.roundHandlersState.set(new Set());

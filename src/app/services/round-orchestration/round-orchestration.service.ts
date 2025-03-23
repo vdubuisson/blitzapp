@@ -19,10 +19,19 @@ export class RoundOrchestrationService {
   private readonly uniqueRoundsPassed = inject(UniqueRoundsPassedStore).state;
   private readonly beforeDeathRound = inject(BeforeDeathRoundStore).state;
 
+  /**
+   * Resets the rounds passed and the before death round.
+   */
   resetRounds(): void {
     this.uniqueRoundsPassed.set(new Set());
+    this.beforeDeathRound.set(null);
   }
 
+  /**
+   * Get the next round.
+   * @param currentRound - The current round.
+   * @returns The next round.
+   */
   getNextRound(currentRound: RoundEnum): RoundEnum {
     const currentHandler = this.roundHandlersService.getHandler(currentRound);
     if (currentHandler?.isOnlyOnce) {
@@ -68,6 +77,10 @@ export class RoundOrchestrationService {
     return nextRound;
   }
 
+  /**
+   * Get the first round of the game.
+   * @returns The first round.
+   */
   getFirstRound(): RoundEnum {
     let nextHandler: RoundHandler | undefined;
     let nextIndex = 0;
@@ -84,6 +97,9 @@ export class RoundOrchestrationService {
     return nextRound;
   }
 
+  /**
+   * Sets the villageois round to be first in the sorted rounds.
+   */
   setVillageoisFirst(): void {
     const sectaireIndex = this.sortedRounds.indexOf(RoundEnum.SECTAIRE);
     const villageoisIndex = this.sortedRounds.indexOf(RoundEnum.VILLAGEOIS);

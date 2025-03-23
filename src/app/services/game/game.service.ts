@@ -58,6 +58,10 @@ export class GameService {
     () => this.round() !== null,
   );
 
+  /**
+   * Starts a new game with the given players.
+   * @param players - The players participating in the game.
+   */
   createGame(players: Player[]): void {
     const cardList = this.cardList();
     this.initGame(players, cardList);
@@ -74,6 +78,12 @@ export class GameService {
     this.router.navigate(['game']);
   }
 
+  /**
+   * Submits the action for the current round.
+   * @param selectedPlayers - The players selected for the action.
+   * @param selectedRole - The role selected for the action (optional).
+   * @param isEquality - Indicates if the action is an equality (optional).
+   */
   submitRoundAction(
     selectedPlayers: number[],
     selectedRole?: PlayerRoleEnum,

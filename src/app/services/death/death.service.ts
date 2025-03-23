@@ -29,6 +29,10 @@ export class DeathService {
     .state;
   private rolesToRemove: PlayerRoleEnum[] = [];
 
+  /**
+   * Retrieves the next round to be processed after a death occurs.
+   * @returns The next round or undefined if there are no rounds left.
+   */
   getNextAfterDeathRound(): RoundEnum | undefined {
     const afterDeathRound = this.afterDeathRoundQueue()[0];
     if (afterDeathRound !== undefined) {
@@ -37,6 +41,9 @@ export class DeathService {
     return afterDeathRound;
   }
 
+  /**
+   * Resets the state of the DeathService.
+   */
   reset(): void {
     this.knownDeaths.set(new Set());
     this.deathsToAnnounce.set([]);
@@ -44,6 +51,11 @@ export class DeathService {
     this.afterDeathRoundQueue.set([]);
   }
 
+  /**
+   * Handles the new deaths of players in the game.
+   * @param players - The list of players in the game.
+   * @returns The updated list of players after handling deaths.
+   */
   handleNewDeaths(players: Player[]): Player[] {
     this.rolesToRemove = [];
     const newPlayers = [...players];
@@ -66,6 +78,9 @@ export class DeathService {
     return newPlayers;
   }
 
+  /**
+   * Announces the deaths of players in the game.
+   */
   announceDeaths(): void {
     if (this.deathsToAnnounce().length > 0) {
       const deadByChevalier = this.deathsToAnnounce().find(

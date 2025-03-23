@@ -13,6 +13,11 @@ import { TextModalData } from '@/models/text-modal-data.model';
 export class ModalService {
   private readonly dialog = inject(Dialog);
 
+  /**
+   * Opens a modal showing a player card.
+   * @param card - The player card to show.
+   * @returns An observable that emits when the modal is closed.
+   */
   showPlayerCard(card: PlayerRoleEnum): Observable<void> {
     return this.showModal<void>(
       PlayerCardModalComponent,
@@ -20,6 +25,11 @@ export class ModalService {
     ) as Observable<void>;
   }
 
+  /**
+   * Opens a modal showing text.
+   * @param data - The data to display in the text modal.
+   * @returns An observable that emits true if the modal was confirmed, false otherwise.
+   */
   showTextModal(data: TextModalData): Observable<boolean> {
     return this.showModal<boolean>(TextModalComponent, data).pipe(
       map((result) => result === true),

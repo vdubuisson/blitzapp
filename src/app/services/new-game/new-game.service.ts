@@ -60,6 +60,10 @@ export class NewGameService {
 
   readonly currentPlayers = this.players.asReadonly();
 
+  /**
+   * Adds a new player to the game.
+   * @param name - The name of the player to be added.
+   */
   addPlayer(name: string): void {
     const currentPlayers = this.players();
     const newPlayer: Player = {
@@ -73,6 +77,9 @@ export class NewGameService {
     this.players.set([...currentPlayers, newPlayer]);
   }
 
+  /** Removes a player from the game.
+   * @param id - The id of the player to be removed.
+   */
   removePlayer(id: number): void {
     const currentPlayers = this.players();
     currentPlayers.splice(id, 1);
@@ -80,6 +87,11 @@ export class NewGameService {
     this.players.set(newPlayers);
   }
 
+  /**
+   * Reorders players in the game.
+   * @param from - The index of the player to be moved.
+   * @param to - The new index for the player.
+   */
   reorderPlayers(from: number, to: number): void {
     const currentPlayers = this.players();
     const movedPlayer = currentPlayers.splice(from, 1)[0];
@@ -88,6 +100,9 @@ export class NewGameService {
     this.players.set(newPlayers);
   }
 
+  /**
+   * Configure a new game with the players from the previous game.
+   */
   replay(): void {
     const players = this.currentGamePlayers();
 
@@ -103,6 +118,11 @@ export class NewGameService {
     this.router.navigate(['roles-choice']);
   }
 
+  /**
+   * Sets the role of a player.
+   * @param id - The id of the player whose role is to be set.
+   * @param role - The role to be assigned to the player.
+   */
   changeRole(id: number, role: PlayerRoleEnum): void {
     const currentPlayers = [...this.players()];
     const playerIndex = currentPlayers.findIndex((player) => player.id === id);
@@ -113,6 +133,9 @@ export class NewGameService {
     }
   }
 
+  /**
+   * Starts a new game with the current players.
+   */
   createGame(): void {
     this.gameService.createGame(this.players());
     this.players.set([]);

@@ -26,6 +26,10 @@ export class AnnouncementService {
     });
   }
 
+  /**
+   * Announce the deaths of players.
+   * @param players - The list of players who have died.
+   */
   announceDeaths(players: Player[]): void {
     const playerNames = players
       .map((player) => `<li>${player.name}</li>`)
@@ -37,6 +41,11 @@ export class AnnouncementService {
     this.addAnnouncementToQueue(announcement);
   }
 
+  /**
+   * Announce a specific type of announcement.
+   * @param type - The type of announcement to make.
+   * @param params - Optional parameters to replace in the announcement message.
+   */
   announce(type: AnnouncementEnum, params?: Record<string, string>): void {
     let message = announcements[type].message;
     if (message !== undefined && params !== undefined) {

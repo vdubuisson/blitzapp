@@ -25,6 +25,11 @@ export class VictoryHandlersService {
     );
   }
 
+  /**
+   * Initializes the victory handlers based on the provided player roles.
+   *
+   * @param roles - Player roles present in the game.
+   */
   initHandlers(roles: PlayerRoleEnum[]): void {
     this.victoryHandlers.clear();
     const rolesSet = new Set<PlayerRoleEnum>(roles);
@@ -54,6 +59,11 @@ export class VictoryHandlersService {
     this.syncState();
   }
 
+  /**
+   * Removes victory handlers that are no longer relevant based on the players still alive.
+   *
+   * @param players - The list of players to evaluate for removing handlers.
+   */
   removeUselessHandlers(players: Player[]): void {
     if (
       this.victoryHandlers.has(VictoryEnum.AMOUREUX) &&
@@ -87,11 +97,22 @@ export class VictoryHandlersService {
     this.syncState();
   }
 
-  removeHandler(victory: VictoryEnum) {
+  /**
+   * Removes a victory handler from the service.
+   *
+   * @param victory - The victory enum to remove.
+   */
+  removeHandler(victory: VictoryEnum): void {
     this.victoryHandlers.delete(victory);
     this.syncState();
   }
 
+  /**
+   * Checks if there is a victory condition met among the players; if so, returns the corresponding victory enum.
+   * @param players - The list of players to evaluate for victory.
+   * @param isFirstDayOrNight - Indicates if it is the first day or night phase.
+   * @returns The corresponding victory enum if a victory condition is met, otherwise undefined.
+   */
   getVictory(
     players: Player[],
     isFirstDayOrNight: boolean,
@@ -107,6 +128,9 @@ export class VictoryHandlersService {
     return resultVictory;
   }
 
+  /**
+   * Clears all victory handlers from the service.
+   */
   clearHandlers(): void {
     this.victoryHandlers.clear();
     this.syncState();

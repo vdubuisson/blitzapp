@@ -8,6 +8,12 @@ import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal
   providedIn: 'root',
 })
 export class StatusesService {
+  /**
+   * Cleans up player statuses after a day based on their roles.
+   *
+   * @param players - The list of players to clean statuses for.
+   * @returns A new array of players with updated statuses.
+   */
   cleanStatusesAfterDay(players: Player[]): Player[] {
     const newPlayers = [...players];
     const roles = new Set(players.map((player) => player.role));
@@ -44,6 +50,11 @@ export class StatusesService {
     return newPlayers;
   }
 
+  /**
+   * Removes powers from players with "innocent" roles.
+   *
+   * @param players - The list of current players.
+   */
   removePowersFromInnocents(players: Player[]): void {
     const sorcierePlayer = players.find(
       (player) => player.role === PlayerRoleEnum.SORCIERE,
@@ -60,6 +71,12 @@ export class StatusesService {
       });
   }
 
+  /**
+   * Removes "NO_VOTE" status from players after the day.
+   *
+   * @param players - The list of current players.
+   * @returns A new array of players with updated statuses.
+   */
   cleanNoVoteAfterDay(players: Player[]): Player[] {
     const newPlayers = [...players];
 
@@ -75,6 +92,12 @@ export class StatusesService {
     return newPlayers;
   }
 
+  /**
+   * Handles the wolf target status for players.
+   *
+   * @param players - The list of current players.
+   * @returns A new array of players with updated statuses.
+   */
   handleWolfTarget(players: Player[]): Player[] {
     const newPlayers = [...players];
     newPlayers
@@ -100,6 +123,12 @@ export class StatusesService {
     return newPlayers;
   }
 
+  /**
+   * Handles the infected status on the ancien player.
+   *
+   * @param players - The list of current players.
+   * @returns A new array of players with updated statuses.
+   */
   handleInfectedAncien(players: Player[]): Player[] {
     const newPlayers = [...players];
     const ancien = newPlayers.find(

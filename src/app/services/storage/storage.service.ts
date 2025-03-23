@@ -2,13 +2,10 @@ import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { from, map, Observable } from 'rxjs';
 
-enum StorageActionEnum {
-  SET,
-  REMOVE,
-}
+type StorageActionType = 'SET' | 'REMOVE';
 
 type StorageAction = {
-  type: StorageActionEnum;
+  type: StorageActionType;
   key: string;
   value?: unknown;
 };
@@ -22,7 +19,7 @@ export class StorageService {
 
   set(key: string, value: unknown): void {
     this.actionQueue.push({
-      type: StorageActionEnum.SET,
+      type: 'SET',
       key,
       value,
     });
@@ -40,7 +37,7 @@ export class StorageService {
 
   remove(key: string): void {
     this.actionQueue.push({
-      type: StorageActionEnum.REMOVE,
+      type: 'REMOVE',
       key,
     });
 
@@ -57,7 +54,7 @@ export class StorageService {
     this.actionInProgress = true;
     const action = this.actionQueue.shift();
     if (action !== undefined) {
-      if (action.type === StorageActionEnum.SET) {
+      if (action.type === 'SET') {
         const jsonValue = JSON.stringify(action.value);
         await Preferences.set({ key: action.key, value: jsonValue });
       } else {
