@@ -22,9 +22,9 @@ describe('BoucRoundHandler', () => {
   });
 
   it('should return during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(true);
+    expect(roundConfig.isDuringDay).toEqual(true);
   });
 
   it('should be PLAYERS type', () => {
@@ -32,9 +32,9 @@ describe('BoucRoundHandler', () => {
   });
 
   it('should return PLAYERS type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add NO_VOTE to not selected alive players', waitForAsync(() => {
@@ -205,15 +205,15 @@ describe('BoucRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([1, 2, 3]);
+    expect(roundConfig.selectablePlayers).toEqual([1, 2, 3]);
   });
 
   it('should return BOUC as round role', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.BOUC);
+    expect(roundConfig.round).toEqual(RoundEnum.BOUC);
   });
 
   it('should return alivePlayers length as maxSelectable players', () => {
@@ -252,14 +252,14 @@ describe('BoucRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.maxSelectable).toEqual(3);
+    expect(roundConfig.maxSelectable).toEqual(3);
   });
 
   it('should return 0 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(0);
+    expect(roundConfig.minSelectable).toEqual(0);
   });
 });

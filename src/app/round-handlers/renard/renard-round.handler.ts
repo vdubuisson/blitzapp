@@ -4,7 +4,7 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
+import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.type';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
 import { isLoupGarou } from '@/utils/roles.utils';

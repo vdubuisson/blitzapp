@@ -5,18 +5,18 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { CurrentRoundStore } from './current-round.store';
+import { CurrentRoundConfigStore } from './current-round-config.store';
 import { StorageService } from '@/services/storage/storage.service';
 import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { Round } from '@/models/round.model';
+import { RoundConfig } from '@/models/round-config.model';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 
-describe('CurrentRoundStore without storage', () => {
-  let service: CurrentRoundStore;
-  const mockState: Round = {
-    role: RoundEnum.VOLEUR,
+describe('CurrentRoundConfigStore without storage', () => {
+  let service: CurrentRoundConfigStore;
+  const mockState: RoundConfig = {
+    round: RoundEnum.VOLEUR,
     selectablePlayers: [],
     maxSelectable: 0,
     minSelectable: 0,
@@ -26,7 +26,7 @@ describe('CurrentRoundStore without storage', () => {
 
   ngMocks.faster();
 
-  beforeAll(() => MockBuilder(CurrentRoundStore).mock(StorageService));
+  beforeAll(() => MockBuilder(CurrentRoundConfigStore).mock(StorageService));
 
   beforeAll(() => {
     MockInstance(
@@ -40,7 +40,8 @@ describe('CurrentRoundStore without storage', () => {
   });
 
   beforeAll(
-    () => (service = MockRender(CurrentRoundStore).point.componentInstance),
+    () =>
+      (service = MockRender(CurrentRoundConfigStore).point.componentInstance),
   );
 
   it('should init state with default value null', () => {
@@ -59,14 +60,14 @@ describe('CurrentRoundStore without storage', () => {
     );
   });
 
-  it('should store new value to storage with storage key store.currentRound', () => {
-    service.state.set({} as Round);
+  it('should store new value to storage with storage key store.currentRoundConfig', () => {
+    service.state.set({} as RoundConfig);
 
     TestBed.flushEffects();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
-      'store.currentRound',
+      'store.currentRoundConfig',
       expect.anything(),
     );
   });
@@ -74,11 +75,11 @@ describe('CurrentRoundStore without storage', () => {
   afterAll(MockReset);
 });
 
-describe('CurrentRoundStore with storage init', () => {
-  let service: CurrentRoundStore;
+describe('CurrentRoundConfigStore with storage init', () => {
+  let service: CurrentRoundConfigStore;
 
-  const mockState: Round = {
-    role: RoundEnum.VOLEUR,
+  const mockState: RoundConfig = {
+    round: RoundEnum.VOLEUR,
     selectablePlayers: [],
     maxSelectable: 0,
     minSelectable: 0,
@@ -88,7 +89,7 @@ describe('CurrentRoundStore with storage init', () => {
 
   ngMocks.faster();
 
-  beforeAll(() => MockBuilder(CurrentRoundStore).mock(StorageService));
+  beforeAll(() => MockBuilder(CurrentRoundConfigStore).mock(StorageService));
 
   beforeAll(() => {
     MockInstance(
@@ -101,7 +102,8 @@ describe('CurrentRoundStore with storage init', () => {
   });
 
   beforeAll(
-    () => (service = MockRender(CurrentRoundStore).point.componentInstance),
+    () =>
+      (service = MockRender(CurrentRoundConfigStore).point.componentInstance),
   );
 
   it('should init state with storage value', () => {

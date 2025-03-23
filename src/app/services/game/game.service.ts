@@ -6,7 +6,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { CardList } from '@/models/card-list.model';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
+import { RoundConfig } from '@/models/round-config.model';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
@@ -15,7 +15,7 @@ import { StatusesService } from '@/services/statuses/statuses.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
-import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { CurrentRoundConfigStore } from '@/stores/current-round/current-round-config.store';
 import { DayCountStore } from '@/stores/day-count/day-count.store';
 import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 import { getNotPlayedRoles } from '@/utils/roles.utils';
@@ -43,8 +43,9 @@ export class GameService {
 
   private readonly players: WritableSignal<Player[]> =
     inject(CurrentPlayersStore).state;
-  private readonly round: WritableSignal<Round | null> =
-    inject(CurrentRoundStore).state;
+  private readonly roundConfig: WritableSignal<RoundConfig | null> = inject(
+    CurrentRoundConfigStore,
+  ).state;
   private readonly dayCount: WritableSignal<number> =
     inject(DayCountStore).state;
   private readonly needCleanAfterBouc: WritableSignal<boolean> = inject(
@@ -55,7 +56,7 @@ export class GameService {
     inject(CardChoiceStore).state.asReadonly();
 
   readonly isGameInProgress: Signal<boolean> = computed(
-    () => this.round() !== null,
+    () => this.roundConfig() !== null,
   );
 
   /**
@@ -89,9 +90,9 @@ export class GameService {
     selectedRole?: PlayerRoleEnum,
     isEquality?: boolean,
   ): void {
-    const currentRoundRole = this.round()?.role;
-    if (currentRoundRole !== undefined) {
-      const handler = this.roundHandlersService.getHandler(currentRoundRole);
+    const currentRound = this.roundConfig()?.round;
+    if (currentRound !== undefined) {
+      const handler = this.roundHandlersService.getHandler(currentRound);
       if (handler !== undefined) {
         handler
           .handleAction(
@@ -132,19 +133,19 @@ export class GameService {
   }
 
   private nextRound(): void {
-    const currentRoundRole = this.round()?.role;
-    if (currentRoundRole === undefined) {
+    const currentRound = this.roundConfig()?.round;
+    if (currentRound === undefined) {
       throw new Error('No current round');
     }
 
-    if (currentRoundRole === RoundEnum.VOLEUR) {
+    if (currentRound === RoundEnum.VOLEUR) {
       this.handleAfterVoleurRound();
-    } else if (currentRoundRole === RoundEnum.PERE_LOUPS) {
+    } else if (currentRound === RoundEnum.PERE_LOUPS) {
       this.handleAfterPereLoupRound();
-    } else if (currentRoundRole === RoundEnum.BOUC) {
+    } else if (currentRound === RoundEnum.BOUC) {
       this.needCleanAfterBouc.set(true);
     } else if (
-      currentRoundRole === RoundEnum.VILLAGEOIS &&
+      currentRound === RoundEnum.VILLAGEOIS &&
       this.needCleanAfterBouc()
     ) {
       this.needCleanAfterBouc.set(false);
@@ -154,14 +155,13 @@ export class GameService {
       this.setPlayers(newPlayers);
     }
 
-    const currentHandler =
-      this.roundHandlersService.getHandler(currentRoundRole);
+    const currentHandler = this.roundHandlersService.getHandler(currentRound);
 
     this.handleDaytimeDeaths(currentHandler);
 
     let nextRound;
     try {
-      nextRound = this.roundOrchestrationService.getNextRound(currentRoundRole);
+      nextRound = this.roundOrchestrationService.getNextRound(currentRound);
     } catch (error) {
       if (this.checkVictory()) {
         return;
@@ -177,7 +177,7 @@ export class GameService {
 
     nextRound = this.handleAfterNightDeaths(
       currentHandler,
-      currentRoundRole,
+      currentRound,
       nextHandler,
       nextRound,
     );
@@ -196,14 +196,14 @@ export class GameService {
     this.setRound(nextRound);
   }
 
-  private setRound(role: RoundEnum): void {
-    const handler = this.roundHandlersService.getHandler(role);
+  private setRound(round: RoundEnum): void {
+    const handler = this.roundHandlersService.getHandler(round);
     if (handler !== undefined) {
       const roundConfig = handler.getRoundConfig(
         this.players(),
         this.cardList(),
       );
-      this.round.set(roundConfig);
+      this.roundConfig.set(roundConfig);
       if (handler.type === RoundTypeEnum.AUTO) {
         this.submitRoundAction([]);
       }
@@ -220,7 +220,7 @@ export class GameService {
   }
 
   private handleVictory(victory: VictoryEnum): void {
-    this.round.set(null);
+    this.roundConfig.set(null);
     this.needCleanAfterBouc.set(false);
     this.roundOrchestrationService.resetRounds();
     this.deathService.reset();
@@ -278,8 +278,9 @@ export class GameService {
 
   private checkVictory(): boolean {
     const isFirstDay =
-      (this.round()?.isDuringDay && this.dayCount() === 0) ?? false;
-    const isFirstNight = !this.round()?.isDuringDay && this.dayCount() === 1;
+      (this.roundConfig()?.isDuringDay && this.dayCount() === 0) ?? false;
+    const isFirstNight =
+      !this.roundConfig()?.isDuringDay && this.dayCount() === 1;
     const victory = this.victoryHandlersService.getVictory(
       this.players(),
       isFirstDay || isFirstNight,
@@ -329,16 +330,16 @@ export class GameService {
   }
 
   private handlerAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
-    const currentRole = this.round()?.role;
-    const nextRole = nextHandler?.getRoundConfig(
+    const currentRound = this.roundConfig()?.round;
+    const nextRound = nextHandler?.getRoundConfig(
       this.players(),
       this.cardList(),
-    )?.role;
+    )?.round;
     if (
-      currentRole !== undefined &&
-      nextRole !== undefined &&
-      LOUPS_GAROUS_ROUNDS.includes(currentRole) &&
-      !LOUPS_GAROUS_ROUNDS.includes(nextRole)
+      currentRound !== undefined &&
+      nextRound !== undefined &&
+      LOUPS_GAROUS_ROUNDS.includes(currentRound) &&
+      !LOUPS_GAROUS_ROUNDS.includes(nextRound)
     ) {
       let newPlayers = this.statusesService.handleWolfTarget(this.players());
       newPlayers = this.statusesService.handleInfectedAncien(newPlayers);

@@ -22,9 +22,9 @@ describe('CorbeauRoundHandler', () => {
   });
 
   it('should return not during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be PLAYERS type', () => {
@@ -32,9 +32,9 @@ describe('CorbeauRoundHandler', () => {
   });
 
   it('should return PLAYERS type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add RAVEN status to selected player', waitForAsync(() => {
@@ -102,26 +102,26 @@ describe('CorbeauRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([1]);
+    expect(roundConfig.selectablePlayers).toEqual([1]);
   });
 
   it('should return CORBEAU as role round', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.CORBEAU);
+    expect(roundConfig.round).toEqual(RoundEnum.CORBEAU);
   });
 
   it('should return 1 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.maxSelectable).toEqual(1);
+    expect(roundConfig.maxSelectable).toEqual(1);
   });
 
   it('should return 1 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(1);
+    expect(roundConfig.minSelectable).toEqual(1);
   });
 });

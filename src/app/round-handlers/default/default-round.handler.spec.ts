@@ -30,16 +30,16 @@ describe('DefaultRoundHandler', () => {
 
   it('should return during day if set', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.VILLAGEOIS, false, true);
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(true);
+    expect(roundConfig.isDuringDay).toEqual(true);
   });
 
   it('should return not during day if set', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.LOUP_GAROU, false, false);
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be DEFAULT type', () => {
@@ -49,9 +49,9 @@ describe('DefaultRoundHandler', () => {
 
   it('should return DEFAULT type', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.CUPIDON, true, false);
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.DEFAULT);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
   it('should return players without change', waitForAsync(() => {
@@ -109,29 +109,29 @@ describe('DefaultRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([]);
+    expect(roundConfig.selectablePlayers).toEqual([]);
   });
 
   it('should return set role as round role', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.CUPIDON, true, false);
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.CUPIDON);
+    expect(roundConfig.round).toEqual(RoundEnum.CUPIDON);
   });
 
   it('should return 0 as maxSelectable players', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.CUPIDON, true, false);
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.maxSelectable).toEqual(0);
+    expect(roundConfig.maxSelectable).toEqual(0);
   });
 
   it('should return 0 as minSelectable players', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.CUPIDON, true, false);
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(0);
+    expect(roundConfig.minSelectable).toEqual(0);
   });
 });

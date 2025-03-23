@@ -3,7 +3,7 @@ import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { CardList } from '@/models/card-list.model';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
+import { RoundConfig } from '@/models/round-config.model';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { Observable, of } from 'rxjs';
 
@@ -35,9 +35,9 @@ export class DefaultRoundHandler implements RoundHandler {
     return of(newPlayers);
   }
 
-  getRoundConfig(players: Player[], cardList?: CardList): Round {
+  getRoundConfig(players: Player[], cardList?: CardList): RoundConfig {
     return {
-      role: this.roundRole,
+      round: this.roundRole,
       selectablePlayers: this.getSelectablePlayers(players).map(
         (player) => player.id,
       ),

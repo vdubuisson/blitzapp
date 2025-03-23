@@ -21,9 +21,9 @@ describe('ChienLoupRoundHandler', () => {
   });
 
   it('should return not during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be ROLES type', () => {
@@ -31,9 +31,9 @@ describe('ChienLoupRoundHandler', () => {
   });
 
   it('should return ROLES type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.ROLES);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.ROLES);
   });
 
   it('should set selected role to CHIEN_LOUP', waitForAsync(() => {
@@ -64,9 +64,9 @@ describe('ChienLoupRoundHandler', () => {
   }));
 
   it('should return LOUP_GAROU and VILLAGEOIS as selectable roles', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.selectableRoles).toEqual([
+    expect(roundConfig.selectableRoles).toEqual([
       PlayerRoleEnum.VILLAGEOIS,
       PlayerRoleEnum.LOUP_GAROU,
     ]);
@@ -100,26 +100,26 @@ describe('ChienLoupRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([2]);
+    expect(roundConfig.selectablePlayers).toEqual([2]);
   });
 
   it('should return CHIEN_LOUP as round role', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.CHIEN_LOUP);
+    expect(roundConfig.round).toEqual(RoundEnum.CHIEN_LOUP);
   });
 
   it('should return 1 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.maxSelectable).toEqual(1);
+    expect(roundConfig.maxSelectable).toEqual(1);
   });
 
   it('should return 1 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(1);
+    expect(roundConfig.minSelectable).toEqual(1);
   });
 });

@@ -22,9 +22,9 @@ describe('SectaireRoundHandler', () => {
   });
 
   it('should return not during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be PLAYERS type', () => {
@@ -32,9 +32,9 @@ describe('SectaireRoundHandler', () => {
   });
 
   it('should return PLAYERS type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add BLUE_TEAM to selected players', waitForAsync(() => {
@@ -165,15 +165,15 @@ describe('SectaireRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([0, 1, 2, 3]);
+    expect(roundConfig.selectablePlayers).toEqual([0, 1, 2, 3]);
   });
 
   it('should return SECTAIRE as round role', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.SECTAIRE);
+    expect(roundConfig.round).toEqual(RoundEnum.SECTAIRE);
   });
 
   it('should return players length minus 1 as maxSelectable players', () => {
@@ -212,14 +212,14 @@ describe('SectaireRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.maxSelectable).toEqual(3);
+    expect(roundConfig.maxSelectable).toEqual(3);
   });
 
   it('should return 1 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(1);
+    expect(roundConfig.minSelectable).toEqual(1);
   });
 });

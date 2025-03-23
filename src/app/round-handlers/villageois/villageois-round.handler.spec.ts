@@ -27,9 +27,9 @@ describe('VillageoisRoundHandler', () => {
   });
 
   it('should return during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(true);
+    expect(roundConfig.isDuringDay).toEqual(true);
   });
 
   it('should be PLAYERS type', () => {
@@ -37,9 +37,9 @@ describe('VillageoisRoundHandler', () => {
   });
 
   it('should return PLAYERS type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should kill selected player', waitForAsync(() => {
@@ -286,9 +286,9 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([1, 2]);
+    expect(roundConfig.selectablePlayers).toEqual([1, 2]);
   });
 
   it('should return no selectable players if no player can vote', () => {
@@ -319,9 +319,9 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([]);
+    expect(roundConfig.selectablePlayers).toEqual([]);
   });
 
   it('should return 0 minSelectable if no player can vote', () => {
@@ -352,15 +352,15 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.minSelectable).toEqual(0);
+    expect(roundConfig.minSelectable).toEqual(0);
   });
 
   it('should return VILLAGEOIS as round role', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.VILLAGEOIS);
+    expect(roundConfig.round).toEqual(RoundEnum.VILLAGEOIS);
   });
 
   it('should return 1 as maxSelectable players', () => {
@@ -391,9 +391,9 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.maxSelectable).toEqual(1);
+    expect(roundConfig.maxSelectable).toEqual(1);
   });
 
   it('should return 1 as minSelectable players', () => {
@@ -424,8 +424,8 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.minSelectable).toEqual(1);
+    expect(roundConfig.minSelectable).toEqual(1);
   });
 });

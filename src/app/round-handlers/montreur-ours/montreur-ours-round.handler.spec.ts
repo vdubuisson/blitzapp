@@ -28,9 +28,9 @@ describe('MontreurOursRoundHandler', () => {
   });
 
   it('should return during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(true);
+    expect(roundConfig.isDuringDay).toEqual(true);
   });
 
   it('should be AUTO type', () => {
@@ -38,9 +38,9 @@ describe('MontreurOursRoundHandler', () => {
   });
 
   it('should return AUTO type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.AUTO);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.AUTO);
   });
 
   it('should return players without change', waitForAsync(() => {
@@ -96,27 +96,27 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([]);
+    expect(roundConfig.selectablePlayers).toEqual([]);
   });
 
   it('should return MONTREUR_OURS as round role', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.MONTREUR_OURS);
+    expect(roundConfig.round).toEqual(RoundEnum.MONTREUR_OURS);
   });
 
   it('should return 0 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.maxSelectable).toEqual(0);
+    expect(roundConfig.maxSelectable).toEqual(0);
   });
 
   it('should return 0 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(0);
+    expect(roundConfig.minSelectable).toEqual(0);
   });
 
   it('should announce bear growl if MONTREUR_OURS is INFECTED', waitForAsync(() => {

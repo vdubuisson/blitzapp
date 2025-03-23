@@ -22,14 +22,14 @@ describe('VoleurRoundHandler', () => {
   });
 
   it('should return not during day', () => {
-    const round = roundHandler.getRoundConfig([], {
+    const roundConfig = roundHandler.getRoundConfig([], {
       villageois: 2,
       loupGarou: 0,
       selectedRoles: new Set(),
       playersNumber: 0,
     });
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be ROLES type', () => {
@@ -37,14 +37,14 @@ describe('VoleurRoundHandler', () => {
   });
 
   it('should return ROLES type', () => {
-    const round = roundHandler.getRoundConfig([], {
+    const roundConfig = roundHandler.getRoundConfig([], {
       villageois: 2,
       loupGarou: 0,
       selectedRoles: new Set(),
       playersNumber: 0,
     });
 
-    expect(round.type).toEqual(RoundTypeEnum.ROLES);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.ROLES);
   });
 
   it('should set selected role to VOLEUR', waitForAsync(() => {
@@ -106,12 +106,14 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.VOYANTE)).toBe(true);
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.JOUEUR_FLUTE)).toBe(
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOYANTE)).toBe(
       true,
     );
+    expect(
+      roundConfig.selectableRoles?.includes(PlayerRoleEnum.JOUEUR_FLUTE),
+    ).toBe(true);
   });
 
   it('should not return played roles as selectable roles', () => {
@@ -145,9 +147,11 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.CORBEAU)).toBe(false);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.CORBEAU)).toBe(
+      false,
+    );
   });
 
   it('should return VOLEUR as selectable roles', () => {
@@ -181,9 +185,11 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(true);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(
+      true,
+    );
   });
 
   it('should not return VOLEUR as selectable roles if only loup-garou', () => {
@@ -216,9 +222,11 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(false);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(
+      false,
+    );
   });
 
   it('should return missing villlageois as selectable roles', () => {
@@ -251,10 +259,10 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
     expect(
-      round.selectableRoles?.filter(
+      roundConfig.selectableRoles?.filter(
         (role) => role === PlayerRoleEnum.VILLAGEOIS,
       ).length,
     ).toBe(1);
@@ -290,10 +298,10 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
     expect(
-      round.selectableRoles?.filter(
+      roundConfig.selectableRoles?.filter(
         (role) => role === PlayerRoleEnum.LOUP_GAROU,
       ).length,
     ).toBe(1);
@@ -329,9 +337,11 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.SOEUR)).toBe(true);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.SOEUR)).toBe(
+      true,
+    );
   });
 
   it('should return missing FRERE as selectable roles', () => {
@@ -372,41 +382,43 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players, cardList);
+    const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(round.selectableRoles?.includes(PlayerRoleEnum.FRERE)).toBe(true);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.FRERE)).toBe(
+      true,
+    );
   });
 
   it('should return VOLEUR as round role', () => {
-    const round = roundHandler.getRoundConfig([], {
+    const roundConfig = roundHandler.getRoundConfig([], {
       villageois: 2,
       loupGarou: 0,
       selectedRoles: new Set(),
       playersNumber: 0,
     });
 
-    expect(round.role).toEqual(RoundEnum.VOLEUR);
+    expect(roundConfig.round).toEqual(RoundEnum.VOLEUR);
   });
 
   it('should return 1 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([], {
+    const roundConfig = roundHandler.getRoundConfig([], {
       villageois: 2,
       loupGarou: 0,
       selectedRoles: new Set(),
       playersNumber: 0,
     });
 
-    expect(round.maxSelectable).toEqual(1);
+    expect(roundConfig.maxSelectable).toEqual(1);
   });
 
   it('should return 1 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([], {
+    const roundConfig = roundHandler.getRoundConfig([], {
       villageois: 2,
       loupGarou: 0,
       selectedRoles: new Set(),
       playersNumber: 0,
     });
 
-    expect(round.minSelectable).toEqual(1);
+    expect(roundConfig.minSelectable).toEqual(1);
   });
 });

@@ -6,7 +6,7 @@ import { AnnouncementService } from '@/services/announcement/announcement.servic
 import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
 import { Observable, of } from 'rxjs';
-import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
+import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.type';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { isLoupGarou } from '@/utils/roles.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';

@@ -11,7 +11,7 @@ import { UniqueRoundsPassedStore } from './stores/unique-rounds-passed/unique-ro
 import { BeforeDeathRoundStore } from './stores/before-death-round/before-death-round.store';
 import { VictoryHandlersStore } from './stores/victory-handlers/victory-handlers.store';
 import { CurrentPlayersStore } from './stores/current-players/current-players.store';
-import { CurrentRoundStore } from './stores/current-round/current-round.store';
+import { CurrentRoundConfigStore } from './stores/current-round/current-round-config.store';
 import { DayCountStore } from './stores/day-count/day-count.store';
 import { NeedCleanAfterBoucStore } from './stores/need-clean-after-bouc/need-clean-after-bouc.store';
 
@@ -22,7 +22,7 @@ export function appInitializer(): Observable<void[]> {
     inject(BeforeDeathRoundStore),
     inject(CardChoiceStore),
     inject(CurrentPlayersStore),
-    inject(CurrentRoundStore),
+    inject(CurrentRoundConfigStore),
     inject(DayCountStore),
     inject(DeathsToAnnounceStore),
     inject(DefaultRoundHandlersStore),

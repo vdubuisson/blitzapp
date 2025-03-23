@@ -21,9 +21,9 @@ describe('AmoureuxRoundHandler', () => {
   });
 
   it('should return not during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be DEFAULT type', () => {
@@ -31,9 +31,9 @@ describe('AmoureuxRoundHandler', () => {
   });
 
   it('should return DEFAULT type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.DEFAULT);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
   it('should return players without change', waitForAsync(() => {
@@ -89,26 +89,26 @@ describe('AmoureuxRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([]);
+    expect(roundConfig.selectablePlayers).toEqual([]);
   });
 
   it('should return AMOUREUX as round role', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.AMOUREUX);
+    expect(roundConfig.round).toEqual(RoundEnum.AMOUREUX);
   });
 
   it('should return 0 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.maxSelectable).toEqual(0);
+    expect(roundConfig.maxSelectable).toEqual(0);
   });
 
   it('should return 0 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(0);
+    expect(roundConfig.minSelectable).toEqual(0);
   });
 });

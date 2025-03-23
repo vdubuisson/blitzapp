@@ -19,12 +19,12 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
+import { RoundConfig } from '@/models/round-config.model';
 import { GameService } from '@/services/game/game.service';
 import GamePage from './game.page';
 import { PlayerComponent } from '@/components/player/player.component';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
-import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { CurrentRoundConfigStore } from '@/stores/current-round/current-round-config.store';
 import { DayCountStore } from '@/stores/day-count/day-count.store';
 
 @Component({
@@ -48,9 +48,9 @@ describe('GamePage', () => {
   let component: GamePage;
 
   let mockPlayers: Player[];
-  let mockRound: Round;
+  let mockRoundConfig: RoundConfig;
   let mockPlayers$: WritableSignal<Player[]>;
-  let mockRound$: WritableSignal<Round | null>;
+  let mockRoundConfig$: WritableSignal<RoundConfig | null>;
 
   ngMocks.faster();
 
@@ -59,7 +59,7 @@ describe('GamePage', () => {
       .replace(PlayerComponent, PlayerStubComponent)
       .mock(GameService)
       .mock(CurrentPlayersStore)
-      .mock(CurrentRoundStore)
+      .mock(CurrentRoundConfigStore)
       .mock(DayCountStore),
   );
 
@@ -83,21 +83,21 @@ describe('GamePage', () => {
       },
     ];
     mockPlayers$ = signal(mockPlayers);
-    mockRound = {
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig = {
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     };
-    mockRound$ = signal(mockRound);
+    mockRoundConfig$ = signal(mockRoundConfig);
 
     MockInstance(GameService, () => ({
       submitRoundAction: jest.fn(),
     }));
     MockInstance(CurrentPlayersStore, 'state', mockPlayers$);
-    MockInstance(CurrentRoundStore, 'state', mockRound$);
+    MockInstance(CurrentRoundConfigStore, 'state', mockRoundConfig$);
     MockInstance(DayCountStore, 'state', signal(0));
   });
 
@@ -114,12 +114,12 @@ describe('GamePage', () => {
   }));
 
   it('should get round from GameService', waitForAsync(() => {
-    expect(component['round']()).toEqual(mockRound);
+    expect(component['roundConfig']()).toEqual(mockRoundConfig);
   }));
 
   it('should set playerDisplayMode as EDIT_ROLE if round type ROLES', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.CHIEN_LOUP,
+    mockRoundConfig$.set({
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -132,8 +132,8 @@ describe('GamePage', () => {
   }));
 
   it('should set playerDisplayMode as SELECT_SINGLE if only one selectable', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -146,8 +146,8 @@ describe('GamePage', () => {
   }));
 
   it('should set playerDisplayMode as SELECT_MULTI if multi selectable', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
@@ -160,8 +160,8 @@ describe('GamePage', () => {
   }));
 
   it('should set playerDisplayMode as DEFAULT if no selectable', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
@@ -174,8 +174,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit disabled if should select one role and no selection', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.CHIEN_LOUP,
+    mockRoundConfig$.set({
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -187,8 +187,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit disabled if should select one and no selection', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -200,8 +200,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit disabled if should select multiple and more selected than max', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 1,
@@ -213,8 +213,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit disabled if should select multiple and less selected than min', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 2,
@@ -226,8 +226,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit enabled if should select one role and one selected', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.CHIEN_LOUP,
+    mockRoundConfig$.set({
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -239,8 +239,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit enabled if should select one and one selected', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -252,8 +252,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit enabled if can select one and none selected', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.CHIEN_LOUP,
+    mockRoundConfig$.set({
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
@@ -265,8 +265,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit enabled if can select one and none selected', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
@@ -278,8 +278,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit enabled if should select multiple and selected in range', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 1,
@@ -291,8 +291,8 @@ describe('GamePage', () => {
   }));
 
   it('should have submit enabled if should select none', waitForAsync(() => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
@@ -303,8 +303,8 @@ describe('GamePage', () => {
   }));
 
   it('should select role', () => {
-    mockRound$.set({
-      role: RoundEnum.CHIEN_LOUP,
+    mockRoundConfig$.set({
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
@@ -317,8 +317,8 @@ describe('GamePage', () => {
   });
 
   it('should single select player', () => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -331,8 +331,8 @@ describe('GamePage', () => {
   });
 
   it('should multi select player', () => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
@@ -345,8 +345,8 @@ describe('GamePage', () => {
   });
 
   it('should multi unselect player', () => {
-    mockRound$.set({
-      role: RoundEnum.LOUP_GAROU,
+    mockRoundConfig$.set({
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
@@ -425,8 +425,8 @@ describe('GamePage', () => {
       },
     ]);
 
-    mockRound$.set({
-      role: RoundEnum.VILLAGEOIS,
+    mockRoundConfig$.set({
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -449,8 +449,8 @@ describe('GamePage', () => {
       },
     ]);
 
-    mockRound$.set({
-      role: RoundEnum.VILLAGEOIS,
+    mockRoundConfig$.set({
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -473,8 +473,8 @@ describe('GamePage', () => {
       },
     ]);
 
-    mockRound$.set({
-      role: RoundEnum.CUPIDON,
+    mockRoundConfig$.set({
+      round: RoundEnum.CUPIDON,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -497,8 +497,8 @@ describe('GamePage', () => {
       },
     ]);
 
-    mockRound$.set({
-      role: RoundEnum.VILLAGEOIS,
+    mockRoundConfig$.set({
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -517,8 +517,8 @@ describe('GamePage', () => {
   });
 
   it('should be beforeGame if round is SECTAIRE', () => {
-    mockRound$.set({
-      role: RoundEnum.SECTAIRE,
+    mockRoundConfig$.set({
+      round: RoundEnum.SECTAIRE,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
@@ -530,8 +530,8 @@ describe('GamePage', () => {
   });
 
   it('should not be beforeGame if round is not SECTAIRE', () => {
-    mockRound$.set({
-      role: RoundEnum.VILLAGEOIS,
+    mockRoundConfig$.set({
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,

@@ -1,7 +1,7 @@
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
+import { RoundConfig } from '@/models/round-config.model';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
@@ -24,7 +24,7 @@ class MockRoundHandler implements RoundHandler {
   handleAction(_: Player[], __: number[]): Observable<Player[]> {
     throw new Error('Method not implemented.');
   }
-  getRoundConfig(_: Player[]): Round {
+  getRoundConfig(_: Player[]): RoundConfig {
     throw new Error('Method not implemented.');
   }
 }

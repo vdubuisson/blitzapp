@@ -1,6 +1,6 @@
 import { RoundEnum } from '@/enums/round.enum';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
+import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.type';
 import { AmoureuxRoundHandler } from '@/round-handlers/amoureux/amoureux-round.handler';
 import { BoucRoundHandler } from '@/round-handlers/bouc/bouc-round.handler';
 import { CapitaineRoundHandler } from '@/round-handlers/capitaine/capitaine-round.handler';

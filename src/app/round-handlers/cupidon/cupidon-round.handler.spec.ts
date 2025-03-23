@@ -22,9 +22,9 @@ describe('CupidonRoundHandler', () => {
   });
 
   it('should return not during day', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.isDuringDay).toEqual(false);
+    expect(roundConfig.isDuringDay).toEqual(false);
   });
 
   it('should be PLAYERS type', () => {
@@ -32,9 +32,9 @@ describe('CupidonRoundHandler', () => {
   });
 
   it('should return PLAYERS type', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.type).toEqual(RoundTypeEnum.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add LOVER status to selected players', waitForAsync(() => {
@@ -99,26 +99,26 @@ describe('CupidonRoundHandler', () => {
       },
     ];
 
-    const round = roundHandler.getRoundConfig(players);
+    const roundConfig = roundHandler.getRoundConfig(players);
 
-    expect(round.selectablePlayers).toEqual([0, 1, 2]);
+    expect(roundConfig.selectablePlayers).toEqual([0, 1, 2]);
   });
 
   it('should return CUPIDON as role round', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.role).toEqual(RoundEnum.CUPIDON);
+    expect(roundConfig.round).toEqual(RoundEnum.CUPIDON);
   });
 
   it('should return 2 as maxSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.maxSelectable).toEqual(2);
+    expect(roundConfig.maxSelectable).toEqual(2);
   });
 
   it('should return 2 as minSelectable players', () => {
-    const round = roundHandler.getRoundConfig([]);
+    const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(round.minSelectable).toEqual(2);
+    expect(roundConfig.minSelectable).toEqual(2);
   });
 });

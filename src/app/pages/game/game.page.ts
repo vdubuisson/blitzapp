@@ -15,11 +15,11 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { Round } from '@/models/round.model';
+import { RoundConfig } from '@/models/round-config.model';
 import { RoundNamePipe } from '@/pipes/round-name/round-name.pipe';
 import { GameService } from '@/services/game/game.service';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
-import { CurrentRoundStore } from '@/stores/current-round/current-round.store';
+import { CurrentRoundConfigStore } from '@/stores/current-round/current-round-config.store';
 import { DayCountStore } from '@/stores/day-count/day-count.store';
 
 @Component({
@@ -34,20 +34,21 @@ export default class GamePage {
 
   protected readonly players: Signal<Player[]> =
     inject(CurrentPlayersStore).state.asReadonly();
-  protected readonly round: Signal<Round | null> =
-    inject(CurrentRoundStore).state.asReadonly();
+  protected readonly roundConfig: Signal<RoundConfig | null> = inject(
+    CurrentRoundConfigStore,
+  ).state.asReadonly();
   protected readonly dayCount: Signal<number> =
     inject(DayCountStore).state.asReadonly();
 
   protected readonly playerDisplayMode: Signal<PlayerDisplayModeEnum> =
     computed(() => {
-      if (this.round() !== null) {
-        const currentRound = this.round() as Round;
-        if (currentRound.type === RoundTypeEnum.ROLES) {
+      const currentRoundConfig = this.roundConfig();
+      if (currentRoundConfig !== null) {
+        if (currentRoundConfig.type === RoundTypeEnum.ROLES) {
           return PlayerDisplayModeEnum.EDIT_ROLE;
-        } else if (currentRound.maxSelectable > 1) {
+        } else if (currentRoundConfig.maxSelectable > 1) {
           return PlayerDisplayModeEnum.SELECT_MULTI;
-        } else if (currentRound.maxSelectable === 1) {
+        } else if (currentRoundConfig.maxSelectable === 1) {
           return PlayerDisplayModeEnum.SELECT_SINGLE;
         } else {
           return PlayerDisplayModeEnum.DEFAULT;
@@ -76,17 +77,18 @@ export default class GamePage {
     switch (this.playerDisplayMode()) {
       case PlayerDisplayModeEnum.SELECT_SINGLE:
         return (
-          (this.round()?.minSelectable ?? 0) > 0 &&
+          (this.roundConfig()?.minSelectable ?? 0) > 0 &&
           this.selectedPlayer() === undefined
         );
       case PlayerDisplayModeEnum.SELECT_MULTI:
         return (
-          this.selectedPlayers().size > (this.round()?.maxSelectable ?? 0) ||
-          this.selectedPlayers().size < (this.round()?.minSelectable ?? 0)
+          this.selectedPlayers().size >
+            (this.roundConfig()?.maxSelectable ?? 0) ||
+          this.selectedPlayers().size < (this.roundConfig()?.minSelectable ?? 0)
         );
       case PlayerDisplayModeEnum.EDIT_ROLE:
         return (
-          (this.round()?.minSelectable ?? 0) > 0 &&
+          (this.roundConfig()?.minSelectable ?? 0) > 0 &&
           this.selectedRole() === undefined
         );
       default:
@@ -98,11 +100,11 @@ export default class GamePage {
     () =>
       this.players().some(
         (player) => player.role === PlayerRoleEnum.BOUC && !player.isDead,
-      ) && this.round()?.role === RoundEnum.VILLAGEOIS,
+      ) && this.roundConfig()?.round === RoundEnum.VILLAGEOIS,
   );
 
   protected readonly isBeforeGame: Signal<boolean> = computed(
-    () => this.round()?.role === RoundEnum.SECTAIRE,
+    () => this.roundConfig()?.round === RoundEnum.SECTAIRE,
   );
 
   protected readonly PlayerDisplayModeEnum = PlayerDisplayModeEnum;

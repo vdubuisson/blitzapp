@@ -2,7 +2,7 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.interface';
+import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.type';
 import { ModalService } from '@/services/modal/modal.service';
 import { map, Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
