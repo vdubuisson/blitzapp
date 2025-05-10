@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
 
 @Injectable({
   providedIn: 'root',
@@ -48,27 +47,6 @@ export class StatusesService {
     }
 
     return newPlayers;
-  }
-
-  /**
-   * Removes powers from players with "innocent" roles.
-   *
-   * @param players - The list of current players.
-   */
-  removePowersFromInnocents(players: Player[]): void {
-    const sorcierePlayer = players.find(
-      (player) => player.role === PlayerRoleEnum.SORCIERE,
-    );
-    if (sorcierePlayer !== undefined) {
-      sorcierePlayer.statuses.delete(PlayerStatusEnum.HEALTH_POTION);
-      sorcierePlayer.statuses.delete(PlayerStatusEnum.DEATH_POTION);
-    }
-
-    players
-      .filter((player) => INNOCENTS_POWER_REMOVAL_ROLES.includes(player.role))
-      .forEach((player) => {
-        player.role = PlayerRoleEnum.VILLAGEOIS;
-      });
   }
 
   /**

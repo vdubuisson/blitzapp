@@ -1,17 +1,15 @@
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { DefaultRoleHandler } from '@/role-handlers/default/default.role-handler';
+import { RoleHandler } from '@/role-handlers/role-handler.interface';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
-import { StatusesService } from '@/services/statuses/statuses.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
 import { DeathsToAnnounceStore } from '@/stores/deaths-to-announce/deaths-to-announce.store';
 import { KnownDeathsStore } from '@/stores/known-deaths/known-deaths.store';
-import * as neighborUtils from '@/utils/neighbor.utils';
 import { signal } from '@angular/core';
 import {
   MockBuilder,
@@ -20,33 +18,26 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
+import { RoleHandlersService } from '../role-handlers/role-handlers.service';
 import { DeathService } from './death.service';
 
 describe('DeathService', () => {
   let service: DeathService;
+  let mockRoleHandler: RoleHandler;
 
   ngMocks.faster();
 
   beforeAll(() =>
     MockBuilder(DeathService)
-      .mock(RoundHandlersService)
       .mock(VictoryHandlersService)
       .mock(AnnouncementService)
-      .mock(StatusesService)
+      .mock(RoleHandlersService)
       .mock(KnownDeathsStore)
       .mock(DeathsToAnnounceStore)
       .mock(AfterDeathRoundQueueStore),
   );
 
   beforeAll(() => {
-    MockInstance(RoundHandlersService, () => ({
-      removeHandlers: jest.fn(),
-    }));
-
-    MockInstance(StatusesService, () => ({
-      removePowersFromInnocents: jest.fn(),
-    }));
-
     MockInstance(VictoryHandlersService, () => ({
       removeUselessHandlers: jest.fn(),
     }));
@@ -54,6 +45,14 @@ describe('DeathService', () => {
     MockInstance(AnnouncementService, () => ({
       announceDeaths: jest.fn(),
       announce: jest.fn(),
+    }));
+
+    mockRoleHandler = {
+      handleDeath: jest.fn().mockImplementation((players) => players),
+    } as unknown as DefaultRoleHandler;
+
+    MockInstance(RoleHandlersService, () => ({
+      getHandler: jest.fn().mockReturnValue(mockRoleHandler),
     }));
 
     MockInstance(
@@ -383,12 +382,17 @@ describe('DeathService', () => {
         isDead: true,
       },
     ];
-    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
-    afterDeathRoundQueueStore.state.set([]);
 
     service.handleNewDeaths(mockPlayers);
 
-    expect(afterDeathRoundQueueStore.state()[0]).toEqual(RoundEnum.CHASSEUR);
+    const roleHandlersService = ngMocks.get(RoleHandlersService);
+    expect(roleHandlersService.getHandler).toHaveBeenCalledWith(
+      PlayerRoleEnum.CHASSEUR,
+    );
+    expect(mockRoleHandler.handleDeath).toHaveBeenCalledWith(
+      mockPlayers,
+      mockPlayers[1],
+    );
   });
 
   it('should change alive ENFANT_SAUVAGE to LOUP_GAROU on CHILD_MODEL death', () => {
@@ -457,227 +461,7 @@ describe('DeathService', () => {
     expect(newPlayers[1].role).toEqual(PlayerRoleEnum.ENFANT_SAUVAGE);
   });
 
-  it('should remove LOUP_GAROU handlers if no more LOUP_GAROU', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith(
-      expect.arrayContaining([PlayerRoleEnum.LOUP_GAROU]),
-    );
-  });
-
-  it('should not remove LOUP_GAROU handlers if no more LOUP_GAROU but GRAND_MECHANT_LOUP still alive', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.GRAND_MECHANT_LOUP,
-    ]);
-  });
-
-  it('should remove GRAND_MECHANT_LOUP handlers if some LOUP_GAROU is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.GRAND_MECHANT_LOUP,
-    ]);
-  });
-
-  it('should remove GRAND_MECHANT_LOUP handlers if GRAND_MECHANT_LOUP is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.GRAND_MECHANT_LOUP,
-    ]);
-  });
-
-  it('should add CHASSEUR round to the beginning of after-death rounds', () => {
-    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
-    afterDeathRoundQueueStore.state.set([RoundEnum.CAPITAINE]);
-
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHASSEUR,
-        card: PlayerRoleEnum.CHASSEUR,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    expect(afterDeathRoundQueueStore.state()[0]).toEqual(RoundEnum.CHASSEUR);
-  });
-
-  it('should remove CUPIDON handlers if CUPIDON is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CUPIDON,
-        card: PlayerRoleEnum.CUPIDON,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.CUPIDON,
-    ]);
-  });
-
-  it('should remove SORCIERE handlers if SORCIERE is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.SORCIERE,
-        card: PlayerRoleEnum.SORCIERE,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.SORCIERE,
-    ]);
-  });
-
-  it('should remove VOYANTE handlers if VOYANTE is dead', () => {
+  it('should use role handler handleDeath to handle player death', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -699,518 +483,13 @@ describe('DeathService', () => {
 
     service.handleNewDeaths(mockPlayers);
 
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
+    const roleHandlersService = ngMocks.get(RoleHandlersService);
+    expect(roleHandlersService.getHandler).toHaveBeenCalledWith(
       PlayerRoleEnum.VOYANTE,
-    ]);
-  });
-
-  it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.JOUEUR_FLUTE,
-        card: PlayerRoleEnum.JOUEUR_FLUTE,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.JOUEUR_FLUTE,
-    ]);
-  });
-
-  it('should remove CORBEAU handlers if CORBEAU is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CORBEAU,
-        card: PlayerRoleEnum.CORBEAU,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.CORBEAU,
-    ]);
-  });
-
-  it('should remove ENFANT_SAUVAGE handlers if ENFANT_SAUVAGE is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ENFANT_SAUVAGE,
-        card: PlayerRoleEnum.ENFANT_SAUVAGE,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.ENFANT_SAUVAGE,
-    ]);
-  });
-
-  it('should remove SALVATEUR handlers if SALVATEUR is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.SALVATEUR,
-        card: PlayerRoleEnum.SALVATEUR,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.SALVATEUR,
-    ]);
-  });
-
-  it('should remove MONTREUR_OURS handlers if MONTREUR_OURS is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.MONTREUR_OURS,
-        card: PlayerRoleEnum.MONTREUR_OURS,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.MONTREUR_OURS,
-    ]);
-  });
-
-  it('should remove RENARD handlers if RENARD is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.RENARD,
-        card: PlayerRoleEnum.RENARD,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.RENARD,
-    ]);
-  });
-
-  it('should remove CHIEN_LOUP handlers if CHIEN_LOUP is dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHIEN_LOUP,
-        card: PlayerRoleEnum.CHIEN_LOUP,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.CHIEN_LOUP,
-    ]);
-  });
-
-  it('should remove SOEUR handlers if all SOEUR are dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.SOEUR,
-        card: PlayerRoleEnum.SOEUR,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.SOEUR,
-        card: PlayerRoleEnum.SOEUR,
-        statuses: new Set(),
-        isDead: true,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.SOEUR,
-      PlayerRoleEnum.SOEUR,
-    ]);
-  });
-
-  it('should not remove SOEUR handlers if some SOEUR is alive', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.SOEUR,
-        card: PlayerRoleEnum.SOEUR,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.SOEUR,
-        card: PlayerRoleEnum.SOEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
-  });
-
-  it('should remove FRERE handlers if all FRERE are dead', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.FRERE,
-        card: PlayerRoleEnum.FRERE,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.FRERE,
-        card: PlayerRoleEnum.FRERE,
-        statuses: new Set(),
-        isDead: true,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.FRERE,
-      PlayerRoleEnum.FRERE,
-    ]);
-  });
-
-  it('should not remove FRERE handlers if some FRERE is alive', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.FRERE,
-        card: PlayerRoleEnum.FRERE,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.FRERE,
-        card: PlayerRoleEnum.FRERE,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
-  });
-
-  it('should remove power from innocents if ANCIEN killed by innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.VILLAGEOIS,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const statusesService = ngMocks.get(StatusesService);
-    expect(statusesService.removePowersFromInnocents).toHaveBeenCalledWith(
+    );
+    expect(mockRoleHandler.handleDeath).toHaveBeenCalledWith(
       mockPlayers,
-    );
-  });
-
-  it('should not remove power from innocents if ANCIEN not killed by innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.LOUP_GAROU,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const statusesService = ngMocks.get(StatusesService);
-    expect(statusesService.removePowersFromInnocents).toHaveBeenCalledTimes(0);
-  });
-
-  it('should remove innocents handlers if ANCIEN killed by innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.VILLAGEOIS,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledWith(
-      INNOCENTS_POWER_REMOVAL_ROLES,
-    );
-  });
-
-  it('should not remove innocents handlers if ANCIEN not killed by innocents', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.LOUP_GAROU,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const roundHandlersService = ngMocks.get(RoundHandlersService);
-    expect(roundHandlersService.removeHandlers).toHaveBeenCalledTimes(0);
-  });
-
-  it('should add RUSTY_SWORD status to GRAND_MECHANT_LOUP if CHEVALIER killed by GRAND_MECHANT_LOUP', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHEVALIER,
-        card: PlayerRoleEnum.CHEVALIER,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    expect(mockPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toBe(
-      true,
-    );
-  });
-
-  it('should add RUSTY_SWORD status to left loup-garou if CHEVALIER killed by LOUP_GAROU', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHEVALIER,
-        card: PlayerRoleEnum.CHEVALIER,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.LOUP_GAROU,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    jest
-      .spyOn(neighborUtils, 'findLeftNeighbor')
-      .mockReturnValue(mockPlayers[1]);
-
-    service.handleNewDeaths(mockPlayers);
-
-    expect(mockPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toBe(
-      true,
+      mockPlayers[0],
     );
   });
 
@@ -1409,35 +688,6 @@ describe('DeathService', () => {
     service.announceDeaths();
 
     expect(deathsToAnnounceStore.state().length).toEqual(0);
-  });
-
-  it('should add BOUC round to the after-death rounds', () => {
-    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
-    afterDeathRoundQueueStore.state.set([]);
-
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.BOUC,
-        card: PlayerRoleEnum.BOUC,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: undefined,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    expect(afterDeathRoundQueueStore.state()[0]).toEqual(RoundEnum.BOUC);
   });
 
   afterAll(MockReset);

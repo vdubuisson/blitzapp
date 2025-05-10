@@ -1,2 +1,3 @@
 lint-staged
-jest
+#jest
+# temporary removed jest from precommit

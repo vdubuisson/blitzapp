@@ -1,21 +1,24 @@
+import { ROLE_HANDLERS_CONFIG } from '@/configs/role-handlers.config';
 import { ROLE_ROUNDS_CONFIG } from '@/configs/role-rounds.config';
 import { ROUND_HANDLERS_CONFIG } from '@/configs/round-handlers.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
-import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { ModalService } from '@/services/modal/modal.service';
 import { DefaultRoundHandlersStore } from '@/stores/default-round-handlers/default-round-handlers.store';
 import { RoundHandlersStore } from '@/stores/round-handlers/round-handlers.store';
-import { inject, Injectable } from '@angular/core';
+import {
+  inject,
+  Injectable,
+  Injector,
+  runInInjectionContext,
+} from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoundHandlersService {
-  private readonly announcementService = inject(AnnouncementService);
-  private readonly modalService = inject(ModalService);
+  private readonly injector = inject(Injector);
 
   private readonly roundHandlers = new Map<RoundEnum, RoundHandler>();
 
@@ -80,25 +83,12 @@ export class RoundHandlersService {
    *
    * @param roles - The player roles for which to remove the handlers.
    */
-  removeHandlers(roles: PlayerRoleEnum[]): void {
+  removeHandlersByRoles(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
-    rolesSet.forEach((role) => {
-      ROLE_ROUNDS_CONFIG[role].forEach((round) => {
-        this.roundHandlers.delete(round);
-        if (this.roundHandlersState().has(round)) {
-          this.roundHandlersState.update((state) => {
-            state.delete(round);
-            return new Set(state);
-          });
-        }
-        if (this.defaultRoundHandlersState().has(round)) {
-          this.defaultRoundHandlersState.update((state) => {
-            state.delete(round);
-            return new Set(state);
-          });
-        }
-      });
-    });
+    const roundsToRemove: RoundEnum[] = Array.from(rolesSet.values()).flatMap(
+      (role) => ROLE_HANDLERS_CONFIG[role]?.ROUNDS ?? [],
+    );
+    roundsToRemove.forEach((round) => this.removeHandler(round));
   }
 
   /**
@@ -110,15 +100,35 @@ export class RoundHandlersService {
     this.defaultRoundHandlersState.set(new Set());
   }
 
-  private createRoundHandler(round: RoundEnum): void {
+  /**
+   * Removes the round handler for a specific round.
+   *
+   * @param round - The round for which to remove the handler.
+   */
+  removeHandler(round: RoundEnum): void {
+    this.roundHandlers.delete(round);
+    if (this.roundHandlersState().has(round)) {
+      this.roundHandlersState.update((state) => {
+        state.delete(round);
+        return new Set(state);
+      });
+    }
+    if (this.defaultRoundHandlersState().has(round)) {
+      this.defaultRoundHandlersState.update((state) => {
+        state.delete(round);
+        return new Set(state);
+      });
+    }
+  }
+
+  createRoundHandler(round: RoundEnum): void {
     if (!this.roundHandlers.has(round)) {
       if (ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        const roundHandler = new ROUND_HANDLERS_CONFIG[round]({
-          announcementService: this.announcementService,
-          modalService: this.modalService,
+        runInInjectionContext(this.injector, () => {
+          const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
+          this.roundHandlers.set(round, roundHandler);
+          this.roundHandlersState.update((state) => new Set([...state, round]));
         });
-        this.roundHandlers.set(round, roundHandler);
-        this.roundHandlersState.update((state) => new Set([...state, round]));
       } else {
         throw new Error(`Missing RoundHandler config for ${round}`);
       }
@@ -128,16 +138,18 @@ export class RoundHandlersService {
   private createDefaultRoundHandler(round: RoundEnum): void {
     if (!this.roundHandlers.has(round)) {
       if (ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        const roundHandler = new ROUND_HANDLERS_CONFIG[round]({});
-        const defaultRoundHandler = new DefaultRoundHandler(
-          round,
-          true,
-          roundHandler.isDuringDay,
-        );
-        this.roundHandlers.set(round, defaultRoundHandler);
-        this.defaultRoundHandlersState.update(
-          (state) => new Set([...state, round]),
-        );
+        runInInjectionContext(this.injector, () => {
+          const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
+          const defaultRoundHandler = new DefaultRoundHandler(
+            round,
+            true,
+            roundHandler.isDuringDay,
+          );
+          this.roundHandlers.set(round, defaultRoundHandler);
+          this.defaultRoundHandlersState.update(
+            (state) => new Set([...state, round]),
+          );
+        });
       } else {
         throw new Error(`Missing RoundHandler config for ${round}`);
       }

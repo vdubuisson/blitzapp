@@ -6,7 +6,7 @@ import { VoyanteRoundHandler } from './voyante-round.handler';
 import { ModalService } from '@/services/modal/modal.service';
 import { MockService } from 'ng-mocks';
 import { of } from 'rxjs';
-import { waitForAsync } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 
 describe('VoyanteRoundHandler', () => {
   let roundHandler: VoyanteRoundHandler;
@@ -17,7 +17,12 @@ describe('VoyanteRoundHandler', () => {
     modalService = MockService(ModalService);
     jest.spyOn(modalService, 'showPlayerCard').mockReturnValue(of(undefined));
 
-    roundHandler = new VoyanteRoundHandler({ modalService });
+    TestBed.configureTestingModule({
+      providers: [{ provide: ModalService, useValue: modalService }],
+    });
+    TestBed.runInInjectionContext(
+      () => (roundHandler = new VoyanteRoundHandler()),
+    );
   });
 
   it('should not be only once', () => {

@@ -7,7 +7,7 @@ import { AnnouncementService } from '@/services/announcement/announcement.servic
 import { RenardRoundHandler } from './renard-round.handler';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { waitForAsync } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 
 describe('RenardRoundHandler', () => {
@@ -16,7 +16,14 @@ describe('RenardRoundHandler', () => {
 
   beforeAll(() => {
     announcementService = MockService(AnnouncementService);
-    roundHandler = new RenardRoundHandler({ announcementService });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AnnouncementService, useValue: announcementService },
+      ],
+    });
+    TestBed.runInInjectionContext(
+      () => (roundHandler = new RenardRoundHandler()),
+    );
   });
 
   it('should not be only once', () => {

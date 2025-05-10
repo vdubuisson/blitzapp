@@ -323,7 +323,9 @@ export class GameService {
         (player) => player.card === PlayerRoleEnum.JOUEUR_FLUTE,
       );
       if (joueurFlute?.role === PlayerRoleEnum.LOUP_GAROU) {
-        this.roundHandlersService.removeHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
+        this.roundHandlersService.removeHandlersByRoles([
+          PlayerRoleEnum.JOUEUR_FLUTE,
+        ]);
         this.victoryHandlersService.removeHandler(VictoryEnum.JOUEUR_FLUTE);
       }
     }

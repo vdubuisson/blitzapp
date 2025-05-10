@@ -1,4 +1,4 @@
-@if (round(); as currentRound) {
+@if (roundConfig(); as currentRound) {
 <header>
   <div class="round-subtitle">
     @if (isBeforeGame()) {
@@ -10,7 +10,7 @@
     }
   </div>
   <hr />
-  <div class="round-title">{{ currentRound.role | roundName }}</div>
+  <div class="round-title">{{ currentRound.round | roundName }}</div>
 </header>
 <main class="player-list">
   @for (player of players(); track player.id) {

@@ -1,22 +1,21 @@
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
-import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
-import { Observable, of } from 'rxjs';
-import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.type';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { isLoupGarou } from '@/utils/roles.utils';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { inject } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
-  private readonly announcementService: AnnouncementService;
+  private readonly announcementService = inject(AnnouncementService);
 
-  constructor({ announcementService }: RoundHandlerParameters) {
+  constructor() {
     super(RoundEnum.MONTREUR_OURS, false, true, RoundTypeEnum.AUTO);
-    this.announcementService = announcementService as AnnouncementService;
   }
 
   override handleAction(players: Player[], _: number[]): Observable<Player[]> {

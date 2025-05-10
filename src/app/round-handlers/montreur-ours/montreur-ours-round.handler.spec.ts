@@ -6,7 +6,7 @@ import { Player } from '@/models/player.model';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 import * as neighborUtils from '@/utils/neighbor.utils';
-import { waitForAsync } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
@@ -16,7 +16,14 @@ describe('MontreurOursRoundHandler', () => {
 
   beforeAll(() => {
     announcementService = MockService(AnnouncementService);
-    roundHandler = new MontreurOursRoundHandler({ announcementService });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AnnouncementService, useValue: announcementService },
+      ],
+    });
+    TestBed.runInInjectionContext(
+      () => (roundHandler = new MontreurOursRoundHandler()),
+    );
   });
 
   it('should not be only once', () => {

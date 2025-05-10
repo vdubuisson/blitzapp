@@ -3,7 +3,7 @@ import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { VillageoisRoundHandler } from './villageois-round.handler';
-import { waitForAsync } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
 import { MockService } from 'ng-mocks';
@@ -15,7 +15,14 @@ describe('VillageoisRoundHandler', () => {
 
   beforeAll(() => {
     announcementService = MockService(AnnouncementService);
-    roundHandler = new VillageoisRoundHandler({ announcementService });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AnnouncementService, useValue: announcementService },
+      ],
+    });
+    TestBed.runInInjectionContext(
+      () => (roundHandler = new VillageoisRoundHandler()),
+    );
   });
 
   it('should not be only once', () => {

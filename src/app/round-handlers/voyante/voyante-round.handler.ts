@@ -2,17 +2,16 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { RoundHandlerParameters } from '@/round-handlers/round-handler-parameters.type';
 import { ModalService } from '@/services/modal/modal.service';
+import { inject } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class VoyanteRoundHandler extends DefaultRoundHandler {
-  private readonly modalService: ModalService;
+  private readonly modalService = inject(ModalService);
 
-  constructor({ modalService }: RoundHandlerParameters) {
+  constructor() {
     super(RoundEnum.VOYANTE, false, false, RoundTypeEnum.PLAYERS);
-    this.modalService = modalService as ModalService;
   }
 
   override handleAction(
