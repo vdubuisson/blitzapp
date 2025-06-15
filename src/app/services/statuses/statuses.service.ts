@@ -1,12 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
+import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StatusesService {
+  private readonly statusHandlerService = inject(StatusHandlersService);
+
   /**
    * Cleans up player statuses after a day based on their roles.
    *
@@ -14,7 +17,7 @@ export class StatusesService {
    * @returns A new array of players with updated statuses.
    */
   cleanStatusesAfterDay(players: Player[]): Player[] {
-    const newPlayers = [...players];
+    let newPlayers = [...players];
     const roles = new Set(players.map((player) => player.role));
 
     if (roles.has(PlayerRoleEnum.CORBEAU)) {
@@ -36,14 +39,9 @@ export class StatusesService {
       roles.has(PlayerRoleEnum.CHEVALIER) &&
       players.find((player) => player.role === PlayerRoleEnum.CHEVALIER)?.isDead
     ) {
-      const playerWithSword = newPlayers.find((player) =>
-        player.statuses.has(PlayerStatusEnum.RUSTY_SWORD),
-      );
-      if (playerWithSword != undefined) {
-        playerWithSword.statuses.delete(PlayerStatusEnum.RUSTY_SWORD);
-        playerWithSword.isDead = true;
-        playerWithSword.killedBy = PlayerRoleEnum.CHEVALIER;
-      }
+      newPlayers = this.statusHandlerService
+        .getHandler(PlayerStatusEnum.RUSTY_SWORD)
+        .triggerAction(newPlayers);
     }
 
     return newPlayers;
@@ -67,58 +65,6 @@ export class StatusesService {
       )
       .forEach((player) => player.statuses.delete(PlayerStatusEnum.NO_VOTE));
 
-    return newPlayers;
-  }
-
-  /**
-   * Handles the wolf target status for players.
-   *
-   * @param players - The list of current players.
-   * @returns A new array of players with updated statuses.
-   */
-  handleWolfTarget(players: Player[]): Player[] {
-    const newPlayers = [...players];
-    newPlayers
-      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
-      .forEach((player) => {
-        player.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
-        if (
-          !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
-          player.role === PlayerRoleEnum.PETITE_FILLE
-        ) {
-          if (
-            player.role === PlayerRoleEnum.ANCIEN &&
-            !player.statuses.has(PlayerStatusEnum.INJURED)
-          ) {
-            player.statuses.add(PlayerStatusEnum.INJURED);
-          } else {
-            player.statuses.add(PlayerStatusEnum.DEVOURED);
-          }
-        } else {
-          player.killedBy = undefined;
-        }
-      });
-    return newPlayers;
-  }
-
-  /**
-   * Handles the infected status on the ancien player.
-   *
-   * @param players - The list of current players.
-   * @returns A new array of players with updated statuses.
-   */
-  handleInfectedAncien(players: Player[]): Player[] {
-    const newPlayers = [...players];
-    const ancien = newPlayers.find(
-      (player) => player.role === PlayerRoleEnum.ANCIEN,
-    );
-    if (
-      ancien?.statuses.has(PlayerStatusEnum.INFECTED) &&
-      !ancien?.statuses.has(PlayerStatusEnum.INJURED)
-    ) {
-      ancien.statuses.delete(PlayerStatusEnum.INFECTED);
-      ancien.statuses.add(PlayerStatusEnum.INJURED);
-    }
     return newPlayers;
   }
 }

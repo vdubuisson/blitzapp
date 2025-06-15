@@ -2,13 +2,46 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { StatusesService } from './statuses.service';
+import { StatusHandler } from '@/status-handlers/status-handler.interface';
+import {
+  MockBuilder,
+  MockInstance,
+  MockRender,
+  MockReset,
+  ngMocks,
+} from 'ng-mocks';
+import { StatusHandlersService } from '../status-handlers/status-handlers.service';
+
+class MockStatusHandler implements StatusHandler {
+  handleDeath(players: Player[], deadPlayer: Player): Player[] {
+    return players;
+  }
+
+  triggerAction = jest.fn().mockImplementation((players: Player[]) => players);
+}
 
 describe('StatusesService', () => {
   let service: StatusesService;
+  let mockRustySwordHandler: StatusHandler;
 
-  beforeEach(() => {
-    service = new StatusesService();
+  ngMocks.faster();
+
+  beforeAll(() => MockBuilder(StatusesService).mock(StatusHandlersService));
+
+  beforeAll(() => {
+    mockRustySwordHandler = new MockStatusHandler();
+    MockInstance(
+      StatusHandlersService,
+      'getHandler',
+      () => mockRustySwordHandler,
+    );
   });
+
+  beforeAll(() => {
+    service = MockRender(StatusesService).point.componentInstance;
+  });
+
+  afterAll(MockReset);
 
   it('should remove RAVEN status on after-day cleaning if there is a CORBEAU', () => {
     const mockPlayers: Player[] = [
@@ -89,83 +122,6 @@ describe('StatusesService', () => {
     );
   });
 
-  it('should remove RUSTY_SWORD status on after-day cleaning', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHEVALIER,
-        card: PlayerRoleEnum.CHEVALIER,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toEqual(
-      false,
-    );
-  });
-
-  it('should kill player with RUSTY_SWORD status on after-day cleaning', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHEVALIER,
-        card: PlayerRoleEnum.CHEVALIER,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
-
-    expect(newPlayers[1].isDead).toEqual(true);
-  });
-
-  it('should set killed by CHEVALIER on player with RUSTY_SWORD status on after-day cleaning', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.CHEVALIER,
-        card: PlayerRoleEnum.CHEVALIER,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
-
-    expect(newPlayers[1].killedBy).toEqual(PlayerRoleEnum.CHEVALIER);
-  });
-
   it('should remove NO_VOTE status from player', () => {
     const mockPlayers: Player[] = [
       {
@@ -218,254 +174,30 @@ describe('StatusesService', () => {
     expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(true);
   });
 
-  it('should add DEVOURED status to players with WOLF_TARGET status', () => {
+  it('should triggerAction for RUSTY_SWORD status if CHEVALIER is dead', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
+        role: PlayerRoleEnum.CHEVALIER,
+        card: PlayerRoleEnum.CHEVALIER,
+        statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
+        isDead: true,
       },
       {
         id: 1,
         name: 'player1',
         role: PlayerRoleEnum.VILLAGEOIS,
         card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleWolfTarget(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(true);
-  });
-
-  it('should not add DEVOURED status to players with WOLF_TARGET status and PROTECTED status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
-        isDead: false,
-      },
     ];
 
-    const newPlayers = service.handleWolfTarget(mockPlayers);
+    const newPlayers = service.cleanStatusesAfterDay(mockPlayers);
 
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
-      false,
+    expect(mockRustySwordHandler.triggerAction).toHaveBeenCalledWith(
+      newPlayers,
     );
-  });
-
-  it('should remove killedBy on players with WOLF_TARGET status and PROTECTED status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
-        isDead: false,
-        killedBy: PlayerRoleEnum.LOUP_GAROU,
-      },
-    ];
-
-    const newPlayers = service.handleWolfTarget(mockPlayers);
-
-    expect(newPlayers[1].killedBy).toBeUndefined();
-  });
-
-  it('should add DEVOURED status to PETITE_FILLE with WOLF_TARGET status and PROTECTED status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.PETITE_FILLE,
-        card: PlayerRoleEnum.PETITE_FILLE,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.PROTECTED,
-        ]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleWolfTarget(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(true);
-  });
-
-  it('should add INJURED status to player with WOLF_TARGET status and ANCIEN role', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleWolfTarget(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
-      false,
-    );
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INJURED)).toEqual(true);
-  });
-
-  it('should add DEVOURED status to player with WOLF_TARGET and INJURED statuses and ANCIEN role', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set([
-          PlayerStatusEnum.WOLF_TARGET,
-          PlayerStatusEnum.INJURED,
-        ]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleWolfTarget(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(true);
-  });
-
-  it('should remove WOLF_TARGET status to players with WOLF_TARGET status', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleWolfTarget(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.WOLF_TARGET)).toEqual(
-      false,
-    );
-  });
-
-  it('should add INJURED status to player with INFECTED status and ANCIEN role', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set([PlayerStatusEnum.INFECTED]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleInfectedAncien(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(
-      false,
-    );
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INJURED)).toEqual(true);
-  });
-
-  it('should keep INFECTED status to player with INFECTED and INJURED statuses and ANCIEN role', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.LOUP_GAROU,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set([
-          PlayerStatusEnum.INFECTED,
-          PlayerStatusEnum.INJURED,
-        ]),
-        isDead: false,
-      },
-    ];
-
-    const newPlayers = service.handleInfectedAncien(mockPlayers);
-
-    expect(newPlayers[1].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(true);
   });
 });

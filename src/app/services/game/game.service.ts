@@ -27,6 +27,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +41,7 @@ export class GameService {
   );
   private readonly deathService = inject(DeathService);
   private readonly statusesService = inject(StatusesService);
+  private readonly statusHandlersService = inject(StatusHandlersService);
 
   private readonly players: WritableSignal<Player[]> =
     inject(CurrentPlayersStore).state;
@@ -343,8 +345,25 @@ export class GameService {
       LOUPS_GAROUS_ROUNDS.includes(currentRound) &&
       !LOUPS_GAROUS_ROUNDS.includes(nextRound)
     ) {
-      let newPlayers = this.statusesService.handleWolfTarget(this.players());
-      newPlayers = this.statusesService.handleInfectedAncien(newPlayers);
+      let newPlayers = [...this.players()];
+      if (
+        newPlayers.some((player) =>
+          player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
+        )
+      ) {
+        newPlayers = this.statusHandlersService
+          .getHandler(PlayerStatusEnum.WOLF_TARGET)
+          .triggerAction(newPlayers);
+      }
+      if (
+        newPlayers.some((player) =>
+          player.statuses.has(PlayerStatusEnum.INFECTED),
+        )
+      ) {
+        newPlayers = this.statusHandlersService
+          .getHandler(PlayerStatusEnum.INFECTED)
+          .triggerAction(newPlayers);
+      }
       this.players.set(newPlayers);
     }
   }

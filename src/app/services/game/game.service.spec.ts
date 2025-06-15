@@ -29,6 +29,8 @@ import { CurrentRoundConfigStore } from '@/stores/current-round/current-round-co
 import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 import { signal } from '@angular/core';
 import { GameService } from './game.service';
+import { StatusHandler } from '@/status-handlers/status-handler.interface';
+import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
@@ -41,6 +43,16 @@ class MockRoundHandler implements RoundHandler {
 
   getRoundConfig(_: Player[]): RoundConfig {
     return {} as RoundConfig;
+  }
+}
+
+class MockStatusHandler implements StatusHandler {
+  handleDeath(players: Player[], deadPlayer: Player): Player[] {
+    return players;
+  }
+
+  triggerAction(players: Player[]): Player[] {
+    return players;
   }
 }
 
@@ -58,6 +70,7 @@ describe('GameService on victory', () => {
       .mock(RoundOrchestrationService)
       .mock(DeathService)
       .mock(StatusesService)
+      .mock(StatusHandlersService)
       .mock(MockRoundHandler)
       .mock(CurrentPlayersStore)
       .mock(CurrentRoundConfigStore)
@@ -92,6 +105,11 @@ describe('GameService on victory', () => {
             return new MockRoundHandler();
         }
       },
+    }));
+
+    MockInstance(StatusHandlersService, () => ({
+      clearHandlers: jest.fn(),
+      getHandler: (status) => new MockStatusHandler(),
     }));
 
     MockInstance(DeathService, () => ({
@@ -178,6 +196,7 @@ describe('GameService', () => {
       .mock(RoundOrchestrationService)
       .mock(DeathService)
       .mock(StatusesService)
+      .mock(StatusHandlersService)
       .mock(MockRoundHandler)
       .mock(CurrentPlayersStore)
       .mock(CurrentRoundConfigStore)
@@ -229,8 +248,12 @@ describe('GameService', () => {
     }));
 
     MockInstance(StatusesService, () => ({
-      handleWolfTarget: (players) => players,
       handleInfectedAncien: (players) => players,
+    }));
+
+    MockInstance(StatusHandlersService, () => ({
+      clearHandlers: jest.fn(),
+      getHandler: (status) => new MockStatusHandler(),
     }));
 
     MockInstance(VictoryHandlersService, () => ({

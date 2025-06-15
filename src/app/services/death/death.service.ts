@@ -11,6 +11,7 @@ import { KnownDeathsStore } from '@/stores/known-deaths/known-deaths.store';
 import { isKilledByInnocents } from '@/utils/roles.utils';
 import { inject, Injectable } from '@angular/core';
 import { RoleHandlersService } from '../role-handlers/role-handlers.service';
+import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,7 @@ export class DeathService {
   private readonly victoryHandlersService = inject(VictoryHandlersService);
   private readonly announcementService = inject(AnnouncementService);
   private readonly roleHandlersService = inject(RoleHandlersService);
+  private readonly statusHandlersService = inject(StatusHandlersService);
 
   private readonly knownDeaths = inject(KnownDeathsStore).state;
   private readonly deathsToAnnounce = inject(DeathsToAnnounceStore).state;
@@ -52,13 +54,9 @@ export class DeathService {
    * @returns The updated list of players after handling deaths.
    */
   handleNewDeaths(players: Player[]): Player[] {
-    let newPlayers = [...players];
-    newPlayers
-      .filter((player) => player.statuses.has(PlayerStatusEnum.DEVOURED))
-      .forEach((player) => {
-        player.statuses.delete(PlayerStatusEnum.DEVOURED);
-        player.isDead = true;
-      });
+    let newPlayers = this.statusHandlersService
+      .getHandler(PlayerStatusEnum.DEVOURED)
+      .triggerAction(players);
 
     const deadPlayers = newPlayers.filter(
       (player) => player.isDead && !this.knownDeaths().has(player.id),
@@ -67,6 +65,7 @@ export class DeathService {
     for (const deadPlayer of deadPlayers) {
       newPlayers = this.handlePlayerDeath(newPlayers, deadPlayer);
     }
+    // TODO iterate to handler LOVER death
 
     this.victoryHandlersService.removeUselessHandlers(players);
 
@@ -119,47 +118,22 @@ export class DeathService {
   private handlePlayerDeathStatuses(
     players: Player[],
     deadPlayer: Player,
-  ): void {
-    if (
-      deadPlayer.statuses.has(PlayerStatusEnum.CAPTAIN) &&
-      deadPlayer.role !== PlayerRoleEnum.IDIOT
-    ) {
-      deadPlayer.statuses.delete(PlayerStatusEnum.CAPTAIN);
-      this.afterDeathRoundQueue.update((queue) => [
-        ...queue,
-        RoundEnum.CAPITAINE,
-      ]);
-    }
-    if (deadPlayer.statuses.has(PlayerStatusEnum.LOVER)) {
-      const otherLivingLover = players.find(
-        (player) =>
-          player.statuses.has(PlayerStatusEnum.LOVER) &&
-          player.id !== deadPlayer.id &&
-          !player.isDead,
-      );
-      if (otherLivingLover !== undefined) {
-        otherLivingLover.isDead = true;
-        this.handlePlayerDeath(players, otherLivingLover);
-      }
-    }
-    if (deadPlayer.statuses.has(PlayerStatusEnum.CHILD_MODEL)) {
-      const enfantSauvage = players.find(
-        (player) => player.role === PlayerRoleEnum.ENFANT_SAUVAGE,
-      );
-      if (enfantSauvage !== undefined && !enfantSauvage.isDead) {
-        enfantSauvage.role = PlayerRoleEnum.LOUP_GAROU;
-      }
-    }
+  ): Player[] {
+    let newPlayers: Player[] = players;
+    deadPlayer.statuses.forEach((status) => {
+      newPlayers = this.statusHandlersService
+        .getHandler(status)
+        .handleDeath(newPlayers, deadPlayer);
+    });
+    return newPlayers;
   }
 
   private handlePlayerDeathRole(
     players: Player[],
     deadPlayer: Player,
   ): Player[] {
-    const roleHandler = this.roleHandlersService.getHandler(deadPlayer.role);
-    if (roleHandler) {
-      return roleHandler.handleDeath(players, deadPlayer);
-    }
-    return players;
+    return this.roleHandlersService
+      .getHandler(deadPlayer.role)
+      .handleDeath(players, deadPlayer);
   }
 }
