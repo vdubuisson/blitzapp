@@ -13,6 +13,7 @@ import {
   ngMocks,
 } from 'ng-mocks';
 import { StatusHandlersService } from './status-handlers.service';
+import { DefaultStatusHandler } from '@/status-handlers/default/default.status-handler';
 
 describe('StatusHandlersService', () => {
   ngMocks.faster();
@@ -76,6 +77,24 @@ describe('StatusHandlersService', () => {
 
     const testHandler = service.getHandler(PlayerStatusEnum.WOLF_TARGET);
     expect(testHandler).toBe(statusHandler);
+  });
+
+  it('should reuse the DefaultStatusHandler instance', () => {
+    const players: Player[] = [
+      { id: 1, role: PlayerRoleEnum.SORCIERE } as Player,
+    ];
+
+    service.initHandlers(players);
+
+    const healthPotionHandler = service.getHandler(
+      PlayerStatusEnum.HEALTH_POTION,
+    );
+    const deaththPotionHandler = service.getHandler(
+      PlayerStatusEnum.DEATH_POTION,
+    );
+
+    expect(healthPotionHandler).toBeInstanceOf(DefaultStatusHandler);
+    expect(healthPotionHandler).toBe(deaththPotionHandler);
   });
 
   afterAll(MockReset);

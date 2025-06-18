@@ -2,6 +2,7 @@ import { ROLE_STATUSES_CONFIG } from '@/configs/role-statuses.config';
 import { STATUS_HANDLERS_CONFIG } from '@/configs/status-handlers.config';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
+import { DefaultStatusHandler } from '@/status-handlers/default/default.status-handler';
 import { StatusHandler } from '@/status-handlers/status-handler.interface';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
 import {
@@ -21,6 +22,9 @@ export class StatusHandlersService {
     inject(CurrentPlayersStore).state.asReadonly();
 
   private readonly statusHandlers = new Map<PlayerStatusEnum, StatusHandler>();
+
+  private readonly defaultStatusHandler: StatusHandler =
+    new DefaultStatusHandler();
 
   constructor() {
     const currentPlayers = this.currentPlayersState();
@@ -74,8 +78,13 @@ export class StatusHandlersService {
   }
 
   private createStatusHandler(status: PlayerStatusEnum): StatusHandler {
-    if (STATUS_HANDLERS_CONFIG[status] !== undefined) {
-      return new STATUS_HANDLERS_CONFIG[status]();
+    const statusHandlerClass = STATUS_HANDLERS_CONFIG[status];
+    if (statusHandlerClass !== undefined) {
+      if (statusHandlerClass.name === DefaultStatusHandler.name) {
+        // Reuse the default status handler instance
+        return this.defaultStatusHandler;
+      }
+      return new statusHandlerClass();
     } else {
       throw new Error(`Missing StatusHandler config for ${status}`);
     }
