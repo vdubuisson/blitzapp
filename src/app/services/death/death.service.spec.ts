@@ -28,6 +28,7 @@ describe('DeathService', () => {
   let service: DeathService;
   let mockRoleHandler: RoleHandler;
   let mockStatusHandler: StatusHandler;
+  let mockLoverStatusHandler: StatusHandler;
 
   ngMocks.faster();
 
@@ -65,8 +66,26 @@ describe('DeathService', () => {
       triggerAction: jest.fn().mockImplementation((players) => players),
     } as unknown as DefaultStatusHandler;
 
+    mockLoverStatusHandler = {
+      handleDeath: jest.fn().mockImplementation((players, _) => {
+        const newPlayers = [...players];
+        newPlayers.forEach((player) => {
+          if (player.statuses.has(PlayerStatusEnum.LOVER)) {
+            player.isDead = true;
+          }
+        });
+        return newPlayers;
+      }),
+      triggerAction: jest.fn().mockImplementation((players) => players),
+    } as unknown as DefaultStatusHandler;
+
     MockInstance(StatusHandlersService, () => ({
-      getHandler: jest.fn().mockReturnValue(mockStatusHandler),
+      getHandler: jest.fn().mockImplementation((status) => {
+        if (status === PlayerStatusEnum.LOVER) {
+          return mockLoverStatusHandler;
+        }
+        return mockStatusHandler;
+      }),
     }));
 
     MockInstance(

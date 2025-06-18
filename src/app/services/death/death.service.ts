@@ -58,14 +58,16 @@ export class DeathService {
       .getHandler(PlayerStatusEnum.DEVOURED)
       .triggerAction(players);
 
-    const deadPlayers = newPlayers.filter(
-      (player) => player.isDead && !this.knownDeaths().has(player.id),
-    );
+    let unknownDeadPlayers: Player[];
+    do {
+      unknownDeadPlayers = newPlayers.filter(
+        (player) => player.isDead && !this.knownDeaths().has(player.id),
+      );
 
-    for (const deadPlayer of deadPlayers) {
-      newPlayers = this.handlePlayerDeath(newPlayers, deadPlayer);
-    }
-    // TODO iterate to handler LOVER death
+      for (const deadPlayer of unknownDeadPlayers) {
+        newPlayers = this.handlePlayerDeath(newPlayers, deadPlayer);
+      }
+    } while (unknownDeadPlayers.length > 0);
 
     this.victoryHandlersService.removeUselessHandlers(players);
 
