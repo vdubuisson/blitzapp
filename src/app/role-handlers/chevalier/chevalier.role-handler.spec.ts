@@ -6,10 +6,12 @@ import { ChevalierRoleHandler } from './chevalier.role-handler';
 import { TestBed } from '@angular/core/testing';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 
 describe('ChevalierRoleHandler', () => {
   let handler: ChevalierRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -20,9 +22,14 @@ describe('ChevalierRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -57,6 +64,14 @@ describe('ChevalierRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersService.createRoundHandler).not.toHaveBeenCalled();
+    });
+
+    it('should create RUSTY_SWORD status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.RUSTY_SWORD,
+      );
     });
   });
 

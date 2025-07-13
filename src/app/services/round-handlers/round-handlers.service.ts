@@ -122,37 +122,37 @@ export class RoundHandlersService {
   }
 
   createRoundHandler(round: RoundEnum): void {
-    if (!this.roundHandlers.has(round)) {
-      if (ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        runInInjectionContext(this.injector, () => {
-          const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
-          this.roundHandlers.set(round, roundHandler);
-          this.roundHandlersState.update((state) => new Set([...state, round]));
-        });
-      } else {
-        throw new Error(`Missing RoundHandler config for ${round}`);
-      }
+    if (this.roundHandlers.has(round)) {
+      return;
     }
+    if (ROUND_HANDLERS_CONFIG[round] === undefined) {
+      throw new Error(`Missing RoundHandler config for ${round}`);
+    }
+    runInInjectionContext(this.injector, () => {
+      const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
+      this.roundHandlers.set(round, roundHandler);
+      this.roundHandlersState.update((state) => new Set([...state, round]));
+    });
   }
 
   private createDefaultRoundHandler(round: RoundEnum): void {
-    if (!this.roundHandlers.has(round)) {
-      if (ROUND_HANDLERS_CONFIG[round] !== undefined) {
-        runInInjectionContext(this.injector, () => {
-          const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
-          const defaultRoundHandler = new DefaultRoundHandler(
-            round,
-            true,
-            roundHandler.isDuringDay,
-          );
-          this.roundHandlers.set(round, defaultRoundHandler);
-          this.defaultRoundHandlersState.update(
-            (state) => new Set([...state, round]),
-          );
-        });
-      } else {
-        throw new Error(`Missing RoundHandler config for ${round}`);
-      }
+    if (this.roundHandlers.has(round)) {
+      return;
     }
+    if (ROUND_HANDLERS_CONFIG[round] === undefined) {
+      throw new Error(`Missing RoundHandler config for ${round}`);
+    }
+    runInInjectionContext(this.injector, () => {
+      const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
+      const defaultRoundHandler = new DefaultRoundHandler(
+        round,
+        true,
+        roundHandler.isDuringDay,
+      );
+      this.roundHandlers.set(round, defaultRoundHandler);
+      this.defaultRoundHandlersState.update(
+        (state) => new Set([...state, round]),
+      );
+    });
   }
 }

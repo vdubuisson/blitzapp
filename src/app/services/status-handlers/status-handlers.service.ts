@@ -39,20 +39,12 @@ export class StatusHandlersService {
    * @param players - Players present in the game.
    */
   initHandlers(players: Player[]): void {
-    runInInjectionContext(this.injector, () => {
-      const captainStatusHandler = this.createStatusHandler(
-        PlayerStatusEnum.CAPTAIN,
-      );
-      this.statusHandlers.set(PlayerStatusEnum.CAPTAIN, captainStatusHandler);
+    this.createStatusHandler(PlayerStatusEnum.CAPTAIN);
 
-      players.forEach((player) => {
-        ROLE_STATUSES_CONFIG[player.role]?.forEach((status) => {
-          if (!this.statusHandlers.has(status)) {
-            const statusHandler = this.createStatusHandler(status);
-            this.statusHandlers.set(status, statusHandler);
-          }
-        });
-      });
+    players.forEach((player) => {
+      ROLE_STATUSES_CONFIG[player.role]?.forEach((status) =>
+        this.createStatusHandler(status),
+      );
     });
   }
 
@@ -77,16 +69,21 @@ export class StatusHandlersService {
     this.statusHandlers.clear();
   }
 
-  private createStatusHandler(status: PlayerStatusEnum): StatusHandler {
+  createStatusHandler(status: PlayerStatusEnum): void {
+    if (this.statusHandlers.has(status)) {
+      return;
+    }
     const statusHandlerClass = STATUS_HANDLERS_CONFIG[status];
-    if (statusHandlerClass !== undefined) {
-      if (statusHandlerClass.name === DefaultStatusHandler.name) {
-        // Reuse the default status handler instance
-        return this.defaultStatusHandler;
-      }
-      return new statusHandlerClass();
-    } else {
+    if (statusHandlerClass === undefined) {
       throw new Error(`Missing StatusHandler config for ${status}`);
     }
+    if (statusHandlerClass.name === DefaultStatusHandler.name) {
+      // Reuse the default status handler instance
+      this.statusHandlers.set(status, this.defaultStatusHandler);
+    }
+    runInInjectionContext(this.injector, () => {
+      const statusHandler = new statusHandlerClass();
+      this.statusHandlers.set(status, statusHandler);
+    });
   }
 }

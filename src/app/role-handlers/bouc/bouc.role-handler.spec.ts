@@ -7,10 +7,13 @@ import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
 import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
 import { signal } from '@angular/core';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('BoucRoleHandler', () => {
   let handler: BoucRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let afterDeathRoundQueue: AfterDeathRoundQueueStore;
   let players: Player[];
 
@@ -26,10 +29,15 @@ describe('BoucRoleHandler', () => {
       state: signal<RoundEnum[]>([RoundEnum.VILLAGEOIS]),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
         { provide: AfterDeathRoundQueueStore, useValue: afterDeathRoundQueue },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -59,6 +67,14 @@ describe('BoucRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.BOUC,
+      );
+    });
+
+    it('should create NO_VOTE status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.NO_VOTE,
       );
     });
   });

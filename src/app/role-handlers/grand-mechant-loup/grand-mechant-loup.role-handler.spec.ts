@@ -5,10 +5,13 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { GrandMechantLoupRoleHandler } from './grand-mechant-loup.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('GrandMechantLoupRoleHandler', () => {
   let handler: GrandMechantLoupRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -19,9 +22,14 @@ describe('GrandMechantLoupRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -53,6 +61,22 @@ describe('GrandMechantLoupRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.GRAND_MECHANT_LOUP,
+      );
+    });
+
+    it('should create WOLF_TARGET status handler for each player', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.WOLF_TARGET,
+      );
+    });
+
+    it('should create DEVOURED status handler for each player', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.DEVOURED,
       );
     });
   });

@@ -5,8 +5,16 @@ import { findLeftNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 
 export class ChevalierRoleHandler extends DefaultRoleHandler {
+  public static override readonly STATUSES: PlayerStatusEnum[] = [
+    PlayerStatusEnum.RUSTY_SWORD,
+  ];
+
   constructor() {
-    super(PlayerRoleEnum.CHEVALIER);
+    super(
+      PlayerRoleEnum.CHEVALIER,
+      DefaultRoleHandler.ROUNDS,
+      ChevalierRoleHandler.STATUSES,
+    );
   }
 
   override handleDeath(players: Player[], deadPlayer: Player): Player[] {

@@ -5,10 +5,13 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { EnfantSauvageRoleHandler } from './enfant-sauvage.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('EnfantSauvageRoleHandler', () => {
   let handler: EnfantSauvageRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -19,9 +22,14 @@ describe('EnfantSauvageRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -53,6 +61,14 @@ describe('EnfantSauvageRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.ENFANT_SAUVAGE,
+      );
+    });
+
+    it('should create CHILD_MODEL status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.CHILD_MODEL,
       );
     });
   });

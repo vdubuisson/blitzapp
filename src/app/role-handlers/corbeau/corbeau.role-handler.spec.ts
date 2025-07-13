@@ -5,10 +5,13 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CorbeauRoleHandler } from './corbeau.role-handler';
 import { TestBed } from '@angular/core/testing';
 import { RoundEnum } from '@/enums/round.enum';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('CorbeauRoleHandler', () => {
   let handler: CorbeauRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -19,9 +22,14 @@ describe('CorbeauRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -51,6 +59,14 @@ describe('CorbeauRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.CORBEAU,
+      );
+    });
+
+    it('should create RAVEN status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.RAVEN,
       );
     });
   });

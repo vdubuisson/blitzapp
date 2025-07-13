@@ -5,10 +5,13 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { PereLoupsRoleHandler } from './pere-loups.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('PereLoupsRoleHandler', () => {
   let handler: PereLoupsRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -19,9 +22,14 @@ describe('PereLoupsRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -51,6 +59,38 @@ describe('PereLoupsRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.PERE_LOUPS,
+      );
+    });
+
+    it('should create WOLF_TARGET status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.WOLF_TARGET,
+      );
+    });
+
+    it('should create NO_POWER status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.NO_POWER,
+      );
+    });
+
+    it('should create INFECTED status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.INFECTED,
+      );
+    });
+
+    it('should create DEVOURED status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.DEVOURED,
       );
     });
   });

@@ -4,10 +4,13 @@ import { RoundHandlersService } from '@/services/round-handlers/round-handlers.s
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { IdiotRoleHandler } from './idiot.role-handler';
 import { TestBed } from '@angular/core/testing';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('IdiotRoleHandler', () => {
   let handler: IdiotRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -18,9 +21,14 @@ describe('IdiotRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -49,6 +57,14 @@ describe('IdiotRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersService.createRoundHandler).not.toHaveBeenCalled();
+    });
+
+    it('should create NO_VOTE status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.NO_VOTE,
+      );
     });
   });
 

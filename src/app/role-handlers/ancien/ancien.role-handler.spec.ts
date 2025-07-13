@@ -6,10 +6,13 @@ import { AncienRoleHandler } from './ancien.role-handler';
 import { TestBed } from '@angular/core/testing';
 import * as rolesUtils from '@/utils/roles.utils';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('AncienRoleHandler', () => {
   let handler: AncienRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let isKilledByInnocents: jest.SpyInstance;
   let removePowersFromInnocents: jest.SpyInstance;
   let players: Player[];
@@ -22,6 +25,9 @@ describe('AncienRoleHandler', () => {
       removeHandler: jest.fn(),
       removeHandlersByRoles: jest.fn(),
     });
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
 
     isKilledByInnocents = jest.spyOn(rolesUtils, 'isKilledByInnocents');
     removePowersFromInnocents = jest.spyOn(
@@ -32,6 +38,7 @@ describe('AncienRoleHandler', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -60,6 +67,14 @@ describe('AncienRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersService.createRoundHandler).not.toHaveBeenCalled();
+    });
+
+    it('should create INJURED status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.INJURED,
+      );
     });
   });
 

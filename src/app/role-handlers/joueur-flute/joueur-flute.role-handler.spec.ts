@@ -5,10 +5,13 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { JoueurFluteRoleHandler } from './joueur-flute.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('JoueurFluteRoleHandler', () => {
   let handler: JoueurFluteRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -19,9 +22,14 @@ describe('JoueurFluteRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -61,6 +69,14 @@ describe('JoueurFluteRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.CHARMED,
+      );
+    });
+
+    it('should create CHARMED status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.CHARMED,
       );
     });
   });

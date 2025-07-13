@@ -1,14 +1,17 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { TestBed } from '@angular/core/testing';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CupidonRoleHandler } from './cupidon.role-handler';
-import { RoundEnum } from '@/enums/round.enum';
-import { TestBed } from '@angular/core/testing';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 
 describe('CupidonRoleHandler', () => {
   let handler: CupidonRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -19,9 +22,14 @@ describe('CupidonRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -59,6 +67,14 @@ describe('CupidonRoleHandler', () => {
 
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledWith(
         RoundEnum.AMOUREUX,
+      );
+    });
+
+    it('should create LOVER status handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.LOVER,
       );
     });
   });

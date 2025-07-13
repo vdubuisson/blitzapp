@@ -5,12 +5,16 @@ import { RoundHandlersService } from '@/services/round-handlers/round-handlers.s
 import { DefaultRoleHandler } from './default.role-handler';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { TestBed } from '@angular/core/testing';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 
 describe('DefaultRoleHandler', () => {
   let handler: DefaultRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let statusHandlersService: StatusHandlersService;
   let players: Player[];
   let testRounds: RoundEnum[];
+  let testStatuses: PlayerStatusEnum[];
 
   ngMocks.faster();
 
@@ -19,12 +23,21 @@ describe('DefaultRoleHandler', () => {
       createRoundHandler: jest.fn(),
       removeHandler: jest.fn(),
     });
+    statusHandlersService = MockService(StatusHandlersService, {
+      createStatusHandler: jest.fn(),
+    });
 
     testRounds = [RoundEnum.LOUP_GAROU, RoundEnum.VOYANTE];
+    testStatuses = [
+      PlayerStatusEnum.WOLF_TARGET,
+      PlayerStatusEnum.DEVOURED,
+      PlayerStatusEnum.NO_POWER,
+    ];
 
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
 
@@ -33,6 +46,7 @@ describe('DefaultRoleHandler', () => {
         (handler = new DefaultRoleHandler(
           PlayerRoleEnum.VILLAGEOIS,
           testRounds,
+          testStatuses,
         )),
     );
 
@@ -66,6 +80,23 @@ describe('DefaultRoleHandler', () => {
       );
       expect(roundHandlersService.createRoundHandler).toHaveBeenCalledTimes(
         testRounds.length,
+      );
+    });
+
+    it('should create status handlers for all configured statuses', () => {
+      handler.prepareNewGame(players);
+
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        testStatuses[0],
+      );
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        testStatuses[1],
+      );
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
+        testStatuses[2],
+      );
+      expect(statusHandlersService.createStatusHandler).toHaveBeenCalledTimes(
+        testStatuses.length,
       );
     });
   });
