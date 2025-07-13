@@ -2,6 +2,7 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 export class GrandMechantLoupRoleHandler extends DefaultRoleHandler {
   public static override readonly ROUNDS: RoundEnum[] = [
@@ -11,12 +12,16 @@ export class GrandMechantLoupRoleHandler extends DefaultRoleHandler {
     PlayerStatusEnum.WOLF_TARGET,
     PlayerStatusEnum.DEVOURED,
   ];
+  public static override readonly VICTORIES: VictoryEnum[] = [
+    VictoryEnum.LOUP_GAROU,
+  ];
 
   constructor() {
     super(
       PlayerRoleEnum.GRAND_MECHANT_LOUP,
       GrandMechantLoupRoleHandler.ROUNDS,
       GrandMechantLoupRoleHandler.STATUSES,
+      GrandMechantLoupRoleHandler.VICTORIES,
     );
   }
 }

@@ -7,11 +7,14 @@ import { TestBed } from '@angular/core/testing';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CupidonRoleHandler } from './cupidon.role-handler';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 describe('CupidonRoleHandler', () => {
   let handler: CupidonRoleHandler;
   let roundHandlersService: RoundHandlersService;
   let statusHandlersService: StatusHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -26,10 +29,15 @@ describe('CupidonRoleHandler', () => {
       createStatusHandler: jest.fn(),
     });
 
+    victoryHandlersService = MockService(VictoryHandlersService, {
+      createVictoryHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
         { provide: StatusHandlersService, useValue: statusHandlersService },
+        { provide: VictoryHandlersService, useValue: victoryHandlersService },
       ],
     });
 
@@ -75,6 +83,14 @@ describe('CupidonRoleHandler', () => {
 
       expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
         PlayerStatusEnum.LOVER,
+      );
+    });
+
+    it('should create AMOUREUX victory handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(victoryHandlersService.createVictoryHandler).toHaveBeenCalledWith(
+        VictoryEnum.AMOUREUX,
       );
     });
   });

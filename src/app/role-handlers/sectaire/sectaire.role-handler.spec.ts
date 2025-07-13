@@ -7,11 +7,14 @@ import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 describe('SectaireRoleHandler', () => {
   let handler: SectaireRoleHandler;
   let roundHandlersService: RoundHandlersService;
   let statusHandlersService: StatusHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -26,10 +29,15 @@ describe('SectaireRoleHandler', () => {
       createStatusHandler: jest.fn(),
     });
 
+    victoryHandlersService = MockService(VictoryHandlersService, {
+      createVictoryHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
         { provide: StatusHandlersService, useValue: statusHandlersService },
+        { provide: VictoryHandlersService, useValue: victoryHandlersService },
       ],
     });
 
@@ -75,6 +83,14 @@ describe('SectaireRoleHandler', () => {
 
       expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
         PlayerStatusEnum.RED_TEAM,
+      );
+    });
+
+    it('should create SECTAIRE victory handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(victoryHandlersService.createVictoryHandler).toHaveBeenCalledWith(
+        VictoryEnum.SECTAIRE,
       );
     });
   });

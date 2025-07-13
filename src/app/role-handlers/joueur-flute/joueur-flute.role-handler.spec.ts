@@ -7,11 +7,14 @@ import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 describe('JoueurFluteRoleHandler', () => {
   let handler: JoueurFluteRoleHandler;
   let roundHandlersService: RoundHandlersService;
   let statusHandlersService: StatusHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -26,10 +29,15 @@ describe('JoueurFluteRoleHandler', () => {
       createStatusHandler: jest.fn(),
     });
 
+    victoryHandlersService = MockService(VictoryHandlersService, {
+      createVictoryHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
         { provide: StatusHandlersService, useValue: statusHandlersService },
+        { provide: VictoryHandlersService, useValue: victoryHandlersService },
       ],
     });
 
@@ -77,6 +85,14 @@ describe('JoueurFluteRoleHandler', () => {
 
       expect(statusHandlersService.createStatusHandler).toHaveBeenCalledWith(
         PlayerStatusEnum.CHARMED,
+      );
+    });
+
+    it('should create JOUEUR_FLUTE victory handler', () => {
+      handler.prepareNewGame(players);
+
+      expect(victoryHandlersService.createVictoryHandler).toHaveBeenCalledWith(
+        VictoryEnum.JOUEUR_FLUTE,
       );
     });
   });

@@ -7,14 +7,19 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { TestBed } from '@angular/core/testing';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 describe('DefaultRoleHandler', () => {
   let handler: DefaultRoleHandler;
   let roundHandlersService: RoundHandlersService;
   let statusHandlersService: StatusHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
+
   let players: Player[];
   let testRounds: RoundEnum[];
   let testStatuses: PlayerStatusEnum[];
+  let testVictories: VictoryEnum[];
 
   ngMocks.faster();
 
@@ -26,6 +31,9 @@ describe('DefaultRoleHandler', () => {
     statusHandlersService = MockService(StatusHandlersService, {
       createStatusHandler: jest.fn(),
     });
+    victoryHandlersService = MockService(VictoryHandlersService, {
+      createVictoryHandler: jest.fn(),
+    });
 
     testRounds = [RoundEnum.LOUP_GAROU, RoundEnum.VOYANTE];
     testStatuses = [
@@ -33,11 +41,13 @@ describe('DefaultRoleHandler', () => {
       PlayerStatusEnum.DEVOURED,
       PlayerStatusEnum.NO_POWER,
     ];
+    testVictories = [VictoryEnum.VILLAGEOIS];
 
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
         { provide: StatusHandlersService, useValue: statusHandlersService },
+        { provide: VictoryHandlersService, useValue: victoryHandlersService },
       ],
     });
 
@@ -47,6 +57,7 @@ describe('DefaultRoleHandler', () => {
           PlayerRoleEnum.VILLAGEOIS,
           testRounds,
           testStatuses,
+          testVictories,
         )),
     );
 
@@ -97,6 +108,14 @@ describe('DefaultRoleHandler', () => {
       );
       expect(statusHandlersService.createStatusHandler).toHaveBeenCalledTimes(
         testStatuses.length,
+      );
+    });
+
+    it('should create victory handlers for all configured victories', () => {
+      handler.prepareNewGame(players);
+
+      expect(victoryHandlersService.createVictoryHandler).toHaveBeenCalledWith(
+        testVictories[0],
       );
     });
   });

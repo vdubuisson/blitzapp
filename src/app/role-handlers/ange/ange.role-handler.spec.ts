@@ -4,10 +4,13 @@ import { RoundHandlersService } from '@/services/round-handlers/round-handlers.s
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { AngeRoleHandler } from './ange.role-handler';
 import { TestBed } from '@angular/core/testing';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 describe('AngeRoleHandler', () => {
   let handler: AngeRoleHandler;
   let roundHandlersService: RoundHandlersService;
+  let victoryHandlersService: VictoryHandlersService;
   let players: Player[];
 
   ngMocks.faster();
@@ -18,9 +21,14 @@ describe('AngeRoleHandler', () => {
       removeHandler: jest.fn(),
     });
 
+    victoryHandlersService = MockService(VictoryHandlersService, {
+      createVictoryHandler: jest.fn(),
+    });
+
     TestBed.configureTestingModule({
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
+        { provide: VictoryHandlersService, useValue: victoryHandlersService },
       ],
     });
 
@@ -49,6 +57,14 @@ describe('AngeRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersService.createRoundHandler).not.toHaveBeenCalled();
+    });
+
+    it('should create a victory handler for ANGE', () => {
+      handler.prepareNewGame(players);
+
+      expect(victoryHandlersService.createVictoryHandler).toHaveBeenCalledWith(
+        VictoryEnum.ANGE,
+      );
     });
   });
 

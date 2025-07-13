@@ -136,9 +136,13 @@ export class VictoryHandlersService {
     this.syncState();
   }
 
-  private createVictoryHandler(victory: VictoryEnum): void {
-    if (VICTORY_HANDLERS_CONFIG[victory] !== undefined) {
+  createVictoryHandler(victory: VictoryEnum): void {
+    if (
+      !this.victoryHandlers.has(victory) &&
+      VICTORY_HANDLERS_CONFIG[victory] !== undefined
+    ) {
       this.victoryHandlers.set(victory, new VICTORY_HANDLERS_CONFIG[victory]());
+      this.syncState();
     }
   }
 
