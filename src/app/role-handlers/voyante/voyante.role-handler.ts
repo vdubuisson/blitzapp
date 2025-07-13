@@ -1,11 +1,12 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { DefaultRoleHandler } from '../default/default.role-handler';
-import { RoundEnum } from '@/enums/round.enum';
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 
 export class VoyanteRoleHandler extends DefaultRoleHandler {
-  public static override readonly ROUNDS: RoundEnum[] = [RoundEnum.VOYANTE];
-
   constructor() {
-    super(PlayerRoleEnum.VOYANTE, VoyanteRoleHandler.ROUNDS);
+    super(
+      PlayerRoleEnum.VOYANTE,
+      ROLE_METADATA_CONFIG[PlayerRoleEnum.VOYANTE]!,
+    );
   }
 }

@@ -1,14 +1,14 @@
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { Player } from '@/models/player.model';
+import { RoleHandler } from '@/role-handlers/role-handler.interface';
+import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
 import {
   inject,
   Injectable,
   Injector,
   runInInjectionContext,
 } from '@angular/core';
-import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { RoleHandler } from '@/role-handlers/role-handler.interface';
-import { Player } from '@/models/player.model';
-import { ROLE_HANDLERS_CONFIG } from '@/configs/role-handlers.config';
 
 @Injectable({
   providedIn: 'root',
@@ -67,8 +67,8 @@ export class RoleHandlersService {
   }
 
   private createRoleHandler(role: PlayerRoleEnum): RoleHandler {
-    if (ROLE_HANDLERS_CONFIG[role] !== undefined) {
-      return new ROLE_HANDLERS_CONFIG[role]();
+    if (ROLE_METADATA_CONFIG[role] !== undefined) {
+      return new ROLE_METADATA_CONFIG[role].handler();
     } else {
       throw new Error(`Missing RoleHandler config for ${role}`);
     }

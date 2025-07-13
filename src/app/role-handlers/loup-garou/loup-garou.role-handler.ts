@@ -1,25 +1,14 @@
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { DefaultRoleHandler } from '../default/default.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { VictoryEnum } from '@/enums/victory.enum';
+import { DefaultRoleHandler } from '../default/default.role-handler';
 
 export class LoupGarouRoleHandler extends DefaultRoleHandler {
-  public static override readonly STATUSES: PlayerStatusEnum[] = [
-    PlayerStatusEnum.WOLF_TARGET,
-    PlayerStatusEnum.DEVOURED,
-  ];
-  public static override readonly VICTORIES: VictoryEnum[] = [
-    VictoryEnum.LOUP_GAROU,
-  ];
-
   constructor() {
     super(
       PlayerRoleEnum.LOUP_GAROU,
-      DefaultRoleHandler.ROUNDS,
-      LoupGarouRoleHandler.STATUSES,
-      LoupGarouRoleHandler.VICTORIES,
+      ROLE_METADATA_CONFIG[PlayerRoleEnum.LOUP_GAROU]!,
     );
   }
 

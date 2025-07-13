@@ -1,16 +1,9 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { VictoryEnum } from '@/enums/victory.enum';
 import { DefaultRoleHandler } from '../default/default.role-handler';
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 
 export class AngeRoleHandler extends DefaultRoleHandler {
-  public static override readonly VICTORIES: VictoryEnum[] = [VictoryEnum.ANGE];
-
   constructor() {
-    super(
-      PlayerRoleEnum.ANGE,
-      DefaultRoleHandler.ROUNDS,
-      DefaultRoleHandler.STATUSES,
-      AngeRoleHandler.VICTORIES,
-    );
+    super(PlayerRoleEnum.ANGE, ROLE_METADATA_CONFIG[PlayerRoleEnum.ANGE]!);
   }
 }

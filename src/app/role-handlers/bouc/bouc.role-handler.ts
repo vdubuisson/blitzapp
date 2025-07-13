@@ -1,26 +1,17 @@
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { DefaultRoleHandler } from '../default/default.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { inject } from '@angular/core';
 import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { inject } from '@angular/core';
+import { DefaultRoleHandler } from '../default/default.role-handler';
 
 export class BoucRoleHandler extends DefaultRoleHandler {
-  public static override readonly ROUNDS: RoundEnum[] = [RoundEnum.BOUC];
-  public static override readonly STATUSES: PlayerStatusEnum[] = [
-    PlayerStatusEnum.NO_VOTE,
-  ];
-
   private readonly afterDeathRoundQueue = inject(AfterDeathRoundQueueStore)
     .state;
 
   constructor() {
-    super(
-      PlayerRoleEnum.BOUC,
-      BoucRoleHandler.ROUNDS,
-      BoucRoleHandler.STATUSES,
-    );
+    super(PlayerRoleEnum.BOUC, ROLE_METADATA_CONFIG[PlayerRoleEnum.BOUC]!);
   }
 
   override handleDeath(players: Player[], deadPlayer: Player): Player[] {

@@ -3,17 +3,13 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { findLeftNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoleHandler } from '../default/default.role-handler';
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 
 export class ChevalierRoleHandler extends DefaultRoleHandler {
-  public static override readonly STATUSES: PlayerStatusEnum[] = [
-    PlayerStatusEnum.RUSTY_SWORD,
-  ];
-
   constructor() {
     super(
       PlayerRoleEnum.CHEVALIER,
-      DefaultRoleHandler.ROUNDS,
-      ChevalierRoleHandler.STATUSES,
+      ROLE_METADATA_CONFIG[PlayerRoleEnum.CHEVALIER]!,
     );
   }
 

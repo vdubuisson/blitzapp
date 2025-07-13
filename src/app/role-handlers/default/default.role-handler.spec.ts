@@ -1,14 +1,15 @@
+import { RoleMetadata } from '@/configs/role-metadata.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { Player } from '@/models/player.model';
-import { RoundEnum } from '@/enums/round.enum';
-import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
-import { DefaultRoleHandler } from './default.role-handler';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
-import { TestBed } from '@angular/core/testing';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { RoundEnum } from '@/enums/round.enum';
+import { VictoryEnum } from '@/enums/victory.enum';
+import { Player } from '@/models/player.model';
+import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
-import { VictoryEnum } from '@/enums/victory.enum';
+import { TestBed } from '@angular/core/testing';
+import { MockReset, MockService, ngMocks } from 'ng-mocks';
+import { DefaultRoleHandler } from './default.role-handler';
 
 describe('DefaultRoleHandler', () => {
   let handler: DefaultRoleHandler;
@@ -53,12 +54,11 @@ describe('DefaultRoleHandler', () => {
 
     TestBed.runInInjectionContext(
       () =>
-        (handler = new DefaultRoleHandler(
-          PlayerRoleEnum.VILLAGEOIS,
-          testRounds,
-          testStatuses,
-          testVictories,
-        )),
+        (handler = new DefaultRoleHandler(PlayerRoleEnum.VILLAGEOIS, {
+          rounds: testRounds,
+          statuses: testStatuses,
+          victories: testVictories,
+        } as RoleMetadata)),
     );
 
     players = [

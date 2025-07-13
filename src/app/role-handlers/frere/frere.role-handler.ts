@@ -2,12 +2,11 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 
 export class FrereRoleHandler extends DefaultRoleHandler {
-  public static override readonly ROUNDS: RoundEnum[] = [RoundEnum.FRERES];
-
   constructor() {
-    super(PlayerRoleEnum.FRERE, FrereRoleHandler.ROUNDS);
+    super(PlayerRoleEnum.FRERE, ROLE_METADATA_CONFIG[PlayerRoleEnum.FRERE]!);
   }
 
   override handleDeath(players: Player[], _: Player): Player[] {

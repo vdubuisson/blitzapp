@@ -1,4 +1,4 @@
-import { ROLE_HANDLERS_CONFIG } from '@/configs/role-handlers.config';
+import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 import { ROLE_ROUNDS_CONFIG } from '@/configs/role-rounds.config';
 import { ROUND_HANDLERS_CONFIG } from '@/configs/round-handlers.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
@@ -86,7 +86,7 @@ export class RoundHandlersService {
   removeHandlersByRoles(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
     const roundsToRemove: RoundEnum[] = Array.from(rolesSet.values()).flatMap(
-      (role) => ROLE_HANDLERS_CONFIG[role]?.ROUNDS ?? [],
+      (role) => ROLE_METADATA_CONFIG[role]?.rounds ?? [],
     );
     roundsToRemove.forEach((round) => this.removeHandler(round));
   }
