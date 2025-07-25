@@ -9,12 +9,14 @@ import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/afte
 import { signal } from '@angular/core';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 
 describe('BoucRoleHandler', () => {
   let handler: BoucRoleHandler;
   let roundHandlersService: RoundHandlersService;
   let statusHandlersService: StatusHandlersService;
   let afterDeathRoundQueue: AfterDeathRoundQueueStore;
+  let needCleanAfterBouc: NeedCleanAfterBoucStore;
   let players: Player[];
 
   ngMocks.faster();
@@ -29,6 +31,10 @@ describe('BoucRoleHandler', () => {
       state: signal<RoundEnum[]>([RoundEnum.VILLAGEOIS]),
     });
 
+    needCleanAfterBouc = MockService(NeedCleanAfterBoucStore, {
+      state: signal<boolean>(false),
+    });
+
     statusHandlersService = MockService(StatusHandlersService, {
       createStatusHandler: jest.fn(),
     });
@@ -37,6 +43,7 @@ describe('BoucRoleHandler', () => {
       providers: [
         { provide: RoundHandlersService, useValue: roundHandlersService },
         { provide: AfterDeathRoundQueueStore, useValue: afterDeathRoundQueue },
+        { provide: NeedCleanAfterBoucStore, useValue: needCleanAfterBouc },
         { provide: StatusHandlersService, useValue: statusHandlersService },
       ],
     });
@@ -44,8 +51,18 @@ describe('BoucRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new BoucRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
+      {
+        id: 1,
+        name: 'Player 1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+      } as Player,
+      {
+        id: 2,
+        name: 'Player 2',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+      } as Player,
     ];
   });
 
@@ -105,9 +122,97 @@ describe('BoucRoleHandler', () => {
   });
 
   describe('cleanStatusesAfterDay', () => {
-    it('should return players unchanged', () => {
-      const result = handler.cleanStatusesAfterDay(players);
-      expect(result).toBe(players);
+    it('should return players unchanged if no need to clean', () => {
+      needCleanAfterBouc.state.set(false);
+
+      const mockPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+          isDead: false,
+        },
+      ];
+      const result = handler.cleanStatusesAfterDay(mockPlayers);
+      expect(result).toBe(mockPlayers);
+    });
+
+    it('should remove NO_VOTE status from player', () => {
+      needCleanAfterBouc.state.set(true);
+
+      const mockPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+          isDead: false,
+        },
+      ];
+
+      const newPlayers = handler.cleanStatusesAfterDay(mockPlayers);
+
+      expect(newPlayers[0].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
+        false,
+      );
+      expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
+        false,
+      );
+    });
+
+    it('should set needCleanAfterBouc to false after cleaning', () => {
+      needCleanAfterBouc.state.set(true);
+      handler.cleanStatusesAfterDay(players);
+      expect(needCleanAfterBouc.state()).toEqual(false);
+    });
+
+    it('should not remove NO_VOTE status from IDIOT killedBy', () => {
+      needCleanAfterBouc.state.set(true);
+
+      const mockPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
+          isDead: false,
+          killedBy: PlayerRoleEnum.VILLAGEOIS,
+        },
+      ];
+
+      const newPlayers = handler.cleanStatusesAfterDay(mockPlayers);
+
+      expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
+        true,
+      );
     });
   });
 });

@@ -9,7 +9,6 @@ import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '@/services/round-orchestration/round-orchestration.service';
-import { StatusesService } from '@/services/statuses/statuses.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -23,14 +22,28 @@ import {
 import { Observable, of } from 'rxjs';
 
 import { CardList } from '@/models/card-list.model';
+import { StatusHandler } from '@/status-handlers/status-handler.interface';
 import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
 import { CurrentRoundConfigStore } from '@/stores/current-round/current-round-config.store';
 import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 import { signal } from '@angular/core';
-import { GameService } from './game.service';
-import { StatusHandler } from '@/status-handlers/status-handler.interface';
 import { StatusHandlersService } from '../status-handlers/status-handlers.service';
+import { GameService } from './game.service';
+import { RoleHandlersService } from '../role-handlers/role-handlers.service';
+import { RoleHandler } from '@/role-handlers/role-handler.interface';
+
+class MockRoleHandler implements RoleHandler {
+  role = PlayerRoleEnum.VILLAGEOIS;
+
+  prepareNewGame = jest.fn().mockImplementation((players: Player[]) => players);
+  handleDeath = jest
+    .fn()
+    .mockImplementation((players: Player[], deadPlayer: Player) => players);
+  cleanStatusesAfterDay = jest
+    .fn()
+    .mockImplementation((players: Player[]) => players);
+}
 
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
@@ -69,7 +82,6 @@ describe('GameService on victory', () => {
       .mock(VictoryHandlersService)
       .mock(RoundOrchestrationService)
       .mock(DeathService)
-      .mock(StatusesService)
       .mock(StatusHandlersService)
       .mock(MockRoundHandler)
       .mock(CurrentPlayersStore)
@@ -173,17 +185,20 @@ describe('GameService on victory', () => {
   afterAll(MockReset);
 });
 
+// TODO: Fix tests
+
 describe('GameService', () => {
   let service: GameService;
   let router: Router;
+  let roleHandlersService: RoleHandlersService;
   let roundHandlersService: RoundHandlersService;
   let victoryHandlersService: VictoryHandlersService;
   let roundOrchestrationService: RoundOrchestrationService;
   let deathService: DeathService;
-  let statusesService: StatusesService;
 
   let mockPlayers: Player[];
   let mockCardList: CardList;
+  let mockRoleHandler: MockRoleHandler;
   let mockRoundHandler: MockRoundHandler;
 
   ngMocks.faster();
@@ -191,11 +206,11 @@ describe('GameService', () => {
   beforeAll(() =>
     MockBuilder(GameService)
       .mock(Router)
+      .mock(RoleHandlersService)
       .mock(RoundHandlersService)
       .mock(VictoryHandlersService)
       .mock(RoundOrchestrationService)
       .mock(DeathService)
-      .mock(StatusesService)
       .mock(StatusHandlersService)
       .mock(MockRoundHandler)
       .mock(CurrentPlayersStore)
@@ -238,17 +253,19 @@ describe('GameService', () => {
       playersNumber: 3,
     };
     mockRoundHandler = new MockRoundHandler();
+    mockRoleHandler = new MockRoleHandler();
+
+    MockInstance(RoleHandlersService, () => ({
+      clearHandlers: jest.fn(),
+      getHandler: () => mockRoleHandler,
+    }));
 
     MockInstance(RoundHandlersService, () => ({
       getHandler: () => mockRoundHandler,
-      initHandlers: jest.fn(),
+      initRequiredHandlers: jest.fn(),
       clearHandlers: jest.fn(),
       removeHandlersByRoles: jest.fn(),
-      initDefaultHandlers: jest.fn(),
-    }));
-
-    MockInstance(StatusesService, () => ({
-      handleInfectedAncien: (players) => players,
+      initAsDefaultHandlers: jest.fn(),
     }));
 
     MockInstance(StatusHandlersService, () => ({
@@ -291,7 +308,6 @@ describe('GameService', () => {
     victoryHandlersService = ngMocks.get(VictoryHandlersService);
     roundOrchestrationService = ngMocks.get(RoundOrchestrationService);
     deathService = ngMocks.get(DeathService);
-    statusesService = ngMocks.get(StatusesService);
   });
 
   afterAll(MockReset);
@@ -303,7 +319,7 @@ describe('GameService', () => {
   it('should init round handlers on game creation', () => {
     service.createGame(mockPlayers);
 
-    expect(roundHandlersService.initHandlers).toHaveBeenCalledWith([
+    expect(roundHandlersService.initRequiredHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
       PlayerRoleEnum.LOUP_GAROU,
       PlayerRoleEnum.SORCIERE,
@@ -973,7 +989,6 @@ describe('GameService', () => {
     mockNextRoundHandler.isDuringDay = false;
     mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
 
-    jest.spyOn(statusesService, 'cleanStatusesAfterDay').mockReturnValue([]);
     jest
       .spyOn(roundHandlersService, 'getHandler')
       .mockImplementation((round) => {
@@ -995,7 +1010,7 @@ describe('GameService', () => {
 
     service.submitRoundAction([]);
 
-    expect(statusesService.cleanStatusesAfterDay).toHaveBeenCalled();
+    expect(mockRoleHandler.cleanStatusesAfterDay).toHaveBeenCalled();
   });
 
   it('should increment day count after day', () => {
@@ -1013,7 +1028,6 @@ describe('GameService', () => {
     mockNextRoundHandler.isDuringDay = false;
     mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
 
-    jest.spyOn(statusesService, 'cleanStatusesAfterDay').mockReturnValue([]);
     jest
       .spyOn(roundHandlersService, 'getHandler')
       .mockImplementation((round) => {
@@ -1096,7 +1110,7 @@ describe('GameService', () => {
 
     expect(roundHandlersService.clearHandlers).toHaveBeenCalled();
     expect(victoryHandlersService.clearHandlers).toHaveBeenCalled();
-    expect(roundHandlersService.initHandlers).toHaveBeenCalledWith([
+    expect(roundHandlersService.initRequiredHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SORCIERE,
       PlayerRoleEnum.CUPIDON,
     ]);
@@ -1239,7 +1253,7 @@ describe('GameService', () => {
   it('should init default round handlers on game creation', () => {
     service.createGame(mockPlayers);
 
-    expect(roundHandlersService.initDefaultHandlers).toHaveBeenCalledWith([
+    expect(roundHandlersService.initAsDefaultHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VOLEUR,
     ]);
   });
@@ -1320,95 +1334,5 @@ describe('GameService', () => {
     service.submitRoundAction([]);
 
     expect(service['needCleanAfterBouc']()).toEqual(true);
-  }));
-
-  it('should clean no vote after VILLAGEOIS round if need clean', waitForAsync(() => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: true,
-      type: RoundTypeEnum.PLAYERS,
-    };
-    const mockNewPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.BOUC,
-        card: PlayerRoleEnum.BOUC,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
-        isDead: false,
-      },
-    ];
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersService, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VILLAGEOIS:
-            return mockCurrentRoundHandler;
-          case RoundEnum.LOUP_GAROU:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrationService, 'getNextRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-    jest.spyOn(victoryHandlersService, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-    ngMocks.get(CardChoiceStore).state.set(mockCardList);
-    service['needCleanAfterBouc'].set(true);
-
-    const mockNewPlayersAfterClean: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.BOUC,
-        card: PlayerRoleEnum.BOUC,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    jest
-      .spyOn(statusesService, 'cleanNoVoteAfterDay')
-      .mockReturnValue(mockNewPlayersAfterClean);
-    jest
-      .spyOn(statusesService, 'cleanStatusesAfterDay')
-      .mockImplementation((players) => players);
-    jest
-      .spyOn(deathService, 'handleNewDeaths')
-      .mockImplementation((players) => players);
-
-    service.submitRoundAction([]);
-
-    expect(service['players']()).toEqual(mockNewPlayersAfterClean);
-    expect(service['needCleanAfterBouc']()).toEqual(false);
   }));
 });

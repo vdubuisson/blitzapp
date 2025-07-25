@@ -36,22 +36,12 @@ export class RoundHandlersService {
   }
 
   /**
-   * Initializes the round handlers based on the provided player roles.
-   *
-   * @param roles - Player roles present in the game.
+   * Initializes the round handlers always required for a game.
    */
-  initHandlers(roles: PlayerRoleEnum[]): void {
-    const rolesSet = new Set<PlayerRoleEnum>(roles);
-
+  initRequiredHandlers(): void {
     this.createRoundHandler(RoundEnum.VILLAGEOIS);
     this.createRoundHandler(RoundEnum.LOUP_GAROU);
     this.createRoundHandler(RoundEnum.CAPITAINE);
-
-    rolesSet.forEach((role) => {
-      ROLE_ROUNDS_CONFIG[role].forEach((round) =>
-        this.createRoundHandler(round),
-      );
-    });
   }
 
   /**
@@ -59,7 +49,7 @@ export class RoundHandlersService {
    *
    * @param roles - Player roles not played in the game.
    */
-  initDefaultHandlers(roles: PlayerRoleEnum[]): void {
+  initAsDefaultHandlers(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
     rolesSet.forEach((role) => {
       ROLE_ROUNDS_CONFIG[role].forEach((round) =>

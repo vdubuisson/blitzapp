@@ -4,6 +4,7 @@ import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { BeforeDeathRoundStore } from '@/stores/before-death-round/before-death-round.store';
+import { DayCountStore } from '@/stores/day-count/day-count.store';
 import { UniqueRoundsPassedStore } from '@/stores/unique-rounds-passed/unique-rounds-passed.store';
 import { inject, Injectable } from '@angular/core';
 
@@ -18,6 +19,7 @@ export class RoundOrchestrationService {
 
   private readonly uniqueRoundsPassed = inject(UniqueRoundsPassedStore).state;
   private readonly beforeDeathRound = inject(BeforeDeathRoundStore).state;
+  private readonly dayCount = inject(DayCountStore).state.asReadonly();
 
   /**
    * Resets the rounds passed and the before death round.
@@ -72,6 +74,10 @@ export class RoundOrchestrationService {
 
     if (nextHandler === undefined || this.uniqueRoundsPassed().has(nextRound)) {
       throw new Error('No next round found');
+    }
+
+    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount() % 2 !== 0) {
+      return this.getNextRound(RoundEnum.LOUP_BLANC);
     }
 
     return nextRound;

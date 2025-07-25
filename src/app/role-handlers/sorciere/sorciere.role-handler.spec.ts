@@ -36,7 +36,12 @@ describe('SorciereRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new SorciereRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      {
+        id: 1,
+        name: 'Player 1',
+        role: PlayerRoleEnum.SORCIERE,
+        statuses: new Set(),
+      } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
@@ -49,9 +54,14 @@ describe('SorciereRoleHandler', () => {
   });
 
   describe('prepareNewGame', () => {
-    it('should return players unchanged', () => {
+    it('should add HEALTH_POTION status to SORCIERE', () => {
       const result = handler.prepareNewGame(players);
-      expect(result).toBe(players);
+      expect(result[0].statuses.has(PlayerStatusEnum.HEALTH_POTION)).toBe(true);
+    });
+
+    it('should add DEATH_POTION status to SORCIERE', () => {
+      const result = handler.prepareNewGame(players);
+      expect(result[0].statuses.has(PlayerStatusEnum.DEATH_POTION)).toBe(true);
     });
 
     it('should create SORCIERE_HEALTH round handler', () => {

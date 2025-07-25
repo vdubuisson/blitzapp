@@ -11,7 +11,6 @@ import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '@/services/round-orchestration/round-orchestration.service';
-import { StatusesService } from '@/services/statuses/statuses.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
@@ -27,8 +26,8 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 import { RoleHandlersService } from '../role-handlers/role-handlers.service';
+import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +40,6 @@ export class GameService {
     RoundOrchestrationService,
   );
   private readonly deathService = inject(DeathService);
-  private readonly statusesService = inject(StatusesService);
   private readonly statusHandlersService = inject(StatusHandlersService);
   private readonly roleHandlersService = inject(RoleHandlersService);
 
@@ -113,21 +111,22 @@ export class GameService {
   }
 
   private initGame(players: Player[], cardList: CardList): void {
-    const roles = players.map((player) => player.role);
-    const notPlayedRoles = getNotPlayedRoles(players, cardList);
+    this.roleHandlersService.clearHandlers();
     this.roundHandlersService.clearHandlers();
-    this.roundHandlersService.initHandlers(roles);
-    this.roundHandlersService.initDefaultHandlers(notPlayedRoles);
+    this.statusHandlersService.clearHandlers();
     this.victoryHandlersService.clearHandlers();
-    this.victoryHandlersService.initHandlers(roles);
-    const sorciere = players.find(
-      (player) => player.role === PlayerRoleEnum.SORCIERE,
-    );
-    if (sorciere) {
-      sorciere.statuses.add(PlayerStatusEnum.HEALTH_POTION);
-      sorciere.statuses.add(PlayerStatusEnum.DEATH_POTION);
-    }
-    this.setPlayers(players);
+
+    this.roundHandlersService.initRequiredHandlers();
+    const notPlayedRoles = getNotPlayedRoles(players, cardList);
+    this.roundHandlersService.initAsDefaultHandlers(notPlayedRoles);
+    this.roleHandlersService.initHandlers(players);
+
+    let newPlayers = [...players];
+    this.roleHandlersService
+      .getHandlers()
+      .forEach((handler) => (newPlayers = handler.prepareNewGame(newPlayers)));
+
+    this.setPlayers(newPlayers);
   }
 
   private setFirstRound(): void {
@@ -147,15 +146,6 @@ export class GameService {
       this.handleAfterPereLoupRound();
     } else if (currentRound === RoundEnum.BOUC) {
       this.needCleanAfterBouc.set(true);
-    } else if (
-      currentRound === RoundEnum.VILLAGEOIS &&
-      this.needCleanAfterBouc()
-    ) {
-      this.needCleanAfterBouc.set(false);
-      const newPlayers = this.statusesService.cleanNoVoteAfterDay(
-        this.players(),
-      );
-      this.setPlayers(newPlayers);
     }
 
     const currentHandler = this.roundHandlersService.getHandler(currentRound);
@@ -171,8 +161,6 @@ export class GameService {
       }
       throw error;
     }
-
-    nextRound = this.checkLoupBlancRound(nextRound);
 
     const nextHandler = this.roundHandlersService.getHandler(nextRound);
 
@@ -239,13 +227,6 @@ export class GameService {
       );
       this.setPlayers(playersAfterDeath);
     }
-  }
-
-  private checkLoupBlancRound(nextRound: RoundEnum): RoundEnum {
-    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount() % 2 !== 0) {
-      return this.roundOrchestrationService.getNextRound(RoundEnum.LOUP_BLANC);
-    }
-    return nextRound;
   }
 
   private handleAfterNightDeaths(
@@ -318,9 +299,6 @@ export class GameService {
   }
 
   private handleAfterVoleurRound(): void {
-    this.roundHandlersService.clearHandlers();
-    this.victoryHandlersService.clearHandlers();
-
     const players = [...this.players()];
     this.initGame(players, this.cardList());
   }

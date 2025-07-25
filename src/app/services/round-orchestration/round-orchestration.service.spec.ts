@@ -12,6 +12,7 @@ import { BeforeDeathRoundStore } from '@/stores/before-death-round/before-death-
 import { UniqueRoundsPassedStore } from '@/stores/unique-rounds-passed/unique-rounds-passed.store';
 import { signal } from '@angular/core';
 import { RoundOrchestrationService } from './round-orchestration.service';
+import { DayCountStore } from '@/stores/day-count/day-count.store';
 
 class MockRoundHandler implements RoundHandler {
   constructor(isOnlyOnce = false) {
@@ -39,7 +40,8 @@ describe('RoundOrchestrationService', () => {
       .mock(RoundHandlersService)
       .mock(DeathService)
       .mock(BeforeDeathRoundStore)
-      .mock(UniqueRoundsPassedStore),
+      .mock(UniqueRoundsPassedStore)
+      .mock(DayCountStore),
   );
 
   beforeEach(() => {
@@ -55,6 +57,7 @@ describe('RoundOrchestrationService', () => {
       'state',
       signal(new Set<RoundEnum>()),
     );
+    MockInstance(DayCountStore, 'state', signal(0));
   });
 
   beforeEach(() => {
@@ -84,6 +87,42 @@ describe('RoundOrchestrationService', () => {
     const nextRound = service.getNextRound(RoundEnum.VOYANTE);
 
     expect(nextRound).toEqual(RoundEnum.LOUP_GAROU);
+  });
+
+  it('should skip LOUP_BLANC on odd days', () => {
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) =>
+        round === RoundEnum.LOUP_BLANC || round === RoundEnum.SORCIERE_HEALTH
+          ? new MockRoundHandler()
+          : undefined,
+      );
+
+    const dayCountStore = ngMocks.get(DayCountStore);
+    dayCountStore.state.set(1);
+
+    const nextRound = service.getNextRound(RoundEnum.LOUP_GAROU);
+
+    expect(nextRound).toEqual(RoundEnum.SORCIERE_HEALTH);
+  });
+
+  it('should not skip LOUP_BLANC on even days', () => {
+    const roundHandlersService = ngMocks.get(RoundHandlersService);
+    jest
+      .spyOn(roundHandlersService, 'getHandler')
+      .mockImplementation((round) =>
+        round === RoundEnum.LOUP_BLANC || round === RoundEnum.SORCIERE_HEALTH
+          ? new MockRoundHandler()
+          : undefined,
+      );
+
+    const dayCountStore = ngMocks.get(DayCountStore);
+    dayCountStore.state.set(2);
+
+    const nextRound = service.getNextRound(RoundEnum.LOUP_GAROU);
+
+    expect(nextRound).toEqual(RoundEnum.LOUP_BLANC);
   });
 
   it('should return next available round when end of rounds', () => {

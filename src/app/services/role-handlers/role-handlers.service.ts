@@ -60,6 +60,15 @@ export class RoleHandlersService {
   }
 
   /**
+   * Returns all role handlers.
+   *
+   * @returns An array of all role handlers.
+   */
+  getHandlers(): RoleHandler[] {
+    return Array.from(this.roleHandlers.values());
+  }
+
+  /**
    * Clears all role handlers.
    */
   clearHandlers(): void {
