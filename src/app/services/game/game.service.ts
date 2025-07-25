@@ -74,7 +74,6 @@ export class GameService {
       .map((player) => player.role)
       .includes(PlayerRoleEnum.ANGE);
     if (isAngePresent) {
-      this.roundOrchestrationService.setVillageoisFirst();
       this.nextDayCount(-1);
     } else {
       this.nextDayCount(0);

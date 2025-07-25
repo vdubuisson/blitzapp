@@ -268,7 +268,6 @@ describe('GameService', () => {
     }));
 
     MockInstance(RoundOrchestrationService, () => ({
-      setVillageoisFirst: jest.fn(),
       getFirstRound: jest.fn(),
     }));
 
@@ -378,38 +377,6 @@ describe('GameService', () => {
     service.createGame(mockPlayers);
 
     expect(service['roundConfig']()).toEqual(mockRoundConfig);
-  });
-
-  it('should set first round on game creation as VILLAGEOIS if Ange', () => {
-    const mockRoundConfig: RoundConfig = {
-      round: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    mockRoundHandler.getRoundConfig = () => mockRoundConfig;
-
-    jest
-      .spyOn(roundOrchestrationService, 'getFirstRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-
-    const newMockPlayers: Player[] = [
-      ...mockPlayers,
-      {
-        id: 3,
-        name: 'player3',
-        role: PlayerRoleEnum.ANGE,
-        card: PlayerRoleEnum.ANGE,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.createGame(newMockPlayers);
-
-    expect(roundOrchestrationService.setVillageoisFirst).toHaveBeenCalled();
   });
 
   it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {
