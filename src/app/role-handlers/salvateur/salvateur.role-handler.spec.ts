@@ -85,9 +85,44 @@ describe('SalvateurRoleHandler', () => {
   });
 
   describe('cleanStatusesAfterDay', () => {
-    it('should return players unchanged', () => {
-      const result = handler.cleanStatusesAfterDay(players);
-      expect(result).toBe(players);
+    it('should remove PROTECTED status from players if SALVATEUR is dead', () => {
+      const testPlayers = [
+        {
+          id: 1,
+          name: 'Player 1',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.PROTECTED]),
+        } as Player,
+        {
+          id: 2,
+          name: 'Player 2',
+          role: PlayerRoleEnum.SALVATEUR,
+          isDead: true,
+        } as Player,
+      ];
+
+      const result = handler.cleanStatusesAfterDay(testPlayers);
+      expect(result[0].statuses.has(PlayerStatusEnum.PROTECTED)).toBe(false);
+    });
+
+    it('should not remove PROTECTED status from players if SALVATEUR is alive', () => {
+      const testPlayers = [
+        {
+          id: 1,
+          name: 'Player 1',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.PROTECTED]),
+        } as Player,
+        {
+          id: 2,
+          name: 'Player 2',
+          role: PlayerRoleEnum.SALVATEUR,
+          isDead: false,
+        } as Player,
+      ];
+
+      const result = handler.cleanStatusesAfterDay(testPlayers);
+      expect(result[0].statuses.has(PlayerStatusEnum.PROTECTED)).toBe(true);
     });
   });
 });

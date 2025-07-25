@@ -27,4 +27,17 @@ export class ChevalierRoleHandler extends DefaultRoleHandler {
     }
     return newPlayers;
   }
+
+  override cleanStatusesAfterDay(players: Player[]): Player[] {
+    if (
+      players.some(
+        (player) => player.role === PlayerRoleEnum.CHEVALIER && player.isDead,
+      )
+    ) {
+      return this.statusHandlersService
+        .getHandler(PlayerStatusEnum.RUSTY_SWORD)
+        .triggerAction(players);
+    }
+    return players;
+  }
 }

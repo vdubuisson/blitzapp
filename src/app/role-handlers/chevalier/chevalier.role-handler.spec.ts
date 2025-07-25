@@ -7,16 +7,22 @@ import { TestBed } from '@angular/core/testing';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
+import { RustySwordStatusHandler } from '@/status-handlers/rusty-sword/rusty-sword.status-handler';
 
 describe('ChevalierRoleHandler', () => {
   let handler: ChevalierRoleHandler;
   let roundHandlersService: RoundHandlersService;
   let statusHandlersService: StatusHandlersService;
+  let rustySwordHandler: RustySwordStatusHandler;
   let players: Player[];
 
   ngMocks.faster();
 
   beforeAll(() => {
+    rustySwordHandler = MockService(RustySwordStatusHandler, {
+      triggerAction: jest.fn(),
+    });
+
     roundHandlersService = MockService(RoundHandlersService, {
       createRoundHandler: jest.fn(),
       removeHandler: jest.fn(),
@@ -109,9 +115,66 @@ describe('ChevalierRoleHandler', () => {
   });
 
   describe('cleanStatusesAfterDay', () => {
-    it('should return players unchanged', () => {
-      const result = handler.cleanStatusesAfterDay(players);
-      expect(result).toBe(players);
+    it('should return players unchanged if CHEVALIER is not dead', () => {
+      const testPlayers = [
+        {
+          id: 1,
+          name: 'Player 1',
+          role: PlayerRoleEnum.CHEVALIER,
+          isDead: false,
+        } as Player,
+        { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
+      ];
+
+      const result = handler.cleanStatusesAfterDay(testPlayers);
+      expect(result).toBe(testPlayers);
+    });
+
+    it('should trigger RUSTY_SWORD status if CHEVALIER is dead', () => {
+      const testPlayers = [
+        {
+          id: 1,
+          name: 'Player 1',
+          role: PlayerRoleEnum.CHEVALIER,
+          isDead: true,
+        } as Player,
+        {
+          id: 2,
+          name: 'Player 2',
+          role: PlayerRoleEnum.LOUP_GAROU,
+          statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
+        } as Player,
+      ];
+
+      const expectedPlayers = [
+        {
+          id: 1,
+          name: 'Player 1',
+          role: PlayerRoleEnum.CHEVALIER,
+          isDead: true,
+        } as Player,
+        {
+          id: 2,
+          name: 'Player 2',
+          role: PlayerRoleEnum.LOUP_GAROU,
+          isDead: true,
+          statuses: new Set(),
+        } as Player,
+      ];
+
+      jest
+        .spyOn(statusHandlersService, 'getHandler')
+        .mockReturnValue(rustySwordHandler);
+      jest
+        .spyOn(rustySwordHandler, 'triggerAction')
+        .mockReturnValue(expectedPlayers);
+
+      const result = handler.cleanStatusesAfterDay(testPlayers);
+      expect(result).toEqual(expectedPlayers);
+      expect(statusHandlersService.getHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.RUSTY_SWORD,
+      );
+      expect(rustySwordHandler.triggerAction).toHaveBeenCalledWith(testPlayers);
     });
   });
 });

@@ -28,6 +28,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { StatusHandlersService } from '../status-handlers/status-handlers.service';
+import { RoleHandlersService } from '../role-handlers/role-handlers.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +43,7 @@ export class GameService {
   private readonly deathService = inject(DeathService);
   private readonly statusesService = inject(StatusesService);
   private readonly statusHandlersService = inject(StatusHandlersService);
+  private readonly roleHandlersService = inject(RoleHandlersService);
 
   private readonly players: WritableSignal<Player[]> =
     inject(CurrentPlayersStore).state;
@@ -303,9 +305,14 @@ export class GameService {
       !nextHandler.isDuringDay &&
       currentHandler?.isDuringDay
     ) {
-      const playersAfterDay = this.statusesService.cleanStatusesAfterDay(
-        this.players(),
-      );
+      let playersAfterDay = this.players();
+
+      const playerRoles = new Set(this.players().map((p) => p.role));
+      playerRoles.forEach((role) => {
+        const roleHandler = this.roleHandlersService.getHandler(role);
+        playersAfterDay = roleHandler.cleanStatusesAfterDay(playersAfterDay);
+      });
+
       this.setPlayers(playersAfterDay);
       this.nextDayCount();
     }

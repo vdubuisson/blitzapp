@@ -36,7 +36,12 @@ describe('CorbeauRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new CorbeauRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      {
+        id: 1,
+        name: 'Player 1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.RAVEN]),
+      } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
@@ -85,9 +90,19 @@ describe('CorbeauRoleHandler', () => {
   });
 
   describe('cleanStatusesAfterDay', () => {
-    it('should return players unchanged', () => {
-      const result = handler.cleanStatusesAfterDay(players);
-      expect(result).toBe(players);
+    it('should remove RAVEN status from players', () => {
+      const testPlayers = [
+        {
+          id: 1,
+          name: 'Player 1',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.RAVEN]),
+        } as Player,
+        { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
+      ];
+
+      const result = handler.cleanStatusesAfterDay(testPlayers);
+      expect(result[0].statuses.has(PlayerStatusEnum.RAVEN)).toBe(false);
     });
   });
 });
