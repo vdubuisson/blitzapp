@@ -1,5 +1,4 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { Player } from '@/models/player.model';
 import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
@@ -98,43 +97,6 @@ describe('VictoryHandlersService', () => {
     expect(service['victoryHandlers'].has(VictoryEnum.AMOUREUX)).toEqual(false);
   });
 
-  it('should remove AMOUREUX victory handler if some Lover is dead', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.LOVER]),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set([PlayerStatusEnum.LOVER]),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    service['victoryHandlers'].set(
-      VictoryEnum.AMOUREUX,
-      new AmoureuxVictoryHandler(),
-    );
-
-    service.removeUselessHandlers(players);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.AMOUREUX)).toEqual(false);
-  });
-
   it('should init JOUEUR_FLUTE victory handler if there is JOUEUR_FLUTE', () => {
     service.initHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
 
@@ -145,29 +107,6 @@ describe('VictoryHandlersService', () => {
 
   it('should not init JOUEUR_FLUTE victory handler if there is no JOUEUR_FLUTE', () => {
     service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
-      false,
-    );
-  });
-
-  it('should remove JOUEUR_FLUTE victory handler if JOUEUR_FLUTE is dead', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.JOUEUR_FLUTE,
-        card: PlayerRoleEnum.JOUEUR_FLUTE,
-        statuses: new Set(),
-        isDead: true,
-      },
-    ];
-    service['victoryHandlers'].set(
-      VictoryEnum.JOUEUR_FLUTE,
-      new JoueurFluteVictoryHandler(),
-    );
-
-    service.removeUselessHandlers(players);
 
     expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
       false,
@@ -190,29 +129,6 @@ describe('VictoryHandlersService', () => {
     );
   });
 
-  it('should remove LOUP_BLANC victory handler if LOUP_BLANC is dead', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_BLANC,
-        card: PlayerRoleEnum.LOUP_BLANC,
-        statuses: new Set(),
-        isDead: true,
-      },
-    ];
-    service['victoryHandlers'].set(
-      VictoryEnum.LOUP_BLANC,
-      new LoupBlancVictoryHandler(),
-    );
-
-    service.removeUselessHandlers(players);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
-      false,
-    );
-  });
-
   it('should init SECTAIRE victory handler if there is SECTAIRE', () => {
     service.initHandlers([PlayerRoleEnum.SECTAIRE]);
 
@@ -223,27 +139,6 @@ describe('VictoryHandlersService', () => {
 
   it('should not init SECTAIRE victory handler if there is no SECTAIRE', () => {
     service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.SECTAIRE)).toEqual(false);
-  });
-
-  it('should remove SECTAIRE victory handler if SECTAIRE is dead', () => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.SECTAIRE,
-        card: PlayerRoleEnum.SECTAIRE,
-        statuses: new Set(),
-        isDead: true,
-      },
-    ];
-    service['victoryHandlers'].set(
-      VictoryEnum.SECTAIRE,
-      new SectaireVictoryHandler(),
-    );
-
-    service.removeUselessHandlers(players);
 
     expect(service['victoryHandlers'].has(VictoryEnum.SECTAIRE)).toEqual(false);
   });

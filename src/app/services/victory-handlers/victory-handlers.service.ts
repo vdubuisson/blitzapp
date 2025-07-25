@@ -2,7 +2,6 @@ import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
 import { VICTORIES_PRIORITY_CONFIG } from '@/configs/victories-priority.config';
 import { VICTORY_HANDLERS_CONFIG } from '@/configs/victory-handlers.config';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { Player } from '@/models/player.model';
 import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
@@ -54,44 +53,6 @@ export class VictoryHandlersService {
     }
     if (rolesSet.has(PlayerRoleEnum.SECTAIRE)) {
       this.createVictoryHandler(VictoryEnum.SECTAIRE);
-    }
-
-    this.syncState();
-  }
-
-  /**
-   * Removes victory handlers that are no longer relevant based on the players still alive.
-   *
-   * @param players - The list of players to evaluate for removing handlers.
-   */
-  removeUselessHandlers(players: Player[]): void {
-    if (
-      this.victoryHandlers.has(VictoryEnum.AMOUREUX) &&
-      players
-        .filter((player) => player.statuses.has(PlayerStatusEnum.LOVER))
-        .some((player) => player.isDead)
-    ) {
-      this.victoryHandlers.delete(VictoryEnum.AMOUREUX);
-    }
-    if (
-      this.victoryHandlers.has(VictoryEnum.JOUEUR_FLUTE) &&
-      players.find((player) => player.role === PlayerRoleEnum.JOUEUR_FLUTE)
-        ?.isDead
-    ) {
-      this.victoryHandlers.delete(VictoryEnum.JOUEUR_FLUTE);
-    }
-    if (
-      this.victoryHandlers.has(VictoryEnum.LOUP_BLANC) &&
-      players.find((player) => player.role === PlayerRoleEnum.LOUP_BLANC)
-        ?.isDead
-    ) {
-      this.victoryHandlers.delete(VictoryEnum.LOUP_BLANC);
-    }
-    if (
-      this.victoryHandlers.has(VictoryEnum.SECTAIRE) &&
-      players.find((player) => player.role === PlayerRoleEnum.SECTAIRE)?.isDead
-    ) {
-      this.victoryHandlers.delete(VictoryEnum.SECTAIRE);
     }
 
     this.syncState();

@@ -4,7 +4,6 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
 import { DeathsToAnnounceStore } from '@/stores/deaths-to-announce/deaths-to-announce.store';
 import { KnownDeathsStore } from '@/stores/known-deaths/known-deaths.store';
@@ -17,7 +16,6 @@ import { StatusHandlersService } from '../status-handlers/status-handlers.servic
   providedIn: 'root',
 })
 export class DeathService {
-  private readonly victoryHandlersService = inject(VictoryHandlersService);
   private readonly announcementService = inject(AnnouncementService);
   private readonly roleHandlersService = inject(RoleHandlersService);
   private readonly statusHandlersService = inject(StatusHandlersService);
@@ -68,8 +66,6 @@ export class DeathService {
         newPlayers = this.handlePlayerDeath(newPlayers, deadPlayer);
       }
     } while (unknownDeadPlayers.length > 0);
-
-    this.victoryHandlersService.removeUselessHandlers(players);
 
     return newPlayers;
   }

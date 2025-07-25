@@ -31,6 +31,7 @@ describe('JoueurFluteRoleHandler', () => {
 
     victoryHandlersService = MockService(VictoryHandlersService, {
       createVictoryHandler: jest.fn(),
+      removeHandler: jest.fn(),
     });
 
     TestBed.configureTestingModule({
@@ -106,6 +107,16 @@ describe('JoueurFluteRoleHandler', () => {
       expect(result).toBe(players);
       expect(roundHandlersService.removeHandler).toHaveBeenCalledWith(
         RoundEnum.JOUEUR_FLUTE,
+      );
+    });
+
+    it('should remove JOUEUR_FLUTE victory handler', () => {
+      const deadPlayer = players[0];
+
+      handler.handleDeath(players, deadPlayer);
+
+      expect(victoryHandlersService.removeHandler).toHaveBeenCalledWith(
+        VictoryEnum.JOUEUR_FLUTE,
       );
     });
   });

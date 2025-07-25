@@ -31,6 +31,7 @@ describe('SectaireRoleHandler', () => {
 
     victoryHandlersService = MockService(VictoryHandlersService, {
       createVictoryHandler: jest.fn(),
+      removeHandler: jest.fn(),
     });
 
     TestBed.configureTestingModule({
@@ -104,6 +105,16 @@ describe('SectaireRoleHandler', () => {
       expect(result).toBe(players);
       expect(roundHandlersService.removeHandler).toHaveBeenCalledWith(
         RoundEnum.SECTAIRE,
+      );
+    });
+
+    it('should remove SECTAIRE victory handler', () => {
+      const deadPlayer = players[0];
+
+      handler.handleDeath(players, deadPlayer);
+
+      expect(victoryHandlersService.removeHandler).toHaveBeenCalledWith(
+        VictoryEnum.SECTAIRE,
       );
     });
   });

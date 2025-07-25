@@ -6,7 +6,6 @@ import { Player } from '@/models/player.model';
 import { DefaultRoleHandler } from '@/role-handlers/default/default.role-handler';
 import { RoleHandler } from '@/role-handlers/role-handler.interface';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
 import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/after-death-round-queue.store';
 import { DeathsToAnnounceStore } from '@/stores/deaths-to-announce/deaths-to-announce.store';
 import { KnownDeathsStore } from '@/stores/known-deaths/known-deaths.store';
@@ -34,7 +33,6 @@ describe('DeathService', () => {
 
   beforeAll(() =>
     MockBuilder(DeathService)
-      .mock(VictoryHandlersService)
       .mock(AnnouncementService)
       .mock(RoleHandlersService)
       .mock(StatusHandlersService)
@@ -44,10 +42,6 @@ describe('DeathService', () => {
   );
 
   beforeAll(() => {
-    MockInstance(VictoryHandlersService, () => ({
-      removeUselessHandlers: jest.fn(),
-    }));
-
     MockInstance(AnnouncementService, () => ({
       announceDeaths: jest.fn(),
       announce: jest.fn(),
@@ -351,34 +345,6 @@ describe('DeathService', () => {
     expect(mockRoleHandler.handleDeath).toHaveBeenCalledWith(
       mockPlayers,
       mockPlayers[0],
-    );
-  });
-
-  it('should remove useless victory handlers on deaths handle', () => {
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOYANTE,
-        card: PlayerRoleEnum.VOYANTE,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.handleNewDeaths(mockPlayers);
-
-    const victoryHandlersService = ngMocks.get(VictoryHandlersService);
-    expect(victoryHandlersService.removeUselessHandlers).toHaveBeenCalledWith(
-      mockPlayers,
     );
   });
 

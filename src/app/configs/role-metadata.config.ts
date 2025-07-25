@@ -37,8 +37,6 @@ export interface RoleMetadata {
   victories: VictoryEnum[];
 }
 
-//TODO Use DefaultRoleHandler for simple handlers like StatusHandlers
-
 export const ROLE_METADATA_CONFIG: Record<
   PlayerRoleEnum,
   RoleMetadata | undefined

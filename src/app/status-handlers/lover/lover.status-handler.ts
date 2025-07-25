@@ -1,8 +1,13 @@
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { DefaultStatusHandler } from '../default/default.status-handler';
+import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
+import { inject } from '@angular/core';
+import { VictoryEnum } from '@/enums/victory.enum';
 
 export class LoverStatusHandler extends DefaultStatusHandler {
+  private readonly victoryHandlersService = inject(VictoryHandlersService);
+
   /**
    * Handles the death of a player with the LOVER status.
    *
@@ -21,6 +26,9 @@ export class LoverStatusHandler extends DefaultStatusHandler {
     if (otherLivingLover !== undefined) {
       otherLivingLover.isDead = true;
     }
+
+    this.victoryHandlersService.removeHandler(VictoryEnum.AMOUREUX);
+
     return newPlayers;
   }
 }

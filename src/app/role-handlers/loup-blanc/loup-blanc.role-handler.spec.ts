@@ -31,6 +31,7 @@ describe('LoupBlancRoleHandler', () => {
 
     victoryHandlersService = MockService(VictoryHandlersService, {
       createVictoryHandler: jest.fn(),
+      removeHandler: jest.fn(),
     });
 
     TestBed.configureTestingModule({
@@ -112,6 +113,16 @@ describe('LoupBlancRoleHandler', () => {
       expect(result).toBe(players);
       expect(roundHandlersService.removeHandler).toHaveBeenCalledWith(
         RoundEnum.LOUP_BLANC,
+      );
+    });
+
+    it('should remove LOUP_BLANC victory handler', () => {
+      const deadPlayer = players[0];
+
+      handler.handleDeath(players, deadPlayer);
+
+      expect(victoryHandlersService.removeHandler).toHaveBeenCalledWith(
+        VictoryEnum.LOUP_BLANC,
       );
     });
   });
