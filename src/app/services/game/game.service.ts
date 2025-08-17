@@ -117,9 +117,11 @@ export class GameService {
     this.victoryHandlersService.clearHandlers();
 
     this.roundHandlersService.initRequiredHandlers();
+    this.victoryHandlersService.initRequiredHandlers();
     const notPlayedRoles = getNotPlayedRoles(players, cardList);
     this.roundHandlersService.initAsDefaultHandlers(notPlayedRoles);
     this.roleHandlersService.initHandlers(players);
+    this.statusHandlersService.initHandlers(players);
 
     let newPlayers = [...players];
     this.roleHandlersService
@@ -144,8 +146,6 @@ export class GameService {
       this.handleAfterVoleurRound();
     } else if (currentRound === RoundEnum.PERE_LOUPS) {
       this.handleAfterPereLoupRound();
-    } else if (currentRound === RoundEnum.BOUC) {
-      this.needCleanAfterBouc.set(true);
     }
 
     const currentHandler = this.roundHandlersService.getHandler(currentRound);
@@ -183,6 +183,10 @@ export class GameService {
     }
 
     this.handleAfterDayEvents(currentHandler, nextHandler);
+
+    if (currentRound === RoundEnum.BOUC) {
+      this.needCleanAfterBouc.set(true);
+    }
 
     this.setRound(nextRound);
   }

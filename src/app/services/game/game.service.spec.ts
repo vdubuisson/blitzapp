@@ -274,7 +274,7 @@ describe('GameService', () => {
     }));
 
     MockInstance(VictoryHandlersService, () => ({
-      initHandlers: jest.fn(),
+      initRequiredHandlers: jest.fn(),
       clearHandlers: jest.fn(),
       getVictory: jest.fn(),
       removeHandler: jest.fn(),
@@ -329,7 +329,7 @@ describe('GameService', () => {
   it('should init victory handlers on game creation', () => {
     service.createGame(mockPlayers);
 
-    expect(victoryHandlersService.initHandlers).toHaveBeenCalledWith([
+    expect(victoryHandlersService.initRequiredHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.VILLAGEOIS,
       PlayerRoleEnum.LOUP_GAROU,
       PlayerRoleEnum.SORCIERE,
@@ -1114,7 +1114,7 @@ describe('GameService', () => {
       PlayerRoleEnum.SORCIERE,
       PlayerRoleEnum.CUPIDON,
     ]);
-    expect(victoryHandlersService.initHandlers).toHaveBeenCalledWith([
+    expect(victoryHandlersService.initRequiredHandlers).toHaveBeenCalledWith([
       PlayerRoleEnum.SORCIERE,
       PlayerRoleEnum.CUPIDON,
     ]);

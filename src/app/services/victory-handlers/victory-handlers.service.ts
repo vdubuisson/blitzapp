@@ -1,7 +1,5 @@
-import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
 import { VICTORIES_PRIORITY_CONFIG } from '@/configs/victories-priority.config';
 import { VICTORY_HANDLERS_CONFIG } from '@/configs/victory-handlers.config';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { Player } from '@/models/player.model';
 import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
@@ -25,37 +23,13 @@ export class VictoryHandlersService {
   }
 
   /**
-   * Initializes the victory handlers based on the provided player roles.
+   * Initializes the victory handlers always required for a game.
    *
    * @param roles - Player roles present in the game.
    */
-  initHandlers(roles: PlayerRoleEnum[]): void {
-    this.victoryHandlers.clear();
-    const rolesSet = new Set<PlayerRoleEnum>(roles);
-
+  initRequiredHandlers(): void {
     this.createVictoryHandler(VictoryEnum.NONE);
     this.createVictoryHandler(VictoryEnum.VILLAGEOIS);
-
-    if (LOUPS_GAROUS_ROLES.some((role) => rolesSet.has(role))) {
-      this.createVictoryHandler(VictoryEnum.LOUP_GAROU);
-    }
-    if (rolesSet.has(PlayerRoleEnum.CUPIDON)) {
-      this.createVictoryHandler(VictoryEnum.AMOUREUX);
-    }
-    if (rolesSet.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
-      this.createVictoryHandler(VictoryEnum.JOUEUR_FLUTE);
-    }
-    if (rolesSet.has(PlayerRoleEnum.LOUP_BLANC)) {
-      this.createVictoryHandler(VictoryEnum.LOUP_BLANC);
-    }
-    if (rolesSet.has(PlayerRoleEnum.ANGE)) {
-      this.createVictoryHandler(VictoryEnum.ANGE);
-    }
-    if (rolesSet.has(PlayerRoleEnum.SECTAIRE)) {
-      this.createVictoryHandler(VictoryEnum.SECTAIRE);
-    }
-
-    this.syncState();
   }
 
   /**

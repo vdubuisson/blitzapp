@@ -1,13 +1,7 @@
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { Player } from '@/models/player.model';
 import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
-import { AmoureuxVictoryHandler } from '@/victory-handlers/amoureux/amoureux-victory.handler';
-import { JoueurFluteVictoryHandler } from '@/victory-handlers/joueur-flute/joueur-flute-victory.handler';
-import { LoupBlancVictoryHandler } from '@/victory-handlers/loup-blanc/loup-blanc-victory.handler';
-import { LoupGarouVictoryHandler } from '@/victory-handlers/loup-garou/loup-garou-victory.handler';
 import { NoneVictoryHandler } from '@/victory-handlers/none/none-victory.handler';
-import { SectaireVictoryHandler } from '@/victory-handlers/sectaire/sectaire-victory.handler';
 import { VictoryHandler } from '@/victory-handlers/victory.handler';
 import { VillageoisVictoryHandler } from '@/victory-handlers/villageois/villageois-victory.handler';
 import { signal } from '@angular/core';
@@ -44,7 +38,7 @@ describe('VictoryHandlersService', () => {
   });
 
   it('should init VILLAGEOIS victory handler', () => {
-    service.initHandlers([]);
+    service.initRequiredHandlers();
 
     expect(
       service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS),
@@ -52,95 +46,11 @@ describe('VictoryHandlersService', () => {
   });
 
   it('should init NONE victory handler', () => {
-    service.initHandlers([]);
+    service.initRequiredHandlers();
 
     expect(service['victoryHandlers'].get(VictoryEnum.NONE)).toBeInstanceOf(
       NoneVictoryHandler,
     );
-  });
-
-  it('should init LOUP_GAROU victory handler if there are LOUP_GAROU', () => {
-    service.initHandlers([PlayerRoleEnum.LOUP_GAROU]);
-
-    expect(
-      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU),
-    ).toBeInstanceOf(LoupGarouVictoryHandler);
-  });
-
-  it('should init LOUP_GAROU victory handler if there is GRAND_MECHANT_LOUP', () => {
-    service.initHandlers([PlayerRoleEnum.GRAND_MECHANT_LOUP]);
-
-    expect(
-      service['victoryHandlers'].get(VictoryEnum.LOUP_GAROU),
-    ).toBeInstanceOf(LoupGarouVictoryHandler);
-  });
-
-  it('should not init LOUP_GAROU victory handler if there are no LOUP_GAROU', () => {
-    service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.LOUP_GAROU)).toEqual(
-      false,
-    );
-  });
-
-  it('should init AMOUREUX victory handler if there is CUPIDON', () => {
-    service.initHandlers([PlayerRoleEnum.CUPIDON]);
-
-    expect(service['victoryHandlers'].get(VictoryEnum.AMOUREUX)).toBeInstanceOf(
-      AmoureuxVictoryHandler,
-    );
-  });
-
-  it('should not init AMOUREUX victory handler if there is no CUPIDON', () => {
-    service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.AMOUREUX)).toEqual(false);
-  });
-
-  it('should init JOUEUR_FLUTE victory handler if there is JOUEUR_FLUTE', () => {
-    service.initHandlers([PlayerRoleEnum.JOUEUR_FLUTE]);
-
-    expect(
-      service['victoryHandlers'].get(VictoryEnum.JOUEUR_FLUTE),
-    ).toBeInstanceOf(JoueurFluteVictoryHandler);
-  });
-
-  it('should not init JOUEUR_FLUTE victory handler if there is no JOUEUR_FLUTE', () => {
-    service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
-      false,
-    );
-  });
-
-  it('should init LOUP_BLANC victory handler if there is LOUP_BLANC', () => {
-    service.initHandlers([PlayerRoleEnum.LOUP_BLANC]);
-
-    expect(
-      service['victoryHandlers'].get(VictoryEnum.LOUP_BLANC),
-    ).toBeInstanceOf(LoupBlancVictoryHandler);
-  });
-
-  it('should not init LOUP_BLANC victory handler if there is no LOUP_BLANC', () => {
-    service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.LOUP_BLANC)).toEqual(
-      false,
-    );
-  });
-
-  it('should init SECTAIRE victory handler if there is SECTAIRE', () => {
-    service.initHandlers([PlayerRoleEnum.SECTAIRE]);
-
-    expect(service['victoryHandlers'].get(VictoryEnum.SECTAIRE)).toBeInstanceOf(
-      SectaireVictoryHandler,
-    );
-  });
-
-  it('should not init SECTAIRE victory handler if there is no SECTAIRE', () => {
-    service.initHandlers([]);
-
-    expect(service['victoryHandlers'].has(VictoryEnum.SECTAIRE)).toEqual(false);
   });
 
   it('should return victory based on victorious Handler', () => {

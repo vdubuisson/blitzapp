@@ -28,16 +28,17 @@ export class BoucRoleHandler extends DefaultRoleHandler {
 
   override cleanStatusesAfterDay(players: Player[]): Player[] {
     if (this.needCleanAfterBouc()) {
-      const newPlayers = [...players];
-
-      newPlayers
-        .filter(
-          (player) =>
-            player.statuses.has(PlayerStatusEnum.NO_VOTE) &&
-            (player.role !== PlayerRoleEnum.IDIOT ||
-              player.killedBy === undefined),
-        )
-        .forEach((player) => player.statuses.delete(PlayerStatusEnum.NO_VOTE));
+      const newPlayers = players.map((player) => {
+        if (
+          player.statuses.has(PlayerStatusEnum.NO_VOTE) &&
+          (player.role !== PlayerRoleEnum.IDIOT ||
+            player.killedBy === undefined)
+        ) {
+          player.statuses.delete(PlayerStatusEnum.NO_VOTE);
+          return { ...player };
+        }
+        return player;
+      });
 
       this.needCleanAfterBouc.set(false);
 
