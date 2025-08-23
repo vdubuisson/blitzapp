@@ -7,6 +7,7 @@ import { TestBed } from '@angular/core/testing';
 import { RoundEnum } from '@/enums/round.enum';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('CorbeauRoleHandler', () => {
   let handler: CorbeauRoleHandler;
@@ -101,8 +102,18 @@ describe('CorbeauRoleHandler', () => {
         { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
       ];
 
+      const expectedPlayers = [...testPlayers];
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayersById')
+        .mockReturnValue(expectedPlayers);
+
       const result = handler.cleanStatusesAfterDay(testPlayers);
-      expect(result[0].statuses.has(PlayerStatusEnum.RAVEN)).toBe(false);
+      expect(result).toBe(expectedPlayers);
+      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
+        testPlayers,
+        PlayerStatusEnum.RAVEN,
+        [1],
+      );
     });
   });
 });

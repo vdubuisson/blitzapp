@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { JoueurFluteRoundHandler } from './joueur-flute-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('JoueurFluteRoundHandler', () => {
   let roundHandler: JoueurFluteRoundHandler;
@@ -64,13 +65,24 @@ describe('JoueurFluteRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer1 = { ...players[0] };
+    const expectedPlayer2 = { ...players[2] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockImplementation((player: Player) =>
+        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
+      );
 
     roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
-      expect(newPlayers[0].statuses.has(PlayerStatusEnum.CHARMED)).toEqual(
-        true,
+      expect(newPlayers[0]).toBe(expectedPlayer1);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.CHARMED,
       );
-      expect(newPlayers[2].statuses.has(PlayerStatusEnum.CHARMED)).toEqual(
-        true,
+      expect(newPlayers[2]).toBe(expectedPlayer2);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[2],
+        PlayerStatusEnum.CHARMED,
       );
     });
   }));

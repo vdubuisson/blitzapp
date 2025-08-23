@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class SorciereHealthRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -22,12 +23,10 @@ export class SorciereHealthRoundHandler extends DefaultRoundHandler {
             (player) => player.role === PlayerRoleEnum.SORCIERE,
           );
           if (sorciereIndex > -1) {
-            const newStatuses = new Set(newPlayers[sorciereIndex].statuses);
-            newStatuses.delete(PlayerStatusEnum.HEALTH_POTION);
-            newPlayers[sorciereIndex] = {
-              ...newPlayers[sorciereIndex],
-              statuses: newStatuses,
-            };
+            newPlayers[sorciereIndex] = removeStatusFromPlayer(
+              newPlayers[sorciereIndex],
+              PlayerStatusEnum.HEALTH_POTION,
+            );
           }
         }
         return newPlayers;
@@ -48,13 +47,12 @@ export class SorciereHealthRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    const newStatuses = new Set(player.statuses);
-    newStatuses.delete(PlayerStatusEnum.DEVOURED);
-    return {
-      ...player,
-      statuses: newStatuses,
-      killedBy: undefined,
-    };
+    const updatedPlayer = removeStatusFromPlayer(
+      player,
+      PlayerStatusEnum.DEVOURED,
+    );
+    updatedPlayer.killedBy = undefined;
+    return updatedPlayer;
   }
 
   private canHeal(players: Player[]): boolean {

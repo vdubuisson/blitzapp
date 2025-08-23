@@ -3,6 +3,7 @@ import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class CupidonRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -22,9 +23,6 @@ export class CupidonRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return {
-      ...player,
-      statuses: new Set([...player.statuses, PlayerStatusEnum.LOVER]),
-    };
+    return addStatusToPlayer(player, PlayerStatusEnum.LOVER);
   }
 }

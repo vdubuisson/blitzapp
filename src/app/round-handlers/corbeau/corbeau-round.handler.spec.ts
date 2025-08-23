@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { CorbeauRoundHandler } from './corbeau-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('CorbeauRoundHandler', () => {
   let roundHandler: CorbeauRoundHandler;
@@ -65,13 +66,18 @@ describe('CorbeauRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [2])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[2].statuses.has(PlayerStatusEnum.RAVEN)).toEqual(
-          true,
-        ),
+    const expectedPlayer = { ...players[2] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
+
+    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
+      expect(newPlayers[2]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[2],
+        PlayerStatusEnum.RAVEN,
       );
+    });
   }));
 
   it('should return all alive players except CORBEAU as selectable', () => {

@@ -5,6 +5,11 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import {
+  addStatusToPlayer,
+  addStatusToPlayersById,
+  removeStatusFromPlayer,
+} from '@/utils/status.utils';
 
 export class PereLoupsRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -17,34 +22,34 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
   ): Observable<Player[]> {
     return super.handleAction(players, selectedPlayerIds).pipe(
       map((newPlayers) => {
+        let updatedPlayers = [...newPlayers];
         if (selectedPlayerIds.length > 0) {
-          const pereLoupsIndex = newPlayers.findIndex(
+          const pereLoupsId = updatedPlayers.find(
             (player) => player.role === PlayerRoleEnum.PERE_LOUPS,
-          );
-          if (pereLoupsIndex > -1) {
-            newPlayers[pereLoupsIndex] = {
-              ...newPlayers[pereLoupsIndex],
-              statuses: new Set([
-                ...newPlayers[pereLoupsIndex].statuses,
-                PlayerStatusEnum.NO_POWER,
-              ]),
-            };
+          )?.id;
+          if (pereLoupsId !== undefined) {
+            updatedPlayers = addStatusToPlayersById(
+              updatedPlayers,
+              PlayerStatusEnum.NO_POWER,
+              [pereLoupsId],
+            );
           }
 
-          const selectedPlayerIndex = newPlayers.findIndex(
+          const selectedPlayerIndex = updatedPlayers.findIndex(
             (player) => player.id === selectedPlayerIds[0],
           );
           if (
             selectedPlayerIndex > -1 &&
-            newPlayers[selectedPlayerIndex].role === PlayerRoleEnum.JOUEUR_FLUTE
+            updatedPlayers[selectedPlayerIndex].role ===
+              PlayerRoleEnum.JOUEUR_FLUTE
           ) {
-            newPlayers[selectedPlayerIndex] = {
-              ...newPlayers[selectedPlayerIndex],
+            updatedPlayers[selectedPlayerIndex] = {
+              ...updatedPlayers[selectedPlayerIndex],
               role: PlayerRoleEnum.LOUP_GAROU,
             };
           }
         }
-        return newPlayers;
+        return updatedPlayers;
       }),
     );
   }
@@ -62,14 +67,13 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    const newStatuses = new Set(player.statuses);
-    newStatuses.delete(PlayerStatusEnum.WOLF_TARGET);
-    newStatuses.add(PlayerStatusEnum.INFECTED);
-    return {
-      ...player,
-      statuses: newStatuses,
-      killedBy: undefined,
-    };
+    let updatedPlayer = removeStatusFromPlayer(
+      player,
+      PlayerStatusEnum.WOLF_TARGET,
+    );
+    updatedPlayer = addStatusToPlayer(updatedPlayer, PlayerStatusEnum.INFECTED);
+    updatedPlayer.killedBy = undefined;
+    return updatedPlayer;
   }
 
   private canInfect(players: Player[]): boolean {

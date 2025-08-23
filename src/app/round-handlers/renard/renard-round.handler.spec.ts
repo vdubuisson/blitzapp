@@ -9,6 +9,7 @@ import * as neighborUtils from '@/utils/neighbor.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AnnouncementEnum } from '@/enums/announcement.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
@@ -460,14 +461,18 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
+    const expectedPlayer = { ...players[1] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
-          true,
-        ),
+    roundHandler.handleAction(players, [1]).subscribe((newPlayers) => {
+      expect(newPlayers[1]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        newPlayers[1],
+        PlayerStatusEnum.NO_POWER,
       );
+    });
   }));
 
   it('should announce fail if no LOUP_GAROU selected', waitForAsync(() => {

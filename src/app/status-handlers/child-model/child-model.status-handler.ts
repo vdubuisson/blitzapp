@@ -11,11 +11,14 @@ export class ChildModelStatusHandler extends DefaultStatusHandler {
    */
   override handleDeath(players: Player[], _: Player): Player[] {
     const newPlayers = [...players];
-    const enfantSauvage = newPlayers.find(
+    const enfantSauvageIndex = newPlayers.findIndex(
       (player) => player.role === PlayerRoleEnum.ENFANT_SAUVAGE,
     );
-    if (enfantSauvage !== undefined && !enfantSauvage.isDead) {
-      enfantSauvage.role = PlayerRoleEnum.LOUP_GAROU;
+    if (enfantSauvageIndex !== -1 && !newPlayers[enfantSauvageIndex].isDead) {
+      newPlayers[enfantSauvageIndex] = {
+        ...newPlayers[enfantSauvageIndex],
+        role: PlayerRoleEnum.LOUP_GAROU,
+      };
     }
     return newPlayers;
   }

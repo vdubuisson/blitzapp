@@ -56,9 +56,10 @@ describe('LoupBlancRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).not.toBe(players[0]);
+      expect(newPlayers[0].isDead).toEqual(true);
+    });
   }));
 
   it('should set killedBy LOUP_BLANC on selected player', waitForAsync(() => {
@@ -81,11 +82,10 @@ describe('LoupBlancRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_BLANC),
-      );
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).not.toBe(players[0]);
+      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_BLANC);
+    });
   }));
 
   it('should return alive players as selectable', () => {

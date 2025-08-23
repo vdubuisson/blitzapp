@@ -3,6 +3,7 @@ import { Player } from '@/models/player.model';
 import { MockReset } from 'ng-mocks';
 import { InfectedStatusHandler } from './infected.status-handler';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('InfectedStatusHandler', () => {
   let handler: InfectedStatusHandler;
@@ -52,14 +53,24 @@ describe('InfectedStatusHandler', () => {
           isDead: false,
         },
       ];
+      const expectedPlayer = { ...mockPlayers[1] };
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayer')
+        .mockReturnValue(expectedPlayer);
+      jest
+        .spyOn(statusUtils, 'addStatusToPlayer')
+        .mockReturnValue(expectedPlayer);
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(
-        false,
+      expect(newPlayers[1]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        mockPlayers[1],
+        PlayerStatusEnum.INJURED,
       );
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.INJURED)).toEqual(
-        true,
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        mockPlayers[1],
+        PlayerStatusEnum.INFECTED,
       );
     });
 

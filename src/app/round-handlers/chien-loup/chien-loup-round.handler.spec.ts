@@ -58,9 +58,10 @@ describe('ChienLoupRoundHandler', () => {
 
     roundHandler
       .handleAction(players, [], PlayerRoleEnum.LOUP_GAROU)
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU),
-      );
+      .subscribe((newPlayers) => {
+        expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
+        expect(newPlayers[0]).not.toBe(players[0]);
+      });
   }));
 
   it('should return LOUP_GAROU and VILLAGEOIS as selectable roles', () => {

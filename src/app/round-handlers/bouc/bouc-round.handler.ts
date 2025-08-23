@@ -4,6 +4,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { addStatusToPlayersById } from '@/utils/status.utils';
 
 export class BoucRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -14,15 +15,18 @@ export class BoucRoundHandler extends DefaultRoundHandler {
     players: Player[],
     selectedPlayerIds: number[],
   ): Observable<Player[]> {
-    const newPlayers = players.map((player) => {
-      if (!player.isDead && !selectedPlayerIds.includes(player.id)) {
-        return {
-          ...player,
-          statuses: new Set([...player.statuses, PlayerStatusEnum.NO_VOTE]),
-        };
-      }
-      return player;
-    });
+    const notSelectedPlayersIds = players.reduce<number[]>(
+      (acc, player) =>
+        !player.isDead && !selectedPlayerIds.includes(player.id)
+          ? [...acc, player.id]
+          : acc,
+      [],
+    );
+    const newPlayers = addStatusToPlayersById(
+      players,
+      PlayerStatusEnum.NO_VOTE,
+      notSelectedPlayersIds,
+    );
 
     return of(newPlayers);
   }

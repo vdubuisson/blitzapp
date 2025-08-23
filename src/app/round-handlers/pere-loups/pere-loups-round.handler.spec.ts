@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { PereLoupsRoundHandler } from './pere-loups-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('PereLoupsRoundHandler', () => {
   let roundHandler: PereLoupsRoundHandler;
@@ -56,14 +57,21 @@ describe('PereLoupsRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedPlayer);
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET),
-        ).toEqual(false),
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.WOLF_TARGET,
       );
+    });
   }));
 
   it('should add INFECTED status to selected player', waitForAsync(() => {
@@ -85,14 +93,21 @@ describe('PereLoupsRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedPlayer);
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(
-          true,
-        ),
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.INFECTED,
       );
+    });
   }));
 
   it('should transform JOUEUR_FLUTE into LOUP_GAROU', waitForAsync(() => {
@@ -115,11 +130,15 @@ describe('PereLoupsRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU),
-      );
+    const expectedPlayers = [...players];
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayersById')
+      .mockReturnValue(expectedPlayers);
+
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).not.toBe(players[0]);
+      expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
+    });
   }));
 
   it('should remove killedBy to selected player', waitForAsync(() => {
@@ -142,12 +161,18 @@ describe('PereLoupsRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedPlayer);
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toBeUndefined(),
-      );
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).not.toBe(players[0]);
+      expect(newPlayers[0].killedBy).toBeUndefined();
+    });
   }));
 
   it('should add NO_POWER status to PERE_LOUPS player', waitForAsync(() => {
@@ -169,14 +194,19 @@ describe('PereLoupsRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayers = [...players];
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayersById')
+      .mockReturnValue(expectedPlayers);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
-          true,
-        ),
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers).toBe(expectedPlayers);
+      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+        expectedPlayers,
+        PlayerStatusEnum.NO_POWER,
+        [1],
       );
+    });
   }));
 
   it('should not add NO_POWER status to PERE_LOUPS player if no player selected', waitForAsync(() => {

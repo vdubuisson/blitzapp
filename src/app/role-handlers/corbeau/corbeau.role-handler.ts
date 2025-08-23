@@ -3,6 +3,7 @@ import { DefaultRoleHandler } from '../default/default.role-handler';
 import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
 import { Player } from '@/models/player.model';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { removeStatusFromPlayersById } from '@/utils/status.utils';
 
 export class CorbeauRoleHandler extends DefaultRoleHandler {
   constructor() {
@@ -13,12 +14,16 @@ export class CorbeauRoleHandler extends DefaultRoleHandler {
   }
 
   override cleanStatusesAfterDay(players: Player[]): Player[] {
-    const newPlayers = [...players];
+    const playerWithStatusId = players.find((player) =>
+      player.statuses.has(PlayerStatusEnum.RAVEN),
+    )?.id;
 
-    newPlayers
-      .find((player) => player.statuses.has(PlayerStatusEnum.RAVEN))
-      ?.statuses.delete(PlayerStatusEnum.RAVEN);
+    if (playerWithStatusId !== undefined) {
+      return removeStatusFromPlayersById(players, PlayerStatusEnum.RAVEN, [
+        playerWithStatusId,
+      ]);
+    }
 
-    return newPlayers;
+    return players;
   }
 }

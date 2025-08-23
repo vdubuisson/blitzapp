@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { SalvateurRoundHandler } from './salvateur-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('SalvateurRoundHandler', () => {
   let roundHandler: SalvateurRoundHandler;
@@ -65,12 +66,25 @@ describe('SalvateurRoundHandler', () => {
       },
     ];
 
+    const expectedAddedPlayer = { ...players[2] };
+    const expectedRemovedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedAddedPlayer);
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedRemovedPlayer);
+
     roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers[0].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
-        false,
+      expect(newPlayers[0]).toBe(expectedRemovedPlayer);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.PROTECTED,
       );
-      expect(newPlayers[2].statuses.has(PlayerStatusEnum.PROTECTED)).toEqual(
-        true,
+      expect(newPlayers[2]).toBe(expectedAddedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[2],
+        PlayerStatusEnum.PROTECTED,
       );
     });
   }));

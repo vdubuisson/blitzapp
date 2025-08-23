@@ -10,6 +10,7 @@ import { isLoupGarou } from '@/utils/roles.utils';
 import { inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class RenardRoundHandler extends DefaultRoundHandler {
   private readonly announcementService = inject(AnnouncementService);
@@ -33,13 +34,10 @@ export class RenardRoundHandler extends DefaultRoundHandler {
           (player) => player.role === PlayerRoleEnum.RENARD,
         );
         if (renardIndex > -1) {
-          newPlayers[renardIndex] = {
-            ...newPlayers[renardIndex],
-            statuses: new Set([
-              ...newPlayers[renardIndex].statuses,
-              PlayerStatusEnum.NO_POWER,
-            ]),
-          };
+          newPlayers[renardIndex] = addStatusToPlayer(
+            newPlayers[renardIndex],
+            PlayerStatusEnum.NO_POWER,
+          );
         }
       }
     }

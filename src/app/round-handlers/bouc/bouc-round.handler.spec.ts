@@ -5,6 +5,7 @@ import { Player } from '@/models/player.model';
 import { BoucRoundHandler } from './bouc-round.handler';
 import { waitForAsync } from '@angular/core/testing';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('BoucRoundHandler', () => {
   let roundHandler: BoucRoundHandler;
@@ -73,98 +74,17 @@ describe('BoucRoundHandler', () => {
       },
     ];
 
-    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        true,
-      );
-      expect(newPlayers[3].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        true,
-      );
-    });
-  }));
-
-  it('should not add NO_VOTE to dead players', waitForAsync(() => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 3,
-        name: 'player3',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
+    const expectedPlayers = [...players];
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayersById')
+      .mockReturnValue(expectedPlayers);
 
     roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers[0].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        false,
-      );
-    });
-  }));
-
-  it('should not add NO_VOTE to selected players', waitForAsync(() => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: true,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 3,
-        name: 'player3',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers[2].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        false,
+      expect(newPlayers).toBe(expectedPlayers);
+      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+        players,
+        PlayerStatusEnum.NO_VOTE,
+        [1, 3],
       );
     });
   }));

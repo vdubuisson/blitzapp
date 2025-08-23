@@ -10,6 +10,7 @@ import { signal } from '@angular/core';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('BoucRoleHandler', () => {
   let handler: BoucRoleHandler;
@@ -168,14 +169,18 @@ describe('BoucRoleHandler', () => {
           isDead: false,
         },
       ];
+      const expectedPlayers = [...mockPlayers];
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayersById')
+        .mockReturnValue(expectedPlayers);
 
       const newPlayers = handler.cleanStatusesAfterDay(mockPlayers);
 
-      expect(newPlayers[0].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        false,
-      );
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        false,
+      expect(newPlayers).toBe(expectedPlayers);
+      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
+        mockPlayers,
+        PlayerStatusEnum.NO_VOTE,
+        [0, 1],
       );
     });
 
@@ -207,11 +212,18 @@ describe('BoucRoleHandler', () => {
           killedBy: PlayerRoleEnum.VILLAGEOIS,
         },
       ];
+      const expectedPlayers = [...mockPlayers];
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayersById')
+        .mockReturnValue(expectedPlayers);
 
       const newPlayers = handler.cleanStatusesAfterDay(mockPlayers);
 
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-        true,
+      expect(newPlayers).toBe(expectedPlayers);
+      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
+        mockPlayers,
+        PlayerStatusEnum.NO_VOTE,
+        [0],
       );
     });
   });

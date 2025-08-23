@@ -1,6 +1,7 @@
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { DefaultStatusHandler } from '../default/default.status-handler';
+import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class DevouredStatusHandler extends DefaultStatusHandler {
   /**
@@ -10,13 +11,16 @@ export class DevouredStatusHandler extends DefaultStatusHandler {
    * @return A new array of players with updated statuses.
    */
   override triggerAction(players: Player[]): Player[] {
-    const newPlayers = [...players];
-    newPlayers
-      .filter((player) => player.statuses.has(PlayerStatusEnum.DEVOURED))
-      .forEach((player) => {
-        player.statuses.delete(PlayerStatusEnum.DEVOURED);
-        player.isDead = true;
-      });
-    return newPlayers;
+    return players.map((player) => {
+      if (player.statuses.has(PlayerStatusEnum.DEVOURED)) {
+        const newPlayer = removeStatusFromPlayer(
+          player,
+          PlayerStatusEnum.DEVOURED,
+        );
+        newPlayer.isDead = true;
+        return newPlayer;
+      }
+      return player;
+    });
   }
 }

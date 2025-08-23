@@ -5,6 +5,7 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { ChevalierRoleHandler } from './chevalier.role-handler';
 import { TestBed } from '@angular/core/testing';
 import * as neighborUtils from '@/utils/neighbor.utils';
+import * as statusUtils from '@/utils/status.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { RustySwordStatusHandler } from '@/status-handlers/rusty-sword/rusty-sword.status-handler';
@@ -42,8 +43,18 @@ describe('ChevalierRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new ChevalierRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
+      {
+        id: 1,
+        name: 'Player 1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+      } as Player,
+      {
+        id: 2,
+        name: 'Player 2',
+        role: PlayerRoleEnum.LOUP_GAROU,
+        statuses: new Set(),
+      } as Player,
       {
         id: 3,
         name: 'Player 3',
@@ -87,22 +98,42 @@ describe('ChevalierRoleHandler', () => {
         ...players[0],
         killedBy: PlayerRoleEnum.GRAND_MECHANT_LOUP,
       };
+
+      const expectedPlayers = { ...players };
+
+      jest
+        .spyOn(statusUtils, 'addStatusToPlayersById')
+        .mockReturnValue(expectedPlayers);
+
       const result = handler.handleDeath(players, deadPlayer);
 
-      expect(result[2].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toBe(true);
+      expect(result).toEqual(expectedPlayers);
+      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+        players,
+        PlayerStatusEnum.RUSTY_SWORD,
+        [3],
+      );
     });
 
     it('should add RUSTY_SWORD status to the left neighbor if killed by LOUP_GAROU', () => {
       const deadPlayer = { ...players[0], killedBy: PlayerRoleEnum.LOUP_GAROU };
-      const leftNeighbor = { ...players[1], statuses: new Set() };
+      const leftNeighbor = players[1];
       jest
         .spyOn(neighborUtils, 'findLeftNeighbor')
         .mockReturnValue(leftNeighbor as Player);
 
+      const expectedPlayers = { ...players };
+      jest
+        .spyOn(statusUtils, 'addStatusToPlayersById')
+        .mockReturnValue(expectedPlayers);
+
       const result = handler.handleDeath(players, deadPlayer);
 
-      expect(leftNeighbor.statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toBe(
-        true,
+      expect(result).toEqual(expectedPlayers);
+      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+        players,
+        PlayerStatusEnum.RUSTY_SWORD,
+        [2],
       );
     });
 

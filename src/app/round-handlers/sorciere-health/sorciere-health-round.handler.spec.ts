@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { SorciereHealthRoundHandler } from './sorciere-health-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('SorciereHealthRoundHandler', () => {
   let roundHandler: SorciereHealthRoundHandler;
@@ -57,13 +58,21 @@ describe('SorciereHealthRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
-          false,
-        ),
+    const expectedPlayer1 = { ...players[0] };
+    const expectedPlayer2 = { ...players[1] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockImplementation((player) =>
+        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
+
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer1);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.DEVOURED,
+      );
+    });
   }));
 
   it('should remove killedBy to selected player', waitForAsync(() => {
@@ -87,11 +96,17 @@ describe('SorciereHealthRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toBeUndefined(),
+    const expectedPlayer1 = { ...players[0] };
+    const expectedPlayer2 = { ...players[1] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockImplementation((player) =>
+        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
+
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0].killedBy).toBeUndefined();
+    });
   }));
 
   it('should remove HEALTH_POTION status to SORCIERE player', waitForAsync(() => {
@@ -114,13 +129,21 @@ describe('SorciereHealthRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION),
-        ).toEqual(false),
+    const expectedPlayer1 = { ...players[0] };
+    const expectedPlayer2 = { ...players[1] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockImplementation((player) =>
+        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
+
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[1]).toBe(expectedPlayer2);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        players[1],
+        PlayerStatusEnum.HEALTH_POTION,
+      );
+    });
   }));
 
   it('should not remove HEALTH_POTION status to SORCIERE player if no player selected', waitForAsync(() => {

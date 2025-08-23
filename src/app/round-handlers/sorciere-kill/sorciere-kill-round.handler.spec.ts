@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { SorciereKillRoundHandler } from './sorciere-kill-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('SorciereKillRoundHandler', () => {
   let roundHandler: SorciereKillRoundHandler;
@@ -109,13 +110,18 @@ describe('SorciereKillRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION),
-        ).toEqual(false),
+    const expectedPlayer = { ...players[1] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedPlayer);
+
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[1]).toBe(expectedPlayer);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        players[1],
+        PlayerStatusEnum.DEATH_POTION,
       );
+    });
   }));
 
   it('should not remove DEATH_POTION status to SORCIERE player if no player selected', waitForAsync(() => {

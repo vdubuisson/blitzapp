@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { GrandMechantLoupRoundHandler } from './grand-mechant-loup-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('GrandMechantLoupRoundHandler', () => {
   let roundHandler: GrandMechantLoupRoundHandler;
@@ -56,14 +57,18 @@ describe('GrandMechantLoupRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET),
-        ).toEqual(true),
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.WOLF_TARGET,
       );
+    });
   }));
 
   it('should set killedBy GRAND_MECHANT_LOUP to selected player', waitForAsync(() => {
@@ -85,14 +90,15 @@ describe('GrandMechantLoupRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toEqual(
-          PlayerRoleEnum.GRAND_MECHANT_LOUP,
-        ),
-      );
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.GRAND_MECHANT_LOUP);
+    });
   }));
 
   it('should return alive players as selectable', () => {

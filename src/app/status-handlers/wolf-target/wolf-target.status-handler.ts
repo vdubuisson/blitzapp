@@ -2,6 +2,10 @@ import { Player } from '@/models/player.model';
 import { DefaultStatusHandler } from '../default/default.status-handler';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import {
+  addStatusToPlayer,
+  removeStatusFromPlayer,
+} from '@/utils/status.utils';
 
 export class WolfTargetStatusHandler extends DefaultStatusHandler {
   /**
@@ -13,11 +17,12 @@ export class WolfTargetStatusHandler extends DefaultStatusHandler {
    * @returns A new array of players with updated statuses.
    */
   override triggerAction(players: Player[]): Player[] {
-    const newPlayers = [...players];
-    newPlayers
-      .filter((player) => player.statuses.has(PlayerStatusEnum.WOLF_TARGET))
-      .forEach((player) => {
-        player.statuses.delete(PlayerStatusEnum.WOLF_TARGET);
+    return players.map((player) => {
+      if (player.statuses.has(PlayerStatusEnum.WOLF_TARGET)) {
+        let newPlayer = removeStatusFromPlayer(
+          player,
+          PlayerStatusEnum.WOLF_TARGET,
+        );
         if (
           !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
           player.role === PlayerRoleEnum.PETITE_FILLE
@@ -26,14 +31,16 @@ export class WolfTargetStatusHandler extends DefaultStatusHandler {
             player.role === PlayerRoleEnum.ANCIEN &&
             !player.statuses.has(PlayerStatusEnum.INJURED)
           ) {
-            player.statuses.add(PlayerStatusEnum.INJURED);
+            newPlayer = addStatusToPlayer(newPlayer, PlayerStatusEnum.INJURED);
           } else {
-            player.statuses.add(PlayerStatusEnum.DEVOURED);
+            newPlayer = addStatusToPlayer(newPlayer, PlayerStatusEnum.DEVOURED);
           }
         } else {
-          player.killedBy = undefined;
+          newPlayer.killedBy = undefined;
         }
-      });
-    return newPlayers;
+        return newPlayer;
+      }
+      return player;
+    });
   }
 }

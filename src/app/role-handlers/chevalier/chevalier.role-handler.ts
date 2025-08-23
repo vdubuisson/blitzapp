@@ -4,6 +4,7 @@ import { Player } from '@/models/player.model';
 import { findLeftNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
+import { addStatusToPlayersById } from '@/utils/status.utils';
 
 export class ChevalierRoleHandler extends DefaultRoleHandler {
   constructor() {
@@ -14,18 +15,23 @@ export class ChevalierRoleHandler extends DefaultRoleHandler {
   }
 
   override handleDeath(players: Player[], deadPlayer: Player): Player[] {
-    const newPlayers = [...players];
+    let playerToAddStatusId: number | undefined;
     if (deadPlayer.killedBy === PlayerRoleEnum.GRAND_MECHANT_LOUP) {
-      newPlayers
-        .find((player) => player.role === PlayerRoleEnum.GRAND_MECHANT_LOUP)
-        ?.statuses.add(PlayerStatusEnum.RUSTY_SWORD);
+      playerToAddStatusId = players.find(
+        (player) => player.role === PlayerRoleEnum.GRAND_MECHANT_LOUP,
+      )?.id;
     } else if (deadPlayer.killedBy === PlayerRoleEnum.LOUP_GAROU) {
-      const chevalierIndex = newPlayers.indexOf(deadPlayer);
-      findLeftNeighbor(newPlayers, chevalierIndex, true)?.statuses.add(
-        PlayerStatusEnum.RUSTY_SWORD,
-      );
+      const chevalierIndex = players.indexOf(deadPlayer);
+      playerToAddStatusId = findLeftNeighbor(players, chevalierIndex, true)?.id;
     }
-    return newPlayers;
+
+    if (playerToAddStatusId !== undefined) {
+      return addStatusToPlayersById(players, PlayerStatusEnum.RUSTY_SWORD, [
+        playerToAddStatusId,
+      ]);
+    }
+
+    return players;
   }
 
   override cleanStatusesAfterDay(players: Player[]): Player[] {

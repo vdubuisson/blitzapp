@@ -4,6 +4,10 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import {
+  addStatusToPlayer,
+  removeStatusFromPlayer,
+} from '@/utils/status.utils';
 
 export class SalvateurRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -22,12 +26,10 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
             !selectedPlayerIds.includes(player.id),
         );
         if (oldProtectedIndex > -1) {
-          const newStatuses = new Set(newPlayers[oldProtectedIndex].statuses);
-          newStatuses.delete(PlayerStatusEnum.PROTECTED);
-          newPlayers[oldProtectedIndex] = {
-            ...newPlayers[oldProtectedIndex],
-            statuses: newStatuses,
-          };
+          newPlayers[oldProtectedIndex] = removeStatusFromPlayer(
+            newPlayers[oldProtectedIndex],
+            PlayerStatusEnum.PROTECTED,
+          );
         }
         return newPlayers;
       }),
@@ -50,9 +52,6 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return {
-      ...player,
-      statuses: new Set([...player.statuses, PlayerStatusEnum.PROTECTED]),
-    };
+    return addStatusToPlayer(player, PlayerStatusEnum.PROTECTED);
   }
 }

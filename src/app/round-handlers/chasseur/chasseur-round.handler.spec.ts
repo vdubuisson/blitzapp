@@ -56,9 +56,10 @@ describe('ChasseurRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0].isDead).toEqual(true);
+      expect(newPlayers[0]).not.toBe(players[0]);
+    });
   }));
 
   it('should set killedBy CHASSEUR on selected player', waitForAsync(() => {
@@ -81,11 +82,10 @@ describe('ChasseurRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.CHASSEUR),
-      );
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.CHASSEUR);
+      expect(newPlayers[0]).not.toBe(players[0]);
+    });
   }));
 
   it('should return all players alive except CHASSEUR as selectable players', () => {

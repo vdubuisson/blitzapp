@@ -4,6 +4,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class SectaireRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -16,13 +17,10 @@ export class SectaireRoundHandler extends DefaultRoundHandler {
   ): Observable<Player[]> {
     const newPlayers = players.map((player) => {
       const isSelected = selectedPlayerIds.includes(player.id);
-      return {
-        ...player,
-        statuses: new Set([
-          ...player.statuses,
-          isSelected ? PlayerStatusEnum.BLUE_TEAM : PlayerStatusEnum.RED_TEAM,
-        ]),
-      };
+      return addStatusToPlayer(
+        player,
+        isSelected ? PlayerStatusEnum.BLUE_TEAM : PlayerStatusEnum.RED_TEAM,
+      );
     });
 
     return of(newPlayers);

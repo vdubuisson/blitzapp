@@ -7,6 +7,7 @@ import { AfterDeathRoundQueueStore } from '@/stores/after-death-round-queue/afte
 import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('CaptainStatusHandler', () => {
   let handler: CaptainStatusHandler;
@@ -53,11 +54,18 @@ describe('CaptainStatusHandler', () => {
           isDead: true,
         },
       ];
+      const expectedPlayers = [...mockPlayers];
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayersById')
+        .mockReturnValue(expectedPlayers);
 
       const newPlayers = handler.handleDeath(mockPlayers, mockPlayers[1]);
 
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.CAPTAIN)).toEqual(
-        false,
+      expect(newPlayers).not.toBe(mockPlayers);
+      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
+        mockPlayers,
+        PlayerStatusEnum.CAPTAIN,
+        [1],
       );
     });
 

@@ -3,6 +3,7 @@ import { Player } from '@/models/player.model';
 import { MockReset } from 'ng-mocks';
 import { RustySwordStatusHandler } from './rusty-sword.status-handler';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('RustySwordStatusHandler', () => {
   let handler: RustySwordStatusHandler;
@@ -52,15 +53,21 @@ describe('RustySwordStatusHandler', () => {
           isDead: false,
         },
       ];
+      const expectedPlayer = { ...mockPlayers[1] };
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayer')
+        .mockReturnValue(expectedPlayer);
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.RUSTY_SWORD)).toEqual(
-        false,
+      expect(newPlayers[1]).toBe(expectedPlayer);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        mockPlayers[1],
+        PlayerStatusEnum.RUSTY_SWORD,
       );
     });
 
-    it('should kill player with RUSTY_SWORD status on after-day cleaning', () => {
+    it('should kill player with RUSTY_SWORD status', () => {
       const mockPlayers: Player[] = [
         {
           id: 0,
@@ -79,13 +86,17 @@ describe('RustySwordStatusHandler', () => {
           isDead: false,
         },
       ];
+      const expectedPlayer = { ...mockPlayers[1] };
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayer')
+        .mockReturnValue(expectedPlayer);
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1].isDead).toEqual(true);
     });
 
-    it('should set killed by CHEVALIER on player with RUSTY_SWORD status on after-day cleaning', () => {
+    it('should set killed by CHEVALIER on player with RUSTY_SWORD status', () => {
       const mockPlayers: Player[] = [
         {
           id: 0,
@@ -104,6 +115,10 @@ describe('RustySwordStatusHandler', () => {
           isDead: false,
         },
       ];
+      const expectedPlayer = { ...mockPlayers[1] };
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayer')
+        .mockReturnValue(expectedPlayer);
 
       const newPlayers = handler.triggerAction(mockPlayers);
 

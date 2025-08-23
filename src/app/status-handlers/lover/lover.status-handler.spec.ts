@@ -65,6 +65,7 @@ describe('LoverStatusHandler', () => {
       const newPlayers = handler.handleDeath(mockPlayers, mockPlayers[2]);
 
       expect(newPlayers[1].isDead).toEqual(true);
+      expect(newPlayers[1]).not.toBe(mockPlayers[1]);
     });
 
     it('should remove AMOUREUX victory handler', () => {

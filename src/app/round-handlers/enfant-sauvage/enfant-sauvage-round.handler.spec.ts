@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { EnfantSauvageRoundHandler } from './enfant-sauvage-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('EnfantSauvageRoundHandler', () => {
   let roundHandler: EnfantSauvageRoundHandler;
@@ -65,13 +66,18 @@ describe('EnfantSauvageRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.CHILD_MODEL),
-        ).toEqual(true),
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
+
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.CHILD_MODEL,
       );
+    });
   }));
 
   it('should return all players except ENFANT_SAUVAGE as selectable', () => {

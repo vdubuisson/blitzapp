@@ -8,6 +8,7 @@ import {
   removePowersFromInnocents,
 } from './roles.utils';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('getNotPlayedRoles', () => {
   it('should return not played cards', () => {
@@ -131,11 +132,17 @@ describe('removePowersFromInnocents', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...mockPlayers[0] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].statuses.has(PlayerStatusEnum.HEALTH_POTION)).toEqual(
-      false,
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      mockPlayers[0],
+      PlayerStatusEnum.HEALTH_POTION,
     );
   });
 
@@ -153,11 +160,17 @@ describe('removePowersFromInnocents', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...mockPlayers[0] };
+    jest
+      .spyOn(statusUtils, 'removeStatusFromPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].statuses.has(PlayerStatusEnum.DEATH_POTION)).toEqual(
-      false,
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      mockPlayers[0],
+      PlayerStatusEnum.DEATH_POTION,
     );
   });
 
@@ -173,9 +186,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform CUPIDON to VILLAGEOIS', () => {
@@ -190,9 +204,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform PETITE_FILLE to VILLAGEOIS', () => {
@@ -207,9 +222,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform SORCIERE to VILLAGEOIS', () => {
@@ -224,9 +240,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform VOYANTE to VILLAGEOIS', () => {
@@ -241,9 +258,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform CORBEAU to VILLAGEOIS', () => {
@@ -258,9 +276,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform SALVATEUR to VILLAGEOIS', () => {
@@ -275,9 +294,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform MONTREUR_OURS to VILLAGEOIS', () => {
@@ -292,9 +312,10 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
   it('should transform RENARD to VILLAGEOIS', () => {
@@ -309,8 +330,9 @@ describe('removePowersFromInnocents', () => {
       },
     ];
 
-    removePowersFromInnocents(mockPlayers);
+    const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(mockPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
+    expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 });

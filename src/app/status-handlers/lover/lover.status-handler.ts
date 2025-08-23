@@ -17,14 +17,17 @@ export class LoverStatusHandler extends DefaultStatusHandler {
    */
   override handleDeath(players: Player[], deadPlayer: Player): Player[] {
     const newPlayers = [...players];
-    const otherLivingLover = newPlayers.find(
+    const otherLivingLoverIndex = newPlayers.findIndex(
       (player) =>
         player.statuses.has(PlayerStatusEnum.LOVER) &&
         player.id !== deadPlayer.id &&
         !player.isDead,
     );
-    if (otherLivingLover !== undefined) {
-      otherLivingLover.isDead = true;
+    if (otherLivingLoverIndex > -1) {
+      newPlayers[otherLivingLoverIndex] = {
+        ...newPlayers[otherLivingLoverIndex],
+        isDead: true,
+      };
     }
 
     this.victoryHandlersService.removeHandler(VictoryEnum.AMOUREUX);

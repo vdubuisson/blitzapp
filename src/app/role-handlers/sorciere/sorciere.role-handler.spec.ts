@@ -7,6 +7,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('SorciereRoleHandler', () => {
   let handler: SorciereRoleHandler;
@@ -55,13 +56,35 @@ describe('SorciereRoleHandler', () => {
 
   describe('prepareNewGame', () => {
     it('should add HEALTH_POTION status to SORCIERE', () => {
+      const expectedPlayers = [...players];
+      jest
+        .spyOn(statusUtils, 'addStatusToPlayersById')
+        .mockReturnValue(expectedPlayers);
+
       const result = handler.prepareNewGame(players);
-      expect(result[0].statuses.has(PlayerStatusEnum.HEALTH_POTION)).toBe(true);
+
+      expect(result).toBe(expectedPlayers);
+      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+        players,
+        PlayerStatusEnum.HEALTH_POTION,
+        [1],
+      );
     });
 
     it('should add DEATH_POTION status to SORCIERE', () => {
+      const expectedPlayers = [...players];
+      jest
+        .spyOn(statusUtils, 'addStatusToPlayersById')
+        .mockReturnValue(expectedPlayers);
+
       const result = handler.prepareNewGame(players);
-      expect(result[0].statuses.has(PlayerStatusEnum.DEATH_POTION)).toBe(true);
+
+      expect(result).toBe(expectedPlayers);
+      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+        players,
+        PlayerStatusEnum.DEATH_POTION,
+        [1],
+      );
     });
 
     it('should create SORCIERE_HEALTH round handler', () => {

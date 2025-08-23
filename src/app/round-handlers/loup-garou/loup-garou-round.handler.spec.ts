@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { LoupGarouRoundHandler } from './loup-garou-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('LoupGarouRoundHandler', () => {
   let roundHandler: LoupGarouRoundHandler;
@@ -56,14 +57,18 @@ describe('LoupGarouRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[0].statuses.has(PlayerStatusEnum.WOLF_TARGET),
-        ).toEqual(true),
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.WOLF_TARGET,
       );
+    });
   }));
 
   it('should set killed by LOUP_GAROU to selected player', waitForAsync(() => {
@@ -85,12 +90,15 @@ describe('LoupGarouRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_GAROU),
-      );
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_GAROU);
+    });
   }));
 
   it('should return alive players as selectable', () => {

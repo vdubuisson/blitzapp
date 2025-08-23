@@ -7,6 +7,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('SalvateurRoleHandler', () => {
   let handler: SalvateurRoleHandler;
@@ -101,8 +102,18 @@ describe('SalvateurRoleHandler', () => {
         } as Player,
       ];
 
+      const expectedPlayers = [...testPlayers];
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayersById')
+        .mockReturnValue(expectedPlayers);
+
       const result = handler.cleanStatusesAfterDay(testPlayers);
-      expect(result[0].statuses.has(PlayerStatusEnum.PROTECTED)).toBe(false);
+      expect(result).toBe(expectedPlayers);
+      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
+        testPlayers,
+        PlayerStatusEnum.PROTECTED,
+        [1],
+      );
     });
 
     it('should not remove PROTECTED status from players if SALVATEUR is alive', () => {

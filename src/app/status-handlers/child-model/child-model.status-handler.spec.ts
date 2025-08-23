@@ -46,6 +46,7 @@ describe('ChildModelStatusHandler', () => {
       const newPlayers = handler.handleDeath(mockPlayers, mockPlayers[2]);
 
       expect(newPlayers[1].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
+      expect(newPlayers[1]).not.toBe(mockPlayers[1]);
     });
 
     it('should not change dead ENFANT_SAUVAGE to LOUP_GAROU on CHILD_MODEL death', () => {

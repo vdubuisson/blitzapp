@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class SorciereKillRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -22,12 +23,10 @@ export class SorciereKillRoundHandler extends DefaultRoundHandler {
             (player) => player.role === PlayerRoleEnum.SORCIERE,
           );
           if (sorciereIndex > -1) {
-            const newStatuses = new Set(newPlayers[sorciereIndex].statuses);
-            newStatuses.delete(PlayerStatusEnum.DEATH_POTION);
-            newPlayers[sorciereIndex] = {
-              ...newPlayers[sorciereIndex],
-              statuses: newStatuses,
-            };
+            newPlayers[sorciereIndex] = removeStatusFromPlayer(
+              newPlayers[sorciereIndex],
+              PlayerStatusEnum.DEATH_POTION,
+            );
           }
         }
         return newPlayers;

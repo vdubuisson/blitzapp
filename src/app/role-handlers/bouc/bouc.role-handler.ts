@@ -7,6 +7,7 @@ import { inject } from '@angular/core';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { removeStatusFromPlayersById } from '@/utils/status.utils';
 
 export class BoucRoleHandler extends DefaultRoleHandler {
   private readonly afterDeathRoundQueue = inject(AfterDeathRoundQueueStore)
@@ -28,21 +29,21 @@ export class BoucRoleHandler extends DefaultRoleHandler {
 
   override cleanStatusesAfterDay(players: Player[]): Player[] {
     if (this.needCleanAfterBouc()) {
-      const newPlayers = players.map((player) => {
-        if (
-          player.statuses.has(PlayerStatusEnum.NO_VOTE) &&
-          (player.role !== PlayerRoleEnum.IDIOT ||
-            player.killedBy === undefined)
-        ) {
-          player.statuses.delete(PlayerStatusEnum.NO_VOTE);
-          return { ...player };
-        }
-        return player;
-      });
+      const ids = players.reduce<number[]>(
+        (acc, player) =>
+          player.role !== PlayerRoleEnum.IDIOT || player.killedBy === undefined
+            ? [...acc, player.id]
+            : acc,
+        [],
+      );
 
       this.needCleanAfterBouc.set(false);
 
-      return newPlayers;
+      return removeStatusFromPlayersById(
+        players,
+        PlayerStatusEnum.NO_VOTE,
+        ids,
+      );
     }
     return players;
   }

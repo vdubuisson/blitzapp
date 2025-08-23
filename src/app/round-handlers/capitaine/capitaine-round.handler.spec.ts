@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { CapitaineRoundHandler } from './capitaine-round.handler';
 import { waitForAsync } from '@angular/core/testing';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('CapitaineRoundHandler', () => {
   let roundHandler: CapitaineRoundHandler;
@@ -56,14 +57,18 @@ describe('CapitaineRoundHandler', () => {
         isDead: false,
       },
     ];
+    const expectedPlayer = { ...players[0] };
+    jest
+      .spyOn(statusUtils, 'addStatusToPlayer')
+      .mockReturnValue(expectedPlayer);
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].statuses.has(PlayerStatusEnum.CAPTAIN)).toEqual(
-          true,
-        ),
+    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
+      expect(newPlayers[0]).toBe(expectedPlayer);
+      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+        players[0],
+        PlayerStatusEnum.CAPTAIN,
       );
+    });
   }));
 
   it('should return all players alive as selectable players', () => {

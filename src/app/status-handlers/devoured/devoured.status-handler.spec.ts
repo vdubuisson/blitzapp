@@ -2,6 +2,7 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { DevouredStatusHandler } from './devoured.status-handler';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import * as statusUtils from '@/utils/status.utils';
 
 describe('DevouredStatusHandler', () => {
   let handler: DevouredStatusHandler;
@@ -49,10 +50,15 @@ describe('DevouredStatusHandler', () => {
           isDead: false,
         },
       ];
+      const expectedPlayer = { ...mockPlayers[1] };
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayer')
+        .mockReturnValue(expectedPlayer);
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1].isDead).toEqual(true);
+      expect(newPlayers[1]).not.toBe(mockPlayers[1]);
     });
 
     it('should remove DEVOURED status to players with DEVOURED status', () => {
@@ -75,10 +81,17 @@ describe('DevouredStatusHandler', () => {
         },
       ];
 
+      const expectedPlayer = { ...mockPlayers[1] };
+      jest
+        .spyOn(statusUtils, 'removeStatusFromPlayer')
+        .mockReturnValue(expectedPlayer);
+
       const newPlayers = handler.triggerAction(mockPlayers);
 
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEVOURED)).toEqual(
-        false,
+      expect(newPlayers[1]).toBe(expectedPlayer);
+      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+        mockPlayers[1],
+        PlayerStatusEnum.DEVOURED,
       );
     });
   });

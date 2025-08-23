@@ -5,6 +5,7 @@ import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { isLoupGarou } from '@/utils/roles.utils';
 import { DefaultRoundHandler } from '../default/default-round.handler';
+import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class GrandMechantLoupRoundHandler extends DefaultRoundHandler {
   constructor() {
@@ -30,10 +31,11 @@ export class GrandMechantLoupRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return {
-      ...player,
-      statuses: new Set([...player.statuses, PlayerStatusEnum.WOLF_TARGET]),
-      killedBy: PlayerRoleEnum.GRAND_MECHANT_LOUP,
-    };
+    const updatedPlayer = addStatusToPlayer(
+      player,
+      PlayerStatusEnum.WOLF_TARGET,
+    );
+    updatedPlayer.killedBy = PlayerRoleEnum.GRAND_MECHANT_LOUP;
+    return updatedPlayer;
   }
 }
