@@ -112,4 +112,8 @@ export class RoundOrchestrationService {
     this.sortedRounds.splice(villageoisIndex, 1);
     this.sortedRounds.splice(sectaireIndex + 1, 0, RoundEnum.VILLAGEOIS);
   }
+
+  resetRoundsOrder(): void {
+    this.sortedRounds = [...ROUNDS_ORDER_CONFIG];
+  }
 }

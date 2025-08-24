@@ -80,6 +80,7 @@ export class StatusHandlersService {
     if (statusHandlerClass.name === DefaultStatusHandler.name) {
       // Reuse the default status handler instance
       this.statusHandlers.set(status, this.defaultStatusHandler);
+      return;
     }
     runInInjectionContext(this.injector, () => {
       const statusHandler = new statusHandlerClass();

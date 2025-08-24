@@ -160,16 +160,18 @@ describe('removePowersFromInnocents', () => {
         isDead: false,
       },
     ];
-    const expectedPlayer = { ...mockPlayers[0] };
+    const firstReturn = { ...mockPlayers[0] };
+    const secondReturn = { ...mockPlayers[0] };
     jest
       .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockReturnValue(expectedPlayer);
+      .mockReturnValueOnce(firstReturn)
+      .mockReturnValueOnce(secondReturn);
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(newPlayers[0]).toBe(secondReturn);
     expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
-      mockPlayers[0],
+      firstReturn,
       PlayerStatusEnum.DEATH_POTION,
     );
   });

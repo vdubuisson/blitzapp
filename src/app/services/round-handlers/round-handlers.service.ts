@@ -136,7 +136,7 @@ export class RoundHandlersService {
       const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
       const defaultRoundHandler = new DefaultRoundHandler(
         round,
-        true,
+        roundHandler.isOnlyOnce,
         roundHandler.isDuringDay,
       );
       this.roundHandlers.set(round, defaultRoundHandler);

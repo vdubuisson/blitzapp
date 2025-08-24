@@ -126,6 +126,31 @@ describe('VillageoisRoundHandler', () => {
       .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(false));
   }));
 
+  it('should kill IDIOT if INFECTED', waitForAsync(() => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
+        statuses: new Set([PlayerStatusEnum.INFECTED]),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+
+    roundHandler
+      .handleAction(players, [0])
+      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
+  }));
+
   it('should kill IDIOT the second time', waitForAsync(() => {
     const players: Player[] = [
       {

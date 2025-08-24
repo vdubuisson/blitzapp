@@ -109,8 +109,8 @@ export class DeathService {
       ...deathsToAnnounce,
       deadPlayer,
     ]);
-    this.handlePlayerDeathStatuses(players, deadPlayer);
-    return this.handlePlayerDeathRole(players, deadPlayer);
+    const newPlayers = this.handlePlayerDeathStatuses(players, deadPlayer);
+    return this.handlePlayerDeathRole(newPlayers, deadPlayer);
   }
 
   private handlePlayerDeathStatuses(

@@ -13,6 +13,7 @@ import { UniqueRoundsPassedStore } from '@/stores/unique-rounds-passed/unique-ro
 import { signal } from '@angular/core';
 import { RoundOrchestrationService } from './round-orchestration.service';
 import { DayCountStore } from '@/stores/day-count/day-count.store';
+import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
 
 class MockRoundHandler implements RoundHandler {
   constructor(isOnlyOnce = false) {
@@ -305,5 +306,18 @@ describe('RoundOrchestrationService', () => {
       RoundEnum.SORCIERE_HEALTH,
       RoundEnum.LOUP_GAROU,
     ]);
+  });
+
+  it('should reset sorted rounds on resetRoundsOrder', () => {
+    service['sortedRounds'] = [
+      RoundEnum.VILLAGEOIS,
+      RoundEnum.SECTAIRE,
+      RoundEnum.SORCIERE_HEALTH,
+      RoundEnum.LOUP_GAROU,
+    ];
+
+    service.resetRoundsOrder();
+
+    expect(service['sortedRounds']).toEqual([...ROUNDS_ORDER_CONFIG]);
   });
 });

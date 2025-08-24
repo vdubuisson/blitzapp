@@ -108,7 +108,7 @@ describe('removeStatusFromPlayer', () => {
   });
 });
 
-describe('addStatusToPlayers', () => {
+describe('addStatusToPlayersById', () => {
   const basePlayer = (id: number): Player => ({
     id,
     name: `Player ${id}`,
@@ -118,8 +118,8 @@ describe('addStatusToPlayers', () => {
     isDead: false,
   });
 
-  it('should add a status to the specified player indexes and keep others unchanged', () => {
-    const players = [basePlayer(1), basePlayer(2), basePlayer(3)];
+  it('should add a status to the specified player and keep others unchanged', () => {
+    const players = [basePlayer(0), basePlayer(1), basePlayer(2)];
     const updated = addStatusToPlayersById(
       players,
       PlayerStatusEnum.PROTECTED,
@@ -145,10 +145,10 @@ describe('addStatusToPlayers', () => {
 
   it('should not duplicate statuses when the status already exists on a player', () => {
     const playerWithStatus = {
-      ...basePlayer(1),
+      ...basePlayer(0),
       statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
     };
-    const players = [playerWithStatus, basePlayer(2)];
+    const players = [playerWithStatus, basePlayer(1)];
     const updated = addStatusToPlayersById(
       players,
       PlayerStatusEnum.WOLF_TARGET,
@@ -165,7 +165,7 @@ describe('addStatusToPlayers', () => {
   });
 
   it('should not modify any player when playerIndexes is empty', () => {
-    const players = [basePlayer(1), basePlayer(2)];
+    const players = [basePlayer(0), basePlayer(1)];
     const updated = addStatusToPlayersById(
       players,
       PlayerStatusEnum.PROTECTED,
@@ -194,12 +194,12 @@ describe('removeStatusFromPlayers', () => {
 
   it('should remove the status from specified players and keep others unchanged', () => {
     const players = [
-      basePlayerWith(1, [
+      basePlayerWith(0, [
         PlayerStatusEnum.WOLF_TARGET,
         PlayerStatusEnum.PROTECTED,
       ]),
-      basePlayerWith(2, [PlayerStatusEnum.PROTECTED]),
-      basePlayerWith(3, [PlayerStatusEnum.WOLF_TARGET]),
+      basePlayerWith(1, [PlayerStatusEnum.PROTECTED]),
+      basePlayerWith(2, [PlayerStatusEnum.WOLF_TARGET]),
     ];
 
     const updated = removeStatusFromPlayersById(
@@ -225,8 +225,8 @@ describe('removeStatusFromPlayers', () => {
 
   it('should do nothing for players that do not have the status', () => {
     const players = [
-      basePlayerWith(1, [PlayerStatusEnum.PROTECTED]),
-      basePlayerWith(2, []),
+      basePlayerWith(0, [PlayerStatusEnum.PROTECTED]),
+      basePlayerWith(1, []),
     ];
     const updated = removeStatusFromPlayersById(
       players,
@@ -241,7 +241,7 @@ describe('removeStatusFromPlayers', () => {
   });
 
   it('should not modify any player references when playerIndexes is empty', () => {
-    const players = [basePlayerWith(1, [PlayerStatusEnum.PROTECTED])];
+    const players = [basePlayerWith(0, [PlayerStatusEnum.PROTECTED])];
     const updated = removeStatusFromPlayersById(
       players,
       PlayerStatusEnum.PROTECTED,

@@ -115,6 +115,7 @@ export class GameService {
     this.roundHandlersService.clearHandlers();
     this.statusHandlersService.clearHandlers();
     this.victoryHandlersService.clearHandlers();
+    this.roundOrchestrationService.resetRoundsOrder();
 
     this.roundHandlersService.initRequiredHandlers();
     this.victoryHandlersService.initRequiredHandlers();

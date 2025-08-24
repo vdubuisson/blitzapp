@@ -49,10 +49,10 @@ export class VillageoisRoundHandler extends DefaultRoundHandler {
       ...player,
       statuses: new Set(player.statuses),
     };
-    // TODO handle if INFECTED
     if (
       newPlayer.role === PlayerRoleEnum.IDIOT &&
-      newPlayer.killedBy === undefined
+      newPlayer.killedBy === undefined &&
+      !newPlayer.statuses.has(PlayerStatusEnum.INFECTED)
     ) {
       newPlayer.statuses.add(PlayerStatusEnum.NO_VOTE);
       this.announcementService.announce(AnnouncementEnum.IDIOT_PARDONED);

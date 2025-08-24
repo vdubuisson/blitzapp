@@ -73,7 +73,7 @@ describe('RoleHandlersService', () => {
   });
 
   it('should return VILLAGEOIS handler', () => {
-    const roleHandler = new VillageoisRoleHandler();
+    const roleHandler = {} as RoleHandler;
     service['roleHandlers'].set(PlayerRoleEnum.VILLAGEOIS, roleHandler);
 
     const testHandler = service.getHandler(PlayerRoleEnum.VILLAGEOIS);
