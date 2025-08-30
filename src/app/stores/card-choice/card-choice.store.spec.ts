@@ -59,7 +59,7 @@ describe('CardChoiceStore without storage', () => {
   it('should store new value to storage', () => {
     service.state.set({ ...mockState });
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
@@ -71,7 +71,7 @@ describe('CardChoiceStore without storage', () => {
   it('should store new value to storage with storage key store.cardChoice', () => {
     service.state.set({ ...mockState });
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(

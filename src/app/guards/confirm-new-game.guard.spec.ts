@@ -1,9 +1,9 @@
-import { signal, WritableSignal } from '@angular/core';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { MockService } from 'ng-mocks';
-import { Observable, of } from 'rxjs';
 import { GameService } from '@/services/game/game.service';
 import { ModalService } from '@/services/modal/modal.service';
+import { signal, WritableSignal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { MockService } from 'ng-mocks';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { confirmNewGameGuard } from './confirm-new-game.guard';
 
 describe('confirmNewGameGuard', () => {
@@ -34,31 +34,25 @@ describe('confirmNewGameGuard', () => {
     expect(result).toBe(true);
   });
 
-  it('should return true if game in progress and confirm', waitForAsync(() => {
+  it('should return true if game in progress and confirm', async () => {
     isGameInProgress.set(true);
 
     jest.spyOn(modalService, 'showTextModal').mockReturnValue(of(true));
 
-    (
-      TestBed.runInInjectionContext<Observable<boolean> | boolean>(() =>
-        confirmNewGameGuard(),
-      ) as Observable<boolean>
-    ).subscribe((result) => {
-      expect(result).toBe(true);
-    });
-  }));
+    const result = await TestBed.runInInjectionContext(async () =>
+      firstValueFrom(confirmNewGameGuard() as Observable<boolean>),
+    );
+    expect(result).toBe(true);
+  });
 
-  it('should return false if game in progress and cancel', waitForAsync(() => {
+  it('should return false if game in progress and cancel', async () => {
     isGameInProgress.set(true);
 
     jest.spyOn(modalService, 'showTextModal').mockReturnValue(of(false));
 
-    (
-      TestBed.runInInjectionContext<Observable<boolean> | boolean>(() =>
-        confirmNewGameGuard(),
-      ) as Observable<boolean>
-    ).subscribe((result) => {
-      expect(result).toBe(false);
-    });
-  }));
+    const result = await TestBed.runInInjectionContext(async () =>
+      firstValueFrom(confirmNewGameGuard() as Observable<boolean>),
+    );
+    expect(result).toBe(false);
+  });
 });

@@ -461,7 +461,7 @@ describe('DeathService', () => {
     service.announceDeaths();
 
     const announcementService = ngMocks.get(AnnouncementService);
-    expect(announcementService.announce).toHaveBeenCalledTimes(0);
+    expect(announcementService.announce).not.toHaveBeenCalled();
   });
 
   it('should announce player killed by CHEVALIER if present', () => {
@@ -496,7 +496,7 @@ describe('DeathService', () => {
     service.announceDeaths();
 
     const announcementService = ngMocks.get(AnnouncementService);
-    expect(announcementService.announceDeaths).toHaveBeenCalledTimes(0);
+    expect(announcementService.announceDeaths).not.toHaveBeenCalled();
   });
 
   it('should clear deaths to announce after announce', () => {

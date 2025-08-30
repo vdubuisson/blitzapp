@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { PereLoupsRoundHandler } from './pere-loups-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { PereLoupsRoundHandler } from './pere-loups-round.handler';
 
 describe('PereLoupsRoundHandler', () => {
   let roundHandler: PereLoupsRoundHandler;
@@ -38,7 +38,7 @@ describe('PereLoupsRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should remove WOLF_TARGET status to selected player', waitForAsync(() => {
+  it('should remove WOLF_TARGET status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -65,16 +65,17 @@ describe('PereLoupsRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.WOLF_TARGET,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.WOLF_TARGET,
+    );
+  });
 
-  it('should add INFECTED status to selected player', waitForAsync(() => {
+  it('should add INFECTED status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -101,16 +102,17 @@ describe('PereLoupsRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.INFECTED,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.INFECTED,
+    );
+  });
 
-  it('should transform JOUEUR_FLUTE into LOUP_GAROU', waitForAsync(() => {
+  it('should transform JOUEUR_FLUTE into LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -135,13 +137,14 @@ describe('PereLoupsRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayersById')
       .mockReturnValue(expectedPlayers);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).not.toBe(players[0]);
-      expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).not.toBe(players[0]);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
+  });
 
-  it('should remove killedBy to selected player', waitForAsync(() => {
+  it('should remove killedBy to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -169,13 +172,14 @@ describe('PereLoupsRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).not.toBe(players[0]);
-      expect(newPlayers[0].killedBy).toBeUndefined();
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).not.toBe(players[0]);
+    expect(newPlayers[0].killedBy).toBeUndefined();
+  });
 
-  it('should add NO_POWER status to PERE_LOUPS player', waitForAsync(() => {
+  it('should add NO_POWER status to PERE_LOUPS player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -199,17 +203,18 @@ describe('PereLoupsRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayersById')
       .mockReturnValue(expectedPlayers);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers).toBe(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
-        expectedPlayers,
-        PlayerStatusEnum.NO_POWER,
-        [1],
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers).toBe(expectedPlayers);
+    expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expectedPlayers,
+      PlayerStatusEnum.NO_POWER,
+      [1],
+    );
+  });
 
-  it('should not add NO_POWER status to PERE_LOUPS player if no player selected', waitForAsync(() => {
+  it('should not add NO_POWER status to PERE_LOUPS player if no player selected', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -229,14 +234,13 @@ describe('PereLoupsRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
-          false,
-        ),
-      );
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
+      false,
+    );
+  });
 
   it('should return player with WOLF_TARGET status as selectable players if PERE_LOUPS has not NO_POWER', () => {
     const players: Player[] = [

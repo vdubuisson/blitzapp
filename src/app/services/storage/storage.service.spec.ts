@@ -1,6 +1,6 @@
-import { waitForAsync } from '@angular/core/testing';
-import { StorageService } from './storage.service';
 import { Preferences } from '@capacitor/preferences';
+import { firstValueFrom } from 'rxjs';
+import { StorageService } from './storage.service';
 
 describe('StorageService', () => {
   let service: StorageService;
@@ -30,21 +30,21 @@ describe('StorageService', () => {
     expect(value).toBeNull();
   });
 
-  it('should get value from storage', waitForAsync(() => {
+  it('should get value from storage', async () => {
     Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
-    service.get('mockKey').subscribe((value) => {
-      expect(value).toEqual('mockValue');
-    });
-  }));
+    const value = await firstValueFrom(service.get('mockKey'));
 
-  it('should clear storage', waitForAsync(() => {
+    expect(value).toEqual('mockValue');
+  });
+
+  it('should clear storage', async () => {
     Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
-    service.clear().subscribe(async () => {
-      const value = (await Preferences.get({ key: 'mockKey' })).value;
+    await firstValueFrom(service.clear());
 
-      expect(value).toBeNull();
-    });
-  }));
+    const value = (await Preferences.get({ key: 'mockKey' })).value;
+
+    expect(value).toBeNull();
+  });
 });

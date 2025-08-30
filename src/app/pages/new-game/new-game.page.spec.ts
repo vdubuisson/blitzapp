@@ -1,7 +1,11 @@
+import { NewPlayerComponent } from '@/components/new-player/new-player.component';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { CardList } from '@/models/card-list.model';
 import { Player } from '@/models/player.model';
 import { NewGameService } from '@/services/new-game/new-game.service';
-import { waitForAsync } from '@angular/core/testing';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { Component, output, signal, WritableSignal } from '@angular/core';
 import {
   MockBuilder,
   MockInstance,
@@ -9,12 +13,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { NewPlayerComponent } from '@/components/new-player/new-player.component';
-import { CardList } from '@/models/card-list.model';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Component, output, signal, WritableSignal } from '@angular/core';
 import NewGamePage from './new-game.page';
-import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 
 @Component({
   selector: 'lgmj-new-player',
@@ -59,7 +58,7 @@ describe('NewGamePage', () => {
     component = MockRender(NewGamePage).point.componentInstance;
   });
 
-  it('should get players from NewGameService', waitForAsync(() => {
+  it('should get players from NewGameService', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -81,15 +80,15 @@ describe('NewGamePage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['players']()).toEqual(mockPlayers);
-  }));
+  });
 
-  it('should get playersNumber from CardChoiceService', waitForAsync(() => {
+  it('should get playersNumber from CardChoiceService', () => {
     mockCardList.set({ playersNumber: 3 } as CardList);
 
     expect(component['playersCount']()).toEqual(3);
-  }));
+  });
 
-  it('should not be able to validate if less than playersCount', waitForAsync(() => {
+  it('should not be able to validate if less than playersCount', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -104,9 +103,9 @@ describe('NewGamePage', () => {
     mockCardList.set({ playersNumber: 3 } as CardList);
 
     expect(component['canValidate']()).toEqual(false);
-  }));
+  });
 
-  it('should be able to validate if equals playersCount', waitForAsync(() => {
+  it('should be able to validate if equals playersCount', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -137,7 +136,7 @@ describe('NewGamePage', () => {
     mockCardList.set({ playersNumber: 3 } as CardList);
 
     expect(component['canValidate']()).toEqual(true);
-  }));
+  });
 
   it('should add player', () => {
     const newGameService = ngMocks.get(NewGameService);

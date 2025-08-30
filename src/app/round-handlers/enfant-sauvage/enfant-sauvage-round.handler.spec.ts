@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { EnfantSauvageRoundHandler } from './enfant-sauvage-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { EnfantSauvageRoundHandler } from './enfant-sauvage-round.handler';
 
 describe('EnfantSauvageRoundHandler', () => {
   let roundHandler: EnfantSauvageRoundHandler;
@@ -38,7 +38,7 @@ describe('EnfantSauvageRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add CHILD_MODEL status to selected player', waitForAsync(() => {
+  it('should add CHILD_MODEL status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -71,14 +71,15 @@ describe('EnfantSauvageRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.CHILD_MODEL,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.CHILD_MODEL,
+    );
+  });
 
   it('should return all players except ENFANT_SAUVAGE as selectable', () => {
     const players: Player[] = [

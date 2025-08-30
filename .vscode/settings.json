@@ -1,0 +1,4 @@
+{
+    "jest.useJest30": true,
+    "jest.jestCommandLine": "node --no-experimental-strip-types node_modules/jest/bin/jest.js --no-cache"
+}

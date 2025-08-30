@@ -1,15 +1,16 @@
-import { MockService } from 'ng-mocks';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { RenardRoundHandler } from './renard-round.handler';
 import * as neighborUtils from '@/utils/neighbor.utils';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
 import * as statusUtils from '@/utils/status.utils';
+import { TestBed } from '@angular/core/testing';
+import { MockService } from 'ng-mocks';
+import { firstValueFrom } from 'rxjs';
+import { RenardRoundHandler } from './renard-round.handler';
 
 describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
@@ -51,7 +52,7 @@ describe('RenardRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should return players without change if no selected player', waitForAsync(() => {
+  it('should return players without change if no selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -79,48 +80,13 @@ describe('RenardRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
-  it('should not announce success if no selected player', waitForAsync(() => {
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    jest.spyOn(announcementService, 'announce');
-
-    roundHandler
-      .handleAction(players, [])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledTimes(0),
-      );
-  }));
-
-  it('should not announce fail if no selected player', waitForAsync(() => {
+  it('should not announce success if no selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -149,14 +115,44 @@ describe('RenardRoundHandler', () => {
     ];
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledTimes(0),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, []));
+    expect(announcementService.announce).not.toHaveBeenCalled();
+  });
 
-  it('should return players without change if selected player is LOUP_GAROU', waitForAsync(() => {
+  it('should not announce fail if no selected player', async () => {
+    const players: Player[] = [
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ];
+    jest.spyOn(announcementService, 'announce');
+
+    await firstValueFrom(roundHandler.handleAction(players, []));
+    expect(announcementService.announce).not.toHaveBeenCalled();
+  });
+
+  it('should return players without change if selected player is LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -184,12 +180,13 @@ describe('RenardRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [1]),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
-  it('should announce success if selected player is LOUP_GAROU', waitForAsync(() => {
+  it('should announce success if selected player is LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -218,16 +215,13 @@ describe('RenardRoundHandler', () => {
     ];
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.FOX_SUCCESS,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, [1]));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.FOX_SUCCESS,
+    );
+  });
 
-  it('should return players without change if left neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should return players without change if left neighbor is LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -263,12 +257,13 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [1]),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
-  it('should announce success if left neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should announce success if left neighbor is LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -305,16 +300,13 @@ describe('RenardRoundHandler', () => {
     });
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.FOX_SUCCESS,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, [1]));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.FOX_SUCCESS,
+    );
+  });
 
-  it('should return players without change if right neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should return players without change if right neighbor is LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -358,12 +350,13 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [1]),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
-  it('should announce success if right neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should announce success if right neighbor is LOUP_GAROU', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -409,16 +402,13 @@ describe('RenardRoundHandler', () => {
 
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.FOX_SUCCESS,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, [1]));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.FOX_SUCCESS,
+    );
+  });
 
-  it('should add NO_POWER status to RENARD if no LOUP_GAROU selected', waitForAsync(() => {
+  it('should add NO_POWER status to RENARD if no LOUP_GAROU selected', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -466,16 +456,17 @@ describe('RenardRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [1]).subscribe((newPlayers) => {
-      expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        newPlayers[1],
-        PlayerStatusEnum.NO_POWER,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [1]),
+    );
+    expect(newPlayers[1]).toBe(expectedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      newPlayers[1],
+      PlayerStatusEnum.NO_POWER,
+    );
+  });
 
-  it('should announce fail if no LOUP_GAROU selected', waitForAsync(() => {
+  it('should announce fail if no LOUP_GAROU selected', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -521,14 +512,11 @@ describe('RenardRoundHandler', () => {
 
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.FOX_FAIL,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, [1]));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.FOX_FAIL,
+    );
+  });
 
   it('should return alive players as selectable players', () => {
     const players: Player[] = [

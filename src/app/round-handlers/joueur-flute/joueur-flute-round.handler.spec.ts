@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { JoueurFluteRoundHandler } from './joueur-flute-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { JoueurFluteRoundHandler } from './joueur-flute-round.handler';
 
 describe('JoueurFluteRoundHandler', () => {
   let roundHandler: JoueurFluteRoundHandler;
@@ -38,7 +38,7 @@ describe('JoueurFluteRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add CHARMED status to selected players', waitForAsync(() => {
+  it('should add CHARMED status to selected players', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -73,19 +73,20 @@ describe('JoueurFluteRoundHandler', () => {
         player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
 
-    roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer1);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.CHARMED,
-      );
-      expect(newPlayers[2]).toBe(expectedPlayer2);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[2],
-        PlayerStatusEnum.CHARMED,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0, 2]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer1);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.CHARMED,
+    );
+    expect(newPlayers[2]).toBe(expectedPlayer2);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[2],
+      PlayerStatusEnum.CHARMED,
+    );
+  });
 
   it('should return all alive players except JOUEUR_FLUTE and CHARMED as selectable', () => {
     const players: Player[] = [

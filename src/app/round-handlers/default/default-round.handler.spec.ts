@@ -2,7 +2,7 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { waitForAsync } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { DefaultRoundHandler } from './default-round.handler';
 
 describe('DefaultRoundHandler', () => {
@@ -54,7 +54,7 @@ describe('DefaultRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
-  it('should return players without change', waitForAsync(() => {
+  it('should return players without change', async () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.CUPIDON, true, false);
     const players: Player[] = [
       {
@@ -75,10 +75,11 @@ describe('DefaultRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
   it('should return no players as selectable players', () => {
     roundHandler = new DefaultRoundHandler(RoundEnum.CUPIDON, true, false);

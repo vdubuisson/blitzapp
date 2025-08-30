@@ -1,11 +1,11 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { SectaireRoundHandler } from './sectaire-round.handler';
-import { waitForAsync } from '@angular/core/testing';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { SectaireRoundHandler } from './sectaire-round.handler';
 
 describe('SectaireRoundHandler', () => {
   let roundHandler: SectaireRoundHandler;
@@ -38,7 +38,7 @@ describe('SectaireRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add BLUE_TEAM to selected players', waitForAsync(() => {
+  it('should add BLUE_TEAM to selected players', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -81,25 +81,26 @@ describe('SectaireRoundHandler', () => {
         statuses: new Set([...(player.statuses || []), status]),
       }));
 
-    roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
-      expect(newPlayers[0].statuses.has(PlayerStatusEnum.BLUE_TEAM)).toEqual(
-        true,
-      );
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.BLUE_TEAM,
-      );
-      expect(newPlayers[2].statuses.has(PlayerStatusEnum.BLUE_TEAM)).toEqual(
-        true,
-      );
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[2],
-        PlayerStatusEnum.BLUE_TEAM,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0, 2]),
+    );
+    expect(newPlayers[0].statuses.has(PlayerStatusEnum.BLUE_TEAM)).toEqual(
+      true,
+    );
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.BLUE_TEAM,
+    );
+    expect(newPlayers[2].statuses.has(PlayerStatusEnum.BLUE_TEAM)).toEqual(
+      true,
+    );
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[2],
+      PlayerStatusEnum.BLUE_TEAM,
+    );
+  });
 
-  it('should add RED_TEAM to not selected players', waitForAsync(() => {
+  it('should add RED_TEAM to not selected players', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -142,23 +143,20 @@ describe('SectaireRoundHandler', () => {
         statuses: new Set([...(player.statuses || []), status]),
       }));
 
-    roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
-      expect(newPlayers[1].statuses.has(PlayerStatusEnum.RED_TEAM)).toEqual(
-        true,
-      );
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[1],
-        PlayerStatusEnum.RED_TEAM,
-      );
-      expect(newPlayers[3].statuses.has(PlayerStatusEnum.RED_TEAM)).toEqual(
-        true,
-      );
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[3],
-        PlayerStatusEnum.RED_TEAM,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0, 2]),
+    );
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.RED_TEAM)).toEqual(true);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[1],
+      PlayerStatusEnum.RED_TEAM,
+    );
+    expect(newPlayers[3].statuses.has(PlayerStatusEnum.RED_TEAM)).toEqual(true);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[3],
+      PlayerStatusEnum.RED_TEAM,
+    );
+  });
 
   it('should return all players as selectable players', () => {
     const players: Player[] = [

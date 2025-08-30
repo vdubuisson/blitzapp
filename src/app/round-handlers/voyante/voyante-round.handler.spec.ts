@@ -2,11 +2,11 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { VoyanteRoundHandler } from './voyante-round.handler';
 import { ModalService } from '@/services/modal/modal.service';
+import { TestBed } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
-import { of } from 'rxjs';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
+import { VoyanteRoundHandler } from './voyante-round.handler';
 
 describe('VoyanteRoundHandler', () => {
   let roundHandler: VoyanteRoundHandler;
@@ -49,7 +49,7 @@ describe('VoyanteRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should return players without change', waitForAsync(() => {
+  it('should return players without change', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -69,12 +69,13 @@ describe('VoyanteRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [1])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [1]),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
-  it('should show playerCard modal with player card', waitForAsync(() => {
+  it('should show playerCard modal with player card', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -94,12 +95,11 @@ describe('VoyanteRoundHandler', () => {
       },
     ];
 
-    roundHandler.handleAction(players, [1]).subscribe(() => {
-      expect(modalService.showPlayerCard).toHaveBeenCalledWith(
-        PlayerRoleEnum.CHIEN_LOUP,
-      );
-    });
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, [1]));
+    expect(modalService.showPlayerCard).toHaveBeenCalledWith(
+      PlayerRoleEnum.CHIEN_LOUP,
+    );
+  });
 
   it('should return all alive players except VOYANTE as selectable players', () => {
     const players: Player[] = [

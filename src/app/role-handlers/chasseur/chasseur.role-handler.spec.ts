@@ -68,7 +68,7 @@ describe('ChasseurRoleHandler', () => {
     it('should add CHASSEUR round at the start of afterDeathRoundQueue', () => {
       const deadPlayer = players[0];
 
-      const result = handler.handleDeath(players, deadPlayer);
+      handler.handleDeath(players, deadPlayer);
 
       expect(afterDeathRoundQueue.state()[0]).toBe(RoundEnum.CHASSEUR);
     });

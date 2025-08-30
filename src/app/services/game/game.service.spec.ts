@@ -10,7 +10,6 @@ import { DeathService } from '@/services/death/death.service';
 import { RoundHandlersService } from '@/services/round-handlers/round-handlers.service';
 import { RoundOrchestrationService } from '@/services/round-orchestration/round-orchestration.service';
 import { VictoryHandlersService } from '@/services/victory-handlers/victory-handlers.service';
-import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
   MockBuilder,
@@ -22,24 +21,22 @@ import {
 import { Observable, of } from 'rxjs';
 
 import { CardList } from '@/models/card-list.model';
+import { RoleHandler } from '@/role-handlers/role-handler.interface';
 import { StatusHandler } from '@/status-handlers/status-handler.interface';
 import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import { CurrentPlayersStore } from '@/stores/current-players/current-players.store';
 import { CurrentRoundConfigStore } from '@/stores/current-round/current-round-config.store';
 import { NeedCleanAfterBoucStore } from '@/stores/need-clean-after-bouc/need-clean-after-bouc.store';
 import { signal } from '@angular/core';
+import { RoleHandlersService } from '../role-handlers/role-handlers.service';
 import { StatusHandlersService } from '../status-handlers/status-handlers.service';
 import { GameService } from './game.service';
-import { RoleHandlersService } from '../role-handlers/role-handlers.service';
-import { RoleHandler } from '@/role-handlers/role-handler.interface';
 
 class MockRoleHandler implements RoleHandler {
   role = PlayerRoleEnum.VILLAGEOIS;
 
   prepareNewGame = jest.fn().mockImplementation((players: Player[]) => players);
-  handleDeath = jest
-    .fn()
-    .mockImplementation((players: Player[], deadPlayer: Player) => players);
+  handleDeath = jest.fn().mockImplementation((players: Player[]) => players);
   cleanStatusesAfterDay = jest
     .fn()
     .mockImplementation((players: Player[]) => players);
@@ -60,7 +57,7 @@ class MockRoundHandler implements RoundHandler {
 }
 
 class MockStatusHandler implements StatusHandler {
-  handleDeath(players: Player[], deadPlayer: Player): Player[] {
+  handleDeath(players: Player[]): Player[] {
     return players;
   }
 
@@ -121,7 +118,7 @@ describe('GameService on victory', () => {
 
     MockInstance(StatusHandlersService, () => ({
       clearHandlers: jest.fn(),
-      getHandler: (status) => new MockStatusHandler(),
+      getHandler: () => new MockStatusHandler(),
     }));
 
     MockInstance(DeathService, () => ({
@@ -270,7 +267,7 @@ describe.skip('GameService', () => {
 
     MockInstance(StatusHandlersService, () => ({
       clearHandlers: jest.fn(),
-      getHandler: (status) => new MockStatusHandler(),
+      getHandler: () => new MockStatusHandler(),
     }));
 
     MockInstance(VictoryHandlersService, () => ({
@@ -725,7 +722,7 @@ describe.skip('GameService', () => {
 
     service.submitRoundAction([]);
 
-    expect(victoryHandlersService.getVictory).toHaveBeenCalledTimes(0);
+    expect(victoryHandlersService.getVictory).not.toHaveBeenCalled();
   });
 
   it('should check victory after night', () => {
@@ -852,7 +849,7 @@ describe.skip('GameService', () => {
 
     service.submitRoundAction([]);
 
-    expect(victoryHandlersService.getVictory).toHaveBeenCalledTimes(0);
+    expect(victoryHandlersService.getVictory).not.toHaveBeenCalled();
   });
 
   it('should announce deaths after night if no victory', () => {
@@ -971,7 +968,7 @@ describe.skip('GameService', () => {
 
     service.submitRoundAction([]);
 
-    expect(deathService.announceDeaths).toHaveBeenCalledTimes(0);
+    expect(deathService.announceDeaths).not.toHaveBeenCalled();
   });
 
   it('should clean statuses after day', () => {
@@ -1052,7 +1049,7 @@ describe.skip('GameService', () => {
     expect(service['dayCount']()).toEqual(2);
   });
 
-  it('should clear and reinit handlers after VOLEUR round', waitForAsync(() => {
+  it('should clear and reinit handlers after VOLEUR round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
       round: RoundEnum.VOLEUR,
       selectablePlayers: [0],
@@ -1118,9 +1115,9 @@ describe.skip('GameService', () => {
       PlayerRoleEnum.SORCIERE,
       PlayerRoleEnum.CUPIDON,
     ]);
-  }));
+  });
 
-  it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has become LOUP_GAROU after PERE_LOUPS round', waitForAsync(() => {
+  it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has become LOUP_GAROU after PERE_LOUPS round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
       round: RoundEnum.PERE_LOUPS,
       selectablePlayers: [0],
@@ -1185,9 +1182,9 @@ describe.skip('GameService', () => {
     expect(victoryHandlersService.removeHandler).toHaveBeenCalledWith(
       VictoryEnum.JOUEUR_FLUTE,
     );
-  }));
+  });
 
-  it('should not remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has not become LOUP_GAROU after PERE_LOUPS round', waitForAsync(() => {
+  it('should not remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has not become LOUP_GAROU after PERE_LOUPS round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
       round: RoundEnum.PERE_LOUPS,
       selectablePlayers: [0],
@@ -1246,9 +1243,9 @@ describe.skip('GameService', () => {
 
     service.submitRoundAction([]);
 
-    expect(roundHandlersService.removeHandlersByRoles).toHaveBeenCalledTimes(0);
-    expect(victoryHandlersService.removeHandler).toHaveBeenCalledTimes(0);
-  }));
+    expect(roundHandlersService.removeHandlersByRoles).not.toHaveBeenCalled();
+    expect(victoryHandlersService.removeHandler).not.toHaveBeenCalled();
+  });
 
   it('should init default round handlers on game creation', () => {
     service.createGame(mockPlayers);
@@ -1277,7 +1274,7 @@ describe.skip('GameService', () => {
     expect(service.isGameInProgress()).toBe(false);
   });
 
-  it('should set needCleanAfterBouc to true after BOUC round', waitForAsync(() => {
+  it('should set needCleanAfterBouc to true after BOUC round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
       round: RoundEnum.BOUC,
       selectablePlayers: [0],
@@ -1334,5 +1331,5 @@ describe.skip('GameService', () => {
     service.submitRoundAction([]);
 
     expect(service['needCleanAfterBouc']()).toEqual(true);
-  }));
+  });
 });

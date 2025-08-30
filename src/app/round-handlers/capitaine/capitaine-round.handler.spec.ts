@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { CapitaineRoundHandler } from './capitaine-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { CapitaineRoundHandler } from './capitaine-round.handler';
 
 describe('CapitaineRoundHandler', () => {
   let roundHandler: CapitaineRoundHandler;
@@ -38,7 +38,7 @@ describe('CapitaineRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add CAPTAIN status to selected player', waitForAsync(() => {
+  it('should add CAPTAIN status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -62,14 +62,16 @@ describe('CapitaineRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.CAPTAIN,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.CAPTAIN,
+    );
+  });
 
   it('should return all players alive as selectable players', () => {
     const players: Player[] = [

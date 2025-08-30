@@ -1,5 +1,6 @@
+import { PlayerCardModalComponent } from '@/components/player-card-modal/player-card-modal.component';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
-import { waitForAsync } from '@angular/core/testing';
 import {
   MockBuilder,
   MockInstance,
@@ -7,9 +8,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { Subject } from 'rxjs';
-import { PlayerCardModalComponent } from '@/components/player-card-modal/player-card-modal.component';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ModalService } from './modal.service';
 
 describe('ModalService', () => {
@@ -21,10 +20,12 @@ describe('ModalService', () => {
 
   beforeAll(() => {
     MockInstance(Dialog, () => ({
-      open: () =>
-        ({
-          closed: new Subject().asObservable(),
-        }) as DialogRef,
+      open: jest.fn().mockImplementation(
+        () =>
+          ({
+            closed: new BehaviorSubject<void>(undefined).asObservable(),
+          }) as DialogRef,
+      ),
     }));
   });
 
@@ -34,15 +35,14 @@ describe('ModalService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should create PlayerCardModalComponent on showPlayerCard', waitForAsync(() => {
+  it('should create PlayerCardModalComponent on showPlayerCard', async () => {
     const dialog = ngMocks.get(Dialog);
 
-    service.showPlayerCard(PlayerRoleEnum.VILLAGEOIS).subscribe(() => {
-      expect(dialog.open).toHaveBeenCalledWith(PlayerCardModalComponent, {
-        data: PlayerRoleEnum.VILLAGEOIS,
-      });
+    await firstValueFrom(service.showPlayerCard(PlayerRoleEnum.VILLAGEOIS));
+    expect(dialog.open).toHaveBeenCalledWith(PlayerCardModalComponent, {
+      data: PlayerRoleEnum.VILLAGEOIS,
     });
-  }));
+  });
 
   afterAll(MockReset);
 });

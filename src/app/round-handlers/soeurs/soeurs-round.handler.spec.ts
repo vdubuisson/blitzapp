@@ -2,8 +2,8 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { firstValueFrom } from 'rxjs';
 import { SoeursRoundHandler } from './soeurs-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 
 describe('SoeursRoundHandler', () => {
   let roundHandler: SoeursRoundHandler;
@@ -36,7 +36,7 @@ describe('SoeursRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.DEFAULT);
   });
 
-  it('should return players without change', waitForAsync(() => {
+  it('should return players without change', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -56,10 +56,11 @@ describe('SoeursRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
   it('should return no players as selectable players', () => {
     const players: Player[] = [

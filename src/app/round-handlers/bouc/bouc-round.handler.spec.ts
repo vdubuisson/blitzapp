@@ -1,11 +1,11 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { BoucRoundHandler } from './bouc-round.handler';
-import { waitForAsync } from '@angular/core/testing';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { BoucRoundHandler } from './bouc-round.handler';
 
 describe('BoucRoundHandler', () => {
   let roundHandler: BoucRoundHandler;
@@ -38,7 +38,7 @@ describe('BoucRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add NO_VOTE to not selected alive players', waitForAsync(() => {
+  it('should add NO_VOTE to not selected alive players', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -79,15 +79,17 @@ describe('BoucRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayersById')
       .mockReturnValue(expectedPlayers);
 
-    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers).toBe(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
-        players,
-        PlayerStatusEnum.NO_VOTE,
-        [1, 3],
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [2]),
+    );
+
+    expect(newPlayers).toBe(expectedPlayers);
+    expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      players,
+      PlayerStatusEnum.NO_VOTE,
+      [1, 3],
+    );
+  });
 
   it('should return all players alive as selectable players', () => {
     const players: Player[] = [

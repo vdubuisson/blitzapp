@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { SalvateurRoundHandler } from './salvateur-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { SalvateurRoundHandler } from './salvateur-round.handler';
 
 describe('SalvateurRoundHandler', () => {
   let roundHandler: SalvateurRoundHandler;
@@ -38,7 +38,7 @@ describe('SalvateurRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should move PROTECTED status to selected player', waitForAsync(() => {
+  it('should move PROTECTED status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -75,19 +75,20 @@ describe('SalvateurRoundHandler', () => {
       .spyOn(statusUtils, 'removeStatusFromPlayer')
       .mockReturnValue(expectedRemovedPlayer);
 
-    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedRemovedPlayer);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.PROTECTED,
-      );
-      expect(newPlayers[2]).toBe(expectedAddedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[2],
-        PlayerStatusEnum.PROTECTED,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [2]),
+    );
+    expect(newPlayers[0]).toBe(expectedRemovedPlayer);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.PROTECTED,
+    );
+    expect(newPlayers[2]).toBe(expectedAddedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[2],
+      PlayerStatusEnum.PROTECTED,
+    );
+  });
 
   it('should return alive player as selectable', () => {
     const players: Player[] = [

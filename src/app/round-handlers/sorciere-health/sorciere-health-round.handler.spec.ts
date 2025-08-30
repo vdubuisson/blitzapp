@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { SorciereHealthRoundHandler } from './sorciere-health-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { SorciereHealthRoundHandler } from './sorciere-health-round.handler';
 
 describe('SorciereHealthRoundHandler', () => {
   let roundHandler: SorciereHealthRoundHandler;
@@ -38,7 +38,7 @@ describe('SorciereHealthRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should remove DEVOURED status to selected player', waitForAsync(() => {
+  it('should remove DEVOURED status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -66,16 +66,17 @@ describe('SorciereHealthRoundHandler', () => {
         player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer1);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.DEVOURED,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer1);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.DEVOURED,
+    );
+  });
 
-  it('should remove killedBy to selected player', waitForAsync(() => {
+  it('should remove killedBy to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -104,12 +105,13 @@ describe('SorciereHealthRoundHandler', () => {
         player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0].killedBy).toBeUndefined();
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].killedBy).toBeUndefined();
+  });
 
-  it('should remove HEALTH_POTION status to SORCIERE player', waitForAsync(() => {
+  it('should remove HEALTH_POTION status to SORCIERE player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -137,16 +139,17 @@ describe('SorciereHealthRoundHandler', () => {
         player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[1]).toBe(expectedPlayer2);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
-        players[1],
-        PlayerStatusEnum.HEALTH_POTION,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[1]).toBe(expectedPlayer2);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      players[1],
+      PlayerStatusEnum.HEALTH_POTION,
+    );
+  });
 
-  it('should not remove HEALTH_POTION status to SORCIERE player if no player selected', waitForAsync(() => {
+  it('should not remove HEALTH_POTION status to SORCIERE player if no player selected', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -166,14 +169,13 @@ describe('SorciereHealthRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION),
-        ).toEqual(true),
-      );
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.HEALTH_POTION)).toEqual(
+      true,
+    );
+  });
 
   it('should return player with DEVOURED status as selectable players if SORCIERE has HEALTH_POTION', () => {
     const players: Player[] = [

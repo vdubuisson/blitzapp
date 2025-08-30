@@ -3,12 +3,12 @@
  * https://jestjs.io/docs/configuration
  */
 
-import presets from 'jest-preset-angular/presets';
+import { createCjsPreset } from 'jest-preset-angular/presets';
 import type { Config } from 'jest';
 import { compilerOptions } from './tsconfig.json';
 import { pathsToModuleNameMapper } from 'ts-jest';
 
-const presetConfig = presets.createCjsPreset({
+const presetConfig = createCjsPreset({
   tsconfig: 'tsconfig.spec.json',
 });
 

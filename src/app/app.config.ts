@@ -1,7 +1,8 @@
 import {
   ApplicationConfig,
   provideAppInitializer,
-  provideExperimentalZonelessChangeDetection,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -15,7 +16,8 @@ import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideBrowserGlobalErrorListeners(),
+    provideZonelessChangeDetection(),
     provideAppInitializer(appInitializer),
     provideRouter(
       appRoutes,

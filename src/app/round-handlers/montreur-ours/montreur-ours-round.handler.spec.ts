@@ -1,14 +1,15 @@
-import { MockService } from 'ng-mocks';
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 import * as neighborUtils from '@/utils/neighbor.utils';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
+import { TestBed } from '@angular/core/testing';
+import { MockService } from 'ng-mocks';
+import { firstValueFrom } from 'rxjs';
+import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 
 describe('MontreurOursRoundHandler', () => {
   let roundHandler: MontreurOursRoundHandler;
@@ -50,7 +51,7 @@ describe('MontreurOursRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.AUTO);
   });
 
-  it('should return players without change', waitForAsync(() => {
+  it('should return players without change', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -70,10 +71,11 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
   it('should return no players as selectable players', () => {
     const players: Player[] = [
@@ -126,7 +128,7 @@ describe('MontreurOursRoundHandler', () => {
     expect(roundConfig.minSelectable).toEqual(0);
   });
 
-  it('should announce bear growl if MONTREUR_OURS is INFECTED', waitForAsync(() => {
+  it('should announce bear growl if MONTREUR_OURS is INFECTED', async () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -155,16 +157,13 @@ describe('MontreurOursRoundHandler', () => {
     ];
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(mockPlayers, [])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.BEAR_GROWL,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(mockPlayers, []));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.BEAR_GROWL,
+    );
+  });
 
-  it('should announce bear growl if left neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should announce bear growl if left neighbor is LOUP_GAROU', async () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -201,16 +200,13 @@ describe('MontreurOursRoundHandler', () => {
       isDead: false,
     });
 
-    roundHandler
-      .handleAction(mockPlayers, [])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.BEAR_GROWL,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(mockPlayers, []));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.BEAR_GROWL,
+    );
+  });
 
-  it('should announce bear growl if right neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should announce bear growl if right neighbor is LOUP_GAROU', async () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -255,16 +251,13 @@ describe('MontreurOursRoundHandler', () => {
       isDead: false,
     });
 
-    roundHandler
-      .handleAction(mockPlayers, [])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.BEAR_GROWL,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(mockPlayers, []));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.BEAR_GROWL,
+    );
+  });
 
-  it('should not announce bear growl if no neighbor is LOUP_GAROU', waitForAsync(() => {
+  it('should not announce bear growl if no neighbor is LOUP_GAROU', async () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -309,10 +302,7 @@ describe('MontreurOursRoundHandler', () => {
       isDead: false,
     });
 
-    roundHandler
-      .handleAction(mockPlayers, [])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledTimes(0),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(mockPlayers, []));
+    expect(announcementService.announce).not.toHaveBeenCalled();
+  });
 });

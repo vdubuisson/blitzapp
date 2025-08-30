@@ -41,7 +41,7 @@ describe('BeforeDeathRoundStore without storage', () => {
   it('should store new value to storage', () => {
     service.state.set(mockState);
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
@@ -53,7 +53,7 @@ describe('BeforeDeathRoundStore without storage', () => {
   it('should store new value to storage with storage key store.beforeDeathRound', () => {
     service.state.set(RoundEnum.LOUP_GAROU);
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(

@@ -3,7 +3,6 @@ import { CardList } from '@/models/card-list.model';
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';
 import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import { signal, WritableSignal } from '@angular/core';
-import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
   MockBuilder,
@@ -293,7 +292,7 @@ describe('RolesChoicePage', () => {
     expect(page['playersCount']()).toEqual(0);
   });
 
-  it('should set roles on validate', waitForAsync(() => {
+  it('should set roles on validate', () => {
     const mockCards = {
       selectedRoles: new Set([]),
       villageois: 1,
@@ -323,7 +322,7 @@ describe('RolesChoicePage', () => {
     const cardChoiceService = ngMocks.get(CardChoiceStore);
 
     expect(cardChoiceService.state()).toEqual(expectedCardList);
-  }));
+  });
 
   it('should navigate to /new-game on validate', () => {
     createComponent();

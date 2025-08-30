@@ -2,8 +2,8 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { firstValueFrom } from 'rxjs';
 import { ChasseurRoundHandler } from './chasseur-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 
 describe('ChasseurRoundHandler', () => {
   let roundHandler: ChasseurRoundHandler;
@@ -36,7 +36,7 @@ describe('ChasseurRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', waitForAsync(() => {
+  it('should kill selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -56,13 +56,15 @@ describe('ChasseurRoundHandler', () => {
       },
     ];
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0].isDead).toEqual(true);
-      expect(newPlayers[0]).not.toBe(players[0]);
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
 
-  it('should set killedBy CHASSEUR on selected player', waitForAsync(() => {
+    expect(newPlayers[0].isDead).toEqual(true);
+    expect(newPlayers[0]).not.toBe(players[0]);
+  });
+
+  it('should set killedBy CHASSEUR on selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -82,11 +84,12 @@ describe('ChasseurRoundHandler', () => {
       },
     ];
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.CHASSEUR);
-      expect(newPlayers[0]).not.toBe(players[0]);
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.CHASSEUR);
+    expect(newPlayers[0]).not.toBe(players[0]);
+  });
 
   it('should return all players alive except CHASSEUR as selectable players', () => {
     const players: Player[] = [

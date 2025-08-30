@@ -1,4 +1,3 @@
-import { waitForAsync } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import {
   MockBuilder,
@@ -21,15 +20,17 @@ describe('NewPlayerComponent', () => {
     expect(fixture.point.componentInstance).toBeTruthy();
   });
 
-  it('should emit name on submit', waitForAsync(() => {
+  it('should emit name on submit', async () => {
     const component = fixture.point.componentInstance;
+
+    // spy reset to assert it was called
+    jest.spyOn(component['playerForm'], 'reset').mockImplementation(() => {});
+    jest.spyOn(component.newPlayer, 'emit').mockImplementation((val) => val);
 
     component['playerForm'].setValue({ name: 'Name' });
     component.onSubmit();
 
-    component.newPlayer.subscribe((newPlayer) => {
-      expect(newPlayer).toEqual('Name');
-      expect(component['playerForm'].reset).toHaveBeenCalled();
-    });
-  }));
+    expect(component.newPlayer.emit).toHaveBeenCalledWith('Name');
+    expect(component['playerForm'].reset).toHaveBeenCalled();
+  });
 });

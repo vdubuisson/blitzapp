@@ -2,7 +2,6 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { GameService } from '@/services/game/game.service';
-import { waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
   MockBuilder,
@@ -44,7 +43,7 @@ describe('NewGameService', () => {
     service = MockRender(NewGameService).point.componentInstance;
   });
 
-  it('should return players', waitForAsync(() => {
+  it('should return players', async () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -67,7 +66,7 @@ describe('NewGameService', () => {
     service['players'].set(mockPlayers);
 
     expect(service.currentPlayers()).toEqual(mockPlayers);
-  }));
+  });
 
   it('should add player', () => {
     service['players'].set([]);

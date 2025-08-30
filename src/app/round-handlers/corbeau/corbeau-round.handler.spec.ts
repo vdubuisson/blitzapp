@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { CorbeauRoundHandler } from './corbeau-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { CorbeauRoundHandler } from './corbeau-round.handler';
 
 describe('CorbeauRoundHandler', () => {
   let roundHandler: CorbeauRoundHandler;
@@ -38,7 +38,7 @@ describe('CorbeauRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add RAVEN status to selected player', waitForAsync(() => {
+  it('should add RAVEN status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -71,14 +71,15 @@ describe('CorbeauRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [2]).subscribe((newPlayers) => {
-      expect(newPlayers[2]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[2],
-        PlayerStatusEnum.RAVEN,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [2]),
+    );
+    expect(newPlayers[2]).toBe(expectedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[2],
+      PlayerStatusEnum.RAVEN,
+    );
+  });
 
   it('should return all alive players except CORBEAU as selectable', () => {
     const players: Player[] = [

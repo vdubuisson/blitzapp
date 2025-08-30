@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { SorciereKillRoundHandler } from './sorciere-kill-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { SorciereKillRoundHandler } from './sorciere-kill-round.handler';
 
 describe('SorciereKillRoundHandler', () => {
   let roundHandler: SorciereKillRoundHandler;
@@ -38,7 +38,7 @@ describe('SorciereKillRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', waitForAsync(() => {
+  it('should kill selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -58,12 +58,13 @@ describe('SorciereKillRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].isDead).toEqual(true);
+  });
 
-  it('should set killedBy SORCIERE on selected player', waitForAsync(() => {
+  it('should set killedBy SORCIERE on selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -83,14 +84,13 @@ describe('SorciereKillRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.SORCIERE),
-      );
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.SORCIERE);
+  });
 
-  it('should remove DEATH_POTION status to SORCIERE player', waitForAsync(() => {
+  it('should remove DEATH_POTION status to SORCIERE player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -115,16 +115,17 @@ describe('SorciereKillRoundHandler', () => {
       .spyOn(statusUtils, 'removeStatusFromPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
-        players[1],
-        PlayerStatusEnum.DEATH_POTION,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[1]).toBe(expectedPlayer);
+    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      players[1],
+      PlayerStatusEnum.DEATH_POTION,
+    );
+  });
 
-  it('should not remove DEATH_POTION status to SORCIERE player if no player selected', waitForAsync(() => {
+  it('should not remove DEATH_POTION status to SORCIERE player if no player selected', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -144,14 +145,13 @@ describe('SorciereKillRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [])
-      .subscribe((newPlayers) =>
-        expect(
-          newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION),
-        ).toEqual(true),
-      );
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, []),
+    );
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)).toEqual(
+      true,
+    );
+  });
 
   it('should return all players alive except SORCIERE as selectable players if SORCIERE has DEATH_POTION', () => {
     const players: Player[] = [

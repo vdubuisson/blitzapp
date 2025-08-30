@@ -1,6 +1,5 @@
 import { SelectOverlay } from '@/models/select-overlay.model';
 import { SelectOverlayService } from '@/services/select-overlay/select-overlay.service';
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import {
   MockBuilder,
   MockInstance,
@@ -18,9 +17,7 @@ describe('SelectOverlayComponent', () => {
   ngMocks.faster();
 
   beforeAll(async () => {
-    return MockBuilder(SelectOverlayComponent)
-      .mock(SelectOverlayService)
-      .provide(provideExperimentalZonelessChangeDetection());
+    return MockBuilder(SelectOverlayComponent).mock(SelectOverlayService);
   });
 
   beforeAll(async () => {

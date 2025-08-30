@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { CupidonRoundHandler } from './cupidon-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { CupidonRoundHandler } from './cupidon-round.handler';
 
 describe('CupidonRoundHandler', () => {
   let roundHandler: CupidonRoundHandler;
@@ -38,7 +38,7 @@ describe('CupidonRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add LOVER status to selected players', waitForAsync(() => {
+  it('should add LOVER status to selected players', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -74,19 +74,20 @@ describe('CupidonRoundHandler', () => {
         player.id === 0 ? expectedPlayer1 : expectedPlayer2,
       );
 
-    roundHandler.handleAction(players, [0, 2]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer1);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.LOVER,
-      );
-      expect(newPlayers[2]).toBe(expectedPlayer2);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[2],
-        PlayerStatusEnum.LOVER,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0, 2]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer1);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.LOVER,
+    );
+    expect(newPlayers[2]).toBe(expectedPlayer2);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[2],
+      PlayerStatusEnum.LOVER,
+    );
+  });
 
   it('should return all players as selectable', () => {
     const players: Player[] = [

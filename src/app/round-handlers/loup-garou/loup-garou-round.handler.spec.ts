@@ -3,9 +3,9 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { LoupGarouRoundHandler } from './loup-garou-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 import * as statusUtils from '@/utils/status.utils';
+import { firstValueFrom } from 'rxjs';
+import { LoupGarouRoundHandler } from './loup-garou-round.handler';
 
 describe('LoupGarouRoundHandler', () => {
   let roundHandler: LoupGarouRoundHandler;
@@ -38,7 +38,7 @@ describe('LoupGarouRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should add WOLF_TARGET status to selected player', waitForAsync(() => {
+  it('should add WOLF_TARGET status to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -62,16 +62,17 @@ describe('LoupGarouRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
-        players[0],
-        PlayerStatusEnum.WOLF_TARGET,
-      );
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      players[0],
+      PlayerStatusEnum.WOLF_TARGET,
+    );
+  });
 
-  it('should set killed by LOUP_GAROU to selected player', waitForAsync(() => {
+  it('should set killed by LOUP_GAROU to selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -95,11 +96,12 @@ describe('LoupGarouRoundHandler', () => {
       .spyOn(statusUtils, 'addStatusToPlayer')
       .mockReturnValue(expectedPlayer);
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).toBe(expectedPlayer);
-      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_GAROU);
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).toBe(expectedPlayer);
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_GAROU);
+  });
 
   it('should return alive players as selectable', () => {
     const players: Player[] = [

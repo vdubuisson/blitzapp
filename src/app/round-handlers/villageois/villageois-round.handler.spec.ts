@@ -1,13 +1,14 @@
+import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { VillageoisRoundHandler } from './villageois-round.handler';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { AnnouncementService } from '@/services/announcement/announcement.service';
+import { TestBed } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
-import { AnnouncementEnum } from '@/enums/announcement.enum';
+import { firstValueFrom } from 'rxjs';
+import { VillageoisRoundHandler } from './villageois-round.handler';
 
 describe('VillageoisRoundHandler', () => {
   let roundHandler: VillageoisRoundHandler;
@@ -49,7 +50,7 @@ describe('VillageoisRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', waitForAsync(() => {
+  it('should kill selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -69,12 +70,13 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].isDead).toEqual(true);
+  });
 
-  it('should set killedBy VILLAGEOIS on selected player', waitForAsync(() => {
+  it('should set killedBy VILLAGEOIS on selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -94,14 +96,13 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.VILLAGEOIS),
-      );
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.VILLAGEOIS);
+  });
 
-  it('should not kill IDIOT the first time', waitForAsync(() => {
+  it('should not kill IDIOT the first time', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -121,12 +122,13 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(false));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].isDead).toEqual(false);
+  });
 
-  it('should kill IDIOT if INFECTED', waitForAsync(() => {
+  it('should kill IDIOT if INFECTED', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -146,12 +148,13 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].isDead).toEqual(true);
+  });
 
-  it('should kill IDIOT the second time', waitForAsync(() => {
+  it('should kill IDIOT the second time', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -172,12 +175,13 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) => expect(newPlayers[0].isDead).toEqual(true));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].isDead).toEqual(true);
+  });
 
-  it('should add NO_VOTE status to IDIOT the first time', waitForAsync(() => {
+  it('should add NO_VOTE status to IDIOT the first time', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -197,16 +201,13 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe((newPlayers) =>
-        expect(newPlayers[0].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(
-          true,
-        ),
-      );
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(true);
+  });
 
-  it('should announce IDIOT_PARDONED when IDIOT is not killed', waitForAsync(() => {
+  it('should announce IDIOT_PARDONED when IDIOT is not killed', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -228,16 +229,13 @@ describe('VillageoisRoundHandler', () => {
 
     jest.spyOn(announcementService, 'announce');
 
-    roundHandler
-      .handleAction(players, [0])
-      .subscribe(() =>
-        expect(announcementService.announce).toHaveBeenCalledWith(
-          AnnouncementEnum.IDIOT_PARDONED,
-        ),
-      );
-  }));
+    await firstValueFrom(roundHandler.handleAction(players, [0]));
+    expect(announcementService.announce).toHaveBeenCalledWith(
+      AnnouncementEnum.IDIOT_PARDONED,
+    );
+  });
 
-  it('should kill BOUC if equality', waitForAsync(() => {
+  it('should kill BOUC if equality', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -257,15 +255,14 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [], undefined, true)
-      .subscribe((newPlayers) => {
-        expect(newPlayers[0].isDead).toEqual(true);
-        expect(newPlayers[0].killedBy).toBeUndefined();
-      });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [], undefined, true),
+    );
+    expect(newPlayers[0].isDead).toEqual(true);
+    expect(newPlayers[0].killedBy).toBeUndefined();
+  });
 
-  it('should do nothing if no selected player', waitForAsync(() => {
+  it('should do nothing if no selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -285,10 +282,11 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [], undefined, false)
-      .subscribe((newPlayers) => expect(newPlayers).toEqual(players));
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [], undefined, false),
+    );
+    expect(newPlayers).toEqual(players);
+  });
 
   it('should return all players alive as selectable players', () => {
     const players: Player[] = [

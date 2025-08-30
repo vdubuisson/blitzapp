@@ -47,7 +47,7 @@ describe('AnnouncementsQueueStore without storage', () => {
   it('should store new value to storage', () => {
     service.state.set(mockState);
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
@@ -59,7 +59,7 @@ describe('AnnouncementsQueueStore without storage', () => {
   it('should store new value to storage with storage key store.announcementsQueue', () => {
     service.state.set([]);
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(

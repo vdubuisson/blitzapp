@@ -2,8 +2,8 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { firstValueFrom } from 'rxjs';
 import { ChienLoupRoundHandler } from './chien-loup-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 
 describe('ChienLoupRoundHandler', () => {
   let roundHandler: ChienLoupRoundHandler;
@@ -36,7 +36,7 @@ describe('ChienLoupRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.ROLES);
   });
 
-  it('should set selected role to CHIEN_LOUP', waitForAsync(() => {
+  it('should set selected role to CHIEN_LOUP', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -56,13 +56,13 @@ describe('ChienLoupRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [], PlayerRoleEnum.LOUP_GAROU)
-      .subscribe((newPlayers) => {
-        expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
-        expect(newPlayers[0]).not.toBe(players[0]);
-      });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [], PlayerRoleEnum.LOUP_GAROU),
+    );
+
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
+    expect(newPlayers[0]).not.toBe(players[0]);
+  });
 
   it('should return LOUP_GAROU and VILLAGEOIS as selectable roles', () => {
     const roundConfig = roundHandler.getRoundConfig([]);

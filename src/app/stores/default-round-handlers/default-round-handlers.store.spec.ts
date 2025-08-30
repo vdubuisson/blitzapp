@@ -51,7 +51,7 @@ describe('DefaultRoundHandlersStore without storage', () => {
   it('should store new value to storage', () => {
     service.state.set(mockState);
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(
@@ -63,7 +63,7 @@ describe('DefaultRoundHandlersStore without storage', () => {
   it('should store new value to storage with storage key store.defaultRoundHandlers', () => {
     service.state.set(new Set());
 
-    TestBed.flushEffects();
+    TestBed.tick();
 
     const storageService = ngMocks.get(StorageService);
     expect(storageService.set).toHaveBeenCalledWith(

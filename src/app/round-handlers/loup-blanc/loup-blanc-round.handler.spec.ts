@@ -2,8 +2,8 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
+import { firstValueFrom } from 'rxjs';
 import { LoupBlancRoundHandler } from './loup-blanc-round.handler';
-import { waitForAsync } from '@angular/core/testing';
 
 describe('LoupBlancRoundHandler', () => {
   let roundHandler: LoupBlancRoundHandler;
@@ -36,7 +36,7 @@ describe('LoupBlancRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
-  it('should kill selected player', waitForAsync(() => {
+  it('should kill selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -56,13 +56,14 @@ describe('LoupBlancRoundHandler', () => {
       },
     ];
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).not.toBe(players[0]);
-      expect(newPlayers[0].isDead).toEqual(true);
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).not.toBe(players[0]);
+    expect(newPlayers[0].isDead).toEqual(true);
+  });
 
-  it('should set killedBy LOUP_BLANC on selected player', waitForAsync(() => {
+  it('should set killedBy LOUP_BLANC on selected player', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -82,11 +83,12 @@ describe('LoupBlancRoundHandler', () => {
       },
     ];
 
-    roundHandler.handleAction(players, [0]).subscribe((newPlayers) => {
-      expect(newPlayers[0]).not.toBe(players[0]);
-      expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_BLANC);
-    });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [0]),
+    );
+    expect(newPlayers[0]).not.toBe(players[0]);
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_BLANC);
+  });
 
   it('should return alive players as selectable', () => {
     const players: Player[] = [

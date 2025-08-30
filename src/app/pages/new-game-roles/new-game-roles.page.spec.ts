@@ -1,4 +1,6 @@
-import { waitForAsync } from '@angular/core/testing';
+import { PlayerRoleEnum } from '@/enums/player-role.enum';
+import { Player } from '@/models/player.model';
+import { NewGameService } from '@/services/new-game/new-game.service';
 import {
   MockBuilder,
   MockInstance,
@@ -6,12 +8,11 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { Player } from '@/models/player.model';
-import { NewGameService } from '@/services/new-game/new-game.service';
 
-import NewGameRolesPage from './new-game-roles.page';
+import { PlayerComponent } from '@/components/player/player.component';
+import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
 import { CardList } from '@/models/card-list.model';
+import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
 import {
   Component,
   input,
@@ -19,9 +20,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { PlayerDisplayModeEnum } from '@/enums/player-display-mode.enum';
-import { PlayerComponent } from '@/components/player/player.component';
-import { CardChoiceStore } from '@/stores/card-choice/card-choice.store';
+import NewGameRolesPage from './new-game-roles.page';
 
 @Component({
   selector: 'lgmj-player',
@@ -76,7 +75,7 @@ describe('NewGameRolesPage', () => {
     component = MockRender(NewGameRolesPage).point.componentInstance;
   });
 
-  it('should get players from NewGameService', waitForAsync(() => {
+  it('should get players from NewGameService', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -98,7 +97,7 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['players']()).toEqual(mockPlayers);
-  }));
+  });
 
   it('should create game', () => {
     const newGameService = ngMocks.get(NewGameService);
@@ -168,7 +167,7 @@ describe('NewGameRolesPage', () => {
     );
   });
 
-  it('should not be able to create if there is NOT_SELECTED role', waitForAsync(() => {
+  it('should not be able to create if there is NOT_SELECTED role', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -182,9 +181,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(false);
-  }));
+  });
 
-  it('should not be able to create if there is only 1 SOEUR', waitForAsync(() => {
+  it('should not be able to create if there is only 1 SOEUR', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -198,9 +197,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(false);
-  }));
+  });
 
-  it('should not be able to create if there is more than 2 SOEUR', waitForAsync(() => {
+  it('should not be able to create if there is more than 2 SOEUR', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -230,9 +229,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(false);
-  }));
+  });
 
-  it('should be able to create if there is 2 SOEUR', waitForAsync(() => {
+  it('should be able to create if there is 2 SOEUR', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -254,9 +253,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(true);
-  }));
+  });
 
-  it('should not be able to create if there is less than 3 FRERE', waitForAsync(() => {
+  it('should not be able to create if there is less than 3 FRERE', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -278,9 +277,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(false);
-  }));
+  });
 
-  it('should not be able to create if there is more than 3 FRERE', waitForAsync(() => {
+  it('should not be able to create if there is more than 3 FRERE', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -318,9 +317,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(false);
-  }));
+  });
 
-  it('should be able to create if there is 3 FRERE', waitForAsync(() => {
+  it('should be able to create if there is 3 FRERE', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -350,9 +349,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(true);
-  }));
+  });
 
-  it('should be able to create if there is no NOT_SELECTED role', waitForAsync(() => {
+  it('should be able to create if there is no NOT_SELECTED role', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -366,9 +365,9 @@ describe('NewGameRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(component['canCreate']()).toEqual(true);
-  }));
+  });
 
-  it('should not have already used unique role as available', waitForAsync(() => {
+  it('should not have already used unique role as available', () => {
     mockCards.set({
       selectedRoles: new Set([PlayerRoleEnum.CUPIDON]),
       villageois: 1,
@@ -390,9 +389,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.CUPIDON),
     ).toEqual(false);
-  }));
+  });
 
-  it('should have SOEUR as available if less than 2 SOEUR', waitForAsync(() => {
+  it('should have SOEUR as available if less than 2 SOEUR', () => {
     mockCards.set({
       selectedRoles: new Set([PlayerRoleEnum.SOEUR]),
       villageois: 1,
@@ -414,9 +413,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
     ).toEqual(true);
-  }));
+  });
 
-  it('should not have SOEUR as available if 2 SOEUR', waitForAsync(() => {
+  it('should not have SOEUR as available if 2 SOEUR', () => {
     mockCards.set({
       selectedRoles: new Set([PlayerRoleEnum.SOEUR]),
       villageois: 1,
@@ -446,9 +445,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
     ).toEqual(false);
-  }));
+  });
 
-  it('should have FRERE as available if less than 3 FRERE', waitForAsync(() => {
+  it('should have FRERE as available if less than 3 FRERE', () => {
     mockCards.set({
       selectedRoles: new Set([PlayerRoleEnum.FRERE]),
       villageois: 1,
@@ -478,9 +477,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.FRERE),
     ).toEqual(true);
-  }));
+  });
 
-  it('should not have FRERE as available if 3 FRERE', waitForAsync(() => {
+  it('should not have FRERE as available if 3 FRERE', () => {
     mockCards.set({
       selectedRoles: new Set([PlayerRoleEnum.FRERE]),
       villageois: 1,
@@ -518,9 +517,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.FRERE),
     ).toEqual(false);
-  }));
+  });
 
-  it('should have VILLAGEOIS as available if less than villageois number', waitForAsync(() => {
+  it('should have VILLAGEOIS as available if less than villageois number', () => {
     mockCards.set({
       selectedRoles: new Set(),
       villageois: 1,
@@ -542,9 +541,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.VILLAGEOIS),
     ).toEqual(true);
-  }));
+  });
 
-  it('should not have VILLAGEOIS as available if equals villageois number', waitForAsync(() => {
+  it('should not have VILLAGEOIS as available if equals villageois number', () => {
     mockCards.set({
       selectedRoles: new Set(),
       villageois: 1,
@@ -574,9 +573,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.VILLAGEOIS),
     ).toEqual(false);
-  }));
+  });
 
-  it('should have LOUP_GAROU as available if less than loupGarou number', waitForAsync(() => {
+  it('should have LOUP_GAROU as available if less than loupGarou number', () => {
     mockCards.set({
       selectedRoles: new Set(),
       villageois: 1,
@@ -598,9 +597,9 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
     ).toEqual(true);
-  }));
+  });
 
-  it('should not have LOUP_GAROU as available if equals loupGarou number', waitForAsync(() => {
+  it('should not have LOUP_GAROU as available if equals loupGarou number', () => {
     mockCards.set({
       selectedRoles: new Set(),
       villageois: 1,
@@ -630,7 +629,7 @@ describe('NewGameRolesPage', () => {
     expect(
       component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
     ).toEqual(false);
-  }));
+  });
 
   afterAll(MockReset);
 });

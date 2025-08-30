@@ -1,10 +1,10 @@
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
-import { Player } from '@/models/player.model';
-import { VoleurRoundHandler } from './voleur-round.handler';
 import { CardList } from '@/models/card-list.model';
-import { waitForAsync } from '@angular/core/testing';
+import { Player } from '@/models/player.model';
+import { firstValueFrom } from 'rxjs';
+import { VoleurRoundHandler } from './voleur-round.handler';
 
 describe('VoleurRoundHandler', () => {
   let roundHandler: VoleurRoundHandler;
@@ -47,7 +47,7 @@ describe('VoleurRoundHandler', () => {
     expect(roundConfig.type).toEqual(RoundTypeEnum.ROLES);
   });
 
-  it('should set selected role to VOLEUR', waitForAsync(() => {
+  it('should set selected role to VOLEUR', async () => {
     const players: Player[] = [
       {
         id: 0,
@@ -67,13 +67,12 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
-    roundHandler
-      .handleAction(players, [], PlayerRoleEnum.CUPIDON)
-      .subscribe((newPlayers) => {
-        expect(newPlayers[0].role).toBe(PlayerRoleEnum.CUPIDON);
-        expect(newPlayers[0].card).toBe(PlayerRoleEnum.CUPIDON);
-      });
-  }));
+    const newPlayers = await firstValueFrom(
+      roundHandler.handleAction(players, [], PlayerRoleEnum.CUPIDON),
+    );
+    expect(newPlayers[0].role).toBe(PlayerRoleEnum.CUPIDON);
+    expect(newPlayers[0].card).toBe(PlayerRoleEnum.CUPIDON);
+  });
 
   it('should return not played roles as selectable roles', () => {
     const cardList: CardList = {
