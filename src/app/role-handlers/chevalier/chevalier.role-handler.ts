@@ -3,7 +3,7 @@ import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { findLeftNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoleHandler } from '../default/default.role-handler';
-import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
 import { addStatusToPlayersById } from '@/utils/status.utils';
 
 export class ChevalierRoleHandler extends DefaultRoleHandler {

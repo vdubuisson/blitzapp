@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AccordionItemModule } from '@/components/accordion-item/accordion-item.module';
-import { PLAYER_STATUS_ORDER_CONFIG } from '@/configs/player-status-order.config';
+import { AccordionItemModule } from '@/shared/components/accordion-item/accordion-item-module';
+import { PLAYER_STATUS_ORDER } from '@/config/player-status-order';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { PlayerStatusIconPipe } from '@/pipes/player-status-icon/player-status-icon.pipe';
 import { PlayerStatusNamePipe } from '@/pipes/player-status-name/player-status-name.pipe';
@@ -19,7 +19,7 @@ export default class StatusLegendsPage {
     PlayerStatusEnum,
   ).toSorted(
     (status1, status2) =>
-      PLAYER_STATUS_ORDER_CONFIG.indexOf(status1) -
-      PLAYER_STATUS_ORDER_CONFIG.indexOf(status2),
+      PLAYER_STATUS_ORDER.indexOf(status1) -
+      PLAYER_STATUS_ORDER.indexOf(status2),
   );
 }

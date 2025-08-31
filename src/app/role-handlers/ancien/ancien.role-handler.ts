@@ -1,5 +1,5 @@
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
-import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/config/innocents-power-removal-roles';
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { Player } from '@/models/player.model';
 import {

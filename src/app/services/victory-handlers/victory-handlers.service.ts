@@ -1,5 +1,5 @@
-import { VICTORIES_PRIORITY_CONFIG } from '@/configs/victories-priority.config';
-import { VICTORY_HANDLERS_CONFIG } from '@/configs/victory-handlers.config';
+import { VICTORIES_PRIORITY } from '@/config/victories-priority';
+import { VICTORY_HANDLERS } from '@/config/victory-handlers';
 import { VictoryEnum } from '@/enums/victory.enum';
 import { Player } from '@/models/player.model';
 import { VictoryHandlersStore } from '@/stores/victory-handlers/victory-handlers.store';
@@ -14,7 +14,7 @@ export class VictoryHandlersService {
 
   private readonly victoryHandlersState = inject(VictoryHandlersStore).state;
 
-  private readonly victoryPriorities = VICTORIES_PRIORITY_CONFIG;
+  private readonly victoryPriorities = VICTORIES_PRIORITY;
 
   constructor() {
     this.victoryHandlersState().forEach((victory) =>
@@ -74,9 +74,9 @@ export class VictoryHandlersService {
   createVictoryHandler(victory: VictoryEnum): void {
     if (
       !this.victoryHandlers.has(victory) &&
-      VICTORY_HANDLERS_CONFIG[victory] !== undefined
+      VICTORY_HANDLERS[victory] !== undefined
     ) {
-      this.victoryHandlers.set(victory, new VICTORY_HANDLERS_CONFIG[victory]());
+      this.victoryHandlers.set(victory, new VICTORY_HANDLERS[victory]());
       this.syncState();
     }
   }

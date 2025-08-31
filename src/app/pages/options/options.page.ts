@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { StorageService } from '@/services/storage/storage.service';
-import { ModalService } from '@/services/modal/modal.service';
+import { ModalManager } from '@/layout/modal/modal-manager';
 import { switchMap } from 'rxjs';
 
 @Component({
@@ -11,14 +11,14 @@ import { switchMap } from 'rxjs';
 })
 export default class OptionsPage {
   private readonly storageService = inject(StorageService);
-  private readonly modalService = inject(ModalService);
+  private readonly modalManager = inject(ModalManager);
 
   protected clear(): void {
     this.storageService
       .clear()
       .pipe(
         switchMap(() =>
-          this.modalService.showTextModal({
+          this.modalManager.showTextModal({
             header: 'Stockage vidé',
             message: "Stockage vidé. Rechargez l'application.",
           }),

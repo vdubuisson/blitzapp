@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AccordionItemModule } from '@/components/accordion-item/accordion-item.module';
+import { AccordionItemModule } from '@/shared/components/accordion-item/accordion-item-module';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerRoleImagePipe } from '@/pipes/player-role-image/player-role-image.pipe';
 import { PlayerRoleNamePipe } from '@/pipes/player-role-name/player-role-name.pipe';

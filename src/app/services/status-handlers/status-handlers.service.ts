@@ -1,5 +1,5 @@
-import { ROLE_STATUSES_CONFIG } from '@/configs/role-statuses.config';
-import { STATUS_HANDLERS_CONFIG } from '@/configs/status-handlers.config';
+import { ROLE_STATUSES } from '@/config/role-statuses';
+import { STATUS_HANDLERS } from '@/config/status-handlers';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { Player } from '@/models/player.model';
 import { DefaultStatusHandler } from '@/status-handlers/default/default.status-handler';
@@ -42,7 +42,7 @@ export class StatusHandlersService {
     this.createStatusHandler(PlayerStatusEnum.CAPTAIN);
 
     players.forEach((player) => {
-      ROLE_STATUSES_CONFIG[player.role]?.forEach((status) =>
+      ROLE_STATUSES[player.role]?.forEach((status) =>
         this.createStatusHandler(status),
       );
     });
@@ -73,7 +73,7 @@ export class StatusHandlersService {
     if (this.statusHandlers.has(status)) {
       return;
     }
-    const statusHandlerClass = STATUS_HANDLERS_CONFIG[status];
+    const statusHandlerClass = STATUS_HANDLERS[status];
     if (statusHandlerClass === undefined) {
       throw new Error(`Missing StatusHandler config for ${status}`);
     }

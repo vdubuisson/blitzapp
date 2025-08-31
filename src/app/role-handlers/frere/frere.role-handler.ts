@@ -2,7 +2,7 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
 
 export class FrereRoleHandler extends DefaultRoleHandler {
   constructor() {

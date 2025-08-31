@@ -1,6 +1,6 @@
-import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
-import { ROLE_ROUNDS_CONFIG } from '@/configs/role-rounds.config';
-import { ROUND_HANDLERS_CONFIG } from '@/configs/round-handlers.config';
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
+import { ROLE_ROUNDS } from '@/config/role-rounds';
+import { ROUND_HANDLERS } from '@/config/round-handlers';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { DefaultRoundHandler } from '@/round-handlers/default/default-round.handler';
@@ -52,7 +52,7 @@ export class RoundHandlersService {
   initAsDefaultHandlers(roles: PlayerRoleEnum[]): void {
     const rolesSet = new Set<PlayerRoleEnum>(roles);
     rolesSet.forEach((role) => {
-      ROLE_ROUNDS_CONFIG[role].forEach((round) =>
+      ROLE_ROUNDS[role].forEach((round) =>
         this.createDefaultRoundHandler(round),
       );
     });
@@ -115,11 +115,11 @@ export class RoundHandlersService {
     if (this.roundHandlers.has(round)) {
       return;
     }
-    if (ROUND_HANDLERS_CONFIG[round] === undefined) {
+    if (ROUND_HANDLERS[round] === undefined) {
       throw new Error(`Missing RoundHandler config for ${round}`);
     }
     runInInjectionContext(this.injector, () => {
-      const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
+      const roundHandler = new ROUND_HANDLERS[round]();
       this.roundHandlers.set(round, roundHandler);
       this.roundHandlersState.update((state) => new Set([...state, round]));
     });
@@ -129,11 +129,11 @@ export class RoundHandlersService {
     if (this.roundHandlers.has(round)) {
       return;
     }
-    if (ROUND_HANDLERS_CONFIG[round] === undefined) {
+    if (ROUND_HANDLERS[round] === undefined) {
       throw new Error(`Missing RoundHandler config for ${round}`);
     }
     runInInjectionContext(this.injector, () => {
-      const roundHandler = new ROUND_HANDLERS_CONFIG[round]();
+      const roundHandler = new ROUND_HANDLERS[round]();
       const defaultRoundHandler = new DefaultRoundHandler(
         round,
         roundHandler.isOnlyOnce,

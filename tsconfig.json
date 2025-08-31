@@ -24,7 +24,7 @@
       "@/configs/*": ["src/app/configs/*"],
       "@/directives/*": ["src/app/directives/*"],
       "@/enums/*": ["src/app/enums/*"],
-      "@/guards/*": ["src/app/guards/*"],
+      "@/guards/*": ["src/core/guards/*"],
       "@/models/*": ["src/app/models/*"],
       "@/pages/*": ["src/app/pages/*"],
       "@/pipes/*": ["src/app/pipes/*"],
@@ -35,7 +35,13 @@
       "@/stores/*": ["src/app/stores/*"],
       "@/utils/*": ["src/app/utils/*"],
       "@/values/*": ["src/app/values/*"],
-      "@/victory-handlers/*": ["src/app/victory-handlers/*"]
+      "@/victory-handlers/*": ["src/app/victory-handlers/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/new-game/*": ["src/new-game/*"],
+      "@/layout/*": ["src/layout/*"],
+      "@/config/*": ["src/config/*"],
+      "@/current-game/*": ["src/current-game/*"],
+      "@/home/*": ["src/home/*"]
     }
   },
   "angularCompilerOptions": {

@@ -69,14 +69,6 @@ export default tseslint.config(
     extends: [
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
-    ],
-    rules: {},
-  },
-  {
-    files: ["**/*.component.html"],
-    extends: [
-      ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
       eslintPluginPrettierRecommended
     ],
     rules: {},

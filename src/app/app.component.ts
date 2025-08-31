@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from '@/components/header/header.component';
-import { SelectOverlayComponent } from '@/components/select-overlay/select-overlay.component';
+import { Header } from '@/layout/header/header';
+import { SelectOverlay } from '@/layout/select-overlay/select-overlay';
 
 @Component({
   selector: 'lgmj-root',
-  imports: [HeaderComponent, RouterOutlet, SelectOverlayComponent],
+  imports: [Header, RouterOutlet, SelectOverlay],
   templateUrl: './app.component.html',
 })
 export class AppComponent {}

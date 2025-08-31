@@ -1,4 +1,4 @@
-import { TextModalData } from '@/models/text-modal-data.model';
+import { TextModalData } from '@/layout/modal/text/text-modal-data';
 import { Injectable } from '@angular/core';
 import { AbstractStore } from '../abstract-store';
 

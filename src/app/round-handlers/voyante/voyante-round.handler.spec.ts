@@ -2,7 +2,7 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { ModalService } from '@/services/modal/modal.service';
+import { ModalManager } from '@/layout/modal/modal-manager';
 import { TestBed } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
 import { firstValueFrom, of } from 'rxjs';
@@ -11,14 +11,14 @@ import { VoyanteRoundHandler } from './voyante-round.handler';
 describe('VoyanteRoundHandler', () => {
   let roundHandler: VoyanteRoundHandler;
 
-  let modalService: ModalService;
+  let modalManager: ModalManager;
 
   beforeAll(() => {
-    modalService = MockService(ModalService);
-    jest.spyOn(modalService, 'showPlayerCard').mockReturnValue(of(undefined));
+    modalManager = MockService(modalManager);
+    jest.spyOn(modalManager, 'showPlayerCard').mockReturnValue(of(undefined));
 
     TestBed.configureTestingModule({
-      providers: [{ provide: ModalService, useValue: modalService }],
+      providers: [{ provide: modalManager, useValue: modalManager }],
     });
     TestBed.runInInjectionContext(
       () => (roundHandler = new VoyanteRoundHandler()),
@@ -96,7 +96,7 @@ describe('VoyanteRoundHandler', () => {
     ];
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
-    expect(modalService.showPlayerCard).toHaveBeenCalledWith(
+    expect(modalManager.showPlayerCard).toHaveBeenCalledWith(
       PlayerRoleEnum.CHIEN_LOUP,
     );
   });

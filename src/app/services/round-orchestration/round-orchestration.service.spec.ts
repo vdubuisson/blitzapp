@@ -13,7 +13,7 @@ import { UniqueRoundsPassedStore } from '@/stores/unique-rounds-passed/unique-ro
 import { signal } from '@angular/core';
 import { RoundOrchestrationService } from './round-orchestration.service';
 import { DayCountStore } from '@/stores/day-count/day-count.store';
-import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
+import { ROUNDS_ORDER } from '@/config/rounds-order';
 
 class MockRoundHandler implements RoundHandler {
   constructor(isOnlyOnce = false) {
@@ -318,6 +318,6 @@ describe('RoundOrchestrationService', () => {
 
     service.resetRoundsOrder();
 
-    expect(service['sortedRounds']).toEqual([...ROUNDS_ORDER_CONFIG]);
+    expect(service['sortedRounds']).toEqual([...ROUNDS_ORDER]);
   });
 });

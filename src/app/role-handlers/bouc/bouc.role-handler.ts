@@ -1,4 +1,4 @@
-import { ROLE_METADATA_CONFIG } from '@/configs/role-metadata.config';
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';

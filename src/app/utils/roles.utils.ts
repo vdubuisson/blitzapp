@@ -1,9 +1,9 @@
 import { Player } from '@/models/player.model';
 import { CardList } from '@/models/card-list.model';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
-import { LOUPS_GAROUS_ROLES } from '@/configs/loups-garous-roles';
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/config/innocents-power-removal-roles';
 import { removeStatusFromPlayer } from './status.utils';
 
 export function getNotPlayedRoles(

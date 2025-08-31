@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { confirmNewGameGuard } from '@/guards/confirm-new-game.guard';
+import { confirmNewGameGuard } from '@/guards/confirm-new-game-guard';
 
 export const appRoutes: Routes = [
   {
@@ -8,25 +8,14 @@ export const appRoutes: Routes = [
     loadComponent: () => import('@/pages/victory/victory.page'),
   },
   {
-    path: 'game',
+    path: 'current-game',
     title: 'Partie en cours',
-    loadComponent: () => import('@/pages/game/game.page'),
+    loadComponent: () => import('@/current-game/current-game-page'),
   },
   {
     path: 'new-game',
-    title: 'Nouvelle partie - Joueurs',
-    loadComponent: () => import('@/pages/new-game/new-game.page'),
-  },
-  {
-    path: 'new-game/roles',
-    title: 'Nouvelle partie - Roles',
-    loadComponent: () => import('@/pages/new-game-roles/new-game-roles.page'),
-  },
-  {
-    path: 'roles-choice',
-    title: 'Choix des rôles à jouer',
     canActivate: [confirmNewGameGuard],
-    loadComponent: () => import('@/pages/roles-choice/roles-choice.page'),
+    loadChildren: () => import('@/new-game/new-game-routes'),
   },
   {
     path: 'roles-rules',
@@ -47,6 +36,6 @@ export const appRoutes: Routes = [
     path: '',
     pathMatch: 'full',
     title: 'Accueil',
-    loadComponent: () => import('@/pages/home/home.page'),
+    loadComponent: () => import('@/home/home-page'),
   },
 ];

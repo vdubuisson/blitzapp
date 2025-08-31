@@ -5,7 +5,7 @@ import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { AncienRoleHandler } from './ancien.role-handler';
 import { TestBed } from '@angular/core/testing';
 import * as rolesUtils from '@/utils/roles.utils';
-import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/configs/innocents-power-removal-roles';
+import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/config/innocents-power-removal-roles';
 import { StatusHandlersService } from '@/services/status-handlers/status-handlers.service';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 

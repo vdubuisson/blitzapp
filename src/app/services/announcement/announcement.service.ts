@@ -1,7 +1,7 @@
 import { AnnouncementEnum } from '@/enums/announcement.enum';
 import { Player } from '@/models/player.model';
-import { TextModalData } from '@/models/text-modal-data.model';
-import { ModalService } from '@/services/modal/modal.service';
+import { TextModalData } from '@/layout/modal/text/text-modal-data';
+import { ModalManager } from '@/layout/modal/modal-manager';
 import { AnnouncementsQueueStore } from '@/stores/announcements-queue/announcements-queue.store';
 import { announcements } from '@/values/announcements';
 import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
@@ -12,7 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class AnnouncementService {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly modalService = inject(ModalService);
+  private readonly modalManager = inject(ModalManager);
 
   private readonly announcementsQueue = inject(AnnouncementsQueueStore).state;
 
@@ -77,7 +77,7 @@ export class AnnouncementService {
 
     this.announcementsQueue.update((queue) => queue.slice(1));
 
-    this.modalService
+    this.modalManager
       .showTextModal(announcement)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {

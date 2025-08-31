@@ -1,4 +1,4 @@
-import { LOUPS_GAROUS_ROUNDS } from '@/configs/loups-garous-rounds';
+import { LOUPS_GAROUS_ROUNDS } from '@/config/loups-garous-rounds';
 import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { PlayerStatusEnum } from '@/enums/player-status.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
@@ -77,7 +77,7 @@ export class GameService {
       this.nextDayCount(0);
     }
     this.setFirstRound();
-    this.router.navigate(['game']);
+    this.router.navigate(['current-game']);
   }
 
   /**

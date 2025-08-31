@@ -2,13 +2,13 @@ import { PlayerRoleEnum } from '@/enums/player-role.enum';
 import { RoundTypeEnum } from '@/enums/round-type.enum';
 import { RoundEnum } from '@/enums/round.enum';
 import { Player } from '@/models/player.model';
-import { ModalService } from '@/services/modal/modal.service';
+import { ModalManager } from '@/layout/modal/modal-manager';
 import { inject } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class VoyanteRoundHandler extends DefaultRoundHandler {
-  private readonly modalService = inject(ModalService);
+  private readonly modalManager = inject(ModalManager);
 
   constructor() {
     super(RoundEnum.VOYANTE, false, false, RoundTypeEnum.PLAYERS);
@@ -25,7 +25,7 @@ export class VoyanteRoundHandler extends DefaultRoundHandler {
     const selectedPlayerCard = (
       players.find((player) => player.id === selectedPlayerIds[0]) as Player
     ).card;
-    return this.modalService
+    return this.modalManager
       .showPlayerCard(selectedPlayerCard)
       .pipe(map(() => [...players]));
   }

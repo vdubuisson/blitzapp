@@ -1,4 +1,4 @@
-import { ROUNDS_ORDER_CONFIG } from '@/configs/rounds-order.config';
+import { ROUNDS_ORDER } from '@/config/rounds-order';
 import { RoundEnum } from '@/enums/round.enum';
 import { RoundHandler } from '@/round-handlers/round-handler.interface';
 import { DeathService } from '@/services/death/death.service';
@@ -15,7 +15,7 @@ export class RoundOrchestrationService {
   private readonly roundHandlersService = inject(RoundHandlersService);
   private readonly deathService = inject(DeathService);
 
-  private sortedRounds = [...ROUNDS_ORDER_CONFIG];
+  private sortedRounds = [...ROUNDS_ORDER];
 
   private readonly uniqueRoundsPassed = inject(UniqueRoundsPassedStore).state;
   private readonly beforeDeathRound = inject(BeforeDeathRoundStore).state;
@@ -114,6 +114,6 @@ export class RoundOrchestrationService {
   }
 
   resetRoundsOrder(): void {
-    this.sortedRounds = [...ROUNDS_ORDER_CONFIG];
+    this.sortedRounds = [...ROUNDS_ORDER];
   }
 }

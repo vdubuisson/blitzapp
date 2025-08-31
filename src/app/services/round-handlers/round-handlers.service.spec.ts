@@ -5,8 +5,6 @@ import { DefaultRoundHandler } from '@/round-handlers/default/default-round.hand
 import { LoupGarouRoundHandler } from '@/round-handlers/loup-garou/loup-garou-round.handler';
 import { VillageoisRoundHandler } from '@/round-handlers/villageois/villageois-round.handler';
 import { VoyanteRoundHandler } from '@/round-handlers/voyante/voyante-round.handler';
-import { AnnouncementService } from '@/services/announcement/announcement.service';
-import { ModalService } from '@/services/modal/modal.service';
 import { DefaultRoundHandlersStore } from '@/stores/default-round-handlers/default-round-handlers.store';
 import { RoundHandlersStore } from '@/stores/round-handlers/round-handlers.store';
 import { signal } from '@angular/core';
@@ -28,8 +26,6 @@ describe('RoundHandlersService', () => {
 
   beforeAll(() =>
     MockBuilder(RoundHandlersService)
-      .mock(AnnouncementService)
-      .mock(ModalService)
       .mock(RoundHandlersStore)
       .mock(DefaultRoundHandlersStore),
   );

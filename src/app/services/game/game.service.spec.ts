@@ -370,7 +370,7 @@ describe.skip('GameService', () => {
   it('should navigate to /game on game creation', () => {
     service.createGame(mockPlayers);
 
-    expect(router.navigate).toHaveBeenCalledWith(['game']);
+    expect(router.navigate).toHaveBeenCalledWith(['current-game']);
   });
 
   it('should set first round on game creation using RoundOrchestrationService', () => {
