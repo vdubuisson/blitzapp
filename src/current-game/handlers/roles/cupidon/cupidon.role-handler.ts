@@ -1,0 +1,9 @@
+import { PlayerRole } from '@/types/player-role';
+import { DefaultRoleHandler } from '../default/default.role-handler';
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
+
+export class CupidonRoleHandler extends DefaultRoleHandler {
+  constructor() {
+    super(PlayerRole.CUPIDON, ROLE_METADATA_CONFIG[PlayerRole.CUPIDON]!);
+  }
+}

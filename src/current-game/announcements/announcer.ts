@@ -1,0 +1,87 @@
+import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
+import { Player } from '@/shared/types/player';
+import { TextModalData } from '@/layout/modal/text/text-modal-data';
+import { ModalManager } from '@/layout/modal/modal-manager';
+import { AnnouncementsQueueStore } from '@/current-game/announcements/announcements-queue/announcements-queue-store';
+import { announcements } from '@/texts/announcements';
+import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class Announcer {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly modalManager = inject(ModalManager);
+
+  private readonly announcementsQueue = inject(AnnouncementsQueueStore).state;
+
+  private readonly isPresenting = signal(false);
+
+  constructor() {
+    effect(() => {
+      if (this.announcementsQueue().length > 0 && !this.isPresenting()) {
+        this.showNextAnnouncement();
+      }
+    });
+  }
+
+  /**
+   * Announce the deaths of players.
+   * @param players - The list of players who have died.
+   */
+  announceDeaths(players: Player[]): void {
+    const playerNames = players
+      .map((player) => `<li>${player.name}</li>`)
+      .join('');
+    const announcement: TextModalData = {
+      header: 'Morts à annoncer',
+      message: `<ul>${playerNames}</ul>`,
+    };
+    this.addAnnouncementToQueue(announcement);
+  }
+
+  /**
+   * Announce a specific type of announcement.
+   * @param type - The type of announcement to make.
+   * @param params - Optional parameters to replace in the announcement message.
+   */
+  announce(type: AnnouncementTypes, params?: Record<string, string>): void {
+    let message = announcements[type].message;
+    if (message !== undefined && params !== undefined) {
+      Object.entries(params).forEach(([key, value]) => {
+        const toReplace = `{{\\s*${key}\\s*}}`;
+        const regex = new RegExp(toReplace, 'g');
+        message = (message as string).replaceAll(regex, value);
+      });
+    }
+    const announcement: TextModalData = {
+      header: announcements[type].header,
+      message,
+    };
+    this.addAnnouncementToQueue(announcement);
+  }
+
+  private addAnnouncementToQueue(announcement: TextModalData): void {
+    this.announcementsQueue.update((queue) => [...queue, announcement]);
+  }
+
+  private showNextAnnouncement(): void {
+    this.isPresenting.set(true);
+    const announcement = this.announcementsQueue()[0];
+
+    if (announcement === undefined) {
+      this.isPresenting.set(false);
+      return;
+    }
+
+    this.announcementsQueue.update((queue) => queue.slice(1));
+
+    this.modalManager
+      .showTextModal(announcement)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.isPresenting.set(false);
+      });
+  }
+}
