@@ -1,0 +1,17 @@
+<main class="player-list">
+  @for (player of players(); track player.id) {
+  <lgmj-player-card
+    [player]="player"
+    [displayMode]="playerDisplayMode"
+    [selectableRoles]="availableRoles()"
+    (roleChange)="changeRole(player.id, $event)"
+  />
+  }
+</main>
+
+<section class="submit-block">
+  <button [disabled]="!canCreate()" (click)="createGame()" class="btn primary">
+    DÉMARRER
+  </button>
+  <button routerLink="../players" class="btn danger">RETOUR</button>
+</section>

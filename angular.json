@@ -18,8 +18,6 @@
           "builder": "@angular/build:application",
           "options": {
             "aot": true,
-            "outputPath": "dist/loup-garou-mj",
-            "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -34,8 +32,7 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
-            },
-            "scripts": []
+            }
           },
           "configurations": {
             "production": {

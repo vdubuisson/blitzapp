@@ -7,10 +7,8 @@
     "types": [
       "jest"
     ],
-    "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "src/**/*.ts"
   ]
 }

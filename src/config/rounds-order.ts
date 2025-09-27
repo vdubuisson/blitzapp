@@ -1,0 +1,27 @@
+import { Round } from '@/types/round';
+
+export const ROUNDS_ORDER: Round[] = [
+  Round.SECTAIRE,
+  Round.VOLEUR,
+  Round.CUPIDON,
+  Round.VOYANTE,
+  Round.RENARD,
+  Round.AMOUREUX,
+  Round.SOEURS,
+  Round.FRERES,
+  Round.ENFANT_SAUVAGE,
+  Round.CORBEAU,
+  Round.SALVATEUR,
+  Round.CHIEN_LOUP,
+  Round.LOUP_GAROU,
+  Round.LOUP_BLANC,
+  Round.PERE_LOUPS,
+  Round.GRAND_MECHANT_LOUP,
+  Round.SORCIERE_HEALTH,
+  Round.SORCIERE_KILL,
+  Round.JOUEUR_FLUTE,
+  Round.CHARMED,
+  Round.MONTREUR_OURS,
+  Round.CAPITAINE,
+  Round.VILLAGEOIS,
+];

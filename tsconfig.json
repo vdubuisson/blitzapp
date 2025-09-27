@@ -1,51 +1,56 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "declaration": false,
+    "isolatedModules": true,
     "experimentalDecorators": true,
-    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
-    "isolatedModules": true,
-    "useDefineForClassFields": false,
+    "module": "preserve",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "lib": [
       "ES2023",
       "dom"
     ],
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["src/app/components/*"],
-      "@/configs/*": ["src/app/configs/*"],
-      "@/directives/*": ["src/app/directives/*"],
-      "@/enums/*": ["src/app/enums/*"],
-      "@/guards/*": ["src/app/guards/*"],
-      "@/models/*": ["src/app/models/*"],
-      "@/pages/*": ["src/app/pages/*"],
-      "@/pipes/*": ["src/app/pipes/*"],
-      "@/role-handlers/*": ["src/app/role-handlers/*"],
-      "@/round-handlers/*": ["src/app/round-handlers/*"],
-      "@/services/*": ["src/app/services/*"],
-      "@/status-handlers/*": ["src/app/status-handlers/*"],
-      "@/stores/*": ["src/app/stores/*"],
-      "@/utils/*": ["src/app/utils/*"],
-      "@/values/*": ["src/app/values/*"],
-      "@/victory-handlers/*": ["src/app/victory-handlers/*"]
+      "@/config/*": ["src/config/*"],
+      "@/current-game/*": ["src/current-game/*"],
+      "@/game-handlers/*": ["src/current-game/handlers/*"],
+      "@/guards/*": ["src/core/guards/*"],
+      "@/help/*": ["src/help/*"],
+      "@/home/*": ["src/home/*"],
+      "@/layout/*": ["src/layout/*"],
+      "@/new-game/*": ["src/new-game/*"],
+      "@/options/*": ["src/options/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/storage/*": ["src/core/storage/*"],
+      "@/texts/*": ["src/texts/*"],
+      "@/types/*": ["src/shared/types/*"],
+      "@/utils/*": ["src/core/utils/*"],
+      "@/victory/*": ["src/victory/*"]
     }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
-  }
+    "strictTemplates": true,
+    "typeCheckHostBindings": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

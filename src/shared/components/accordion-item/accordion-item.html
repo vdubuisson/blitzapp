@@ -1,0 +1,27 @@
+<article>
+  <header
+    (click)="toggle()"
+    (keyup.enter)="toggle()"
+    [class.selected]="expanded"
+    [class]="headerColor()"
+    tabindex="0"
+  >
+    <ng-content select="[header]" />
+    <fa-icon
+      class="accordion-item-indicator"
+      [icon]="expanded ? openedIcon : closedIcon"
+    />
+  </header>
+  <div
+    #content
+    class="accordion-item-content"
+    [style.height.px]="expanded ? content.scrollHeight : 0"
+  >
+    <div
+      class="accordion-item-content-inner"
+      [class.no-padding]="noInnerPadding()"
+    >
+      <ng-content />
+    </div>
+  </div>
+</article>

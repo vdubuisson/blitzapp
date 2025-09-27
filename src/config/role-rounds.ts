@@ -1,0 +1,32 @@
+import { PlayerRole } from '@/types/player-role';
+import { Round } from '@/types/round';
+
+export const ROLE_ROUNDS: Record<PlayerRole, Round[]> = {
+  [PlayerRole.NOT_SELECTED]: [],
+  [PlayerRole.VILLAGEOIS]: [],
+  [PlayerRole.LOUP_GAROU]: [],
+  [PlayerRole.CHASSEUR]: [Round.CHASSEUR],
+  [PlayerRole.CUPIDON]: [Round.CUPIDON, Round.AMOUREUX],
+  [PlayerRole.PETITE_FILLE]: [],
+  [PlayerRole.SORCIERE]: [Round.SORCIERE_HEALTH, Round.SORCIERE_KILL],
+  [PlayerRole.VOYANTE]: [Round.VOYANTE],
+  [PlayerRole.JOUEUR_FLUTE]: [Round.JOUEUR_FLUTE, Round.CHARMED],
+  [PlayerRole.CORBEAU]: [Round.CORBEAU],
+  [PlayerRole.ENFANT_SAUVAGE]: [Round.ENFANT_SAUVAGE],
+  [PlayerRole.SALVATEUR]: [Round.SALVATEUR],
+  [PlayerRole.GRAND_MECHANT_LOUP]: [Round.GRAND_MECHANT_LOUP],
+  [PlayerRole.MONTREUR_OURS]: [Round.MONTREUR_OURS],
+  [PlayerRole.RENARD]: [Round.RENARD],
+  [PlayerRole.CHIEN_LOUP]: [Round.CHIEN_LOUP],
+  [PlayerRole.SOEUR]: [Round.SOEURS],
+  [PlayerRole.FRERE]: [Round.FRERES],
+  [PlayerRole.LOUP_BLANC]: [Round.LOUP_BLANC],
+  [PlayerRole.VOLEUR]: [Round.VOLEUR],
+  [PlayerRole.ANGE]: [],
+  [PlayerRole.ANCIEN]: [],
+  [PlayerRole.IDIOT]: [],
+  [PlayerRole.CHEVALIER]: [],
+  [PlayerRole.BOUC]: [Round.BOUC],
+  [PlayerRole.SECTAIRE]: [Round.SECTAIRE],
+  [PlayerRole.PERE_LOUPS]: [Round.PERE_LOUPS],
+};

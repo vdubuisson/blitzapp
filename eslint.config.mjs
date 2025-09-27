@@ -55,12 +55,6 @@ export default tseslint.config(
           prefix: "lgmj",
           style: "kebab-case",
         },
-      ],
-      "@angular-eslint/component-class-suffix": [
-        "error",
-        {
-          "suffixes": ["Page", "Component"]
-        }
       ]
     },
   },
@@ -68,16 +62,7 @@ export default tseslint.config(
     files: ["**/*.html"],
     extends: [
       ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
-    ],
-    rules: {},
-  },
-  {
-    files: ["**/*.component.html"],
-    extends: [
-      ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
-      eslintPluginPrettierRecommended
+      ...angular.configs.templateAccessibility
     ],
     rules: {},
   }
