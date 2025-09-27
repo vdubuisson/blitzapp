@@ -13,8 +13,9 @@
     />
   </header>
   <div
+    #content
     class="accordion-item-content"
-    [@slideOpen]="expanded ? 'opened' : 'closed'"
+    [style.height.px]="expanded ? content.scrollHeight : 0"
   >
     <div
       class="accordion-item-content-inner"

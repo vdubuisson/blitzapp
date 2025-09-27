@@ -4,7 +4,6 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
   PreloadAllModules,
   provideRouter,
@@ -24,6 +23,5 @@ export const appConfig: ApplicationConfig = {
       withPreloading(PreloadAllModules),
       withComponentInputBinding(),
     ),
-    provideAnimationsAsync(),
   ],
 };

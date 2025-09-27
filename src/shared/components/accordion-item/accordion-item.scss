@@ -17,6 +17,7 @@ header {
 .accordion-item-content {
   background-color: white;
   overflow: hidden;
+  transition: height 0.3s ease;
 
   &-inner:not(.no-padding) {
     padding: var(--spacing-075) var(--spacing-1);
