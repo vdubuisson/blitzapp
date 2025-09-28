@@ -1,4 +1,4 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatus, PlayerStatusEnum } from '@/types/player-status';
 import { CaptainStatusHandler } from '@/game-handlers/status/captain/captain.status-handler';
 import { ChildModelStatusHandler } from '@/game-handlers/status/child-model/child-model.status-handler';
 import { DefaultStatusHandler } from '@/game-handlers/status/default/default.status-handler';
@@ -10,22 +10,22 @@ import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
 import { WolfTargetStatusHandler } from '@/game-handlers/status/wolf-target/wolf-target.status-handler';
 
 export const STATUS_HANDLERS: Record<PlayerStatus, new () => StatusHandler> = {
-  [PlayerStatus.WOLF_TARGET]: WolfTargetStatusHandler,
-  [PlayerStatus.HEALTH_POTION]: DefaultStatusHandler,
-  [PlayerStatus.DEATH_POTION]: DefaultStatusHandler,
-  [PlayerStatus.CAPTAIN]: CaptainStatusHandler,
-  [PlayerStatus.LOVER]: LoverStatusHandler,
-  [PlayerStatus.INJURED]: DefaultStatusHandler,
-  [PlayerStatus.PROTECTED]: DefaultStatusHandler,
-  [PlayerStatus.NO_POWER]: DefaultStatusHandler,
-  [PlayerStatus.CHARMED]: DefaultStatusHandler,
-  [PlayerStatus.CHILD_MODEL]: ChildModelStatusHandler,
-  [PlayerStatus.RAVEN]: DefaultStatusHandler,
-  [PlayerStatus.NO_VOTE]: DefaultStatusHandler,
-  [PlayerStatus.RUSTY_SWORD]: RustySwordStatusHandler,
-  [PlayerStatus.BLUE_TEAM]: DefaultStatusHandler,
-  [PlayerStatus.RED_TEAM]: DefaultStatusHandler,
+  [PlayerStatusEnum.WOLF_TARGET]: WolfTargetStatusHandler,
+  [PlayerStatusEnum.HEALTH_POTION]: DefaultStatusHandler,
+  [PlayerStatusEnum.DEATH_POTION]: DefaultStatusHandler,
+  [PlayerStatusEnum.CAPTAIN]: CaptainStatusHandler,
+  [PlayerStatusEnum.LOVER]: LoverStatusHandler,
+  [PlayerStatusEnum.INJURED]: DefaultStatusHandler,
+  [PlayerStatusEnum.PROTECTED]: DefaultStatusHandler,
+  [PlayerStatusEnum.NO_POWER]: DefaultStatusHandler,
+  [PlayerStatusEnum.CHARMED]: DefaultStatusHandler,
+  [PlayerStatusEnum.CHILD_MODEL]: ChildModelStatusHandler,
+  [PlayerStatusEnum.RAVEN]: DefaultStatusHandler,
+  [PlayerStatusEnum.NO_VOTE]: DefaultStatusHandler,
+  [PlayerStatusEnum.RUSTY_SWORD]: RustySwordStatusHandler,
+  [PlayerStatusEnum.BLUE_TEAM]: DefaultStatusHandler,
+  [PlayerStatusEnum.RED_TEAM]: DefaultStatusHandler,
   // [PlayerStatusEnum.COMEDIAN]: DefaultStatusHandler,
-  [PlayerStatus.INFECTED]: InfectedStatusHandler,
-  [PlayerStatus.DEVOURED]: DevouredStatusHandler,
+  [PlayerStatusEnum.INFECTED]: InfectedStatusHandler,
+  [PlayerStatusEnum.DEVOURED]: DevouredStatusHandler,
 };

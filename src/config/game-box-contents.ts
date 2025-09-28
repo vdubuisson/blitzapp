@@ -1,42 +1,43 @@
-import { GameBoxes } from '@/config/game-boxes';
-import { PlayerRole } from '@/types/player-role';
+import { GameBox, GameBoxEnum } from '@/config/game-boxes';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 
-export const GAME_BOX_CONTENTS: Record<string, PlayerRole[]> = {
-  [GameBoxes.CORE]: [
-    PlayerRole.CHASSEUR,
-    PlayerRole.CUPIDON,
-    PlayerRole.PETITE_FILLE,
-    PlayerRole.SORCIERE,
-    PlayerRole.VOLEUR,
-    PlayerRole.VOYANTE,
+const excludedRoles: PlayerRole[] = [
+  PlayerRoleEnum.NOT_SELECTED,
+  PlayerRoleEnum.VILLAGEOIS,
+  PlayerRoleEnum.LOUP_GAROU,
+];
+
+export const GAME_BOX_CONTENTS: Record<GameBox, PlayerRole[]> = {
+  [GameBoxEnum.CORE]: [
+    PlayerRoleEnum.CHASSEUR,
+    PlayerRoleEnum.CUPIDON,
+    PlayerRoleEnum.PETITE_FILLE,
+    PlayerRoleEnum.SORCIERE,
+    PlayerRoleEnum.VOLEUR,
+    PlayerRoleEnum.VOYANTE,
   ],
-  [GameBoxes.LUNE]: [
-    PlayerRole.JOUEUR_FLUTE,
-    PlayerRole.SALVATEUR,
-    PlayerRole.ANCIEN,
-    PlayerRole.IDIOT,
-    PlayerRole.BOUC,
+  [GameBoxEnum.LUNE]: [
+    PlayerRoleEnum.JOUEUR_FLUTE,
+    PlayerRoleEnum.SALVATEUR,
+    PlayerRoleEnum.ANCIEN,
+    PlayerRoleEnum.IDIOT,
+    PlayerRoleEnum.BOUC,
   ],
-  [GameBoxes.VILLAGE]: [PlayerRole.CORBEAU, PlayerRole.LOUP_BLANC],
-  [GameBoxes.PERSONNAGES]: [
-    PlayerRole.CHIEN_LOUP,
-    PlayerRole.SOEUR,
-    PlayerRole.FRERE,
-    PlayerRole.ENFANT_SAUVAGE,
-    PlayerRole.GRAND_MECHANT_LOUP,
-    PlayerRole.MONTREUR_OURS,
-    PlayerRole.RENARD,
-    PlayerRole.ANGE,
-    PlayerRole.CHEVALIER,
-    PlayerRole.SECTAIRE,
-    PlayerRole.PERE_LOUPS,
+  [GameBoxEnum.VILLAGE]: [PlayerRoleEnum.CORBEAU, PlayerRoleEnum.LOUP_BLANC],
+  [GameBoxEnum.PERSONNAGES]: [
+    PlayerRoleEnum.CHIEN_LOUP,
+    PlayerRoleEnum.SOEUR,
+    PlayerRoleEnum.FRERE,
+    PlayerRoleEnum.ENFANT_SAUVAGE,
+    PlayerRoleEnum.GRAND_MECHANT_LOUP,
+    PlayerRoleEnum.MONTREUR_OURS,
+    PlayerRoleEnum.RENARD,
+    PlayerRoleEnum.ANGE,
+    PlayerRoleEnum.CHEVALIER,
+    PlayerRoleEnum.SECTAIRE,
+    PlayerRoleEnum.PERE_LOUPS,
   ],
-  [GameBoxes.PACTE]: Object.values(PlayerRole).filter(
-    (role) =>
-      ![
-        PlayerRole.NOT_SELECTED,
-        PlayerRole.VILLAGEOIS,
-        PlayerRole.LOUP_GAROU,
-      ].includes(role),
+  [GameBoxEnum.PACTE]: Object.values(PlayerRoleEnum).filter(
+    (role: PlayerRole) => !excludedRoles.includes(role),
   ),
 };

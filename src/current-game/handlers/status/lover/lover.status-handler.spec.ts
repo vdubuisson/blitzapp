@@ -1,11 +1,11 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { LoverStatusHandler } from './lover.status-handler';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { TestBed } from '@angular/core/testing';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 
 describe('LoverStatusHandler', () => {
   let handler: LoverStatusHandler;
@@ -39,25 +39,25 @@ describe('LoverStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.LOVER]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.LOVER]),
           isDead: false,
         },
         {
           id: 2,
           name: 'player2',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.LOVER]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.LOVER]),
           isDead: true,
         },
       ];
@@ -73,9 +73,9 @@ describe('LoverStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
-          statuses: new Set([PlayerStatus.LOVER]),
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
+          statuses: new Set([PlayerStatusEnum.LOVER]),
           isDead: false,
         },
       ];
@@ -83,7 +83,7 @@ describe('LoverStatusHandler', () => {
       handler.handleDeath(mockPlayers, mockPlayers[0]);
 
       expect(victoryHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Victory.AMOUREUX,
+        VictoryEnum.AMOUREUX,
       );
     });
   });
@@ -91,7 +91,7 @@ describe('LoverStatusHandler', () => {
   describe('triggerAction', () => {
     it('should return players unchanged', () => {
       const mockPlayers: Player[] = [
-        { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
+        { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       ];
       const result = handler.triggerAction(mockPlayers);
       expect(result).toBe(mockPlayers);

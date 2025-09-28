@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { isLoupGarou } from '@/utils/roles.utils';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -9,7 +9,7 @@ import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class LoupGarouRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.LOUP_GAROU, false, false, RoundType.PLAYERS);
+    super(RoundEnum.LOUP_GAROU, false, false, RoundTypeEnum.PLAYERS);
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
@@ -28,8 +28,11 @@ export class LoupGarouRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    const updatedPlayer = addStatusToPlayer(player, PlayerStatus.WOLF_TARGET);
-    updatedPlayer.killedBy = PlayerRole.LOUP_GAROU;
+    const updatedPlayer = addStatusToPlayer(
+      player,
+      PlayerStatusEnum.WOLF_TARGET,
+    );
+    updatedPlayer.killedBy = PlayerRoleEnum.LOUP_GAROU;
     return updatedPlayer;
   }
 

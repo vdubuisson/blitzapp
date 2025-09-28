@@ -7,7 +7,7 @@ import {
   ngMocks,
 } from 'ng-mocks';
 import VictoryPage from './victory-page';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 import { provideLocationMocks } from '@angular/common/testing';
 
 describe('VictoryPage', () => {
@@ -28,7 +28,7 @@ describe('VictoryPage', () => {
   });
 
   beforeAll(() => {
-    component = MockRender(VictoryPage, { victory: Victory.NONE }).point
+    component = MockRender(VictoryPage, { victory: VictoryEnum.NONE }).point
       .componentInstance;
   });
 

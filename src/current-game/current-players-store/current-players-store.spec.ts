@@ -1,5 +1,5 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player, StoredPlayer } from '@/shared/types/player';
 import { Storage } from '@/storage/storage';
 import { TestBed } from '@angular/core/testing';
@@ -19,9 +19,9 @@ describe('CurrentPlayersStore without storage', () => {
     {
       id: 0,
       name: 'player0',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
-      statuses: new Set([PlayerStatus.WOLF_TARGET]),
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
       isDead: true,
     },
   ];
@@ -30,9 +30,9 @@ describe('CurrentPlayersStore without storage', () => {
     {
       id: 0,
       name: 'player0',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
-      statuses: [PlayerStatus.WOLF_TARGET],
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
+      statuses: [PlayerStatusEnum.WOLF_TARGET],
       isDead: true,
     },
   ];
@@ -94,9 +94,9 @@ describe('CurrentPlayersStore with storage init', () => {
     {
       id: 0,
       name: 'player0',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
-      statuses: new Set([PlayerStatus.WOLF_TARGET]),
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
       isDead: true,
     },
   ];
@@ -105,9 +105,9 @@ describe('CurrentPlayersStore with storage init', () => {
     {
       id: 0,
       name: 'player0',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
-      statuses: [PlayerStatus.WOLF_TARGET],
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
+      statuses: [PlayerStatusEnum.WOLF_TARGET],
       isDead: true,
     },
   ];

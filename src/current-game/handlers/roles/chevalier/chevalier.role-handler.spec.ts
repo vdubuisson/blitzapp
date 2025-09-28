@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
@@ -6,7 +6,7 @@ import { ChevalierRoleHandler } from './chevalier.role-handler';
 import { TestBed } from '@angular/core/testing';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import * as statusUtils from '@/utils/status.utils';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { RustySwordStatusHandler } from '@/game-handlers/status/rusty-sword/rusty-sword.status-handler';
 
@@ -46,19 +46,19 @@ describe('ChevalierRoleHandler', () => {
       {
         id: 1,
         name: 'Player 1',
-        role: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
       } as Player,
       {
         id: 2,
         name: 'Player 2',
-        role: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
       } as Player,
       {
         id: 3,
         name: 'Player 3',
-        role: PlayerRole.GRAND_MECHANT_LOUP,
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
         statuses: new Set(),
       } as Player,
     ];
@@ -68,7 +68,7 @@ describe('ChevalierRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.CHEVALIER);
+    expect(handler.role).toBe(PlayerRoleEnum.CHEVALIER);
   });
 
   describe('prepareNewGame', () => {
@@ -87,7 +87,7 @@ describe('ChevalierRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.RUSTY_SWORD,
+        PlayerStatusEnum.RUSTY_SWORD,
       );
     });
   });
@@ -96,7 +96,7 @@ describe('ChevalierRoleHandler', () => {
     it('should add RUSTY_SWORD status to the GRAND_MECHANT_LOUP if killed by GRAND_MECHANT_LOUP', () => {
       const deadPlayer = {
         ...players[0],
-        killedBy: PlayerRole.GRAND_MECHANT_LOUP,
+        killedBy: PlayerRoleEnum.GRAND_MECHANT_LOUP,
       };
 
       const expectedPlayers = { ...players };
@@ -110,13 +110,13 @@ describe('ChevalierRoleHandler', () => {
       expect(result).toEqual(expectedPlayers);
       expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
-        PlayerStatus.RUSTY_SWORD,
+        PlayerStatusEnum.RUSTY_SWORD,
         [3],
       );
     });
 
     it('should add RUSTY_SWORD status to the left neighbor if killed by LOUP_GAROU', () => {
-      const deadPlayer = { ...players[0], killedBy: PlayerRole.LOUP_GAROU };
+      const deadPlayer = { ...players[0], killedBy: PlayerRoleEnum.LOUP_GAROU };
       const leftNeighbor = players[1];
       jest
         .spyOn(neighborUtils, 'findLeftNeighbor')
@@ -132,13 +132,13 @@ describe('ChevalierRoleHandler', () => {
       expect(result).toEqual(expectedPlayers);
       expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
-        PlayerStatus.RUSTY_SWORD,
+        PlayerStatusEnum.RUSTY_SWORD,
         [2],
       );
     });
 
     it('should return players unchanged if not killed by LOUP_GAROU or GRAND_MECHANT_LOUP', () => {
-      const deadPlayer = { ...players[0], killedBy: PlayerRole.VILLAGEOIS };
+      const deadPlayer = { ...players[0], killedBy: PlayerRoleEnum.VILLAGEOIS };
       const result = handler.handleDeath(players, deadPlayer);
 
       expect(result).toEqual(players);
@@ -151,10 +151,10 @@ describe('ChevalierRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.CHEVALIER,
+          role: PlayerRoleEnum.CHEVALIER,
           isDead: false,
         } as Player,
-        { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+        { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
       ];
 
       const result = handler.cleanStatusesAfterDay(testPlayers);
@@ -166,14 +166,14 @@ describe('ChevalierRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.CHEVALIER,
+          role: PlayerRoleEnum.CHEVALIER,
           isDead: true,
         } as Player,
         {
           id: 2,
           name: 'Player 2',
-          role: PlayerRole.LOUP_GAROU,
-          statuses: new Set([PlayerStatus.RUSTY_SWORD]),
+          role: PlayerRoleEnum.LOUP_GAROU,
+          statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
         } as Player,
       ];
 
@@ -181,13 +181,13 @@ describe('ChevalierRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.CHEVALIER,
+          role: PlayerRoleEnum.CHEVALIER,
           isDead: true,
         } as Player,
         {
           id: 2,
           name: 'Player 2',
-          role: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
           isDead: true,
           statuses: new Set(),
         } as Player,
@@ -203,7 +203,7 @@ describe('ChevalierRoleHandler', () => {
       const result = handler.cleanStatusesAfterDay(testPlayers);
       expect(result).toEqual(expectedPlayers);
       expect(statusHandlersManager.getHandler).toHaveBeenCalledWith(
-        PlayerStatus.RUSTY_SWORD,
+        PlayerStatusEnum.RUSTY_SWORD,
       );
       expect(rustySwordHandler.triggerAction).toHaveBeenCalledWith(testPlayers);
     });

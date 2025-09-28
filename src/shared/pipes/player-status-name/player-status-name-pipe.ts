@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { PlayerStatus } from '@/types/player-status';
 import { STATUS_NAMES } from '@/texts/status-names';
+import { PlayerStatus } from '@/types/player-status';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'playerStatusName',

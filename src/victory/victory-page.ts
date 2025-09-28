@@ -1,4 +1,4 @@
-import { Victory } from '@/types/victory';
+import { Victory, VictoryEnum } from '@/types/victory';
 import { VictoryNamePipe } from '@/victory/victory-name/victory-name-pipe';
 import { NewGameCreator } from '@/new-game/creator/new-game-creator';
 import {
@@ -18,9 +18,9 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class VictoryPage {
-  protected readonly victory = input<Victory>(Victory.NONE);
+  protected readonly victory = input<Victory>(VictoryEnum.NONE);
   protected readonly victoryTitle = computed<string>(() =>
-    this.victory() === Victory.NONE ? 'Match nul' : 'Victoire',
+    this.victory() === VictoryEnum.NONE ? 'Match nul' : 'Victoire',
   );
 
   private readonly newGameCreator = inject(NewGameCreator);

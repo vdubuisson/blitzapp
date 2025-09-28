@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
 import { PlayerStatus } from '@/types/player-status';
+import { Pipe, PipeTransform } from '@angular/core';
 import { STATUS_ICONS } from './status-icons';
 
 @Pipe({

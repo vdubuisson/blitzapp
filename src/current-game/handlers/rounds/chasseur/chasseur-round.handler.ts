@@ -1,17 +1,17 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class ChasseurRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.CHASSEUR, true, true, RoundType.PLAYERS);
+    super(RoundEnum.CHASSEUR, true, true, RoundTypeEnum.PLAYERS);
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return players.filter(
-      (player) => player.role !== PlayerRole.CHASSEUR && !player.isDead,
+      (player) => player.role !== PlayerRoleEnum.CHASSEUR && !player.isDead,
     );
   }
 
@@ -27,7 +27,7 @@ export class ChasseurRoundHandler extends DefaultRoundHandler {
     return {
       ...player,
       isDead: true,
-      killedBy: PlayerRole.CHASSEUR,
+      killedBy: PlayerRoleEnum.CHASSEUR,
     };
   }
 }

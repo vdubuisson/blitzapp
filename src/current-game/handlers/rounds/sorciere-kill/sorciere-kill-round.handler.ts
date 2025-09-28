@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -9,7 +9,7 @@ import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class SorciereKillRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.SORCIERE_KILL, false, false, RoundType.PLAYERS);
+    super(RoundEnum.SORCIERE_KILL, false, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -20,12 +20,12 @@ export class SorciereKillRoundHandler extends DefaultRoundHandler {
       map((newPlayers) => {
         if (selectedPlayerIds.length > 0) {
           const sorciereIndex = newPlayers.findIndex(
-            (player) => player.role === PlayerRole.SORCIERE,
+            (player) => player.role === PlayerRoleEnum.SORCIERE,
           );
           if (sorciereIndex > -1) {
             newPlayers[sorciereIndex] = removeStatusFromPlayer(
               newPlayers[sorciereIndex],
-              PlayerStatus.DEATH_POTION,
+              PlayerStatusEnum.DEATH_POTION,
             );
           }
         }
@@ -37,7 +37,7 @@ export class SorciereKillRoundHandler extends DefaultRoundHandler {
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return this.canKill(players)
       ? players.filter(
-          (player) => player.role !== PlayerRole.SORCIERE && !player.isDead,
+          (player) => player.role !== PlayerRoleEnum.SORCIERE && !player.isDead,
         )
       : [];
   }
@@ -50,15 +50,15 @@ export class SorciereKillRoundHandler extends DefaultRoundHandler {
     return {
       ...player,
       isDead: true,
-      killedBy: PlayerRole.SORCIERE,
+      killedBy: PlayerRoleEnum.SORCIERE,
     };
   }
 
   private canKill(players: Player[]): boolean {
     return (
       players
-        .find((player) => player.role === PlayerRole.SORCIERE)
-        ?.statuses.has(PlayerStatus.DEATH_POTION) ?? false
+        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
+        ?.statuses.has(PlayerStatusEnum.DEATH_POTION) ?? false
     );
   }
 }

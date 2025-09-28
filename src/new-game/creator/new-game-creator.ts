@@ -1,8 +1,8 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
+import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
+import { Player } from '@/shared/types/player';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatus } from '@/types/player-status';
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -69,8 +69,8 @@ export class NewGameCreator {
     const newPlayer: Player = {
       id: currentPlayers.length,
       name,
-      role: PlayerRole.NOT_SELECTED,
-      card: PlayerRole.NOT_SELECTED,
+      role: PlayerRoleEnum.NOT_SELECTED,
+      card: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set<PlayerStatus>(),
       isDead: false,
     };
@@ -108,8 +108,8 @@ export class NewGameCreator {
 
     const newPlayers = [...players].map((player) => ({
       ...player,
-      role: PlayerRole.NOT_SELECTED,
-      card: PlayerRole.NOT_SELECTED,
+      role: PlayerRoleEnum.NOT_SELECTED,
+      card: PlayerRoleEnum.NOT_SELECTED,
       statuses: new Set<PlayerStatus>(),
       isDead: false,
     }));

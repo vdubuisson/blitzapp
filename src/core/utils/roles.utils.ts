@@ -1,8 +1,8 @@
 import { Player } from '@/shared/types/player';
 import { CardList } from '@/shared/types/card-list';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/config/innocents-power-removal-roles';
 import { removeStatusFromPlayer } from './status.utils';
 
@@ -13,8 +13,8 @@ export function getNotPlayedRoles(
   const playedRoles = players.map((player) => player.role);
   const selectedRoles = [
     ...cardList.selectedRoles,
-    PlayerRole.VILLAGEOIS,
-    PlayerRole.LOUP_GAROU,
+    PlayerRoleEnum.VILLAGEOIS,
+    PlayerRoleEnum.LOUP_GAROU,
   ];
 
   return selectedRoles.filter((role) => !playedRoles.includes(role));
@@ -23,32 +23,37 @@ export function getNotPlayedRoles(
 export function isLoupGarou(player: Player): boolean {
   return (
     LOUPS_GAROUS_ROLES.includes(player.role) ||
-    player.statuses.has(PlayerStatus.INFECTED)
+    player.statuses.has(PlayerStatusEnum.INFECTED)
   );
 }
 
 export function isKilledByInnocents(player: Player): boolean {
+  const innocentRoles: PlayerRole[] = [
+    PlayerRoleEnum.CHASSEUR,
+    PlayerRoleEnum.SORCIERE,
+    PlayerRoleEnum.VILLAGEOIS,
+  ];
   return (
-    player.killedBy !== undefined &&
-    [PlayerRole.CHASSEUR, PlayerRole.SORCIERE, PlayerRole.VILLAGEOIS].includes(
-      player.killedBy,
-    )
+    player.killedBy !== undefined && innocentRoles.includes(player.killedBy)
   );
 }
 
 export function removePowersFromInnocents(players: Player[]): Player[] {
   return players.map((player) => {
-    if (player.role === PlayerRole.SORCIERE) {
+    if (player.role === PlayerRoleEnum.SORCIERE) {
       let newPlayer = removeStatusFromPlayer(
         player,
-        PlayerStatus.HEALTH_POTION,
+        PlayerStatusEnum.HEALTH_POTION,
       );
-      newPlayer = removeStatusFromPlayer(newPlayer, PlayerStatus.DEATH_POTION);
-      newPlayer.role = PlayerRole.VILLAGEOIS;
+      newPlayer = removeStatusFromPlayer(
+        newPlayer,
+        PlayerStatusEnum.DEATH_POTION,
+      );
+      newPlayer.role = PlayerRoleEnum.VILLAGEOIS;
       return newPlayer;
     }
     if (INNOCENTS_POWER_REMOVAL_ROLES.includes(player.role)) {
-      return { ...player, role: PlayerRole.VILLAGEOIS };
+      return { ...player, role: PlayerRoleEnum.VILLAGEOIS };
     }
     return player;
   });

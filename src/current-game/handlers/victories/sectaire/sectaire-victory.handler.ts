@@ -1,17 +1,19 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { VictoryHandler } from '@/game-handlers/victories/victory.handler';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 
 export class SectaireVictoryHandler implements VictoryHandler {
   isVictorious(players: Player[]): boolean {
     const sectairePlayer = players.find(
-      (player) => player.role === PlayerRole.SECTAIRE,
+      (player) => player.role === PlayerRoleEnum.SECTAIRE,
     );
     if (sectairePlayer) {
-      const sectaireTeam = sectairePlayer.statuses.has(PlayerStatus.BLUE_TEAM)
-        ? PlayerStatus.BLUE_TEAM
-        : PlayerStatus.RED_TEAM;
+      const sectaireTeam = sectairePlayer.statuses.has(
+        PlayerStatusEnum.BLUE_TEAM,
+      )
+        ? PlayerStatusEnum.BLUE_TEAM
+        : PlayerStatusEnum.RED_TEAM;
 
       return (
         !sectairePlayer.isDead &&

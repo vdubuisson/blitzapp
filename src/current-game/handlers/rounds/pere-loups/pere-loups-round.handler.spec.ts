@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as statusUtils from '@/utils/status.utils';
 import { firstValueFrom } from 'rxjs';
@@ -29,13 +29,13 @@ describe('PereLoupsRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should remove WOLF_TARGET status to selected player', async () => {
@@ -43,16 +43,16 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -71,7 +71,7 @@ describe('PereLoupsRoundHandler', () => {
     expect(newPlayers[0]).toBe(expectedPlayer);
     expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[0],
-      PlayerStatus.WOLF_TARGET,
+      PlayerStatusEnum.WOLF_TARGET,
     );
   });
 
@@ -80,16 +80,16 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -108,7 +108,7 @@ describe('PereLoupsRoundHandler', () => {
     expect(newPlayers[0]).toBe(expectedPlayer);
     expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
       players[0],
-      PlayerStatus.INFECTED,
+      PlayerStatusEnum.INFECTED,
     );
   });
 
@@ -117,16 +117,16 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.JOUEUR_FLUTE,
-        card: PlayerRole.JOUEUR_FLUTE,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -141,7 +141,7 @@ describe('PereLoupsRoundHandler', () => {
       roundHandler.handleAction(players, [0]),
     );
     expect(newPlayers[0]).not.toBe(players[0]);
-    expect(newPlayers[0].role).toEqual(PlayerRole.LOUP_GAROU);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
   });
 
   it('should remove killedBy to selected player', async () => {
@@ -149,17 +149,17 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
-        killedBy: PlayerRole.LOUP_GAROU,
+        killedBy: PlayerRoleEnum.LOUP_GAROU,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -184,16 +184,16 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -209,7 +209,7 @@ describe('PereLoupsRoundHandler', () => {
     expect(newPlayers).toBe(expectedPlayers);
     expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
       expectedPlayers,
-      PlayerStatus.NO_POWER,
+      PlayerStatusEnum.NO_POWER,
       [1],
     );
   });
@@ -219,16 +219,16 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -237,7 +237,9 @@ describe('PereLoupsRoundHandler', () => {
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, []),
     );
-    expect(newPlayers[1].statuses.has(PlayerStatus.NO_POWER)).toEqual(false);
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.NO_POWER)).toEqual(
+      false,
+    );
   });
 
   it('should return player with WOLF_TARGET status as selectable players if PERE_LOUPS has not NO_POWER', () => {
@@ -245,16 +247,16 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -270,17 +272,17 @@ describe('PereLoupsRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.WOLF_TARGET]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
-        statuses: new Set([PlayerStatus.NO_POWER]),
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
+        statuses: new Set([PlayerStatusEnum.NO_POWER]),
         isDead: false,
       },
     ];
@@ -293,7 +295,7 @@ describe('PereLoupsRoundHandler', () => {
   it('should return PERE_LOUPS as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.PERE_LOUPS);
+    expect(roundConfig.round).toEqual(RoundEnum.PERE_LOUPS);
   });
 
   it('should return 1 as maxSelectable players', () => {

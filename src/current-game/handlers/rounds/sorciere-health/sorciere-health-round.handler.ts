@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -9,7 +9,7 @@ import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class SorciereHealthRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.SORCIERE_HEALTH, false, false, RoundType.PLAYERS);
+    super(RoundEnum.SORCIERE_HEALTH, false, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -20,12 +20,12 @@ export class SorciereHealthRoundHandler extends DefaultRoundHandler {
       map((newPlayers) => {
         if (selectedPlayerIds.length > 0) {
           const sorciereIndex = newPlayers.findIndex(
-            (player) => player.role === PlayerRole.SORCIERE,
+            (player) => player.role === PlayerRoleEnum.SORCIERE,
           );
           if (sorciereIndex > -1) {
             newPlayers[sorciereIndex] = removeStatusFromPlayer(
               newPlayers[sorciereIndex],
-              PlayerStatus.HEALTH_POTION,
+              PlayerStatusEnum.HEALTH_POTION,
             );
           }
         }
@@ -36,7 +36,9 @@ export class SorciereHealthRoundHandler extends DefaultRoundHandler {
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return this.canHeal(players)
-      ? players.filter((player) => player.statuses.has(PlayerStatus.DEVOURED))
+      ? players.filter((player) =>
+          player.statuses.has(PlayerStatusEnum.DEVOURED),
+        )
       : [];
   }
 
@@ -45,7 +47,10 @@ export class SorciereHealthRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    const updatedPlayer = removeStatusFromPlayer(player, PlayerStatus.DEVOURED);
+    const updatedPlayer = removeStatusFromPlayer(
+      player,
+      PlayerStatusEnum.DEVOURED,
+    );
     updatedPlayer.killedBy = undefined;
     return updatedPlayer;
   }
@@ -53,8 +58,8 @@ export class SorciereHealthRoundHandler extends DefaultRoundHandler {
   private canHeal(players: Player[]): boolean {
     return (
       players
-        .find((player) => player.role === PlayerRole.SORCIERE)
-        ?.statuses.has(PlayerStatus.HEALTH_POTION) ?? false
+        .find((player) => player.role === PlayerRoleEnum.SORCIERE)
+        ?.statuses.has(PlayerStatusEnum.HEALTH_POTION) ?? false
     );
   }
 }

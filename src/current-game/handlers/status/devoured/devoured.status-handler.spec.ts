@@ -1,7 +1,7 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { DevouredStatusHandler } from './devoured.status-handler';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('DevouredStatusHandler', () => {
@@ -21,7 +21,7 @@ describe('DevouredStatusHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          statuses: new Set(PlayerStatus.INFECTED),
+          statuses: new Set(PlayerStatusEnum.INFECTED),
         } as Player,
         { id: 2, name: 'Player 2' } as Player,
       ];
@@ -36,17 +36,17 @@ describe('DevouredStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.DEVOURED]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.DEVOURED]),
           isDead: false,
         },
       ];
@@ -66,17 +66,17 @@ describe('DevouredStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.DEVOURED]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.DEVOURED]),
           isDead: false,
         },
       ];
@@ -91,7 +91,7 @@ describe('DevouredStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
   });

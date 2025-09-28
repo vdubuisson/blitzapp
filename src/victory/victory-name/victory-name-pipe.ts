@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { Victory } from '@/types/victory';
 import { VICTORY_NAMES } from '@/texts/victory-names';
+import { Victory } from '@/types/victory';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'victoryName',

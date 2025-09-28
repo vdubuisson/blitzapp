@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { Round } from '@/types/round';
 import { ROUND_NAMES } from '@/texts/round-names';
+import { Round } from '@/types/round';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'roundName',

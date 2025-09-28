@@ -1,12 +1,12 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CorbeauRoleHandler } from './corbeau.role-handler';
 import { TestBed } from '@angular/core/testing';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('CorbeauRoleHandler', () => {
@@ -40,10 +40,10 @@ describe('CorbeauRoleHandler', () => {
       {
         id: 1,
         name: 'Player 1',
-        role: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.RAVEN]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.RAVEN]),
       } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -51,7 +51,7 @@ describe('CorbeauRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.CORBEAU);
+    expect(handler.role).toBe(PlayerRoleEnum.CORBEAU);
   });
 
   describe('prepareNewGame', () => {
@@ -64,7 +64,7 @@ describe('CorbeauRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.CORBEAU,
+        RoundEnum.CORBEAU,
       );
     });
 
@@ -72,7 +72,7 @@ describe('CorbeauRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.RAVEN,
+        PlayerStatusEnum.RAVEN,
       );
     });
   });
@@ -85,7 +85,7 @@ describe('CorbeauRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.CORBEAU,
+        RoundEnum.CORBEAU,
       );
     });
   });
@@ -96,10 +96,10 @@ describe('CorbeauRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.RAVEN]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.RAVEN]),
         } as Player,
-        { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+        { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
       ];
 
       const expectedPlayers = [...testPlayers];
@@ -111,7 +111,7 @@ describe('CorbeauRoleHandler', () => {
       expect(result).toBe(expectedPlayers);
       expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
         testPlayers,
-        PlayerStatus.RAVEN,
+        PlayerStatusEnum.RAVEN,
         [1],
       );
     });

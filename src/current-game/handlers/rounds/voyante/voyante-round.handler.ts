@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { ModalManager } from '@/layout/modal/modal-manager';
 import { inject } from '@angular/core';
@@ -11,7 +11,7 @@ export class VoyanteRoundHandler extends DefaultRoundHandler {
   private readonly modalManager = inject(ModalManager);
 
   constructor() {
-    super(Round.VOYANTE, false, false, RoundType.PLAYERS);
+    super(RoundEnum.VOYANTE, false, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -32,7 +32,7 @@ export class VoyanteRoundHandler extends DefaultRoundHandler {
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return players.filter(
-      (player) => player.role !== PlayerRole.VOYANTE && !player.isDead,
+      (player) => player.role !== PlayerRoleEnum.VOYANTE && !player.isDead,
     );
   }
 

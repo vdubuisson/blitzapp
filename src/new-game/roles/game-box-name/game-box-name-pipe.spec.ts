@@ -1,8 +1,8 @@
-import { GameBoxes } from '@/config/game-boxes';
+import { GameBoxEnum } from '@/config/game-boxes';
 import { GameBoxNamePipe } from './game-box-name-pipe';
 
 jest.mock('@/texts/game-box-names', () => ({
-  GAME_BOX_NAMES: { [GameBoxes.CORE]: 'Test' },
+  GAME_BOX_NAMES: { [GameBoxEnum.CORE]: 'Test' },
 }));
 
 describe('GameBoxNamePipe', () => {
@@ -17,7 +17,7 @@ describe('GameBoxNamePipe', () => {
   });
 
   it('should display value for requested enum', () => {
-    const name = pipe.transform(GameBoxes.CORE);
+    const name = pipe.transform(GameBoxEnum.CORE);
     expect(name).toEqual('Test');
   });
 });

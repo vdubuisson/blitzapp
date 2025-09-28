@@ -1,5 +1,5 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { signal } from '@angular/core';
@@ -39,7 +39,7 @@ describe('StatusHandlersManager', () => {
 
   it('should clear handlers', () => {
     service['statusHandlers'].set(
-      PlayerStatus.WOLF_TARGET,
+      PlayerStatusEnum.WOLF_TARGET,
       {} as unknown as StatusHandler,
     );
     expect(service['statusHandlers'].size).toBe(1);
@@ -51,13 +51,13 @@ describe('StatusHandlersManager', () => {
 
   it('should initialize WOLF_TARGET handler if role present', () => {
     const players: Player[] = [
-      { id: 1, role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
 
     service.initHandlers(players);
 
     expect(
-      service['statusHandlers'].get(PlayerStatus.WOLF_TARGET),
+      service['statusHandlers'].get(PlayerStatusEnum.WOLF_TARGET),
     ).toBeInstanceOf(WolfTargetStatusHandler);
   });
 
@@ -66,24 +66,32 @@ describe('StatusHandlersManager', () => {
 
     service.initHandlers(players);
 
-    expect(service['statusHandlers'].has(PlayerStatus.WOLF_TARGET)).toBe(false);
+    expect(service['statusHandlers'].has(PlayerStatusEnum.WOLF_TARGET)).toBe(
+      false,
+    );
   });
 
   it('should return WOLF_TARGET handler', () => {
     const statusHandler = new WolfTargetStatusHandler();
-    service['statusHandlers'].set(PlayerStatus.WOLF_TARGET, statusHandler);
+    service['statusHandlers'].set(PlayerStatusEnum.WOLF_TARGET, statusHandler);
 
-    const testHandler = service.getHandler(PlayerStatus.WOLF_TARGET);
+    const testHandler = service.getHandler(PlayerStatusEnum.WOLF_TARGET);
     expect(testHandler).toBe(statusHandler);
   });
 
   it('should reuse the DefaultStatusHandler instance', () => {
-    const players: Player[] = [{ id: 1, role: PlayerRole.SORCIERE } as Player];
+    const players: Player[] = [
+      { id: 1, role: PlayerRoleEnum.SORCIERE } as Player,
+    ];
 
     service.initHandlers(players);
 
-    const healthPotionHandler = service.getHandler(PlayerStatus.HEALTH_POTION);
-    const deaththPotionHandler = service.getHandler(PlayerStatus.DEATH_POTION);
+    const healthPotionHandler = service.getHandler(
+      PlayerStatusEnum.HEALTH_POTION,
+    );
+    const deaththPotionHandler = service.getHandler(
+      PlayerStatusEnum.DEATH_POTION,
+    );
 
     expect(healthPotionHandler).toBeInstanceOf(DefaultStatusHandler);
     expect(healthPotionHandler).toBe(deaththPotionHandler);

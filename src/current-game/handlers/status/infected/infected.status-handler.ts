@@ -1,7 +1,7 @@
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from '../default/default.status-handler';
-import { PlayerStatus } from '@/types/player-status';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
 import {
   addStatusToPlayer,
   removeStatusFromPlayer,
@@ -17,21 +17,21 @@ export class InfectedStatusHandler extends DefaultStatusHandler {
    */
   override triggerAction(players: Player[]): Player[] {
     const ancienIndex = players.findIndex(
-      (player) => player.role === PlayerRole.ANCIEN,
+      (player) => player.role === PlayerRoleEnum.ANCIEN,
     );
     const ancien = players[ancienIndex];
     if (
-      ancien?.statuses.has(PlayerStatus.INFECTED) &&
-      !ancien?.statuses.has(PlayerStatus.INJURED)
+      ancien?.statuses.has(PlayerStatusEnum.INFECTED) &&
+      !ancien?.statuses.has(PlayerStatusEnum.INJURED)
     ) {
       const newPlayers = [...players];
       newPlayers[ancienIndex] = removeStatusFromPlayer(
         newPlayers[ancienIndex],
-        PlayerStatus.INFECTED,
+        PlayerStatusEnum.INFECTED,
       );
       newPlayers[ancienIndex] = addStatusToPlayer(
         newPlayers[ancienIndex],
-        PlayerStatus.INJURED,
+        PlayerStatusEnum.INJURED,
       );
       return newPlayers;
     }

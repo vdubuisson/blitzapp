@@ -1,12 +1,12 @@
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
-import { PlayerRole } from '@/types/player-role';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { inject } from '@angular/core';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { removeStatusFromPlayersById } from '@/utils/status.utils';
 
 export class BoucRoleHandler extends DefaultRoleHandler {
@@ -15,14 +15,14 @@ export class BoucRoleHandler extends DefaultRoleHandler {
   private readonly needCleanAfterBouc = inject(NeedCleanAfterBoucStore).state;
 
   constructor() {
-    super(PlayerRole.BOUC, ROLE_METADATA_CONFIG[PlayerRole.BOUC]!);
+    super(PlayerRoleEnum.BOUC, ROLE_METADATA_CONFIG[PlayerRoleEnum.BOUC]!);
   }
 
   override handleDeath(players: Player[], deadPlayer: Player): Player[] {
     if (deadPlayer.killedBy === undefined) {
-      this.afterDeathRoundQueue.update((queue) => [...queue, Round.BOUC]);
+      this.afterDeathRoundQueue.update((queue) => [...queue, RoundEnum.BOUC]);
     } else {
-      this.roundHandlersManager.removeHandler(Round.BOUC);
+      this.roundHandlersManager.removeHandler(RoundEnum.BOUC);
     }
     return players;
   }
@@ -31,7 +31,7 @@ export class BoucRoleHandler extends DefaultRoleHandler {
     if (this.needCleanAfterBouc()) {
       const ids = players.reduce<number[]>(
         (acc, player) =>
-          player.role !== PlayerRole.IDIOT || player.killedBy === undefined
+          player.role !== PlayerRoleEnum.IDIOT || player.killedBy === undefined
             ? [...acc, player.id]
             : acc,
         [],
@@ -39,7 +39,11 @@ export class BoucRoleHandler extends DefaultRoleHandler {
 
       this.needCleanAfterBouc.set(false);
 
-      return removeStatusFromPlayersById(players, PlayerStatus.NO_VOTE, ids);
+      return removeStatusFromPlayersById(
+        players,
+        PlayerStatusEnum.NO_VOTE,
+        ids,
+      );
     }
     return players;
   }

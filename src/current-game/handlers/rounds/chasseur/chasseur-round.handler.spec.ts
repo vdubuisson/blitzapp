@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { firstValueFrom } from 'rxjs';
 import { ChasseurRoundHandler } from './chasseur-round.handler';
@@ -27,13 +27,13 @@ describe('ChasseurRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should kill selected player', async () => {
@@ -41,16 +41,16 @@ describe('ChasseurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -69,16 +69,16 @@ describe('ChasseurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -87,7 +87,7 @@ describe('ChasseurRoundHandler', () => {
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0].killedBy).toEqual(PlayerRole.CHASSEUR);
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.CHASSEUR);
     expect(newPlayers[0]).not.toBe(players[0]);
   });
 
@@ -96,32 +96,32 @@ describe('ChasseurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CHASSEUR,
-        card: PlayerRole.CHASSEUR,
+        role: PlayerRoleEnum.CHASSEUR,
+        card: PlayerRoleEnum.CHASSEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -135,7 +135,7 @@ describe('ChasseurRoundHandler', () => {
   it('should return CHASSEUR as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.CHASSEUR);
+    expect(roundConfig.round).toEqual(RoundEnum.CHASSEUR);
   });
 
   it('should return 1 as maxSelectable players', () => {

@@ -10,18 +10,18 @@ import { Storage } from '@/storage/storage';
 import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
 import { RoundConfig } from '@/shared/types/round-config';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 
 describe('CurrentRoundConfigStore without storage', () => {
   let service: CurrentRoundConfigStore;
   const mockState: RoundConfig = {
-    round: Round.VOLEUR,
+    round: RoundEnum.VOLEUR,
     selectablePlayers: [],
     maxSelectable: 0,
     minSelectable: 0,
     isDuringDay: false,
-    type: RoundType.DEFAULT,
+    type: RoundTypeEnum.DEFAULT,
   };
 
   ngMocks.faster();
@@ -76,12 +76,12 @@ describe('CurrentRoundConfigStore with storage init', () => {
   let service: CurrentRoundConfigStore;
 
   const mockState: RoundConfig = {
-    round: Round.VOLEUR,
+    round: RoundEnum.VOLEUR,
     selectablePlayers: [],
     maxSelectable: 0,
     minSelectable: 0,
     isDuringDay: false,
-    type: RoundType.DEFAULT,
+    type: RoundTypeEnum.DEFAULT,
   };
 
   ngMocks.faster();

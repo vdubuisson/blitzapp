@@ -1,8 +1,8 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { MockReset } from 'ng-mocks';
 import { InfectedStatusHandler } from './infected.status-handler';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('InfectedStatusHandler', () => {
@@ -24,7 +24,7 @@ describe('InfectedStatusHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          statuses: new Set(PlayerStatus.INFECTED),
+          statuses: new Set(PlayerStatusEnum.INFECTED),
         } as Player,
         { id: 2, name: 'Player 2' } as Player,
       ];
@@ -39,17 +39,17 @@ describe('InfectedStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.ANCIEN,
-          card: PlayerRole.ANCIEN,
-          statuses: new Set([PlayerStatus.INFECTED]),
+          role: PlayerRoleEnum.ANCIEN,
+          card: PlayerRoleEnum.ANCIEN,
+          statuses: new Set([PlayerStatusEnum.INFECTED]),
           isDead: false,
         },
       ];
@@ -66,11 +66,11 @@ describe('InfectedStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
-        PlayerStatus.INJURED,
+        PlayerStatusEnum.INJURED,
       );
       expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
-        PlayerStatus.INFECTED,
+        PlayerStatusEnum.INFECTED,
       );
     });
 
@@ -79,24 +79,29 @@ describe('InfectedStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.ANCIEN,
-          card: PlayerRole.ANCIEN,
-          statuses: new Set([PlayerStatus.INFECTED, PlayerStatus.INJURED]),
+          role: PlayerRoleEnum.ANCIEN,
+          card: PlayerRoleEnum.ANCIEN,
+          statuses: new Set([
+            PlayerStatusEnum.INFECTED,
+            PlayerStatusEnum.INJURED,
+          ]),
           isDead: false,
         },
       ];
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
-      expect(newPlayers[1].statuses.has(PlayerStatus.INFECTED)).toEqual(true);
+      expect(newPlayers[1].statuses.has(PlayerStatusEnum.INFECTED)).toEqual(
+        true,
+      );
     });
   });
 });

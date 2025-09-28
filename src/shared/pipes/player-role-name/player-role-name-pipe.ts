@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { PlayerRole } from '@/types/player-role';
 import { ROLE_NAMES } from '@/texts/role-names';
+import { PlayerRole } from '@/types/player-role';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'playerRoleName',

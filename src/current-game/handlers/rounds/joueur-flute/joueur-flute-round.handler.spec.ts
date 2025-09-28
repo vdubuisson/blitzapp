@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as statusUtils from '@/utils/status.utils';
 import { firstValueFrom } from 'rxjs';
@@ -29,13 +29,13 @@ describe('JoueurFluteRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add CHARMED status to selected players', async () => {
@@ -43,24 +43,24 @@ describe('JoueurFluteRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.JOUEUR_FLUTE,
-        card: PlayerRole.JOUEUR_FLUTE,
+        role: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -79,12 +79,12 @@ describe('JoueurFluteRoundHandler', () => {
     expect(newPlayers[0]).toBe(expectedPlayer1);
     expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
       players[0],
-      PlayerStatus.CHARMED,
+      PlayerStatusEnum.CHARMED,
     );
     expect(newPlayers[2]).toBe(expectedPlayer2);
     expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
       players[2],
-      PlayerStatus.CHARMED,
+      PlayerStatusEnum.CHARMED,
     );
   });
 
@@ -93,32 +93,32 @@ describe('JoueurFluteRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.CHARMED]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.CHARMED]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.JOUEUR_FLUTE,
-        card: PlayerRole.JOUEUR_FLUTE,
+        role: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },
@@ -132,7 +132,7 @@ describe('JoueurFluteRoundHandler', () => {
   it('should return JOUEUR_FLUTE as role round', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.JOUEUR_FLUTE);
+    expect(roundConfig.round).toEqual(RoundEnum.JOUEUR_FLUTE);
   });
 
   it('should return 2 as maxSelectable players', () => {

@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
 import { PlayerRoleImagePipe } from '@/shared/pipes/player-role-image/player-role-image-pipe';
 import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
+import { PlayerRole } from '@/types/player-role';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';

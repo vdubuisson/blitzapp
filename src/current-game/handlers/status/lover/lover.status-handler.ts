@@ -1,9 +1,9 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from '../default/default.status-handler';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
 import { inject } from '@angular/core';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 
 export class LoverStatusHandler extends DefaultStatusHandler {
   private readonly victoryHandlersManager = inject(VictoryHandlersManager);
@@ -19,7 +19,7 @@ export class LoverStatusHandler extends DefaultStatusHandler {
     const newPlayers = [...players];
     const otherLivingLoverIndex = newPlayers.findIndex(
       (player) =>
-        player.statuses.has(PlayerStatus.LOVER) &&
+        player.statuses.has(PlayerStatusEnum.LOVER) &&
         player.id !== deadPlayer.id &&
         !player.isDead,
     );
@@ -30,7 +30,7 @@ export class LoverStatusHandler extends DefaultStatusHandler {
       };
     }
 
-    this.victoryHandlersManager.removeHandler(Victory.AMOUREUX);
+    this.victoryHandlersManager.removeHandler(VictoryEnum.AMOUREUX);
 
     return newPlayers;
   }

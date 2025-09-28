@@ -1,5 +1,5 @@
-import { PlayerRole } from '@/types/player-role';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
@@ -23,7 +23,7 @@ describe('ChasseurRoleHandler', () => {
     });
 
     afterDeathRoundQueue = MockService(AfterDeathRoundQueueStore, {
-      state: signal<Round[]>([Round.VILLAGEOIS]),
+      state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
     });
 
     TestBed.configureTestingModule({
@@ -36,8 +36,8 @@ describe('ChasseurRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new ChasseurRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -45,7 +45,7 @@ describe('ChasseurRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.CHASSEUR);
+    expect(handler.role).toBe(PlayerRoleEnum.CHASSEUR);
   });
 
   describe('prepareNewGame', () => {
@@ -58,7 +58,7 @@ describe('ChasseurRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.CHASSEUR,
+        RoundEnum.CHASSEUR,
       );
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledTimes(1);
     });
@@ -70,7 +70,7 @@ describe('ChasseurRoleHandler', () => {
 
       handler.handleDeath(players, deadPlayer);
 
-      expect(afterDeathRoundQueue.state()[0]).toBe(Round.CHASSEUR);
+      expect(afterDeathRoundQueue.state()[0]).toBe(RoundEnum.CHASSEUR);
     });
   });
 

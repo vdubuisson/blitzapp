@@ -1,4 +1,4 @@
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 import { Player } from '@/shared/types/player';
 import { VictoryHandlersStore } from '@/game-handlers/victories/victory-handlers-store';
 import { signal } from '@angular/core';
@@ -40,15 +40,15 @@ describe('VictoryHandlersManager', () => {
   it('should init VILLAGEOIS victory handler', () => {
     service.initRequiredHandlers();
 
-    expect(service['victoryHandlers'].get(Victory.VILLAGEOIS)).toBeInstanceOf(
-      VillageoisVictoryHandler,
-    );
+    expect(
+      service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS),
+    ).toBeInstanceOf(VillageoisVictoryHandler);
   });
 
   it('should init NONE victory handler', () => {
     service.initRequiredHandlers();
 
-    expect(service['victoryHandlers'].get(Victory.NONE)).toBeInstanceOf(
+    expect(service['victoryHandlers'].get(VictoryEnum.NONE)).toBeInstanceOf(
       NoneVictoryHandler,
     );
   });
@@ -69,21 +69,21 @@ describe('VictoryHandlersManager', () => {
 
     service['victoryHandlers'].clear();
     service['victoryHandlers'].set(
-      Victory.AMOUREUX,
+      VictoryEnum.AMOUREUX,
       mockAmoureuxVictoryHandler,
     );
     service['victoryHandlers'].set(
-      Victory.LOUP_GAROU,
+      VictoryEnum.LOUP_GAROU,
       mockLoupGarouVictoryHandler,
     );
     service['victoryHandlers'].set(
-      Victory.VILLAGEOIS,
+      VictoryEnum.VILLAGEOIS,
       mockVillageoisVictoryHandler,
     );
 
     const victory = service.getVictory([], false);
 
-    expect(victory).toEqual(Victory.LOUP_GAROU);
+    expect(victory).toEqual(VictoryEnum.LOUP_GAROU);
   });
 
   it('should return no victory if no victorious handler', () => {
@@ -102,15 +102,15 @@ describe('VictoryHandlersManager', () => {
 
     service['victoryHandlers'].clear();
     service['victoryHandlers'].set(
-      Victory.AMOUREUX,
+      VictoryEnum.AMOUREUX,
       mockAmoureuxVictoryHandler,
     );
     service['victoryHandlers'].set(
-      Victory.LOUP_GAROU,
+      VictoryEnum.LOUP_GAROU,
       mockLoupGarouVictoryHandler,
     );
     service['victoryHandlers'].set(
-      Victory.VILLAGEOIS,
+      VictoryEnum.VILLAGEOIS,
       mockVillageoisVictoryHandler,
     );
 
@@ -121,13 +121,15 @@ describe('VictoryHandlersManager', () => {
 
   it('should remove victory handler', () => {
     service['victoryHandlers'].set(
-      Victory.JOUEUR_FLUTE,
+      VictoryEnum.JOUEUR_FLUTE,
       new MockVictoryHandler(),
     );
 
-    service.removeHandler(Victory.JOUEUR_FLUTE);
+    service.removeHandler(VictoryEnum.JOUEUR_FLUTE);
 
-    expect(service['victoryHandlers'].has(Victory.JOUEUR_FLUTE)).toEqual(false);
+    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
+      false,
+    );
   });
 
   afterAll(MockReset);

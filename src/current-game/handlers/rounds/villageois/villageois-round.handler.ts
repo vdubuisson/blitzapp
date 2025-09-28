@@ -1,8 +1,8 @@
-import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { Announcer } from '@/current-game/announcements/announcer';
 import { inject } from '@angular/core';
@@ -13,7 +13,7 @@ export class VillageoisRoundHandler extends DefaultRoundHandler {
   private readonly announcer = inject(Announcer);
 
   constructor() {
-    super(Round.VILLAGEOIS, false, true, RoundType.PLAYERS);
+    super(RoundEnum.VILLAGEOIS, false, true, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -50,30 +50,31 @@ export class VillageoisRoundHandler extends DefaultRoundHandler {
       statuses: new Set(player.statuses),
     };
     if (
-      newPlayer.role === PlayerRole.IDIOT &&
+      newPlayer.role === PlayerRoleEnum.IDIOT &&
       newPlayer.killedBy === undefined &&
-      !newPlayer.statuses.has(PlayerStatus.INFECTED)
+      !newPlayer.statuses.has(PlayerStatusEnum.INFECTED)
     ) {
-      newPlayer.statuses.add(PlayerStatus.NO_VOTE);
-      this.announcer.announce(AnnouncementTypes.IDIOT_PARDONED);
+      newPlayer.statuses.add(PlayerStatusEnum.NO_VOTE);
+      this.announcer.announce(AnnouncementTypesEnum.IDIOT_PARDONED);
     } else {
       newPlayer.isDead = true;
     }
-    newPlayer.killedBy = PlayerRole.VILLAGEOIS;
+    newPlayer.killedBy = PlayerRoleEnum.VILLAGEOIS;
 
     return newPlayer;
   }
 
   private canVote(players: Player[]): boolean {
     return players.some(
-      (player) => !player.isDead && !player.statuses.has(PlayerStatus.NO_VOTE),
+      (player) =>
+        !player.isDead && !player.statuses.has(PlayerStatusEnum.NO_VOTE),
     );
   }
 
   private handleEquality(players: Player[]): Player[] {
     const newPlayers = [...players];
     const boucIndex = newPlayers.findIndex(
-      (player) => player.role === PlayerRole.BOUC,
+      (player) => player.role === PlayerRoleEnum.BOUC,
     );
     if (boucIndex > -1) {
       newPlayers[boucIndex] = {

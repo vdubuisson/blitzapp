@@ -1,6 +1,6 @@
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from './default.status-handler';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { MockReset } from 'ng-mocks';
 
 describe('DefaultStatusHandler', () => {
@@ -13,7 +13,7 @@ describe('DefaultStatusHandler', () => {
       {
         id: 1,
         name: 'Player 1',
-        statuses: new Set(PlayerStatus.NO_POWER),
+        statuses: new Set(PlayerStatusEnum.NO_POWER),
       } as Player,
       { id: 2, name: 'Player 2' } as Player,
     ];

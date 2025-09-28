@@ -1,12 +1,12 @@
-import { Victory } from '@/types/victory';
+import { Victory, VictoryEnum } from '@/types/victory';
 
 export const VICTORIES_PRIORITY: Victory[] = [
-  Victory.NONE,
-  Victory.ANGE,
-  Victory.AMOUREUX,
-  Victory.SECTAIRE,
-  Victory.LOUP_BLANC,
-  Victory.JOUEUR_FLUTE,
-  Victory.LOUP_GAROU,
-  Victory.VILLAGEOIS,
+  VictoryEnum.NONE,
+  VictoryEnum.ANGE,
+  VictoryEnum.AMOUREUX,
+  VictoryEnum.SECTAIRE,
+  VictoryEnum.LOUP_BLANC,
+  VictoryEnum.JOUEUR_FLUTE,
+  VictoryEnum.LOUP_GAROU,
+  VictoryEnum.VILLAGEOIS,
 ];

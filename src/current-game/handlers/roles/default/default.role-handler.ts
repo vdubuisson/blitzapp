@@ -1,9 +1,9 @@
 import { RoleMetadata } from '@/config/role-metadata';
-import { PlayerRole } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRole } from '@/types/player-role';
 import { inject } from '@angular/core';
 
 export class DefaultRoleHandler {

@@ -1,9 +1,9 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { SoeurRoleHandler } from './soeur.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 
 describe('SoeurRoleHandler', () => {
@@ -28,8 +28,8 @@ describe('SoeurRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new SoeurRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -37,7 +37,7 @@ describe('SoeurRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.SOEUR);
+    expect(handler.role).toBe(PlayerRoleEnum.SOEUR);
   });
 
   describe('prepareNewGame', () => {
@@ -50,7 +50,7 @@ describe('SoeurRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.SOEURS,
+        RoundEnum.SOEURS,
       );
     });
   });
@@ -61,23 +61,23 @@ describe('SoeurRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.SOEUR,
+          role: PlayerRoleEnum.SOEUR,
           isDead: true,
         } as Player,
         {
           id: 2,
           name: 'Player 2',
-          role: PlayerRole.SOEUR,
+          role: PlayerRoleEnum.SOEUR,
           isDead: true,
         } as Player,
-        { id: 3, name: 'Player 3', role: PlayerRole.VILLAGEOIS } as Player,
+        { id: 3, name: 'Player 3', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       ];
 
       const result = handler.handleDeath(players, players[0]);
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.SOEURS,
+        RoundEnum.SOEURS,
       );
     });
 
@@ -86,16 +86,16 @@ describe('SoeurRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.SOEUR,
+          role: PlayerRoleEnum.SOEUR,
           isDead: true,
         } as Player,
         {
           id: 2,
           name: 'Player 2',
-          role: PlayerRole.SOEUR,
+          role: PlayerRoleEnum.SOEUR,
           isDead: false,
         } as Player,
-        { id: 3, name: 'Player 3', role: PlayerRole.VILLAGEOIS } as Player,
+        { id: 3, name: 'Player 3', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       ];
 
       const result = handler.handleDeath(players, players[0]);

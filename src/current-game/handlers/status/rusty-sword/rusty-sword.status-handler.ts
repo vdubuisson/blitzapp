@@ -1,7 +1,7 @@
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from '../default/default.status-handler';
-import { PlayerStatus } from '@/types/player-status';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class RustySwordStatusHandler extends DefaultStatusHandler {
@@ -13,16 +13,16 @@ export class RustySwordStatusHandler extends DefaultStatusHandler {
    */
   override triggerAction(players: Player[]): Player[] {
     const playerWithSwordIndex = players.findIndex((player) =>
-      player.statuses.has(PlayerStatus.RUSTY_SWORD),
+      player.statuses.has(PlayerStatusEnum.RUSTY_SWORD),
     );
     if (playerWithSwordIndex > -1) {
       const newPlayers = [...players];
       newPlayers[playerWithSwordIndex] = removeStatusFromPlayer(
         newPlayers[playerWithSwordIndex],
-        PlayerStatus.RUSTY_SWORD,
+        PlayerStatusEnum.RUSTY_SWORD,
       );
       newPlayers[playerWithSwordIndex].isDead = true;
-      newPlayers[playerWithSwordIndex].killedBy = PlayerRole.CHEVALIER;
+      newPlayers[playerWithSwordIndex].killedBy = PlayerRoleEnum.CHEVALIER;
       return newPlayers;
     }
     return players;

@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as statusUtils from '@/utils/status.utils';
 import { firstValueFrom } from 'rxjs';
@@ -29,13 +29,13 @@ describe('BoucRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add NO_VOTE to not selected alive players', async () => {
@@ -43,32 +43,32 @@ describe('BoucRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -86,7 +86,7 @@ describe('BoucRoundHandler', () => {
     expect(newPlayers).toBe(expectedPlayers);
     expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
       players,
-      PlayerStatus.NO_VOTE,
+      PlayerStatusEnum.NO_VOTE,
       [1, 3],
     );
   });
@@ -96,32 +96,32 @@ describe('BoucRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -135,7 +135,7 @@ describe('BoucRoundHandler', () => {
   it('should return BOUC as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.BOUC);
+    expect(roundConfig.round).toEqual(RoundEnum.BOUC);
   });
 
   it('should return alivePlayers length as maxSelectable players', () => {
@@ -143,32 +143,32 @@ describe('BoucRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

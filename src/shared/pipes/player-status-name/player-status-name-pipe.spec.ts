@@ -1,8 +1,8 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { PlayerStatusNamePipe } from './player-status-name-pipe';
 
 jest.mock('@/texts/status-names', () => ({
-  STATUS_NAMES: { [PlayerStatus.WOLF_TARGET]: 'Test' },
+  STATUS_NAMES: { [PlayerStatusEnum.WOLF_TARGET]: 'Test' },
 }));
 
 describe('PlayerStatusNamePipe', () => {
@@ -17,7 +17,7 @@ describe('PlayerStatusNamePipe', () => {
   });
 
   it('should display value for requested enum', () => {
-    const name = pipe.transform(PlayerStatus.WOLF_TARGET);
+    const name = pipe.transform(PlayerStatusEnum.WOLF_TARGET);
     expect(name).toEqual('Test');
   });
 });

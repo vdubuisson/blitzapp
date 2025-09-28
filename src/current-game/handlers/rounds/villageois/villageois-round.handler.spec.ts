@@ -1,8 +1,8 @@
-import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { TestBed } from '@angular/core/testing';
 import { MockService } from 'ng-mocks';
@@ -39,13 +39,13 @@ describe('VillageoisRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should kill selected player', async () => {
@@ -53,16 +53,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -79,16 +79,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -97,7 +97,7 @@ describe('VillageoisRoundHandler', () => {
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0].killedBy).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.VILLAGEOIS);
   });
 
   it('should not kill IDIOT the first time', async () => {
@@ -105,16 +105,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.IDIOT,
-        card: PlayerRole.IDIOT,
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -131,16 +131,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.IDIOT,
-        card: PlayerRole.IDIOT,
-        statuses: new Set([PlayerStatus.INFECTED]),
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
+        statuses: new Set([PlayerStatusEnum.INFECTED]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -157,17 +157,17 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.IDIOT,
-        card: PlayerRole.IDIOT,
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
         statuses: new Set(),
         isDead: false,
-        killedBy: PlayerRole.VILLAGEOIS,
+        killedBy: PlayerRoleEnum.VILLAGEOIS,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -184,16 +184,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.IDIOT,
-        card: PlayerRole.IDIOT,
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -202,7 +202,7 @@ describe('VillageoisRoundHandler', () => {
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0].statuses.has(PlayerStatus.NO_VOTE)).toEqual(true);
+    expect(newPlayers[0].statuses.has(PlayerStatusEnum.NO_VOTE)).toEqual(true);
   });
 
   it('should announce IDIOT_PARDONED when IDIOT is not killed', async () => {
@@ -210,16 +210,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.IDIOT,
-        card: PlayerRole.IDIOT,
+        role: PlayerRoleEnum.IDIOT,
+        card: PlayerRoleEnum.IDIOT,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -229,7 +229,7 @@ describe('VillageoisRoundHandler', () => {
 
     await firstValueFrom(roundHandler.handleAction(players, [0]));
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.IDIOT_PARDONED,
+      AnnouncementTypesEnum.IDIOT_PARDONED,
     );
   });
 
@@ -238,16 +238,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.BOUC,
-        card: PlayerRole.BOUC,
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -265,16 +265,16 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -291,24 +291,24 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -324,25 +324,25 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.NO_VOTE]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.NO_VOTE]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
         isDead: false,
       },
     ];
@@ -357,25 +357,25 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.NO_VOTE]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.NO_VOTE]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.NO_VOTE]),
         isDead: false,
       },
     ];
@@ -388,7 +388,7 @@ describe('VillageoisRoundHandler', () => {
   it('should return VILLAGEOIS as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.VILLAGEOIS);
+    expect(roundConfig.round).toEqual(RoundEnum.VILLAGEOIS);
   });
 
   it('should return 1 as maxSelectable players', () => {
@@ -396,24 +396,24 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -429,24 +429,24 @@ describe('VillageoisRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },

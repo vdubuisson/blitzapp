@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { NewGameCreator } from '@/new-game/creator/new-game-creator';
 import {
@@ -10,7 +10,7 @@ import {
 } from 'ng-mocks';
 
 import { PlayerCard } from '@/shared/components/player-card/player-card';
-import { PlayerDisplayMode } from '@/shared/components/player-card/player-display-mode';
+import { PlayerDisplayModeEnum } from '@/shared/components/player-card/player-display-mode';
 import { CardList } from '@/shared/types/card-list';
 import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
 import {
@@ -29,9 +29,11 @@ import NewGamePlayersRolesPage from './new-game-players-roles-page';
 })
 export class PlayerStubComponent {
   readonly player = input.required<Player>();
-  readonly displayMode = input<PlayerDisplayMode>(PlayerDisplayMode.DEFAULT);
-  readonly selectableRoles = input<PlayerRole[]>([]);
-  readonly roleChange = output<PlayerRole>();
+  readonly displayMode = input<PlayerDisplayModeEnum>(
+    PlayerDisplayModeEnum.DEFAULT,
+  );
+  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
+  readonly roleChange = output<PlayerRoleEnum>();
 }
 
 describe('NewGamePlayersRolesPage', () => {
@@ -78,16 +80,16 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -108,11 +110,11 @@ describe('NewGamePlayersRolesPage', () => {
   it('should change role', () => {
     const newGameCreator = ngMocks.get(NewGameCreator);
 
-    component['changeRole'](0, PlayerRole.SORCIERE);
+    component['changeRole'](0, PlayerRoleEnum.SORCIERE);
 
     expect(newGameCreator.changeRole).toHaveBeenCalledWith(
       0,
-      PlayerRole.SORCIERE,
+      PlayerRoleEnum.SORCIERE,
     );
   });
 
@@ -130,38 +132,38 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.NOT_SELECTED,
-        card: PlayerRole.NOT_SELECTED,
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.NOT_SELECTED,
-        card: PlayerRole.NOT_SELECTED,
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.NOT_SELECTED,
-        card: PlayerRole.NOT_SELECTED,
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
         statuses: new Set(),
         isDead: false,
       },
     ]);
 
-    component['changeRole'](0, PlayerRole.VILLAGEOIS);
+    component['changeRole'](0, PlayerRoleEnum.VILLAGEOIS);
 
     expect(newGameCreator.changeRole).toHaveBeenCalledWith(
       1,
-      PlayerRole.VILLAGEOIS,
+      PlayerRoleEnum.VILLAGEOIS,
     );
     expect(newGameCreator.changeRole).toHaveBeenCalledWith(
       2,
-      PlayerRole.VILLAGEOIS,
+      PlayerRoleEnum.VILLAGEOIS,
     );
   });
 
@@ -170,8 +172,8 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.NOT_SELECTED,
-        card: PlayerRole.NOT_SELECTED,
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
         statuses: new Set(),
         isDead: false,
       },
@@ -186,8 +188,8 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -202,24 +204,24 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -234,16 +236,16 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -258,16 +260,16 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -282,32 +284,32 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -322,24 +324,24 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -354,8 +356,8 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -367,7 +369,7 @@ describe('NewGamePlayersRolesPage', () => {
 
   it('should not have already used unique role as available', () => {
     mockCards.set({
-      selectedRoles: new Set([PlayerRole.CUPIDON]),
+      selectedRoles: new Set([PlayerRoleEnum.CUPIDON]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -376,22 +378,22 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.CUPIDON,
-        card: PlayerRole.CUPIDON,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['availableRoles']().includes(PlayerRole.CUPIDON)).toEqual(
-      false,
-    );
+    expect(
+      component['availableRoles']().includes(PlayerRoleEnum.CUPIDON),
+    ).toEqual(false);
   });
 
   it('should have SOEUR as available if less than 2 SOEUR', () => {
     mockCards.set({
-      selectedRoles: new Set([PlayerRole.SOEUR]),
+      selectedRoles: new Set([PlayerRoleEnum.SOEUR]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -400,22 +402,22 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['availableRoles']().includes(PlayerRole.SOEUR)).toEqual(
-      true,
-    );
+    expect(
+      component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
+    ).toEqual(true);
   });
 
   it('should not have SOEUR as available if 2 SOEUR', () => {
     mockCards.set({
-      selectedRoles: new Set([PlayerRole.SOEUR]),
+      selectedRoles: new Set([PlayerRoleEnum.SOEUR]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -424,30 +426,30 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['availableRoles']().includes(PlayerRole.SOEUR)).toEqual(
-      false,
-    );
+    expect(
+      component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
+    ).toEqual(false);
   });
 
   it('should have FRERE as available if less than 3 FRERE', () => {
     mockCards.set({
-      selectedRoles: new Set([PlayerRole.FRERE]),
+      selectedRoles: new Set([PlayerRoleEnum.FRERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -456,30 +458,30 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['availableRoles']().includes(PlayerRole.FRERE)).toEqual(
-      true,
-    );
+    expect(
+      component['availableRoles']().includes(PlayerRoleEnum.FRERE),
+    ).toEqual(true);
   });
 
   it('should not have FRERE as available if 3 FRERE', () => {
     mockCards.set({
-      selectedRoles: new Set([PlayerRole.FRERE]),
+      selectedRoles: new Set([PlayerRoleEnum.FRERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -488,33 +490,33 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['availableRoles']().includes(PlayerRole.FRERE)).toEqual(
-      false,
-    );
+    expect(
+      component['availableRoles']().includes(PlayerRoleEnum.FRERE),
+    ).toEqual(false);
   });
 
   it('should have VILLAGEOIS as available if less than villageois number', () => {
@@ -528,8 +530,8 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -537,7 +539,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRole.VILLAGEOIS),
+      component['availableRoles']().includes(PlayerRoleEnum.VILLAGEOIS),
     ).toEqual(true);
   });
 
@@ -552,16 +554,16 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -569,7 +571,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRole.VILLAGEOIS),
+      component['availableRoles']().includes(PlayerRoleEnum.VILLAGEOIS),
     ).toEqual(false);
   });
 
@@ -584,8 +586,8 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -593,7 +595,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRole.LOUP_GAROU),
+      component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
     ).toEqual(true);
   });
 
@@ -608,16 +610,16 @@ describe('NewGamePlayersRolesPage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -625,7 +627,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRole.LOUP_GAROU),
+      component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
     ).toEqual(false);
   });
 

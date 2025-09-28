@@ -1,12 +1,12 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { RenardRoleHandler } from './renard.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 
 describe('RenardRoleHandler', () => {
   let handler: RenardRoleHandler;
@@ -36,8 +36,8 @@ describe('RenardRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new RenardRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -45,7 +45,7 @@ describe('RenardRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.RENARD);
+    expect(handler.role).toBe(PlayerRoleEnum.RENARD);
   });
 
   describe('prepareNewGame', () => {
@@ -58,7 +58,7 @@ describe('RenardRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.RENARD,
+        RoundEnum.RENARD,
       );
     });
 
@@ -66,7 +66,7 @@ describe('RenardRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.NO_POWER,
+        PlayerStatusEnum.NO_POWER,
       );
     });
   });
@@ -79,7 +79,7 @@ describe('RenardRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.RENARD,
+        RoundEnum.RENARD,
       );
     });
   });

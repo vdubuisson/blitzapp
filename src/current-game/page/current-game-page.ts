@@ -10,10 +10,13 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PlayerCard } from '@/shared/components/player-card/player-card';
-import { PlayerDisplayMode } from '@/shared/components/player-card/player-display-mode';
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import {
+  PlayerDisplayMode,
+  PlayerDisplayModeEnum,
+} from '@/shared/components/player-card/player-display-mode';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { RoundConfig } from '@/shared/types/round-config';
 import { RoundNamePipe } from '@/current-game/page/round-name/round-name-pipe';
@@ -44,17 +47,17 @@ export default class CurrentGamePage {
     () => {
       const currentRoundConfig = this.roundConfig();
       if (currentRoundConfig !== null) {
-        if (currentRoundConfig.type === RoundType.ROLES) {
-          return PlayerDisplayMode.EDIT_ROLE;
+        if (currentRoundConfig.type === RoundTypeEnum.ROLES) {
+          return PlayerDisplayModeEnum.EDIT_ROLE;
         } else if (currentRoundConfig.maxSelectable > 1) {
-          return PlayerDisplayMode.SELECT_MULTI;
+          return PlayerDisplayModeEnum.SELECT_MULTI;
         } else if (currentRoundConfig.maxSelectable === 1) {
-          return PlayerDisplayMode.SELECT_SINGLE;
+          return PlayerDisplayModeEnum.SELECT_SINGLE;
         } else {
-          return PlayerDisplayMode.DEFAULT;
+          return PlayerDisplayModeEnum.DEFAULT;
         }
       } else {
-        return PlayerDisplayMode.DEFAULT;
+        return PlayerDisplayModeEnum.DEFAULT;
       }
     },
   );
@@ -76,18 +79,18 @@ export default class CurrentGamePage {
 
   protected readonly submitDisabled: Signal<boolean> = computed(() => {
     switch (this.playerDisplayMode()) {
-      case PlayerDisplayMode.SELECT_SINGLE:
+      case PlayerDisplayModeEnum.SELECT_SINGLE:
         return (
           (this.roundConfig()?.minSelectable ?? 0) > 0 &&
           this.selectedPlayer() === undefined
         );
-      case PlayerDisplayMode.SELECT_MULTI:
+      case PlayerDisplayModeEnum.SELECT_MULTI:
         return (
           this.selectedPlayers().size >
             (this.roundConfig()?.maxSelectable ?? 0) ||
           this.selectedPlayers().size < (this.roundConfig()?.minSelectable ?? 0)
         );
-      case PlayerDisplayMode.EDIT_ROLE:
+      case PlayerDisplayModeEnum.EDIT_ROLE:
         return (
           (this.roundConfig()?.minSelectable ?? 0) > 0 &&
           this.selectedRole() === undefined
@@ -100,18 +103,16 @@ export default class CurrentGamePage {
   protected readonly displayEqualityButton: Signal<boolean> = computed(
     () =>
       this.players().some(
-        (player) => player.role === PlayerRole.BOUC && !player.isDead,
-      ) && this.roundConfig()?.round === Round.VILLAGEOIS,
+        (player) => player.role === PlayerRoleEnum.BOUC && !player.isDead,
+      ) && this.roundConfig()?.round === RoundEnum.VILLAGEOIS,
   );
 
   protected readonly isBeforeGame: Signal<boolean> = computed(
-    () => this.roundConfig()?.round === Round.SECTAIRE,
+    () => this.roundConfig()?.round === RoundEnum.SECTAIRE,
   );
 
-  protected readonly PlayerDisplayModeEnum = PlayerDisplayMode;
-
   protected onPlayerChecked(id: number, checked: boolean): void {
-    if (this.playerDisplayMode() === PlayerDisplayMode.SELECT_MULTI) {
+    if (this.playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI) {
       this.playersMultiSelection.toggle(id);
     } else {
       this.selectedPlayer.set(checked ? id : undefined);

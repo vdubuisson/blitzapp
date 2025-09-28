@@ -1,14 +1,14 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { PereLoupsRoleHandler } from './pere-loups.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 
 describe('PereLoupsRoleHandler', () => {
   let handler: PereLoupsRoleHandler;
@@ -44,8 +44,8 @@ describe('PereLoupsRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new PereLoupsRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -53,7 +53,7 @@ describe('PereLoupsRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.PERE_LOUPS);
+    expect(handler.role).toBe(PlayerRoleEnum.PERE_LOUPS);
   });
 
   describe('prepareNewGame', () => {
@@ -66,7 +66,7 @@ describe('PereLoupsRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.PERE_LOUPS,
+        RoundEnum.PERE_LOUPS,
       );
     });
 
@@ -74,7 +74,7 @@ describe('PereLoupsRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.WOLF_TARGET,
+        PlayerStatusEnum.WOLF_TARGET,
       );
     });
 
@@ -82,7 +82,7 @@ describe('PereLoupsRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.NO_POWER,
+        PlayerStatusEnum.NO_POWER,
       );
     });
 
@@ -90,7 +90,7 @@ describe('PereLoupsRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.INFECTED,
+        PlayerStatusEnum.INFECTED,
       );
     });
 
@@ -98,7 +98,7 @@ describe('PereLoupsRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
 
@@ -106,7 +106,7 @@ describe('PereLoupsRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
-        Victory.LOUP_GAROU,
+        VictoryEnum.LOUP_GAROU,
       );
     });
   });
@@ -119,7 +119,7 @@ describe('PereLoupsRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.PERE_LOUPS,
+        RoundEnum.PERE_LOUPS,
       );
     });
   });

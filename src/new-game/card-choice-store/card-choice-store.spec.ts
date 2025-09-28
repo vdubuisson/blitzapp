@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { CardList, StoredCardList } from '@/shared/types/card-list';
 import { Storage } from '@/storage/storage';
 import { TestBed } from '@angular/core/testing';
@@ -15,14 +15,14 @@ import { CardChoiceStore } from './card-choice-store';
 describe('CardChoiceStore without storage', () => {
   let service: CardChoiceStore;
   const mockState: CardList = {
-    selectedRoles: new Set<PlayerRole>([PlayerRole.SORCIERE]),
+    selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.SORCIERE]),
     villageois: 4,
     loupGarou: 1,
     playersNumber: 6,
   };
 
   const mockStateStored: StoredCardList = {
-    selectedRoles: [PlayerRole.SORCIERE],
+    selectedRoles: [PlayerRoleEnum.SORCIERE],
     villageois: 4,
     loupGarou: 1,
     playersNumber: 6,
@@ -87,14 +87,14 @@ describe('CardChoiceStore with storage init', () => {
   let service: CardChoiceStore;
 
   const mockState: CardList = {
-    selectedRoles: new Set<PlayerRole>([PlayerRole.SORCIERE]),
+    selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.SORCIERE]),
     villageois: 4,
     loupGarou: 1,
     playersNumber: 6,
   };
 
   const mockStateStored: StoredCardList = {
-    selectedRoles: [PlayerRole.SORCIERE],
+    selectedRoles: [PlayerRoleEnum.SORCIERE],
     villageois: 4,
     loupGarou: 1,
     playersNumber: 6,

@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as statusUtils from '@/utils/status.utils';
 import { firstValueFrom } from 'rxjs';
@@ -29,13 +29,13 @@ describe('SorciereKillRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should kill selected player', async () => {
@@ -43,17 +43,17 @@ describe('SorciereKillRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
-        statuses: new Set([PlayerStatus.DEATH_POTION]),
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
@@ -69,17 +69,17 @@ describe('SorciereKillRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
-        statuses: new Set([PlayerStatus.DEATH_POTION]),
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
@@ -87,7 +87,7 @@ describe('SorciereKillRoundHandler', () => {
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0].killedBy).toEqual(PlayerRole.SORCIERE);
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.SORCIERE);
   });
 
   it('should remove DEATH_POTION status to SORCIERE player', async () => {
@@ -95,17 +95,17 @@ describe('SorciereKillRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
-        statuses: new Set([PlayerStatus.DEATH_POTION]),
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
@@ -121,7 +121,7 @@ describe('SorciereKillRoundHandler', () => {
     expect(newPlayers[1]).toBe(expectedPlayer);
     expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[1],
-      PlayerStatus.DEATH_POTION,
+      PlayerStatusEnum.DEATH_POTION,
     );
   });
 
@@ -130,17 +130,17 @@ describe('SorciereKillRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
-        statuses: new Set([PlayerStatus.DEATH_POTION]),
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
     ];
@@ -148,7 +148,9 @@ describe('SorciereKillRoundHandler', () => {
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, []),
     );
-    expect(newPlayers[1].statuses.has(PlayerStatus.DEATH_POTION)).toEqual(true);
+    expect(newPlayers[1].statuses.has(PlayerStatusEnum.DEATH_POTION)).toEqual(
+      true,
+    );
   });
 
   it('should return all players alive except SORCIERE as selectable players if SORCIERE has DEATH_POTION', () => {
@@ -156,32 +158,32 @@ describe('SorciereKillRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
-        statuses: new Set([PlayerStatus.DEATH_POTION]),
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
+        statuses: new Set([PlayerStatusEnum.DEATH_POTION]),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -197,32 +199,32 @@ describe('SorciereKillRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -236,7 +238,7 @@ describe('SorciereKillRoundHandler', () => {
   it('should return SORCIERE_KILL as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.SORCIERE_KILL);
+    expect(roundConfig.round).toEqual(RoundEnum.SORCIERE_KILL);
   });
 
   it('should return 1 as maxSelectable players', () => {

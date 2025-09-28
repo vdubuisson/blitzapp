@@ -1,9 +1,9 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { MontreurOursRoleHandler } from './montreur-ours.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 
 describe('MontreurOursRoleHandler', () => {
@@ -30,8 +30,8 @@ describe('MontreurOursRoleHandler', () => {
     );
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -39,7 +39,7 @@ describe('MontreurOursRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.MONTREUR_OURS);
+    expect(handler.role).toBe(PlayerRoleEnum.MONTREUR_OURS);
   });
 
   describe('prepareNewGame', () => {
@@ -52,7 +52,7 @@ describe('MontreurOursRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.MONTREUR_OURS,
+        RoundEnum.MONTREUR_OURS,
       );
     });
   });
@@ -65,7 +65,7 @@ describe('MontreurOursRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.MONTREUR_OURS,
+        RoundEnum.MONTREUR_OURS,
       );
     });
   });

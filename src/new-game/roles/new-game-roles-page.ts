@@ -1,7 +1,7 @@
 import { AccordionItemModule } from '@/shared/components/accordion-item/accordion-item-module';
 import { GAME_BOX_CONTENTS } from '@/config/game-box-contents';
-import { GameBoxes } from '@/config/game-boxes';
-import { PlayerRole } from '@/types/player-role';
+import { GameBox, GameBoxEnum } from '@/config/game-boxes';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { CardList } from '@/shared/types/card-list';
 import { GameBoxNamePipe } from '@/new-game/roles/game-box-name/game-box-name-pipe';
 import { PlayerRoleImagePipe } from '@/shared/pipes/player-role-image/player-role-image-pipe';
@@ -58,10 +58,10 @@ export default class NewGameRolesPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly boxContents = GAME_BOX_CONTENTS;
-  protected readonly boxes: GameBoxes[] = Object.values(GameBoxes);
+  protected readonly boxes: GameBox[] = Object.values(GameBoxEnum);
 
-  protected readonly loupGarouRole = PlayerRole.LOUP_GAROU;
-  protected readonly villageoisRole = PlayerRole.VILLAGEOIS;
+  protected readonly loupGarouRole = PlayerRoleEnum.LOUP_GAROU;
+  protected readonly villageoisRole = PlayerRoleEnum.VILLAGEOIS;
 
   protected readonly selectedRoles = computed<Set<PlayerRole>>(() => {
     const selection = this.rolesSelectionChange()?.source?.selected ?? [];
@@ -72,7 +72,7 @@ export default class NewGameRolesPage implements OnInit {
   private readonly rolesSelectionChange = toSignal(this.rolesSelection.changed);
 
   protected readonly requiredVillageois: Signal<number> = computed(() =>
-    this.selectedRoles().has(PlayerRole.VOLEUR) ? 2 : 0,
+    this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0,
   );
 
   protected readonly roleCountForm: FormGroup<RoleForm> =
@@ -97,9 +97,9 @@ export default class NewGameRolesPage implements OnInit {
       this.selectedRoles().size +
       this.villageoisCount() +
       this.loupGarouCount() +
-      (this.selectedRoles().has(PlayerRole.SOEUR) ? 1 : 0) +
-      (this.selectedRoles().has(PlayerRole.FRERE) ? 2 : 0) -
-      (this.selectedRoles().has(PlayerRole.VOLEUR) ? 2 : 0),
+      (this.selectedRoles().has(PlayerRoleEnum.SOEUR) ? 1 : 0) +
+      (this.selectedRoles().has(PlayerRoleEnum.FRERE) ? 2 : 0) -
+      (this.selectedRoles().has(PlayerRoleEnum.VOLEUR) ? 2 : 0),
   );
 
   ngOnInit(): void {
@@ -118,7 +118,7 @@ export default class NewGameRolesPage implements OnInit {
 
   protected onRoleCheckChange(role: PlayerRole): void {
     this.rolesSelection.toggle(role);
-    if (role === PlayerRole.VOLEUR) {
+    if (role === PlayerRoleEnum.VOLEUR) {
       const currentVillageois = this.roleCountForm.value.villageois ?? 0;
       if (this.rolesSelection.isSelected(role)) {
         this.roleCountForm.patchValue({ villageois: currentVillageois + 2 });

@@ -8,15 +8,15 @@
     <fa-icon [icon]="deadIcon" size="xl" />
   } @else {
     @if (
-      displayMode() === playerDisplayModeEnum.SELECT_MULTI ||
-      displayMode() === playerDisplayModeEnum.SELECT_SINGLE
+      displayMode() === 'SELECT_MULTI' ||
+      displayMode() === 'SELECT_SINGLE'
     ) {
       <label [for]="'input-' + player().id" class="label"></label>
       <input
         #checkbox
         [id]="'input-' + player().id"
         [type]="
-          displayMode() === playerDisplayModeEnum.SELECT_SINGLE
+          displayMode() === 'SELECT_SINGLE'
             ? 'radio'
             : 'checkbox'
         "
@@ -44,7 +44,7 @@
     <span class="role">{{ displayedRole() | playerRoleName }}</span>
   </div>
 
-  @if (displayMode() === playerDisplayModeEnum.EDIT_ROLE) {
+  @if (displayMode() === 'EDIT_ROLE') {
     <div
       class="label"
       (click)="openSelectRoleOverlay()"

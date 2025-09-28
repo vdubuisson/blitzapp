@@ -1,8 +1,8 @@
 import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { Player } from '@/shared/types/player';
-import { TextModalData } from '@/layout/modal/text/text-modal-data';
-import { ModalManager } from '@/layout/modal/modal-manager';
 import { AnnouncementsQueueStore } from '@/current-game/announcements/announcements-queue/announcements-queue-store';
+import { ModalManager } from '@/layout/modal/modal-manager';
+import { TextModalData } from '@/layout/modal/text/text-modal-data';
+import { Player } from '@/shared/types/player';
 import { announcements } from '@/texts/announcements';
 import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

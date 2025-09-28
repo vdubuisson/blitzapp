@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { isLoupGarou } from '@/utils/roles.utils';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -9,7 +9,7 @@ import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class GrandMechantLoupRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.GRAND_MECHANT_LOUP, false, false, RoundType.PLAYERS);
+    super(RoundEnum.GRAND_MECHANT_LOUP, false, false, RoundTypeEnum.PLAYERS);
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
@@ -22,7 +22,7 @@ export class GrandMechantLoupRoundHandler extends DefaultRoundHandler {
           (player) =>
             !isLoupGarou(player) &&
             !player.isDead &&
-            !player.statuses.has(PlayerStatus.WOLF_TARGET),
+            !player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
         );
   }
 
@@ -31,8 +31,11 @@ export class GrandMechantLoupRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    const updatedPlayer = addStatusToPlayer(player, PlayerStatus.WOLF_TARGET);
-    updatedPlayer.killedBy = PlayerRole.GRAND_MECHANT_LOUP;
+    const updatedPlayer = addStatusToPlayer(
+      player,
+      PlayerStatusEnum.WOLF_TARGET,
+    );
+    updatedPlayer.killedBy = PlayerRoleEnum.GRAND_MECHANT_LOUP;
     return updatedPlayer;
   }
 }

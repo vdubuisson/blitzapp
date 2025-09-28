@@ -1,7 +1,7 @@
-import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { Round } from '@/types/round';
+import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { DefaultRoleHandler } from '@/game-handlers/roles/default/default.role-handler';
 import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
@@ -64,7 +64,7 @@ describe('DeathHandler', () => {
       handleDeath: jest.fn().mockImplementation((players, _) => {
         const newPlayers = [...players];
         newPlayers.forEach((player) => {
-          if (player.statuses.has(PlayerStatus.LOVER)) {
+          if (player.statuses.has(PlayerStatusEnum.LOVER)) {
             player.isDead = true;
           }
         });
@@ -75,7 +75,7 @@ describe('DeathHandler', () => {
 
     MockInstance(StatusHandlersManager, () => ({
       getHandler: jest.fn().mockImplementation((status) => {
-        if (status === PlayerStatus.LOVER) {
+        if (status === PlayerStatusEnum.LOVER) {
           return mockLoverStatusHandler;
         }
         return mockStatusHandler;
@@ -102,12 +102,15 @@ describe('DeathHandler', () => {
 
   it('should return next after-death round', () => {
     const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
-    afterDeathRoundQueueStore.state.set([Round.CHASSEUR, Round.CAPITAINE]);
+    afterDeathRoundQueueStore.state.set([
+      RoundEnum.CHASSEUR,
+      RoundEnum.CAPITAINE,
+    ]);
 
     const nextAfterDeathRound = service.getNextAfterDeathRound();
 
-    expect(nextAfterDeathRound).toEqual(Round.CHASSEUR);
-    expect(afterDeathRoundQueueStore.state()).toEqual([Round.CAPITAINE]);
+    expect(nextAfterDeathRound).toEqual(RoundEnum.CHASSEUR);
+    expect(afterDeathRoundQueueStore.state()).toEqual([RoundEnum.CAPITAINE]);
   });
 
   it('should clear known deaths on reset', () => {
@@ -121,7 +124,7 @@ describe('DeathHandler', () => {
 
   it('should empty afterDeathRoundQueue on reset', () => {
     const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
-    afterDeathRoundQueueStore.state.set([Round.CHASSEUR]);
+    afterDeathRoundQueueStore.state.set([RoundEnum.CHASSEUR]);
 
     service.reset();
 
@@ -134,8 +137,8 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
@@ -151,17 +154,17 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.DEVOURED]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.DEVOURED]),
         isDead: false,
       },
     ];
@@ -176,16 +179,16 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -206,16 +209,16 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -227,8 +230,8 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
@@ -240,25 +243,25 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CHASSEUR,
-        card: PlayerRole.CHASSEUR,
-        statuses: new Set([PlayerStatus.LOVER]),
+        role: PlayerRoleEnum.CHASSEUR,
+        card: PlayerRoleEnum.CHASSEUR,
+        statuses: new Set([PlayerStatusEnum.LOVER]),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.LOVER]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.LOVER]),
         isDead: true,
       },
     ];
@@ -267,7 +270,7 @@ describe('DeathHandler', () => {
 
     const roleHandlersManager = ngMocks.get(RoleHandlersManager);
     expect(roleHandlersManager.getHandler).toHaveBeenCalledWith(
-      PlayerRole.CHASSEUR,
+      PlayerRoleEnum.CHASSEUR,
     );
     expect(mockRoleHandler.handleDeath).toHaveBeenCalledWith(
       mockPlayers,
@@ -280,16 +283,19 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOYANTE,
-        card: PlayerRole.VOYANTE,
-        statuses: new Set([PlayerStatus.CAPTAIN, PlayerStatus.CHILD_MODEL]),
+        role: PlayerRoleEnum.VOYANTE,
+        card: PlayerRoleEnum.VOYANTE,
+        statuses: new Set([
+          PlayerStatusEnum.CAPTAIN,
+          PlayerStatusEnum.CHILD_MODEL,
+        ]),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -299,10 +305,10 @@ describe('DeathHandler', () => {
 
     const statusHandlersManager = ngMocks.get(StatusHandlersManager);
     expect(statusHandlersManager.getHandler).toHaveBeenCalledWith(
-      PlayerStatus.CAPTAIN,
+      PlayerStatusEnum.CAPTAIN,
     );
     expect(statusHandlersManager.getHandler).toHaveBeenCalledWith(
-      PlayerStatus.CHILD_MODEL,
+      PlayerStatusEnum.CHILD_MODEL,
     );
     expect(mockStatusHandler.handleDeath).toHaveBeenCalledWith(
       mockPlayers,
@@ -315,16 +321,16 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOYANTE,
-        card: PlayerRole.VOYANTE,
+        role: PlayerRoleEnum.VOYANTE,
+        card: PlayerRoleEnum.VOYANTE,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -334,7 +340,7 @@ describe('DeathHandler', () => {
 
     const roleHandlersManager = ngMocks.get(RoleHandlersManager);
     expect(roleHandlersManager.getHandler).toHaveBeenCalledWith(
-      PlayerRole.VOYANTE,
+      PlayerRoleEnum.VOYANTE,
     );
     expect(mockRoleHandler.handleDeath).toHaveBeenCalledWith(
       mockPlayers,
@@ -348,8 +354,8 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOYANTE,
-        card: PlayerRole.VOYANTE,
+        role: PlayerRoleEnum.VOYANTE,
+        card: PlayerRoleEnum.VOYANTE,
         statuses: new Set(),
         isDead: true,
       },
@@ -369,11 +375,11 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANCIEN,
-        card: PlayerRole.ANCIEN,
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
         statuses: new Set(),
         isDead: true,
-        killedBy: PlayerRole.CHASSEUR,
+        killedBy: PlayerRoleEnum.CHASSEUR,
       },
     ];
 
@@ -383,7 +389,7 @@ describe('DeathHandler', () => {
 
     const announcer = ngMocks.get(Announcer);
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.ANCIEN_KILLED_BY_INNOCENTS,
+      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
@@ -393,11 +399,11 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANCIEN,
-        card: PlayerRole.ANCIEN,
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
         statuses: new Set(),
         isDead: true,
-        killedBy: PlayerRole.SORCIERE,
+        killedBy: PlayerRoleEnum.SORCIERE,
       },
     ];
 
@@ -407,7 +413,7 @@ describe('DeathHandler', () => {
 
     const announcer = ngMocks.get(Announcer);
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.ANCIEN_KILLED_BY_INNOCENTS,
+      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
@@ -417,11 +423,11 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANCIEN,
-        card: PlayerRole.ANCIEN,
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
         statuses: new Set(),
         isDead: true,
-        killedBy: PlayerRole.VILLAGEOIS,
+        killedBy: PlayerRoleEnum.VILLAGEOIS,
       },
     ];
 
@@ -431,7 +437,7 @@ describe('DeathHandler', () => {
 
     const announcer = ngMocks.get(Announcer);
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.ANCIEN_KILLED_BY_INNOCENTS,
+      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
@@ -441,8 +447,8 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANCIEN,
-        card: PlayerRole.ANCIEN,
+        role: PlayerRoleEnum.ANCIEN,
+        card: PlayerRoleEnum.ANCIEN,
         statuses: new Set(),
         isDead: true,
       },
@@ -462,11 +468,11 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
-        killedBy: PlayerRole.CHEVALIER,
+        killedBy: PlayerRoleEnum.CHEVALIER,
       },
     ];
 
@@ -476,7 +482,7 @@ describe('DeathHandler', () => {
 
     const announcer = ngMocks.get(Announcer);
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.WOLF_KILLED_BY_CHEVALIER,
+      AnnouncementTypesEnum.WOLF_KILLED_BY_CHEVALIER,
       { playerName: 'player0' },
     );
   });
@@ -497,8 +503,8 @@ describe('DeathHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOYANTE,
-        card: PlayerRole.VOYANTE,
+        role: PlayerRoleEnum.VOYANTE,
+        card: PlayerRoleEnum.VOYANTE,
         statuses: new Set(),
         isDead: true,
       },

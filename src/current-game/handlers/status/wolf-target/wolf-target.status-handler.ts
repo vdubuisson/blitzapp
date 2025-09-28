@@ -1,7 +1,7 @@
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from '../default/default.status-handler';
-import { PlayerStatus } from '@/types/player-status';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
 import {
   addStatusToPlayer,
   removeStatusFromPlayer,
@@ -18,22 +18,22 @@ export class WolfTargetStatusHandler extends DefaultStatusHandler {
    */
   override triggerAction(players: Player[]): Player[] {
     return players.map((player) => {
-      if (player.statuses.has(PlayerStatus.WOLF_TARGET)) {
+      if (player.statuses.has(PlayerStatusEnum.WOLF_TARGET)) {
         let newPlayer = removeStatusFromPlayer(
           player,
-          PlayerStatus.WOLF_TARGET,
+          PlayerStatusEnum.WOLF_TARGET,
         );
         if (
-          !player.statuses.has(PlayerStatus.PROTECTED) ||
-          player.role === PlayerRole.PETITE_FILLE
+          !player.statuses.has(PlayerStatusEnum.PROTECTED) ||
+          player.role === PlayerRoleEnum.PETITE_FILLE
         ) {
           if (
-            player.role === PlayerRole.ANCIEN &&
-            !player.statuses.has(PlayerStatus.INJURED)
+            player.role === PlayerRoleEnum.ANCIEN &&
+            !player.statuses.has(PlayerStatusEnum.INJURED)
           ) {
-            newPlayer = addStatusToPlayer(newPlayer, PlayerStatus.INJURED);
+            newPlayer = addStatusToPlayer(newPlayer, PlayerStatusEnum.INJURED);
           } else {
-            newPlayer = addStatusToPlayer(newPlayer, PlayerStatus.DEVOURED);
+            newPlayer = addStatusToPlayer(newPlayer, PlayerStatusEnum.DEVOURED);
           }
         } else {
           newPlayer.killedBy = undefined;

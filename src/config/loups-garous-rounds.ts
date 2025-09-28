@@ -1,8 +1,8 @@
-import { Round } from '@/types/round';
+import { Round, RoundEnum } from '@/types/round';
 
 export const LOUPS_GAROUS_ROUNDS: Round[] = [
-  Round.LOUP_GAROU,
-  Round.GRAND_MECHANT_LOUP,
-  Round.LOUP_BLANC,
-  Round.PERE_LOUPS,
+  RoundEnum.LOUP_GAROU,
+  RoundEnum.GRAND_MECHANT_LOUP,
+  RoundEnum.LOUP_BLANC,
+  RoundEnum.PERE_LOUPS,
 ];

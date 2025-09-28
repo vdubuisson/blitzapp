@@ -5,7 +5,7 @@ import {
   MockReset,
   ngMocks,
 } from 'ng-mocks';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
 import { PlayerCard } from './player-card';
@@ -13,8 +13,8 @@ import { PlayerCard } from './player-card';
 const MOCK_PLAYER: Player = {
   id: 0,
   name: 'player',
-  role: PlayerRole.VILLAGEOIS,
-  card: PlayerRole.VILLAGEOIS,
+  role: PlayerRoleEnum.VILLAGEOIS,
+  card: PlayerRoleEnum.VILLAGEOIS,
   statuses: new Set(),
   isDead: false,
 };
@@ -28,11 +28,11 @@ describe('PlayerCard', () => {
     MockInstance(PlayerRoleNamePipe, () => ({
       transform: (role) => {
         switch (role) {
-          case PlayerRole.VILLAGEOIS:
+          case PlayerRoleEnum.VILLAGEOIS:
             return 'Villageois';
-          case PlayerRole.LOUP_GAROU:
+          case PlayerRoleEnum.LOUP_GAROU:
             return 'Loup';
-          case PlayerRole.CUPIDON:
+          case PlayerRoleEnum.CUPIDON:
             return 'Cupidon';
           default:
             return '';
@@ -50,12 +50,12 @@ describe('PlayerCard', () => {
   it('should sort roles alphabetically on set', () => {
     const component = MockRender(PlayerCard, {
       player: MOCK_PLAYER,
-      selectableRoles: [PlayerRole.VILLAGEOIS, PlayerRole.LOUP_GAROU],
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
     }).point.componentInstance;
 
     expect(component['sortedRoles']()).toEqual([
-      PlayerRole.LOUP_GAROU,
-      PlayerRole.VILLAGEOIS,
+      PlayerRoleEnum.LOUP_GAROU,
+      PlayerRoleEnum.VILLAGEOIS,
     ]);
   });
 
@@ -63,13 +63,13 @@ describe('PlayerCard', () => {
     const component = MockRender(PlayerCard, {
       player: {
         ...MOCK_PLAYER,
-        role: PlayerRole.CUPIDON,
-        card: PlayerRole.CUPIDON,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
       },
-      selectableRoles: [PlayerRole.VILLAGEOIS, PlayerRole.LOUP_GAROU],
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
     }).point.componentInstance;
 
-    expect(component['sortedRoles']().includes(PlayerRole.CUPIDON)).toEqual(
+    expect(component['sortedRoles']().includes(PlayerRoleEnum.CUPIDON)).toEqual(
       true,
     );
   });
@@ -78,14 +78,14 @@ describe('PlayerCard', () => {
     const component = MockRender(PlayerCard, {
       player: {
         ...MOCK_PLAYER,
-        role: PlayerRole.CUPIDON,
-        card: PlayerRole.CUPIDON,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
       },
-      selectableRoles: [PlayerRole.VILLAGEOIS, PlayerRole.LOUP_GAROU],
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
       noSelfRole: true,
     }).point.componentInstance;
 
-    expect(component['sortedRoles']().includes(PlayerRole.CUPIDON)).toEqual(
+    expect(component['sortedRoles']().includes(PlayerRoleEnum.CUPIDON)).toEqual(
       false,
     );
   });
@@ -94,14 +94,14 @@ describe('PlayerCard', () => {
     const component = MockRender(PlayerCard, {
       player: {
         ...MOCK_PLAYER,
-        role: PlayerRole.NOT_SELECTED,
-        card: PlayerRole.NOT_SELECTED,
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
       },
-      selectableRoles: [PlayerRole.VILLAGEOIS, PlayerRole.LOUP_GAROU],
+      selectableRoles: [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU],
     }).point.componentInstance;
 
     expect(
-      component['sortedRoles']().includes(PlayerRole.NOT_SELECTED),
+      component['sortedRoles']().includes(PlayerRoleEnum.NOT_SELECTED),
     ).toEqual(false);
   });
 

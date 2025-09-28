@@ -1,5 +1,5 @@
 import { PlayerRoleModal } from '@/layout/modal/player-role/player-role-modal';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import {
   MockBuilder,
@@ -38,9 +38,9 @@ describe('ModalManager', () => {
   it('should create PlayerCardModalComponent on showPlayerCard', async () => {
     const dialog = ngMocks.get(Dialog);
 
-    await firstValueFrom(service.showPlayerCard(PlayerRole.VILLAGEOIS));
+    await firstValueFrom(service.showPlayerCard(PlayerRoleEnum.VILLAGEOIS));
     expect(dialog.open).toHaveBeenCalledWith(PlayerRoleModal, {
-      data: PlayerRole.VILLAGEOIS,
+      data: PlayerRoleEnum.VILLAGEOIS,
     });
   });
 

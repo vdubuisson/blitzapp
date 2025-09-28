@@ -1,6 +1,6 @@
 import { Player } from '@/shared/types/player';
 import { CardList } from '@/shared/types/card-list';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 
 export function getNotPlayedCards(
   players: Player[],
@@ -11,36 +11,38 @@ export function getNotPlayedCards(
 
   const notPlayedVillageoisCount =
     cardList.villageois -
-    playedCards.filter((card) => card === PlayerRole.VILLAGEOIS).length;
+    playedCards.filter((card) => card === PlayerRoleEnum.VILLAGEOIS).length;
   for (let i = 0; i < notPlayedVillageoisCount; i++) {
-    notPlayedCards.push(PlayerRole.VILLAGEOIS);
+    notPlayedCards.push(PlayerRoleEnum.VILLAGEOIS);
   }
 
   const notPlayedLoupGarouCount =
     cardList.loupGarou -
-    playedCards.filter((card) => card === PlayerRole.LOUP_GAROU).length;
+    playedCards.filter((card) => card === PlayerRoleEnum.LOUP_GAROU).length;
   for (let i = 0; i < notPlayedLoupGarouCount; i++) {
-    notPlayedCards.push(PlayerRole.LOUP_GAROU);
+    notPlayedCards.push(PlayerRoleEnum.LOUP_GAROU);
   }
 
-  if (cardList.selectedRoles.has(PlayerRole.SOEUR)) {
+  if (cardList.selectedRoles.has(PlayerRoleEnum.SOEUR)) {
     const notPlayedSoeurCount =
-      2 - playedCards.filter((card) => card === PlayerRole.SOEUR).length;
+      2 - playedCards.filter((card) => card === PlayerRoleEnum.SOEUR).length;
     for (let i = 0; i < notPlayedSoeurCount; i++) {
-      notPlayedCards.push(PlayerRole.SOEUR);
+      notPlayedCards.push(PlayerRoleEnum.SOEUR);
     }
   }
 
-  if (cardList.selectedRoles.has(PlayerRole.FRERE)) {
+  if (cardList.selectedRoles.has(PlayerRoleEnum.FRERE)) {
     const notPlayedFrereCount =
-      3 - playedCards.filter((card) => card === PlayerRole.FRERE).length;
+      3 - playedCards.filter((card) => card === PlayerRoleEnum.FRERE).length;
     for (let i = 0; i < notPlayedFrereCount; i++) {
-      notPlayedCards.push(PlayerRole.FRERE);
+      notPlayedCards.push(PlayerRoleEnum.FRERE);
     }
   }
 
   Array.from(cardList.selectedRoles)
-    .filter((role) => role !== PlayerRole.SOEUR && role !== PlayerRole.FRERE)
+    .filter(
+      (role) => role !== PlayerRoleEnum.SOEUR && role !== PlayerRoleEnum.FRERE,
+    )
     .forEach((role) => {
       if (!playedCards.includes(role)) {
         notPlayedCards.push(role);

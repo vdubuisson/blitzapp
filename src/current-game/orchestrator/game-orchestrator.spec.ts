@@ -1,8 +1,8 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
-import { Victory } from '@/types/victory';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
+import { VictoryEnum } from '@/types/victory';
 import { Player } from '@/shared/types/player';
 import { RoundConfig } from '@/shared/types/round-config';
 import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
@@ -33,7 +33,7 @@ import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
 
 class MockRoleHandler implements RoleHandler {
-  role = PlayerRole.VILLAGEOIS;
+  role = PlayerRoleEnum.VILLAGEOIS;
 
   prepareNewGame = jest.fn().mockImplementation((players: Player[]) => players);
   handleDeath = jest.fn().mockImplementation((players: Player[]) => players);
@@ -45,7 +45,7 @@ class MockRoleHandler implements RoleHandler {
 class MockRoundHandler implements RoundHandler {
   isOnlyOnce = false;
   isDuringDay = false;
-  type = RoundType.DEFAULT;
+  type = RoundTypeEnum.DEFAULT;
 
   handleAction(players: Player[], _: number[]): Observable<Player[]> {
     return of(players);
@@ -89,12 +89,12 @@ describe('GameOrchestrator on victory', () => {
 
   beforeAll(() => {
     mockCurrentRoundConfig = {
-      round: Round.CAPITAINE,
+      round: RoundEnum.CAPITAINE,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -106,9 +106,9 @@ describe('GameOrchestrator on victory', () => {
       clearHandlers: jest.fn(),
       getHandler(round) {
         switch (round) {
-          case Round.CAPITAINE:
+          case RoundEnum.CAPITAINE:
             return mockCurrentRoundHandler;
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -128,12 +128,12 @@ describe('GameOrchestrator on victory', () => {
 
     MockInstance(RoundOrchestrator, () => ({
       resetRounds: jest.fn(),
-      getNextRound: () => Round.VILLAGEOIS,
+      getNextRound: () => RoundEnum.VILLAGEOIS,
     }));
 
     MockInstance(VictoryHandlersManager, () => ({
       clearHandlers: jest.fn(),
-      getVictory: () => Victory.LOUP_GAROU,
+      getVictory: () => VictoryEnum.LOUP_GAROU,
     }));
 
     MockInstance(CurrentPlayersStore, 'state', signal([]));
@@ -221,30 +221,30 @@ describe.skip('GameOrchestrator', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockCardList = {
-      selectedRoles: new Set([PlayerRole.SORCIERE, PlayerRole.VOLEUR]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE, PlayerRoleEnum.VOLEUR]),
       loupGarou: 1,
       villageois: 1,
       playersNumber: 3,
@@ -317,9 +317,9 @@ describe.skip('GameOrchestrator', () => {
     service.createGame(mockPlayers);
 
     expect(roundHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRole.VILLAGEOIS,
-      PlayerRole.LOUP_GAROU,
-      PlayerRole.SORCIERE,
+      PlayerRoleEnum.VILLAGEOIS,
+      PlayerRoleEnum.LOUP_GAROU,
+      PlayerRoleEnum.SORCIERE,
     ]);
   });
 
@@ -327,9 +327,9 @@ describe.skip('GameOrchestrator', () => {
     service.createGame(mockPlayers);
 
     expect(victoryHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRole.VILLAGEOIS,
-      PlayerRole.LOUP_GAROU,
-      PlayerRole.SORCIERE,
+      PlayerRoleEnum.VILLAGEOIS,
+      PlayerRoleEnum.LOUP_GAROU,
+      PlayerRoleEnum.SORCIERE,
     ]);
   });
 
@@ -355,8 +355,8 @@ describe.skip('GameOrchestrator', () => {
       {
         id: 3,
         name: 'player3',
-        role: PlayerRole.ANGE,
-        card: PlayerRole.ANGE,
+        role: PlayerRoleEnum.ANGE,
+        card: PlayerRoleEnum.ANGE,
         statuses: new Set(),
         isDead: false,
       },
@@ -375,17 +375,17 @@ describe.skip('GameOrchestrator', () => {
 
   it('should set first round on game creation using RoundOrchestrator', () => {
     const mockRoundConfig: RoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     mockRoundHandler.getRoundConfig = () => mockRoundConfig;
     jest
       .spyOn(roundOrchestrator, 'getFirstRound')
-      .mockReturnValue(Round.LOUP_GAROU);
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
 
     service.createGame(mockPlayers);
 
@@ -396,7 +396,7 @@ describe.skip('GameOrchestrator', () => {
     service.createGame(mockPlayers);
 
     expect(
-      service['players']()[2].statuses.has(PlayerStatus.HEALTH_POTION),
+      service['players']()[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
     ).toEqual(true);
   });
 
@@ -404,19 +404,19 @@ describe.skip('GameOrchestrator', () => {
     service.createGame(mockPlayers);
 
     expect(
-      service['players']()[2].statuses.has(PlayerStatus.DEATH_POTION),
+      service['players']()[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
     ).toEqual(true);
   });
 
   it('should update players with handler action on submit', () => {
     mockRoundHandler.handleAction = () => of(mockPlayers);
     const mockRoundConfig: RoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     service['roundConfig'].set(mockRoundConfig);
 
@@ -430,26 +430,26 @@ describe.skip('GameOrchestrator', () => {
   it('should set next round on submit', () => {
     mockRoundHandler.handleAction = () => of(mockPlayers);
     const mockRoundConfig: RoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockNextRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_HEALTH,
+      round: RoundEnum.SORCIERE_HEALTH,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     service['roundConfig'].set(mockRoundConfig);
     mockRoundHandler.getRoundConfig = () => mockNextRoundConfig;
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.SORCIERE_HEALTH);
+      .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
 
     expect(service['roundConfig']()).toEqual(mockRoundConfig);
 
@@ -461,28 +461,28 @@ describe.skip('GameOrchestrator', () => {
   it('should skip LOUP_BLANC next round on odd day', () => {
     mockRoundHandler.handleAction = () => of(mockPlayers);
     const mockRoundConfig: RoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockSorciereHealthRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_HEALTH,
+      round: RoundEnum.SORCIERE_HEALTH,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockLoupBlancRoundConfig: RoundConfig = {
-      round: Round.LOUP_BLANC,
+      round: RoundEnum.LOUP_BLANC,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockSorciereHealthHandler = new MockRoundHandler();
     const mockLoupBlancHandler = new MockRoundHandler();
@@ -494,9 +494,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_HEALTH:
+          case RoundEnum.SORCIERE_HEALTH:
             return mockSorciereHealthHandler;
-          case Round.LOUP_BLANC:
+          case RoundEnum.LOUP_BLANC:
             return mockLoupBlancHandler;
           default:
             return new MockRoundHandler();
@@ -508,8 +508,8 @@ describe.skip('GameOrchestrator', () => {
 
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValueOnce(Round.LOUP_BLANC)
-      .mockReturnValueOnce(Round.SORCIERE_HEALTH);
+      .mockReturnValueOnce(RoundEnum.LOUP_BLANC)
+      .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
 
     expect(service['roundConfig']()).toEqual(mockRoundConfig);
 
@@ -521,28 +521,28 @@ describe.skip('GameOrchestrator', () => {
   it('should not skip LOUP_BLANC next round on even day', () => {
     mockRoundHandler.handleAction = () => of(mockPlayers);
     const mockRoundConfig: RoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 2],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockSorciereHealthRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_HEALTH,
+      round: RoundEnum.SORCIERE_HEALTH,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockLoupBlancRoundConfig: RoundConfig = {
-      round: Round.LOUP_BLANC,
+      round: RoundEnum.LOUP_BLANC,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockSorciereHealthHandler = new MockRoundHandler();
     const mockLoupBlancHandler = new MockRoundHandler();
@@ -554,9 +554,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_HEALTH:
+          case RoundEnum.SORCIERE_HEALTH:
             return mockSorciereHealthHandler;
-          case Round.LOUP_BLANC:
+          case RoundEnum.LOUP_BLANC:
             return mockLoupBlancHandler;
           default:
             return new MockRoundHandler();
@@ -568,8 +568,8 @@ describe.skip('GameOrchestrator', () => {
 
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValueOnce(Round.LOUP_BLANC)
-      .mockReturnValueOnce(Round.SORCIERE_HEALTH);
+      .mockReturnValueOnce(RoundEnum.LOUP_BLANC)
+      .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
 
     expect(service['roundConfig']()).toEqual(mockRoundConfig);
 
@@ -593,7 +593,7 @@ describe.skip('GameOrchestrator', () => {
   //     maxSelectable: 1,
   //     minSelectable: 0,
   //     isDuringDay: false,
-  //     type: RoundTypeEnum.DEFAULT,
+  //     type: RoundTypeEnumEnum.DEFAULT,
   //   };
   //
   //   const mockSorciereKillHandler = new MockRoundHandler();
@@ -616,7 +616,7 @@ describe.skip('GameOrchestrator', () => {
   //     maxSelectable: 1,
   //     minSelectable: 1,
   //     isDuringDay: false,
-  //     type: RoundTypeEnum.DEFAULT,
+  //     type: RoundTypeEnumEnum.DEFAULT,
   //   };
   //   mockChasseurHandler.getRoundConfig = () => mockChasseurRound;
   //   when(getHandlerSpy)
@@ -639,12 +639,12 @@ describe.skip('GameOrchestrator', () => {
     jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockPlayers);
 
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_KILL,
+      round: RoundEnum.SORCIERE_KILL,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
 
     const mockSorciereKillHandler = new MockRoundHandler();
@@ -653,12 +653,12 @@ describe.skip('GameOrchestrator', () => {
     const mockVillageoisHandler = new MockRoundHandler();
     mockVillageoisHandler.isDuringDay = true;
     const mockVillageoisRoundConfig: RoundConfig = {
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     mockVillageoisHandler.getRoundConfig = () => mockVillageoisRoundConfig;
 
@@ -666,9 +666,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_KILL:
+          case RoundEnum.SORCIERE_KILL:
             return mockSorciereKillHandler;
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockVillageoisHandler;
           default:
             return new MockRoundHandler();
@@ -677,8 +677,8 @@ describe.skip('GameOrchestrator', () => {
 
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValueOnce(Round.VILLAGEOIS)
-      .mockReturnValueOnce(Round.VILLAGEOIS);
+      .mockReturnValueOnce(RoundEnum.VILLAGEOIS)
+      .mockReturnValueOnce(RoundEnum.VILLAGEOIS);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
 
@@ -689,12 +689,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should not check victory during night', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -706,9 +706,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.LOUP_GAROU:
+          case RoundEnum.LOUP_GAROU:
             return mockCurrentRoundHandler;
-          case Round.SORCIERE_HEALTH:
+          case RoundEnum.SORCIERE_HEALTH:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -716,7 +716,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.SORCIERE_HEALTH);
+      .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
 
@@ -727,12 +727,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should check victory after night', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_KILL,
+      round: RoundEnum.SORCIERE_KILL,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -745,9 +745,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_KILL:
+          case RoundEnum.SORCIERE_KILL:
             return mockCurrentRoundHandler;
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -755,28 +755,28 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VILLAGEOIS);
+      .mockReturnValue(RoundEnum.VILLAGEOIS);
     jest
       .spyOn(victoryHandlersManager, 'getVictory')
-      .mockReturnValue(Victory.LOUP_GAROU);
+      .mockReturnValue(VictoryEnum.LOUP_GAROU);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
     expect(router.navigate).toHaveBeenCalledWith(['victory'], {
-      queryParams: { victory: Victory.LOUP_GAROU },
+      queryParams: { victory: VictoryEnum.LOUP_GAROU },
     });
   });
 
   it('should check victory during day', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.CAPITAINE,
+      round: RoundEnum.CAPITAINE,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -789,9 +789,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.CAPITAINE:
+          case RoundEnum.CAPITAINE:
             return mockCurrentRoundHandler;
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -799,28 +799,28 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VILLAGEOIS);
+      .mockReturnValue(RoundEnum.VILLAGEOIS);
     jest
       .spyOn(victoryHandlersManager, 'getVictory')
-      .mockReturnValue(Victory.LOUP_GAROU);
+      .mockReturnValue(VictoryEnum.LOUP_GAROU);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
 
     service.submitRoundAction([]);
 
     expect(router.navigate).toHaveBeenCalledWith(['victory'], {
-      queryParams: { victory: Victory.LOUP_GAROU },
+      queryParams: { victory: VictoryEnum.LOUP_GAROU },
     });
   });
 
   it('should not check victory if next round is CHASSEUR', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_KILL,
+      round: RoundEnum.SORCIERE_KILL,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -833,9 +833,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_KILL:
+          case RoundEnum.SORCIERE_KILL:
             return mockCurrentRoundHandler;
-          case Round.CHASSEUR:
+          case RoundEnum.CHASSEUR:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -843,7 +843,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.CHASSEUR);
+      .mockReturnValue(RoundEnum.CHASSEUR);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
 
@@ -854,12 +854,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should announce deaths after night if no victory', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_KILL,
+      round: RoundEnum.SORCIERE_KILL,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -872,9 +872,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_KILL:
+          case RoundEnum.SORCIERE_KILL:
             return mockCurrentRoundHandler;
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -882,7 +882,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VILLAGEOIS);
+      .mockReturnValue(RoundEnum.VILLAGEOIS);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
@@ -894,12 +894,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should announce deaths during day if no victory', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.CAPITAINE,
+      round: RoundEnum.CAPITAINE,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -912,9 +912,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.CAPITAINE:
+          case RoundEnum.CAPITAINE:
             return mockCurrentRoundHandler;
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -922,7 +922,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VILLAGEOIS);
+      .mockReturnValue(RoundEnum.VILLAGEOIS);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
@@ -934,12 +934,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should not announce deaths if next round is CHASSEUR', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.SORCIERE_KILL,
+      round: RoundEnum.SORCIERE_KILL,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = false;
@@ -952,9 +952,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.SORCIERE_KILL:
+          case RoundEnum.SORCIERE_KILL:
             return mockCurrentRoundHandler;
-          case Round.CHASSEUR:
+          case RoundEnum.CHASSEUR:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -962,7 +962,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.CHASSEUR);
+      .mockReturnValue(RoundEnum.CHASSEUR);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
 
@@ -973,12 +973,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should clean statuses after day', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -990,9 +990,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockCurrentRoundHandler;
-          case Round.LOUP_GAROU:
+          case RoundEnum.LOUP_GAROU:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -1000,7 +1000,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.LOUP_GAROU);
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
@@ -1012,12 +1012,12 @@ describe.skip('GameOrchestrator', () => {
 
   it('should increment day count after day', () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     const mockCurrentRoundHandler = new MockRoundHandler();
     mockCurrentRoundHandler.isDuringDay = true;
@@ -1029,9 +1029,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.VILLAGEOIS:
+          case RoundEnum.VILLAGEOIS:
             return mockCurrentRoundHandler;
-          case Round.LOUP_GAROU:
+          case RoundEnum.LOUP_GAROU:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -1039,7 +1039,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.LOUP_GAROU);
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
@@ -1051,27 +1051,27 @@ describe.skip('GameOrchestrator', () => {
 
   it('should clear and reinit handlers after VOLEUR round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.VOLEUR,
+      round: RoundEnum.VOLEUR,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.ROLES,
+      type: RoundTypeEnum.ROLES,
     };
     const mockNewPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CUPIDON,
-        card: PlayerRole.CUPIDON,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
         statuses: new Set(),
         isDead: false,
       },
@@ -1087,9 +1087,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.VOLEUR:
+          case RoundEnum.VOLEUR:
             return mockCurrentRoundHandler;
-          case Round.VOYANTE:
+          case RoundEnum.VOYANTE:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -1097,7 +1097,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VOYANTE);
+      .mockReturnValue(RoundEnum.VOYANTE);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
@@ -1108,38 +1108,38 @@ describe.skip('GameOrchestrator', () => {
     expect(roundHandlersManager.clearHandlers).toHaveBeenCalled();
     expect(victoryHandlersManager.clearHandlers).toHaveBeenCalled();
     expect(roundHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRole.SORCIERE,
-      PlayerRole.CUPIDON,
+      PlayerRoleEnum.SORCIERE,
+      PlayerRoleEnum.CUPIDON,
     ]);
     expect(victoryHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRole.SORCIERE,
-      PlayerRole.CUPIDON,
+      PlayerRoleEnum.SORCIERE,
+      PlayerRoleEnum.CUPIDON,
     ]);
   });
 
   it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has become LOUP_GAROU after PERE_LOUPS round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.PERE_LOUPS,
+      round: RoundEnum.PERE_LOUPS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.PLAYERS,
+      type: RoundTypeEnum.PLAYERS,
     };
     const mockNewPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.JOUEUR_FLUTE,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -1155,9 +1155,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.PERE_LOUPS:
+          case RoundEnum.PERE_LOUPS:
             return mockCurrentRoundHandler;
-          case Round.VOYANTE:
+          case RoundEnum.VOYANTE:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -1165,48 +1165,48 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VOYANTE);
+      .mockReturnValue(RoundEnum.VOYANTE);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
     ngMocks.get(CardChoiceStore).state.set({
       ...mockCardList,
-      selectedRoles: new Set<PlayerRole>([PlayerRole.JOUEUR_FLUTE]),
+      selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.JOUEUR_FLUTE]),
     });
 
     service.submitRoundAction([]);
 
     expect(roundHandlersManager.removeHandlersByRoles).toHaveBeenCalledWith([
-      PlayerRole.JOUEUR_FLUTE,
+      PlayerRoleEnum.JOUEUR_FLUTE,
     ]);
     expect(victoryHandlersManager.removeHandler).toHaveBeenCalledWith(
-      Victory.JOUEUR_FLUTE,
+      VictoryEnum.JOUEUR_FLUTE,
     );
   });
 
   it('should not remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has not become LOUP_GAROU after PERE_LOUPS round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.PERE_LOUPS,
+      round: RoundEnum.PERE_LOUPS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.PLAYERS,
+      type: RoundTypeEnum.PLAYERS,
     };
     const mockNewPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.JOUEUR_FLUTE,
-        card: PlayerRole.JOUEUR_FLUTE,
+        role: PlayerRoleEnum.JOUEUR_FLUTE,
+        card: PlayerRoleEnum.JOUEUR_FLUTE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.PERE_LOUPS,
-        card: PlayerRole.PERE_LOUPS,
+        role: PlayerRoleEnum.PERE_LOUPS,
+        card: PlayerRoleEnum.PERE_LOUPS,
         statuses: new Set(),
         isDead: false,
       },
@@ -1222,9 +1222,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.PERE_LOUPS:
+          case RoundEnum.PERE_LOUPS:
             return mockCurrentRoundHandler;
-          case Round.VOYANTE:
+          case RoundEnum.VOYANTE:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -1232,13 +1232,13 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.VOYANTE);
+      .mockReturnValue(RoundEnum.VOYANTE);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);
     ngMocks.get(CardChoiceStore).state.set({
       ...mockCardList,
-      selectedRoles: new Set<PlayerRole>([PlayerRole.JOUEUR_FLUTE]),
+      selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.JOUEUR_FLUTE]),
     });
 
     service.submitRoundAction([]);
@@ -1251,17 +1251,17 @@ describe.skip('GameOrchestrator', () => {
     service.createGame(mockPlayers);
 
     expect(roundHandlersManager.initAsDefaultHandlers).toHaveBeenCalledWith([
-      PlayerRole.VOLEUR,
+      PlayerRoleEnum.VOLEUR,
     ]);
   });
 
   it('should return game in progress if current round', () => {
     service['roundConfig'].set({
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
       isDuringDay: true,
     });
 
@@ -1276,27 +1276,27 @@ describe.skip('GameOrchestrator', () => {
 
   it('should set needCleanAfterBouc to true after BOUC round', async () => {
     const mockCurrentRoundConfig: RoundConfig = {
-      round: Round.BOUC,
+      round: RoundEnum.BOUC,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: true,
-      type: RoundType.PLAYERS,
+      type: RoundTypeEnum.PLAYERS,
     };
     const mockNewPlayers: Player[] = [
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.BOUC,
-        card: PlayerRole.BOUC,
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -1312,9 +1312,9 @@ describe.skip('GameOrchestrator', () => {
       .spyOn(roundHandlersManager, 'getHandler')
       .mockImplementation((round) => {
         switch (round) {
-          case Round.BOUC:
+          case RoundEnum.BOUC:
             return mockCurrentRoundHandler;
-          case Round.LOUP_GAROU:
+          case RoundEnum.LOUP_GAROU:
             return mockNextRoundHandler;
           default:
             return new MockRoundHandler();
@@ -1322,7 +1322,7 @@ describe.skip('GameOrchestrator', () => {
       });
     jest
       .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(Round.LOUP_GAROU);
+      .mockReturnValue(RoundEnum.LOUP_GAROU);
     jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
 
     service['roundConfig'].set(mockCurrentRoundConfig);

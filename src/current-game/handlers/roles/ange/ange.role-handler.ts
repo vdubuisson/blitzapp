@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { DefaultRoleHandler } from '../default/default.role-handler';
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
 import { Player } from '@/shared/types/player';
@@ -9,7 +9,7 @@ export class AngeRoleHandler extends DefaultRoleHandler {
   private readonly roundOrchestrator = inject(RoundOrchestrator);
 
   constructor() {
-    super(PlayerRole.ANGE, ROLE_METADATA_CONFIG[PlayerRole.ANGE]!);
+    super(PlayerRoleEnum.ANGE, ROLE_METADATA_CONFIG[PlayerRoleEnum.ANGE]!);
   }
 
   override prepareNewGame(players: Player[]): Player[] {

@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerRoleImagePipe } from './player-role-image-pipe';
 
 describe('PlayerRoleImagePipe', () => {
@@ -12,7 +12,7 @@ describe('PlayerRoleImagePipe', () => {
   });
 
   it('should return image path for role', () => {
-    const path = pipe.transform(PlayerRole.VILLAGEOIS);
+    const path = pipe.transform(PlayerRoleEnum.VILLAGEOIS);
     expect(path).toEqual('images/roles/villageois.webp');
   });
 });

@@ -1,4 +1,4 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from '../default/default.status-handler';
 import { removeStatusFromPlayer } from '@/utils/status.utils';
@@ -12,8 +12,11 @@ export class DevouredStatusHandler extends DefaultStatusHandler {
    */
   override triggerAction(players: Player[]): Player[] {
     return players.map((player) => {
-      if (player.statuses.has(PlayerStatus.DEVOURED)) {
-        const newPlayer = removeStatusFromPlayer(player, PlayerStatus.DEVOURED);
+      if (player.statuses.has(PlayerStatusEnum.DEVOURED)) {
+        const newPlayer = removeStatusFromPlayer(
+          player,
+          PlayerStatusEnum.DEVOURED,
+        );
         newPlayer.isDead = true;
         return newPlayer;
       }

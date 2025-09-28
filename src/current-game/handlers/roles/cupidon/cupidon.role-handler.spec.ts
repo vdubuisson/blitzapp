@@ -1,14 +1,14 @@
-import { PlayerRole } from '@/types/player-role';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { TestBed } from '@angular/core/testing';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CupidonRoleHandler } from './cupidon.role-handler';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 
 describe('CupidonRoleHandler', () => {
   let handler: CupidonRoleHandler;
@@ -44,8 +44,8 @@ describe('CupidonRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new CupidonRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -53,7 +53,7 @@ describe('CupidonRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.CUPIDON);
+    expect(handler.role).toBe(PlayerRoleEnum.CUPIDON);
   });
 
   describe('prepareNewGame', () => {
@@ -66,7 +66,7 @@ describe('CupidonRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.CUPIDON,
+        RoundEnum.CUPIDON,
       );
     });
 
@@ -74,7 +74,7 @@ describe('CupidonRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.AMOUREUX,
+        RoundEnum.AMOUREUX,
       );
     });
 
@@ -82,7 +82,7 @@ describe('CupidonRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.LOVER,
+        PlayerStatusEnum.LOVER,
       );
     });
 
@@ -90,7 +90,7 @@ describe('CupidonRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
-        Victory.AMOUREUX,
+        VictoryEnum.AMOUREUX,
       );
     });
   });
@@ -103,7 +103,7 @@ describe('CupidonRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.CUPIDON,
+        RoundEnum.CUPIDON,
       );
     });
   });

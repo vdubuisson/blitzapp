@@ -1,15 +1,15 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 
 export const INNOCENTS_POWER_REMOVAL_ROLES: PlayerRole[] = [
-  PlayerRole.CHASSEUR,
-  PlayerRole.CUPIDON,
-  PlayerRole.PETITE_FILLE,
-  PlayerRole.SORCIERE,
-  PlayerRole.VOYANTE,
-  PlayerRole.CORBEAU,
-  PlayerRole.SALVATEUR,
-  PlayerRole.MONTREUR_OURS,
-  PlayerRole.RENARD,
-  PlayerRole.CHEVALIER,
-  PlayerRole.BOUC,
+  PlayerRoleEnum.CHASSEUR,
+  PlayerRoleEnum.CUPIDON,
+  PlayerRoleEnum.PETITE_FILLE,
+  PlayerRoleEnum.SORCIERE,
+  PlayerRoleEnum.VOYANTE,
+  PlayerRoleEnum.CORBEAU,
+  PlayerRoleEnum.SALVATEUR,
+  PlayerRoleEnum.MONTREUR_OURS,
+  PlayerRoleEnum.RENARD,
+  PlayerRoleEnum.CHEVALIER,
+  PlayerRoleEnum.BOUC,
 ];

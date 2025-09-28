@@ -1,9 +1,9 @@
 import { LOUPS_GAROUS_ROUNDS } from '@/config/loups-garous-rounds';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
-import { Victory } from '@/types/victory';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Round, RoundEnum } from '@/types/round';
+import { Victory, VictoryEnum } from '@/types/victory';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
 import { RoundConfig } from '@/shared/types/round-config';
@@ -68,7 +68,7 @@ export class GameOrchestrator {
     this.initGame(players, cardList);
     const isAngePresent = players
       .map((player) => player.role)
-      .includes(PlayerRole.ANGE);
+      .includes(PlayerRoleEnum.ANGE);
     if (isAngePresent) {
       this.nextDayCount(-1);
     } else {
@@ -141,9 +141,9 @@ export class GameOrchestrator {
       throw new Error('No current round');
     }
 
-    if (currentRound === Round.VOLEUR) {
+    if (currentRound === RoundEnum.VOLEUR) {
       this.handleAfterVoleurRound();
-    } else if (currentRound === Round.PERE_LOUPS) {
+    } else if (currentRound === RoundEnum.PERE_LOUPS) {
       this.handleAfterPereLoupRound();
     }
 
@@ -183,7 +183,7 @@ export class GameOrchestrator {
 
     this.handleAfterDayEvents(currentHandler, nextHandler);
 
-    if (currentRound === Round.BOUC) {
+    if (currentRound === RoundEnum.BOUC) {
       this.needCleanAfterBouc.set(true);
     }
 
@@ -198,7 +198,7 @@ export class GameOrchestrator {
         this.cardList(),
       );
       this.roundConfig.set(roundConfig);
-      if (handler.type === RoundType.AUTO) {
+      if (handler.type === RoundTypeEnum.AUTO) {
         this.submitRoundAction([]);
       }
     }
@@ -255,7 +255,7 @@ export class GameOrchestrator {
   ): boolean {
     if (
       (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
-      nextRound !== Round.CHASSEUR
+      nextRound !== RoundEnum.CHASSEUR
     ) {
       this.deathHandler.announceDeaths();
       return this.checkVictory();
@@ -307,15 +307,15 @@ export class GameOrchestrator {
   }
 
   private handleAfterPereLoupRound(): void {
-    if (this.cardList().selectedRoles.has(PlayerRole.JOUEUR_FLUTE)) {
+    if (this.cardList().selectedRoles.has(PlayerRoleEnum.JOUEUR_FLUTE)) {
       const joueurFlute = this.players().find(
-        (player) => player.card === PlayerRole.JOUEUR_FLUTE,
+        (player) => player.card === PlayerRoleEnum.JOUEUR_FLUTE,
       );
-      if (joueurFlute?.role === PlayerRole.LOUP_GAROU) {
+      if (joueurFlute?.role === PlayerRoleEnum.LOUP_GAROU) {
         this.roundHandlersManager.removeHandlersByRoles([
-          PlayerRole.JOUEUR_FLUTE,
+          PlayerRoleEnum.JOUEUR_FLUTE,
         ]);
-        this.victoryHandlersManager.removeHandler(Victory.JOUEUR_FLUTE);
+        this.victoryHandlersManager.removeHandler(VictoryEnum.JOUEUR_FLUTE);
       }
     }
   }
@@ -335,18 +335,20 @@ export class GameOrchestrator {
       let newPlayers = [...this.players()];
       if (
         newPlayers.some((player) =>
-          player.statuses.has(PlayerStatus.WOLF_TARGET),
+          player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
         )
       ) {
         newPlayers = this.statusHandlersManager
-          .getHandler(PlayerStatus.WOLF_TARGET)
+          .getHandler(PlayerStatusEnum.WOLF_TARGET)
           .triggerAction(newPlayers);
       }
       if (
-        newPlayers.some((player) => player.statuses.has(PlayerStatus.INFECTED))
+        newPlayers.some((player) =>
+          player.statuses.has(PlayerStatusEnum.INFECTED),
+        )
       ) {
         newPlayers = this.statusHandlersManager
-          .getHandler(PlayerStatus.INFECTED)
+          .getHandler(PlayerStatusEnum.INFECTED)
           .triggerAction(newPlayers);
       }
       this.players.set(newPlayers);

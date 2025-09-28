@@ -1,12 +1,12 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { SalvateurRoleHandler } from './salvateur.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('SalvateurRoleHandler', () => {
@@ -37,8 +37,8 @@ describe('SalvateurRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new SalvateurRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -46,7 +46,7 @@ describe('SalvateurRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.SALVATEUR);
+    expect(handler.role).toBe(PlayerRoleEnum.SALVATEUR);
   });
 
   describe('prepareNewGame', () => {
@@ -59,7 +59,7 @@ describe('SalvateurRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.SALVATEUR,
+        RoundEnum.SALVATEUR,
       );
     });
 
@@ -67,7 +67,7 @@ describe('SalvateurRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.PROTECTED,
+        PlayerStatusEnum.PROTECTED,
       );
     });
   });
@@ -80,7 +80,7 @@ describe('SalvateurRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.SALVATEUR,
+        RoundEnum.SALVATEUR,
       );
     });
   });
@@ -91,13 +91,13 @@ describe('SalvateurRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.PROTECTED]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.PROTECTED]),
         } as Player,
         {
           id: 2,
           name: 'Player 2',
-          role: PlayerRole.SALVATEUR,
+          role: PlayerRoleEnum.SALVATEUR,
           isDead: true,
         } as Player,
       ];
@@ -111,7 +111,7 @@ describe('SalvateurRoleHandler', () => {
       expect(result).toBe(expectedPlayers);
       expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
         testPlayers,
-        PlayerStatus.PROTECTED,
+        PlayerStatusEnum.PROTECTED,
         [1],
       );
     });
@@ -121,19 +121,19 @@ describe('SalvateurRoleHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          role: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.PROTECTED]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.PROTECTED]),
         } as Player,
         {
           id: 2,
           name: 'Player 2',
-          role: PlayerRole.SALVATEUR,
+          role: PlayerRoleEnum.SALVATEUR,
           isDead: false,
         } as Player,
       ];
 
       const result = handler.cleanStatusesAfterDay(testPlayers);
-      expect(result[0].statuses.has(PlayerStatus.PROTECTED)).toBe(true);
+      expect(result[0].statuses.has(PlayerStatusEnum.PROTECTED)).toBe(true);
     });
   });
 });

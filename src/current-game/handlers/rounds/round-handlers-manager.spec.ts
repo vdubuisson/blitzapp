@@ -1,5 +1,5 @@
-import { PlayerRole } from '@/types/player-role';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
 import { CapitaineRoundHandler } from '@/game-handlers/rounds/capitaine/capitaine-round.handler';
 import { DefaultRoundHandler } from '@/game-handlers/rounds/default/default-round.handler';
 import { LoupGarouRoundHandler } from '@/game-handlers/rounds/loup-garou/loup-garou-round.handler';
@@ -56,7 +56,7 @@ describe('RoundHandlersManager', () => {
     it('should init VILLAGEOIS round handler', () => {
       service.initRequiredHandlers();
 
-      expect(service['roundHandlers'].get(Round.VILLAGEOIS)).toBeInstanceOf(
+      expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
         VillageoisRoundHandler,
       );
     });
@@ -64,7 +64,7 @@ describe('RoundHandlersManager', () => {
     it('should init CAPITAINE round handler', () => {
       service.initRequiredHandlers();
 
-      expect(service['roundHandlers'].get(Round.CAPITAINE)).toBeInstanceOf(
+      expect(service['roundHandlers'].get(RoundEnum.CAPITAINE)).toBeInstanceOf(
         CapitaineRoundHandler,
       );
     });
@@ -72,7 +72,7 @@ describe('RoundHandlersManager', () => {
     it('should init LOUP_GAROU round handler for LOUP_GAROU role', () => {
       service.initRequiredHandlers();
 
-      expect(service['roundHandlers'].get(Round.LOUP_GAROU)).toBeInstanceOf(
+      expect(service['roundHandlers'].get(RoundEnum.LOUP_GAROU)).toBeInstanceOf(
         LoupGarouRoundHandler,
       );
     });
@@ -80,9 +80,12 @@ describe('RoundHandlersManager', () => {
 
   describe('getHandler', () => {
     it('should return configured round handler', () => {
-      service['roundHandlers'].set(Round.VILLAGEOIS, villageoisRoundHandler);
+      service['roundHandlers'].set(
+        RoundEnum.VILLAGEOIS,
+        villageoisRoundHandler,
+      );
 
-      const testHandler = service.getHandler(Round.VILLAGEOIS);
+      const testHandler = service.getHandler(RoundEnum.VILLAGEOIS);
 
       expect(testHandler).toEqual(villageoisRoundHandler);
     });
@@ -90,9 +93,9 @@ describe('RoundHandlersManager', () => {
 
   describe('initAsDefaultHandlers', () => {
     it('should init handler as default', () => {
-      service.initAsDefaultHandlers([PlayerRole.VOYANTE]);
+      service.initAsDefaultHandlers([PlayerRoleEnum.VOYANTE]);
 
-      expect(service['roundHandlers'].get(Round.VOYANTE)).toBeInstanceOf(
+      expect(service['roundHandlers'].get(RoundEnum.VOYANTE)).toBeInstanceOf(
         DefaultRoundHandler,
       );
     });
@@ -100,19 +103,22 @@ describe('RoundHandlersManager', () => {
 
   describe('removeHandlersByRoles', () => {
     it('should remove handlers for specified roles', () => {
-      service['roundHandlers'].set(Round.VOYANTE, voyanteRoundHandler);
+      service['roundHandlers'].set(RoundEnum.VOYANTE, voyanteRoundHandler);
 
-      service.removeHandlersByRoles([PlayerRole.VOYANTE]);
+      service.removeHandlersByRoles([PlayerRoleEnum.VOYANTE]);
 
-      expect(service['roundHandlers'].get(Round.VOYANTE)).toBeUndefined();
+      expect(service['roundHandlers'].get(RoundEnum.VOYANTE)).toBeUndefined();
     });
 
     it('should not remove handlers for non-specified roles', () => {
-      service['roundHandlers'].set(Round.VILLAGEOIS, villageoisRoundHandler);
+      service['roundHandlers'].set(
+        RoundEnum.VILLAGEOIS,
+        villageoisRoundHandler,
+      );
 
-      service.removeHandlersByRoles([PlayerRole.VOYANTE]);
+      service.removeHandlersByRoles([PlayerRoleEnum.VOYANTE]);
 
-      expect(service['roundHandlers'].get(Round.VILLAGEOIS)).toBeInstanceOf(
+      expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
         VillageoisRoundHandler,
       );
     });
@@ -120,7 +126,10 @@ describe('RoundHandlersManager', () => {
 
   describe('clearHandlers', () => {
     it('should clear all round handlers', () => {
-      service['roundHandlers'].set(Round.VILLAGEOIS, villageoisRoundHandler);
+      service['roundHandlers'].set(
+        RoundEnum.VILLAGEOIS,
+        villageoisRoundHandler,
+      );
 
       service.clearHandlers();
 
@@ -128,7 +137,7 @@ describe('RoundHandlersManager', () => {
     });
 
     it('should clear round handlers state', () => {
-      service['roundHandlersState'].set(new Set([Round.VILLAGEOIS]));
+      service['roundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
 
       service.clearHandlers();
 
@@ -136,7 +145,7 @@ describe('RoundHandlersManager', () => {
     });
 
     it('should clear default round handlers state', () => {
-      service['defaultRoundHandlersState'].set(new Set([Round.VILLAGEOIS]));
+      service['defaultRoundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
 
       service.clearHandlers();
 
@@ -146,47 +155,55 @@ describe('RoundHandlersManager', () => {
 
   describe('removeHandler', () => {
     it('should remove specific round handler', () => {
-      service['roundHandlers'].set(Round.VILLAGEOIS, villageoisRoundHandler);
+      service['roundHandlers'].set(
+        RoundEnum.VILLAGEOIS,
+        villageoisRoundHandler,
+      );
 
-      service.removeHandler(Round.VILLAGEOIS);
+      service.removeHandler(RoundEnum.VILLAGEOIS);
 
-      expect(service['roundHandlers'].get(Round.VILLAGEOIS)).toBeUndefined();
+      expect(
+        service['roundHandlers'].get(RoundEnum.VILLAGEOIS),
+      ).toBeUndefined();
     });
 
     it('should update round handlers state after removal', () => {
-      service['roundHandlersState'].set(new Set([Round.VILLAGEOIS]));
+      service['roundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
 
-      service.removeHandler(Round.VILLAGEOIS);
+      service.removeHandler(RoundEnum.VILLAGEOIS);
 
-      expect(service['roundHandlersState']().has(Round.VILLAGEOIS)).toEqual(
+      expect(service['roundHandlersState']().has(RoundEnum.VILLAGEOIS)).toEqual(
         false,
       );
     });
 
     it('should update default round handlers state after removal', () => {
-      service['defaultRoundHandlersState'].set(new Set([Round.VILLAGEOIS]));
+      service['defaultRoundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
 
-      service.removeHandler(Round.VILLAGEOIS);
+      service.removeHandler(RoundEnum.VILLAGEOIS);
 
       expect(
-        service['defaultRoundHandlersState']().has(Round.VILLAGEOIS),
+        service['defaultRoundHandlersState']().has(RoundEnum.VILLAGEOIS),
       ).toEqual(false);
     });
   });
 
   describe('createRoundHandler', () => {
     it('should create and add a new round handler', () => {
-      service.createRoundHandler(Round.VILLAGEOIS);
+      service.createRoundHandler(RoundEnum.VILLAGEOIS);
 
-      expect(service['roundHandlers'].get(Round.VILLAGEOIS)).toBeInstanceOf(
+      expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
         VillageoisRoundHandler,
       );
     });
 
     it('should not create a handler if it already exists', () => {
-      service['roundHandlers'].set(Round.VILLAGEOIS, villageoisRoundHandler);
+      service['roundHandlers'].set(
+        RoundEnum.VILLAGEOIS,
+        villageoisRoundHandler,
+      );
 
-      service.createRoundHandler(Round.VILLAGEOIS);
+      service.createRoundHandler(RoundEnum.VILLAGEOIS);
 
       expect(service['roundHandlers'].size).toEqual(1);
     });

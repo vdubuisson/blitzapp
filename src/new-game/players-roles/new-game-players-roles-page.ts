@@ -8,8 +8,8 @@ import {
 import { RouterLink } from '@angular/router';
 import { PlayerCard } from '@/shared/components/player-card/player-card';
 import { NON_UNIQUE_ROLES } from '@/config/non-unique-roles';
-import { PlayerDisplayMode } from '@/shared/components/player-card/player-display-mode';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerDisplayModeEnum } from '@/shared/components/player-card/player-display-mode';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { NewGameCreator } from '@/new-game/creator/new-game-creator';
 import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
@@ -27,7 +27,7 @@ export default class NewGamePlayersRolesPage {
   protected readonly players: Signal<Player[]> =
     this.newGameCreator.currentPlayers;
 
-  protected readonly playerDisplayMode = PlayerDisplayMode.EDIT_ROLE;
+  protected readonly playerDisplayMode = PlayerDisplayModeEnum.EDIT_ROLE;
 
   protected readonly canCreate: Signal<boolean> = computed(() =>
     this.canCreateGame(this.players()),
@@ -57,33 +57,37 @@ export default class NewGamePlayersRolesPage {
 
     if (
       cardsToPlay.villageois >
-      players.filter((player) => player.role === PlayerRole.VILLAGEOIS).length
+      players.filter((player) => player.role === PlayerRoleEnum.VILLAGEOIS)
+        .length
     ) {
-      availableRoles.push(PlayerRole.VILLAGEOIS);
+      availableRoles.push(PlayerRoleEnum.VILLAGEOIS);
     }
 
     if (
       cardsToPlay.loupGarou >
-      players.filter((player) => player.role === PlayerRole.LOUP_GAROU).length
+      players.filter((player) => player.role === PlayerRoleEnum.LOUP_GAROU)
+        .length
     ) {
-      availableRoles.push(PlayerRole.LOUP_GAROU);
+      availableRoles.push(PlayerRoleEnum.LOUP_GAROU);
     }
 
     if (
-      usedRoles.has(PlayerRole.SOEUR) &&
-      players.filter((player) => player.role === PlayerRole.SOEUR).length === 2
+      usedRoles.has(PlayerRoleEnum.SOEUR) &&
+      players.filter((player) => player.role === PlayerRoleEnum.SOEUR)
+        .length === 2
     ) {
       availableRoles = availableRoles.filter(
-        (role) => role !== PlayerRole.SOEUR,
+        (role) => role !== PlayerRoleEnum.SOEUR,
       );
     }
 
     if (
-      usedRoles.has(PlayerRole.FRERE) &&
-      players.filter((player) => player.role === PlayerRole.FRERE).length === 3
+      usedRoles.has(PlayerRoleEnum.FRERE) &&
+      players.filter((player) => player.role === PlayerRoleEnum.FRERE)
+        .length === 3
     ) {
       availableRoles = availableRoles.filter(
-        (role) => role !== PlayerRole.FRERE,
+        (role) => role !== PlayerRoleEnum.FRERE,
       );
     }
 
@@ -92,23 +96,23 @@ export default class NewGamePlayersRolesPage {
 
   private canCreateGame(players: Player[]): boolean {
     let canCreate = players.every(
-      (player) => player.role !== PlayerRole.NOT_SELECTED,
+      (player) => player.role !== PlayerRoleEnum.NOT_SELECTED,
     );
     if (
       canCreate &&
-      players.some((player) => player.role === PlayerRole.SOEUR)
+      players.some((player) => player.role === PlayerRoleEnum.SOEUR)
     ) {
       canCreate =
-        players.filter((player) => player.role === PlayerRole.SOEUR).length ===
-        2;
+        players.filter((player) => player.role === PlayerRoleEnum.SOEUR)
+          .length === 2;
     }
     if (
       canCreate &&
-      players.some((player) => player.role === PlayerRole.FRERE)
+      players.some((player) => player.role === PlayerRoleEnum.FRERE)
     ) {
       canCreate =
-        players.filter((player) => player.role === PlayerRole.FRERE).length ===
-        3;
+        players.filter((player) => player.role === PlayerRoleEnum.FRERE)
+          .length === 3;
     }
     return canCreate;
   }
@@ -116,7 +120,7 @@ export default class NewGamePlayersRolesPage {
   private affectLastRoleToPlayers(): void {
     const lastRole = this.availableRoles()[0];
     this.players()
-      .filter((player) => player.role === PlayerRole.NOT_SELECTED)
+      .filter((player) => player.role === PlayerRoleEnum.NOT_SELECTED)
       .forEach((player) => this.newGameCreator.changeRole(player.id, lastRole));
   }
 }
