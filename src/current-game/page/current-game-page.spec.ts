@@ -1,8 +1,8 @@
 import { PlayerCard } from '@/shared/components/player-card/player-card';
-import { PlayerDisplayMode } from '@/shared/components/player-card/player-display-mode';
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerDisplayModeEnum } from '@/shared/components/player-card/player-display-mode';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { RoundConfig } from '@/shared/types/round-config';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
@@ -33,12 +33,14 @@ import { GameOrchestrator } from '../orchestrator/game-orchestrator';
 })
 export class PlayerStubComponent {
   readonly player = input.required<Player>();
-  readonly displayMode = input<PlayerDisplayMode>(PlayerDisplayMode.DEFAULT);
+  readonly displayMode = input<PlayerDisplayModeEnum>(
+    PlayerDisplayModeEnum.DEFAULT,
+  );
   readonly disabled = input(false);
   readonly noSelfRole = input<boolean>(false);
-  readonly selectableRoles = input<PlayerRole[]>([]);
+  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
   readonly checked = model(false);
-  readonly roleChange = output<PlayerRole>();
+  readonly roleChange = output<PlayerRoleEnum>();
 }
 
 describe('GamePage', () => {
@@ -65,28 +67,28 @@ describe('GamePage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
     ];
     mockPlayers$ = signal(mockPlayers);
     mockRoundConfig = {
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     };
     mockRoundConfig$ = signal(mockRoundConfig);
 
@@ -116,66 +118,68 @@ describe('GamePage', () => {
 
   it('should set playerDisplayMode as EDIT_ROLE if round type ROLES', () => {
     mockRoundConfig$.set({
-      round: Round.CHIEN_LOUP,
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.ROLES,
+      type: RoundTypeEnum.ROLES,
     });
     expect(component['playerDisplayMode']()).toEqual(
-      PlayerDisplayMode.EDIT_ROLE,
+      PlayerDisplayModeEnum.EDIT_ROLE,
     );
   });
 
   it('should set playerDisplayMode as SELECT_SINGLE if only one selectable', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     expect(component['playerDisplayMode']()).toEqual(
-      PlayerDisplayMode.SELECT_SINGLE,
+      PlayerDisplayModeEnum.SELECT_SINGLE,
     );
   });
 
   it('should set playerDisplayMode as SELECT_MULTI if multi selectable', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     expect(component['playerDisplayMode']()).toEqual(
-      PlayerDisplayMode.SELECT_MULTI,
+      PlayerDisplayModeEnum.SELECT_MULTI,
     );
   });
 
   it('should set playerDisplayMode as DEFAULT if no selectable', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
-    expect(component['playerDisplayMode']()).toEqual(PlayerDisplayMode.DEFAULT);
+    expect(component['playerDisplayMode']()).toEqual(
+      PlayerDisplayModeEnum.DEFAULT,
+    );
   });
 
   it('should have submit disabled if should select one role and no selection', () => {
     mockRoundConfig$.set({
-      round: Round.CHIEN_LOUP,
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.ROLES,
+      type: RoundTypeEnum.ROLES,
     });
     component['selectedRole'].set(undefined);
     expect(component['submitDisabled']()).toEqual(true);
@@ -183,12 +187,12 @@ describe('GamePage', () => {
 
   it('should have submit disabled if should select one and no selection', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'].set(undefined);
     expect(component['submitDisabled']()).toEqual(true);
@@ -196,12 +200,12 @@ describe('GamePage', () => {
 
   it('should have submit disabled if should select multiple and more selected than max', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['playersMultiSelection'].setSelection(0, 1, 2);
     expect(component['submitDisabled']()).toEqual(true);
@@ -209,12 +213,12 @@ describe('GamePage', () => {
 
   it('should have submit disabled if should select multiple and less selected than min', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 2,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['playersMultiSelection'].setSelection(0);
     expect(component['submitDisabled']()).toEqual(true);
@@ -222,25 +226,25 @@ describe('GamePage', () => {
 
   it('should have submit enabled if should select one role and one selected', () => {
     mockRoundConfig$.set({
-      round: Round.CHIEN_LOUP,
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.ROLES,
+      type: RoundTypeEnum.ROLES,
     });
-    component['selectedRole'].set(PlayerRole.LOUP_GAROU);
+    component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
     expect(component['submitDisabled']()).toEqual(false);
   });
 
   it('should have submit enabled if should select one and one selected', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'].set(0);
     expect(component['submitDisabled']()).toEqual(false);
@@ -248,12 +252,12 @@ describe('GamePage', () => {
 
   it('should have submit enabled if can select one and none selected', () => {
     mockRoundConfig$.set({
-      round: Round.CHIEN_LOUP,
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.ROLES,
+      type: RoundTypeEnum.ROLES,
     });
     component['selectedRole'].set(undefined);
     expect(component['submitDisabled']()).toEqual(false);
@@ -261,12 +265,12 @@ describe('GamePage', () => {
 
   it('should have submit enabled if can select one and none selected', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['selectedPlayer'].set(undefined);
     expect(component['submitDisabled']()).toEqual(false);
@@ -274,12 +278,12 @@ describe('GamePage', () => {
 
   it('should have submit enabled if should select multiple and selected in range', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['playersMultiSelection'].setSelection(0);
     expect(component['submitDisabled']()).toEqual(false);
@@ -287,38 +291,38 @@ describe('GamePage', () => {
 
   it('should have submit enabled if should select none', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [],
       maxSelectable: 0,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     expect(component['submitDisabled']()).toEqual(false);
   });
 
   it('should select role', () => {
     mockRoundConfig$.set({
-      round: Round.CHIEN_LOUP,
+      round: RoundEnum.CHIEN_LOUP,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 0,
       isDuringDay: false,
-      type: RoundType.ROLES,
+      type: RoundTypeEnum.ROLES,
     });
-    component['onRoleSelect'](PlayerRole.LOUP_GAROU);
+    component['onRoleSelect'](PlayerRoleEnum.LOUP_GAROU);
 
-    expect(component['selectedRole']()).toEqual(PlayerRole.LOUP_GAROU);
+    expect(component['selectedRole']()).toEqual(PlayerRoleEnum.LOUP_GAROU);
   });
 
   it('should single select player', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['onPlayerChecked'](0, true);
 
@@ -327,12 +331,12 @@ describe('GamePage', () => {
 
   it('should multi select player', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['onPlayerChecked'](0, true);
 
@@ -341,12 +345,12 @@ describe('GamePage', () => {
 
   it('should multi unselect player', () => {
     mockRoundConfig$.set({
-      round: Round.LOUP_GAROU,
+      round: RoundEnum.LOUP_GAROU,
       selectablePlayers: [0, 1],
       maxSelectable: 2,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
     component['playersMultiSelection'].setSelection(0);
     component['onPlayerChecked'](0, false);
@@ -355,7 +359,7 @@ describe('GamePage', () => {
   });
 
   it('should submit selectedRole to GameOrchestrator on submit', () => {
-    component['selectedRole'].set(PlayerRole.LOUP_GAROU);
+    component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
 
     component['onSubmit']();
 
@@ -363,7 +367,7 @@ describe('GamePage', () => {
       ngMocks.get(GameOrchestrator).submitRoundAction;
     expect(submitRoundActionSpy).toHaveBeenCalledWith(
       [],
-      PlayerRole.LOUP_GAROU,
+      PlayerRoleEnum.LOUP_GAROU,
     );
   });
 
@@ -388,7 +392,7 @@ describe('GamePage', () => {
   });
 
   it('should reset selectedRole after submit', () => {
-    component['selectedRole'].set(PlayerRole.LOUP_GAROU);
+    component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
 
     component['onSubmit']();
 
@@ -416,20 +420,20 @@ describe('GamePage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.BOUC,
-        card: PlayerRole.BOUC,
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
         statuses: new Set(),
         isDead: false,
       },
     ]);
 
     mockRoundConfig$.set({
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
 
     expect(component['displayEqualityButton']()).toEqual(true);
@@ -440,20 +444,20 @@ describe('GamePage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.BOUC,
-        card: PlayerRole.BOUC,
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
         statuses: new Set(),
         isDead: true,
       },
     ]);
 
     mockRoundConfig$.set({
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
 
     expect(component['displayEqualityButton']()).toEqual(false);
@@ -464,20 +468,20 @@ describe('GamePage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.BOUC,
-        card: PlayerRole.BOUC,
+        role: PlayerRoleEnum.BOUC,
+        card: PlayerRoleEnum.BOUC,
         statuses: new Set(),
         isDead: false,
       },
     ]);
 
     mockRoundConfig$.set({
-      round: Round.CUPIDON,
+      round: RoundEnum.CUPIDON,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: false,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
 
     expect(component['displayEqualityButton']()).toEqual(false);
@@ -488,20 +492,20 @@ describe('GamePage', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ]);
 
     mockRoundConfig$.set({
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
 
     expect(component['displayEqualityButton']()).toEqual(false);
@@ -517,12 +521,12 @@ describe('GamePage', () => {
 
   it('should be beforeGame if round is SECTAIRE', () => {
     mockRoundConfig$.set({
-      round: Round.SECTAIRE,
+      round: RoundEnum.SECTAIRE,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
 
     expect(component['isBeforeGame']()).toEqual(true);
@@ -530,12 +534,12 @@ describe('GamePage', () => {
 
   it('should not be beforeGame if round is not SECTAIRE', () => {
     mockRoundConfig$.set({
-      round: Round.VILLAGEOIS,
+      round: RoundEnum.VILLAGEOIS,
       selectablePlayers: [0],
       maxSelectable: 1,
       minSelectable: 1,
       isDuringDay: true,
-      type: RoundType.DEFAULT,
+      type: RoundTypeEnum.DEFAULT,
     });
 
     expect(component['isBeforeGame']()).toEqual(false);

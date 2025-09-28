@@ -1,43 +1,55 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatus, PlayerStatusEnum } from '@/types/player-status';
 
 export const ROLE_STATUSES: Record<PlayerRole, PlayerStatus[]> = {
-  [PlayerRole.NOT_SELECTED]: [],
-  [PlayerRole.VILLAGEOIS]: [],
-  [PlayerRole.LOUP_GAROU]: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
-  [PlayerRole.CHASSEUR]: [],
-  [PlayerRole.CUPIDON]: [PlayerStatus.LOVER],
-  [PlayerRole.PETITE_FILLE]: [],
-  [PlayerRole.SORCIERE]: [
-    PlayerStatus.HEALTH_POTION,
-    PlayerStatus.DEATH_POTION,
+  [PlayerRoleEnum.NOT_SELECTED]: [],
+  [PlayerRoleEnum.VILLAGEOIS]: [],
+  [PlayerRoleEnum.LOUP_GAROU]: [
+    PlayerStatusEnum.WOLF_TARGET,
+    PlayerStatusEnum.DEVOURED,
   ],
-  [PlayerRole.VOLEUR]: [],
-  [PlayerRole.VOYANTE]: [],
-  [PlayerRole.JOUEUR_FLUTE]: [PlayerStatus.CHARMED],
-  [PlayerRole.CORBEAU]: [PlayerStatus.RAVEN],
-  [PlayerRole.ENFANT_SAUVAGE]: [PlayerStatus.CHILD_MODEL],
-  [PlayerRole.SALVATEUR]: [PlayerStatus.PROTECTED],
-  [PlayerRole.GRAND_MECHANT_LOUP]: [
-    PlayerStatus.WOLF_TARGET,
-    PlayerStatus.DEVOURED,
+  [PlayerRoleEnum.CHASSEUR]: [],
+  [PlayerRoleEnum.CUPIDON]: [PlayerStatusEnum.LOVER],
+  [PlayerRoleEnum.PETITE_FILLE]: [],
+  [PlayerRoleEnum.SORCIERE]: [
+    PlayerStatusEnum.HEALTH_POTION,
+    PlayerStatusEnum.DEATH_POTION,
   ],
-  [PlayerRole.MONTREUR_OURS]: [],
-  [PlayerRole.RENARD]: [PlayerStatus.NO_POWER],
-  [PlayerRole.CHIEN_LOUP]: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
-  [PlayerRole.SOEUR]: [],
-  [PlayerRole.FRERE]: [],
-  [PlayerRole.LOUP_BLANC]: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
-  [PlayerRole.ANGE]: [],
-  [PlayerRole.ANCIEN]: [PlayerStatus.INJURED],
-  [PlayerRole.IDIOT]: [PlayerStatus.NO_VOTE],
-  [PlayerRole.CHEVALIER]: [PlayerStatus.RUSTY_SWORD],
-  [PlayerRole.BOUC]: [PlayerStatus.NO_VOTE],
-  [PlayerRole.SECTAIRE]: [PlayerStatus.BLUE_TEAM, PlayerStatus.RED_TEAM],
-  [PlayerRole.PERE_LOUPS]: [
-    PlayerStatus.WOLF_TARGET,
-    PlayerStatus.NO_POWER,
-    PlayerStatus.INFECTED,
-    PlayerStatus.DEVOURED,
+  [PlayerRoleEnum.VOLEUR]: [],
+  [PlayerRoleEnum.VOYANTE]: [],
+  [PlayerRoleEnum.JOUEUR_FLUTE]: [PlayerStatusEnum.CHARMED],
+  [PlayerRoleEnum.CORBEAU]: [PlayerStatusEnum.RAVEN],
+  [PlayerRoleEnum.ENFANT_SAUVAGE]: [PlayerStatusEnum.CHILD_MODEL],
+  [PlayerRoleEnum.SALVATEUR]: [PlayerStatusEnum.PROTECTED],
+  [PlayerRoleEnum.GRAND_MECHANT_LOUP]: [
+    PlayerStatusEnum.WOLF_TARGET,
+    PlayerStatusEnum.DEVOURED,
+  ],
+  [PlayerRoleEnum.MONTREUR_OURS]: [],
+  [PlayerRoleEnum.RENARD]: [PlayerStatusEnum.NO_POWER],
+  [PlayerRoleEnum.CHIEN_LOUP]: [
+    PlayerStatusEnum.WOLF_TARGET,
+    PlayerStatusEnum.DEVOURED,
+  ],
+  [PlayerRoleEnum.SOEUR]: [],
+  [PlayerRoleEnum.FRERE]: [],
+  [PlayerRoleEnum.LOUP_BLANC]: [
+    PlayerStatusEnum.WOLF_TARGET,
+    PlayerStatusEnum.DEVOURED,
+  ],
+  [PlayerRoleEnum.ANGE]: [],
+  [PlayerRoleEnum.ANCIEN]: [PlayerStatusEnum.INJURED],
+  [PlayerRoleEnum.IDIOT]: [PlayerStatusEnum.NO_VOTE],
+  [PlayerRoleEnum.CHEVALIER]: [PlayerStatusEnum.RUSTY_SWORD],
+  [PlayerRoleEnum.BOUC]: [PlayerStatusEnum.NO_VOTE],
+  [PlayerRoleEnum.SECTAIRE]: [
+    PlayerStatusEnum.BLUE_TEAM,
+    PlayerStatusEnum.RED_TEAM,
+  ],
+  [PlayerRoleEnum.PERE_LOUPS]: [
+    PlayerStatusEnum.WOLF_TARGET,
+    PlayerStatusEnum.NO_POWER,
+    PlayerStatusEnum.INFECTED,
+    PlayerStatusEnum.DEVOURED,
   ],
 };

@@ -16,9 +16,9 @@
   @for (player of players(); track player.id) {
   <lgmj-player-card
     [player]="player"
-    [displayMode]="playerDisplayMode() === PlayerDisplayModeEnum.EDIT_ROLE && !currentRound.selectablePlayers.includes(player.id) ? PlayerDisplayModeEnum.DEFAULT : playerDisplayMode()"
+    [displayMode]="playerDisplayMode() === 'EDIT_ROLE' && !currentRound.selectablePlayers.includes(player.id) ? 'DEFAULT' : playerDisplayMode()"
     [disabled]="!currentRound.selectablePlayers.includes(player.id)"
-    [checked]="playerDisplayMode() === PlayerDisplayModeEnum.SELECT_MULTI ? selectedPlayers().has(player.id) : selectedPlayer() === player.id"
+    [checked]="playerDisplayMode() === 'SELECT_MULTI' ? selectedPlayers().has(player.id) : selectedPlayer() === player.id"
     [noSelfRole]="true"
     [selectableRoles]="currentRound.selectableRoles || []"
     (checkedChange)="onPlayerChecked(player.id, $event)"

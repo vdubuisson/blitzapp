@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as statusUtils from '@/utils/status.utils';
 import { firstValueFrom } from 'rxjs';
@@ -29,13 +29,13 @@ describe('EnfantSauvageRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should add CHILD_MODEL status to selected player', async () => {
@@ -43,24 +43,24 @@ describe('EnfantSauvageRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.ENFANT_SAUVAGE,
-        card: PlayerRole.ENFANT_SAUVAGE,
+        role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        card: PlayerRoleEnum.ENFANT_SAUVAGE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -77,7 +77,7 @@ describe('EnfantSauvageRoundHandler', () => {
     expect(newPlayers[0]).toBe(expectedPlayer);
     expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
       players[0],
-      PlayerStatus.CHILD_MODEL,
+      PlayerStatusEnum.CHILD_MODEL,
     );
   });
 
@@ -86,24 +86,24 @@ describe('EnfantSauvageRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.ENFANT_SAUVAGE,
-        card: PlayerRole.ENFANT_SAUVAGE,
+        role: PlayerRoleEnum.ENFANT_SAUVAGE,
+        card: PlayerRoleEnum.ENFANT_SAUVAGE,
         statuses: new Set(),
         isDead: false,
       },
@@ -117,7 +117,7 @@ describe('EnfantSauvageRoundHandler', () => {
   it('should return ENFANT_SAUVAGE as role round', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.ENFANT_SAUVAGE);
+    expect(roundConfig.round).toEqual(RoundEnum.ENFANT_SAUVAGE);
   });
 
   it('should return 1 as maxSelectable players', () => {

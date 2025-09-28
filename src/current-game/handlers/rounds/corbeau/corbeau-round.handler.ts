@@ -1,19 +1,19 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class CorbeauRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.CORBEAU, false, false, RoundType.PLAYERS);
+    super(RoundEnum.CORBEAU, false, false, RoundTypeEnum.PLAYERS);
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return players.filter(
-      (player) => player.role !== PlayerRole.CORBEAU && !player.isDead,
+      (player) => player.role !== PlayerRoleEnum.CORBEAU && !player.isDead,
     );
   }
 
@@ -26,6 +26,6 @@ export class CorbeauRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return addStatusToPlayer(player, PlayerStatus.RAVEN);
+    return addStatusToPlayer(player, PlayerStatusEnum.RAVEN);
   }
 }

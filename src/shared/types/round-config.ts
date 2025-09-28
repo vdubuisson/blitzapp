@@ -1,5 +1,5 @@
-import { PlayerRole } from '@/types/player-role';
 import { RoundType } from '@/game-handlers/rounds/round-type';
+import { PlayerRole } from '@/types/player-role';
 import { Round } from '@/types/round';
 
 export type RoundConfig = {

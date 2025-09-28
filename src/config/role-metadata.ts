@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { Round } from '@/types/round';
-import { Victory } from '@/types/victory';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatus, PlayerStatusEnum } from '@/types/player-status';
+import { Round, RoundEnum } from '@/types/round';
+import { Victory, VictoryEnum } from '@/types/victory';
 import { AncienRoleHandler } from '@/game-handlers/roles/ancien/ancien.role-handler';
 import { AngeRoleHandler } from '@/game-handlers/roles/ange/ange.role-handler';
 import { BoucRoleHandler } from '@/game-handlers/roles/bouc/bouc.role-handler';
@@ -41,166 +41,166 @@ export const ROLE_METADATA_CONFIG: Record<
   PlayerRole,
   RoleMetadata | undefined
 > = {
-  [PlayerRole.NOT_SELECTED]: undefined,
-  [PlayerRole.VILLAGEOIS]: {
+  [PlayerRoleEnum.NOT_SELECTED]: undefined,
+  [PlayerRoleEnum.VILLAGEOIS]: {
     handler: VillageoisRoleHandler,
     rounds: [],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.LOUP_GAROU]: {
+  [PlayerRoleEnum.LOUP_GAROU]: {
     handler: LoupGarouRoleHandler,
     rounds: [],
-    statuses: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
-    victories: [Victory.LOUP_GAROU],
+    statuses: [PlayerStatusEnum.WOLF_TARGET, PlayerStatusEnum.DEVOURED],
+    victories: [VictoryEnum.LOUP_GAROU],
   },
-  [PlayerRole.CHASSEUR]: {
+  [PlayerRoleEnum.CHASSEUR]: {
     handler: ChasseurRoleHandler,
-    rounds: [Round.CHASSEUR],
+    rounds: [RoundEnum.CHASSEUR],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.CUPIDON]: {
+  [PlayerRoleEnum.CUPIDON]: {
     handler: CupidonRoleHandler,
-    rounds: [Round.CUPIDON, Round.AMOUREUX],
-    statuses: [PlayerStatus.LOVER],
-    victories: [Victory.AMOUREUX],
+    rounds: [RoundEnum.CUPIDON, RoundEnum.AMOUREUX],
+    statuses: [PlayerStatusEnum.LOVER],
+    victories: [VictoryEnum.AMOUREUX],
   },
-  [PlayerRole.PETITE_FILLE]: {
+  [PlayerRoleEnum.PETITE_FILLE]: {
     handler: PetiteFilleRoleHandler,
     rounds: [],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.SORCIERE]: {
+  [PlayerRoleEnum.SORCIERE]: {
     handler: SorciereRoleHandler,
-    rounds: [Round.SORCIERE_HEALTH, Round.SORCIERE_KILL],
-    statuses: [PlayerStatus.HEALTH_POTION, PlayerStatus.DEATH_POTION],
+    rounds: [RoundEnum.SORCIERE_HEALTH, RoundEnum.SORCIERE_KILL],
+    statuses: [PlayerStatusEnum.HEALTH_POTION, PlayerStatusEnum.DEATH_POTION],
     victories: [],
   },
-  [PlayerRole.VOLEUR]: {
+  [PlayerRoleEnum.VOLEUR]: {
     handler: VoleurRoleHandler,
-    rounds: [Round.VOLEUR],
+    rounds: [RoundEnum.VOLEUR],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.VOYANTE]: {
+  [PlayerRoleEnum.VOYANTE]: {
     handler: VoyanteRoleHandler,
-    rounds: [Round.VOYANTE],
+    rounds: [RoundEnum.VOYANTE],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.JOUEUR_FLUTE]: {
+  [PlayerRoleEnum.JOUEUR_FLUTE]: {
     handler: JoueurFluteRoleHandler,
-    rounds: [Round.JOUEUR_FLUTE, Round.CHARMED],
-    statuses: [PlayerStatus.CHARMED],
-    victories: [Victory.JOUEUR_FLUTE],
+    rounds: [RoundEnum.JOUEUR_FLUTE, RoundEnum.CHARMED],
+    statuses: [PlayerStatusEnum.CHARMED],
+    victories: [VictoryEnum.JOUEUR_FLUTE],
   },
-  [PlayerRole.CORBEAU]: {
+  [PlayerRoleEnum.CORBEAU]: {
     handler: CorbeauRoleHandler,
-    rounds: [Round.CORBEAU],
-    statuses: [PlayerStatus.RAVEN],
+    rounds: [RoundEnum.CORBEAU],
+    statuses: [PlayerStatusEnum.RAVEN],
     victories: [],
   },
-  [PlayerRole.ENFANT_SAUVAGE]: {
+  [PlayerRoleEnum.ENFANT_SAUVAGE]: {
     handler: EnfantSauvageRoleHandler,
-    rounds: [Round.ENFANT_SAUVAGE],
-    statuses: [PlayerStatus.CHILD_MODEL],
+    rounds: [RoundEnum.ENFANT_SAUVAGE],
+    statuses: [PlayerStatusEnum.CHILD_MODEL],
     victories: [],
   },
-  [PlayerRole.SALVATEUR]: {
+  [PlayerRoleEnum.SALVATEUR]: {
     handler: SalvateurRoleHandler,
-    rounds: [Round.SALVATEUR],
-    statuses: [PlayerStatus.PROTECTED],
+    rounds: [RoundEnum.SALVATEUR],
+    statuses: [PlayerStatusEnum.PROTECTED],
     victories: [],
   },
-  [PlayerRole.GRAND_MECHANT_LOUP]: {
+  [PlayerRoleEnum.GRAND_MECHANT_LOUP]: {
     handler: GrandMechantLoupRoleHandler,
-    rounds: [Round.GRAND_MECHANT_LOUP],
-    statuses: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
-    victories: [Victory.LOUP_GAROU],
+    rounds: [RoundEnum.GRAND_MECHANT_LOUP],
+    statuses: [PlayerStatusEnum.WOLF_TARGET, PlayerStatusEnum.DEVOURED],
+    victories: [VictoryEnum.LOUP_GAROU],
   },
-  [PlayerRole.MONTREUR_OURS]: {
+  [PlayerRoleEnum.MONTREUR_OURS]: {
     handler: MontreurOursRoleHandler,
-    rounds: [Round.MONTREUR_OURS],
+    rounds: [RoundEnum.MONTREUR_OURS],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.RENARD]: {
+  [PlayerRoleEnum.RENARD]: {
     handler: RenardRoleHandler,
-    rounds: [Round.RENARD],
-    statuses: [PlayerStatus.NO_POWER],
+    rounds: [RoundEnum.RENARD],
+    statuses: [PlayerStatusEnum.NO_POWER],
     victories: [],
   },
-  [PlayerRole.CHIEN_LOUP]: {
+  [PlayerRoleEnum.CHIEN_LOUP]: {
     handler: ChienLoupRoleHandler,
-    rounds: [Round.CHIEN_LOUP],
-    statuses: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
+    rounds: [RoundEnum.CHIEN_LOUP],
+    statuses: [PlayerStatusEnum.WOLF_TARGET, PlayerStatusEnum.DEVOURED],
     victories: [],
   },
-  [PlayerRole.SOEUR]: {
+  [PlayerRoleEnum.SOEUR]: {
     handler: SoeurRoleHandler,
-    rounds: [Round.SOEURS],
+    rounds: [RoundEnum.SOEURS],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.FRERE]: {
+  [PlayerRoleEnum.FRERE]: {
     handler: FrereRoleHandler,
-    rounds: [Round.FRERES],
+    rounds: [RoundEnum.FRERES],
     statuses: [],
     victories: [],
   },
-  [PlayerRole.LOUP_BLANC]: {
+  [PlayerRoleEnum.LOUP_BLANC]: {
     handler: LoupBlancRoleHandler,
-    rounds: [Round.LOUP_BLANC],
-    statuses: [PlayerStatus.WOLF_TARGET, PlayerStatus.DEVOURED],
-    victories: [Victory.LOUP_BLANC, Victory.LOUP_GAROU],
+    rounds: [RoundEnum.LOUP_BLANC],
+    statuses: [PlayerStatusEnum.WOLF_TARGET, PlayerStatusEnum.DEVOURED],
+    victories: [VictoryEnum.LOUP_BLANC, VictoryEnum.LOUP_GAROU],
   },
-  [PlayerRole.ANGE]: {
+  [PlayerRoleEnum.ANGE]: {
     handler: AngeRoleHandler,
     rounds: [],
     statuses: [],
-    victories: [Victory.ANGE],
+    victories: [VictoryEnum.ANGE],
   },
-  [PlayerRole.ANCIEN]: {
+  [PlayerRoleEnum.ANCIEN]: {
     handler: AncienRoleHandler,
     rounds: [],
-    statuses: [PlayerStatus.INJURED],
+    statuses: [PlayerStatusEnum.INJURED],
     victories: [],
   },
-  [PlayerRole.IDIOT]: {
+  [PlayerRoleEnum.IDIOT]: {
     handler: IdiotRoleHandler,
     rounds: [],
-    statuses: [PlayerStatus.NO_VOTE],
+    statuses: [PlayerStatusEnum.NO_VOTE],
     victories: [],
   },
-  [PlayerRole.CHEVALIER]: {
+  [PlayerRoleEnum.CHEVALIER]: {
     handler: ChevalierRoleHandler,
     rounds: [],
-    statuses: [PlayerStatus.RUSTY_SWORD],
+    statuses: [PlayerStatusEnum.RUSTY_SWORD],
     victories: [],
   },
-  [PlayerRole.BOUC]: {
+  [PlayerRoleEnum.BOUC]: {
     handler: BoucRoleHandler,
-    rounds: [Round.BOUC],
-    statuses: [PlayerStatus.NO_VOTE],
+    rounds: [RoundEnum.BOUC],
+    statuses: [PlayerStatusEnum.NO_VOTE],
     victories: [],
   },
-  [PlayerRole.SECTAIRE]: {
+  [PlayerRoleEnum.SECTAIRE]: {
     handler: SectaireRoleHandler,
-    rounds: [Round.SECTAIRE],
-    statuses: [PlayerStatus.BLUE_TEAM, PlayerStatus.RED_TEAM],
-    victories: [Victory.SECTAIRE],
+    rounds: [RoundEnum.SECTAIRE],
+    statuses: [PlayerStatusEnum.BLUE_TEAM, PlayerStatusEnum.RED_TEAM],
+    victories: [VictoryEnum.SECTAIRE],
   },
-  [PlayerRole.PERE_LOUPS]: {
+  [PlayerRoleEnum.PERE_LOUPS]: {
     handler: PereLoupsRoleHandler,
-    rounds: [Round.PERE_LOUPS],
+    rounds: [RoundEnum.PERE_LOUPS],
     statuses: [
-      PlayerStatus.WOLF_TARGET,
-      PlayerStatus.NO_POWER,
-      PlayerStatus.INFECTED,
-      PlayerStatus.DEVOURED,
+      PlayerStatusEnum.WOLF_TARGET,
+      PlayerStatusEnum.NO_POWER,
+      PlayerStatusEnum.INFECTED,
+      PlayerStatusEnum.DEVOURED,
     ],
-    victories: [Victory.LOUP_GAROU],
+    victories: [VictoryEnum.LOUP_GAROU],
   },
 };

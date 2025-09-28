@@ -1,11 +1,11 @@
+import { PlayerRoleModal } from '@/layout/modal/player-role/player-role-modal';
+import { TextModal } from '@/layout/modal/text/text-modal';
+import { TextModalData } from '@/layout/modal/text/text-modal-data';
+import { PlayerRole } from '@/types/player-role';
 import { Dialog } from '@angular/cdk/dialog';
 import { ComponentType } from '@angular/cdk/portal';
 import { inject, Injectable } from '@angular/core';
 import { first, map, Observable } from 'rxjs';
-import { PlayerRoleModal } from '@/layout/modal/player-role/player-role-modal';
-import { TextModal } from '@/layout/modal/text/text-modal';
-import { PlayerRole } from '@/types/player-role';
-import { TextModalData } from '@/layout/modal/text/text-modal-data';
 
 @Injectable({
   providedIn: 'root',

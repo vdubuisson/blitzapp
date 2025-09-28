@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { DefaultStatusHandler } from '../default/default.status-handler';
 
@@ -12,12 +12,12 @@ export class ChildModelStatusHandler extends DefaultStatusHandler {
   override handleDeath(players: Player[], _: Player): Player[] {
     const newPlayers = [...players];
     const enfantSauvageIndex = newPlayers.findIndex(
-      (player) => player.role === PlayerRole.ENFANT_SAUVAGE,
+      (player) => player.role === PlayerRoleEnum.ENFANT_SAUVAGE,
     );
     if (enfantSauvageIndex !== -1 && !newPlayers[enfantSauvageIndex].isDead) {
       newPlayers[enfantSauvageIndex] = {
         ...newPlayers[enfantSauvageIndex],
-        role: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
       };
     }
     return newPlayers;

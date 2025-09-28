@@ -1,14 +1,14 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { BoucRoleHandler } from './bouc.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { signal } from '@angular/core';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
 import * as statusUtils from '@/utils/status.utils';
 
@@ -29,7 +29,7 @@ describe('BoucRoleHandler', () => {
     });
 
     afterDeathRoundQueue = MockService(AfterDeathRoundQueueStore, {
-      state: signal<Round[]>([Round.VILLAGEOIS]),
+      state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
     });
 
     needCleanAfterBouc = MockService(NeedCleanAfterBoucStore, {
@@ -55,13 +55,13 @@ describe('BoucRoleHandler', () => {
       {
         id: 1,
         name: 'Player 1',
-        role: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
       } as Player,
       {
         id: 2,
         name: 'Player 2',
-        role: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
       } as Player,
     ];
@@ -71,7 +71,7 @@ describe('BoucRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.BOUC);
+    expect(handler.role).toBe(PlayerRoleEnum.BOUC);
   });
 
   describe('prepareNewGame', () => {
@@ -84,7 +84,7 @@ describe('BoucRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.BOUC,
+        RoundEnum.BOUC,
       );
     });
 
@@ -92,7 +92,7 @@ describe('BoucRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.NO_VOTE,
+        PlayerStatusEnum.NO_VOTE,
       );
     });
   });
@@ -105,19 +105,19 @@ describe('BoucRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(afterDeathRoundQueue.state()).toEqual([
-        Round.VILLAGEOIS,
-        Round.BOUC,
+        RoundEnum.VILLAGEOIS,
+        RoundEnum.BOUC,
       ]);
     });
 
     it('should remove BOUC round handler if killed by someone', () => {
-      const deadPlayer = { ...players[0], killedBy: PlayerRole.LOUP_GAROU };
+      const deadPlayer = { ...players[0], killedBy: PlayerRoleEnum.LOUP_GAROU };
 
       const result = handler.handleDeath(players, deadPlayer);
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.BOUC,
+        RoundEnum.BOUC,
       );
     });
   });
@@ -130,17 +130,17 @@ describe('BoucRoleHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.NO_VOTE]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.IDIOT,
-          card: PlayerRole.IDIOT,
-          statuses: new Set([PlayerStatus.NO_VOTE]),
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
           isDead: false,
         },
       ];
@@ -155,17 +155,17 @@ describe('BoucRoleHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.NO_VOTE]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.IDIOT,
-          card: PlayerRole.IDIOT,
-          statuses: new Set([PlayerStatus.NO_VOTE]),
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
           isDead: false,
         },
       ];
@@ -179,7 +179,7 @@ describe('BoucRoleHandler', () => {
       expect(newPlayers).toBe(expectedPlayers);
       expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
         mockPlayers,
-        PlayerStatus.NO_VOTE,
+        PlayerStatusEnum.NO_VOTE,
         [0, 1],
       );
     });
@@ -197,19 +197,19 @@ describe('BoucRoleHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.NO_VOTE]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.IDIOT,
-          card: PlayerRole.IDIOT,
-          statuses: new Set([PlayerStatus.NO_VOTE]),
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.NO_VOTE]),
           isDead: false,
-          killedBy: PlayerRole.VILLAGEOIS,
+          killedBy: PlayerRoleEnum.VILLAGEOIS,
         },
       ];
       const expectedPlayers = [...mockPlayers];
@@ -222,7 +222,7 @@ describe('BoucRoleHandler', () => {
       expect(newPlayers).toBe(expectedPlayers);
       expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
         mockPlayers,
-        PlayerStatus.NO_VOTE,
+        PlayerStatusEnum.NO_VOTE,
         [0],
       );
     });

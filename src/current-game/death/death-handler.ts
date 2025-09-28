@@ -1,16 +1,16 @@
-import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { Round } from '@/types/round';
-import { Player } from '@/shared/types/player';
+import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
 import { Announcer } from '@/current-game/announcements/announcer';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { DeathsToAnnounceStore } from '@/current-game/death/deaths-to-announce/deaths-to-announce-store';
 import { KnownDeathsStore } from '@/current-game/death/known-deaths/known-deaths-store';
+import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { Round } from '@/types/round';
 import { isKilledByInnocents } from '@/utils/roles.utils';
 import { inject, Injectable } from '@angular/core';
 import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
-import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
 
 @Injectable({
   providedIn: 'root',
@@ -53,7 +53,7 @@ export class DeathHandler {
    */
   handleNewDeaths(players: Player[]): Player[] {
     let newPlayers = this.statusHandlersManager
-      .getHandler(PlayerStatus.DEVOURED)
+      .getHandler(PlayerStatusEnum.DEVOURED)
       .triggerAction(players);
 
     let unknownDeadPlayers: Player[];
@@ -76,22 +76,27 @@ export class DeathHandler {
   announceDeaths(): void {
     if (this.deathsToAnnounce().length > 0) {
       const deadByChevalier = this.deathsToAnnounce().find(
-        (player) => player.killedBy === PlayerRole.CHEVALIER,
+        (player) => player.killedBy === PlayerRoleEnum.CHEVALIER,
       );
       if (deadByChevalier !== undefined) {
-        this.announcer.announce(AnnouncementTypes.WOLF_KILLED_BY_CHEVALIER, {
-          playerName: deadByChevalier.name,
-        });
+        this.announcer.announce(
+          AnnouncementTypesEnum.WOLF_KILLED_BY_CHEVALIER,
+          {
+            playerName: deadByChevalier.name,
+          },
+        );
       }
       this.announcer.announceDeaths(this.deathsToAnnounce());
       const deadAncienPlayer = this.deathsToAnnounce().find(
-        (player) => player.role === PlayerRole.ANCIEN,
+        (player) => player.role === PlayerRoleEnum.ANCIEN,
       );
       if (
         deadAncienPlayer !== undefined &&
         isKilledByInnocents(deadAncienPlayer)
       ) {
-        this.announcer.announce(AnnouncementTypes.ANCIEN_KILLED_BY_INNOCENTS);
+        this.announcer.announce(
+          AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
+        );
       }
       this.deathsToAnnounce.set([]);
     }

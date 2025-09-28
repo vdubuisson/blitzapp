@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -13,7 +13,7 @@ import {
 
 export class PereLoupsRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.PERE_LOUPS, false, false, RoundType.PLAYERS);
+    super(RoundEnum.PERE_LOUPS, false, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -25,12 +25,12 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
         let updatedPlayers = [...newPlayers];
         if (selectedPlayerIds.length > 0) {
           const pereLoupsId = updatedPlayers.find(
-            (player) => player.role === PlayerRole.PERE_LOUPS,
+            (player) => player.role === PlayerRoleEnum.PERE_LOUPS,
           )?.id;
           if (pereLoupsId !== undefined) {
             updatedPlayers = addStatusToPlayersById(
               updatedPlayers,
-              PlayerStatus.NO_POWER,
+              PlayerStatusEnum.NO_POWER,
               [pereLoupsId],
             );
           }
@@ -40,11 +40,12 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
           );
           if (
             selectedPlayerIndex > -1 &&
-            updatedPlayers[selectedPlayerIndex].role === PlayerRole.JOUEUR_FLUTE
+            updatedPlayers[selectedPlayerIndex].role ===
+              PlayerRoleEnum.JOUEUR_FLUTE
           ) {
             updatedPlayers[selectedPlayerIndex] = {
               ...updatedPlayers[selectedPlayerIndex],
-              role: PlayerRole.LOUP_GAROU,
+              role: PlayerRoleEnum.LOUP_GAROU,
             };
           }
         }
@@ -56,7 +57,7 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return this.canInfect(players)
       ? players.filter((player) =>
-          player.statuses.has(PlayerStatus.WOLF_TARGET),
+          player.statuses.has(PlayerStatusEnum.WOLF_TARGET),
         )
       : [];
   }
@@ -68,9 +69,9 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
   protected override affectSelectedPlayer(player: Player): Player {
     let updatedPlayer = removeStatusFromPlayer(
       player,
-      PlayerStatus.WOLF_TARGET,
+      PlayerStatusEnum.WOLF_TARGET,
     );
-    updatedPlayer = addStatusToPlayer(updatedPlayer, PlayerStatus.INFECTED);
+    updatedPlayer = addStatusToPlayer(updatedPlayer, PlayerStatusEnum.INFECTED);
     updatedPlayer.killedBy = undefined;
     return updatedPlayer;
   }
@@ -78,8 +79,8 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
   private canInfect(players: Player[]): boolean {
     return !(
       players
-        .find((player) => player.role === PlayerRole.PERE_LOUPS)
-        ?.statuses.has(PlayerStatus.NO_POWER) ?? false
+        .find((player) => player.role === PlayerRoleEnum.PERE_LOUPS)
+        ?.statuses.has(PlayerStatusEnum.NO_POWER) ?? false
     );
   }
 }

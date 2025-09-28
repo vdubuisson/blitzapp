@@ -9,16 +9,20 @@ import { UniqueRoundsPassedStore } from './unique-rounds-passed-store';
 import { Storage } from '@/storage/storage';
 import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 
 describe('UniqueRoundsPassedStore without storage', () => {
   let service: UniqueRoundsPassedStore;
   const mockState = new Set([
-    Round.VILLAGEOIS,
-    Round.LOUP_GAROU,
-    Round.CAPITAINE,
+    RoundEnum.VILLAGEOIS,
+    RoundEnum.LOUP_GAROU,
+    RoundEnum.CAPITAINE,
   ]);
-  const mockStored = [Round.VILLAGEOIS, Round.LOUP_GAROU, Round.CAPITAINE];
+  const mockStored = [
+    RoundEnum.VILLAGEOIS,
+    RoundEnum.LOUP_GAROU,
+    RoundEnum.CAPITAINE,
+  ];
 
   ngMocks.faster();
 
@@ -72,11 +76,15 @@ describe('UniqueRoundsPassedStore with storage init', () => {
   let service: UniqueRoundsPassedStore;
 
   const mockState = new Set([
-    Round.VILLAGEOIS,
-    Round.LOUP_GAROU,
-    Round.CAPITAINE,
+    RoundEnum.VILLAGEOIS,
+    RoundEnum.LOUP_GAROU,
+    RoundEnum.CAPITAINE,
   ]);
-  const mockStored = [Round.VILLAGEOIS, Round.LOUP_GAROU, Round.CAPITAINE];
+  const mockStored = [
+    RoundEnum.VILLAGEOIS,
+    RoundEnum.LOUP_GAROU,
+    RoundEnum.CAPITAINE,
+  ];
 
   ngMocks.faster();
 

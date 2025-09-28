@@ -1,8 +1,8 @@
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { DefaultRoundHandler } from '@/game-handlers/rounds/default/default-round.handler';
 
 export class AmoureuxRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.AMOUREUX, true, false);
+    super(RoundEnum.AMOUREUX, true, false);
   }
 }

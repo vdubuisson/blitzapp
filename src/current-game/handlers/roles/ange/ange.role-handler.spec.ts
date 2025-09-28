@@ -1,11 +1,11 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { AngeRoleHandler } from './ange.role-handler';
 import { TestBed } from '@angular/core/testing';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 import { RoundOrchestrator } from '@/current-game/orchestrator/round-orchestrator';
 
 describe('AngeRoleHandler', () => {
@@ -45,8 +45,8 @@ describe('AngeRoleHandler', () => {
     TestBed.runInInjectionContext(() => (handler = new AngeRoleHandler()));
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -54,7 +54,7 @@ describe('AngeRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.ANGE);
+    expect(handler.role).toBe(PlayerRoleEnum.ANGE);
   });
 
   describe('prepareNewGame', () => {
@@ -73,7 +73,7 @@ describe('AngeRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
-        Victory.ANGE,
+        VictoryEnum.ANGE,
       );
     });
 

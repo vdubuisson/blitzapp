@@ -1,3 +1,16 @@
+import { PLAYER_STATUS_ORDER } from '@/config/player-status-order';
+import { SelectOverlayContent } from '@/layout/select-overlay/select-overlay-content';
+import { SelectOverlayManager } from '@/layout/select-overlay/select-overlay-manager';
+import {
+  PlayerDisplayMode,
+  PlayerDisplayModeEnum,
+} from '@/shared/components/player-card/player-display-mode';
+import { PlayerRoleImagePipe } from '@/shared/pipes/player-role-image/player-role-image-pipe';
+import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
+import { PlayerStatusIconPipe } from '@/shared/pipes/player-status-icon/player-status-icon-pipe';
+import { Player } from '@/shared/types/player';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatus } from '@/types/player-status';
 import { NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -17,16 +30,6 @@ import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faSkull, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { take } from 'rxjs';
-import { PLAYER_STATUS_ORDER } from '@/config/player-status-order';
-import { PlayerDisplayMode } from '@/shared/components/player-card/player-display-mode';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { SelectOverlayContent } from '@/layout/select-overlay/select-overlay-content';
-import { PlayerRoleImagePipe } from '@/shared/pipes/player-role-image/player-role-image-pipe';
-import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
-import { PlayerStatusIconPipe } from '@/shared/pipes/player-status-icon/player-status-icon-pipe';
-import { SelectOverlayManager } from '@/layout/select-overlay/select-overlay-manager';
 
 @Component({
   selector: 'lgmj-player-card',
@@ -46,7 +49,9 @@ import { SelectOverlayManager } from '@/layout/select-overlay/select-overlay-man
 export class PlayerCard {
   readonly player = input.required<Player>();
 
-  readonly displayMode = input<PlayerDisplayMode>(PlayerDisplayMode.DEFAULT);
+  readonly displayMode = input<PlayerDisplayMode>(
+    PlayerDisplayModeEnum.DEFAULT,
+  );
 
   readonly disabled = input(false);
 
@@ -65,8 +70,7 @@ export class PlayerCard {
   private readonly selectOverlayManager = inject(SelectOverlayManager);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly playerDisplayModeEnum = PlayerDisplayMode;
-  protected readonly playerRoleEnum = PlayerRole;
+  protected readonly playerRoleEnum = PlayerRoleEnum;
 
   protected readonly deadIcon = faSkull;
   protected readonly selectIcon = faSortDown;
@@ -75,7 +79,7 @@ export class PlayerCard {
     const sortedRoles = [...this.selectableRoles()];
     if (
       !this.noSelfRole() &&
-      this.player().role !== PlayerRole.NOT_SELECTED &&
+      this.player().role !== PlayerRoleEnum.NOT_SELECTED &&
       !sortedRoles.includes(this.player().role)
     ) {
       sortedRoles.push(this.player().role);
@@ -98,7 +102,7 @@ export class PlayerCard {
 
   protected readonly displayedRole = computed<PlayerRole>(() => {
     if (
-      this.displayMode() === PlayerDisplayMode.EDIT_ROLE &&
+      this.displayMode() === PlayerDisplayModeEnum.EDIT_ROLE &&
       this.selectedRole() !== undefined
     ) {
       return this.selectedRole() as PlayerRole;
@@ -118,7 +122,7 @@ export class PlayerCard {
   protected onCheckboxClick() {
     if (
       this.checked() &&
-      this.displayMode() === PlayerDisplayMode.SELECT_SINGLE
+      this.displayMode() === PlayerDisplayModeEnum.SELECT_SINGLE
     ) {
       this.checked.set(false);
     }

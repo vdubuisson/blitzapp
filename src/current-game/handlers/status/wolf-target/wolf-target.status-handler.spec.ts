@@ -1,8 +1,8 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { MockReset } from 'ng-mocks';
 import { WolfTargetStatusHandler } from './wolf-target.status-handler';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('WolfTargetStatusHandler', () => {
@@ -24,7 +24,7 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          statuses: new Set(PlayerStatus.WOLF_TARGET),
+          statuses: new Set(PlayerStatusEnum.WOLF_TARGET),
         } as Player,
         { id: 2, name: 'Player 2' } as Player,
       ];
@@ -39,17 +39,17 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.WOLF_TARGET]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
           isDead: false,
         },
       ];
@@ -66,7 +66,7 @@ describe('WolfTargetStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
 
@@ -75,17 +75,20 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.WOLF_TARGET, PlayerStatus.PROTECTED]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([
+            PlayerStatusEnum.WOLF_TARGET,
+            PlayerStatusEnum.PROTECTED,
+          ]),
           isDead: false,
         },
       ];
@@ -102,7 +105,7 @@ describe('WolfTargetStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.addStatusToPlayer).not.toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
 
@@ -111,19 +114,22 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.WOLF_TARGET, PlayerStatus.PROTECTED]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([
+            PlayerStatusEnum.WOLF_TARGET,
+            PlayerStatusEnum.PROTECTED,
+          ]),
           isDead: false,
-          killedBy: PlayerRole.LOUP_GAROU,
+          killedBy: PlayerRoleEnum.LOUP_GAROU,
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
@@ -145,17 +151,20 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.PETITE_FILLE,
-          card: PlayerRole.PETITE_FILLE,
-          statuses: new Set([PlayerStatus.WOLF_TARGET, PlayerStatus.PROTECTED]),
+          role: PlayerRoleEnum.PETITE_FILLE,
+          card: PlayerRoleEnum.PETITE_FILLE,
+          statuses: new Set([
+            PlayerStatusEnum.WOLF_TARGET,
+            PlayerStatusEnum.PROTECTED,
+          ]),
           isDead: false,
         },
       ];
@@ -172,7 +181,7 @@ describe('WolfTargetStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
 
@@ -181,17 +190,17 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.ANCIEN,
-          card: PlayerRole.ANCIEN,
-          statuses: new Set([PlayerStatus.WOLF_TARGET]),
+          role: PlayerRoleEnum.ANCIEN,
+          card: PlayerRoleEnum.ANCIEN,
+          statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
           isDead: false,
         },
       ];
@@ -208,11 +217,11 @@ describe('WolfTargetStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.INJURED,
+        PlayerStatusEnum.INJURED,
       );
       expect(statusUtils.addStatusToPlayer).not.toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
 
@@ -221,17 +230,20 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.ANCIEN,
-          card: PlayerRole.ANCIEN,
-          statuses: new Set([PlayerStatus.WOLF_TARGET, PlayerStatus.INJURED]),
+          role: PlayerRoleEnum.ANCIEN,
+          card: PlayerRoleEnum.ANCIEN,
+          statuses: new Set([
+            PlayerStatusEnum.WOLF_TARGET,
+            PlayerStatusEnum.INJURED,
+          ]),
           isDead: false,
         },
       ];
@@ -248,7 +260,7 @@ describe('WolfTargetStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.DEVOURED,
+        PlayerStatusEnum.DEVOURED,
       );
     });
 
@@ -257,17 +269,17 @@ describe('WolfTargetStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.WOLF_TARGET]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.WOLF_TARGET]),
           isDead: false,
         },
       ];
@@ -284,7 +296,7 @@ describe('WolfTargetStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
         expectedPlayer,
-        PlayerStatus.WOLF_TARGET,
+        PlayerStatusEnum.WOLF_TARGET,
       );
     });
   });

@@ -9,11 +9,11 @@ import { BeforeDeathRoundStore } from './before-death-round-store';
 import { Storage } from '@/storage/storage';
 import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 
 describe('BeforeDeathRoundStore without storage', () => {
   let service: BeforeDeathRoundStore;
-  const mockState = Round.VILLAGEOIS;
+  const mockState = RoundEnum.VILLAGEOIS;
 
   ngMocks.faster();
 
@@ -48,7 +48,7 @@ describe('BeforeDeathRoundStore without storage', () => {
   });
 
   it('should store new value to storage with storage key store.beforeDeathRound', () => {
-    service.state.set(Round.LOUP_GAROU);
+    service.state.set(RoundEnum.LOUP_GAROU);
 
     TestBed.tick();
 
@@ -65,7 +65,7 @@ describe('BeforeDeathRoundStore without storage', () => {
 describe('BeforeDeathRoundStore with storage init', () => {
   let service: BeforeDeathRoundStore;
 
-  const mockState = Round.VILLAGEOIS;
+  const mockState = RoundEnum.VILLAGEOIS;
 
   ngMocks.faster();
 

@@ -1,8 +1,8 @@
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
-import { PlayerRole } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
-import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
+import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
+import { Player } from '@/shared/types/player';
+import { PlayerRole } from '@/types/player-role';
 import {
   inject,
   Injectable,

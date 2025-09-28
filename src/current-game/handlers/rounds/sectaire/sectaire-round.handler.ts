@@ -1,6 +1,6 @@
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -8,7 +8,7 @@ import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class SectaireRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.SECTAIRE, true, false, RoundType.PLAYERS);
+    super(RoundEnum.SECTAIRE, true, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -19,7 +19,7 @@ export class SectaireRoundHandler extends DefaultRoundHandler {
       const isSelected = selectedPlayerIds.includes(player.id);
       return addStatusToPlayer(
         player,
-        isSelected ? PlayerStatus.BLUE_TEAM : PlayerStatus.RED_TEAM,
+        isSelected ? PlayerStatusEnum.BLUE_TEAM : PlayerStatusEnum.RED_TEAM,
       );
     });
 

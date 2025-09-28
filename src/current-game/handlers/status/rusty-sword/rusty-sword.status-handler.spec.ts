@@ -1,8 +1,8 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { MockReset } from 'ng-mocks';
 import { RustySwordStatusHandler } from './rusty-sword.status-handler';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('RustySwordStatusHandler', () => {
@@ -24,7 +24,7 @@ describe('RustySwordStatusHandler', () => {
         {
           id: 1,
           name: 'Player 1',
-          statuses: new Set(PlayerStatus.INFECTED),
+          statuses: new Set(PlayerStatusEnum.INFECTED),
         } as Player,
         { id: 2, name: 'Player 2' } as Player,
       ];
@@ -39,17 +39,17 @@ describe('RustySwordStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.CHEVALIER,
-          card: PlayerRole.CHEVALIER,
+          role: PlayerRoleEnum.CHEVALIER,
+          card: PlayerRoleEnum.CHEVALIER,
           statuses: new Set(),
           isDead: true,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
-          statuses: new Set([PlayerStatus.RUSTY_SWORD]),
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
+          statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
           isDead: false,
         },
       ];
@@ -63,7 +63,7 @@ describe('RustySwordStatusHandler', () => {
       expect(newPlayers[1]).toBe(expectedPlayer);
       expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
-        PlayerStatus.RUSTY_SWORD,
+        PlayerStatusEnum.RUSTY_SWORD,
       );
     });
 
@@ -72,17 +72,17 @@ describe('RustySwordStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.CHEVALIER,
-          card: PlayerRole.CHEVALIER,
+          role: PlayerRoleEnum.CHEVALIER,
+          card: PlayerRoleEnum.CHEVALIER,
           statuses: new Set(),
           isDead: true,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
-          statuses: new Set([PlayerStatus.RUSTY_SWORD]),
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
+          statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
           isDead: false,
         },
       ];
@@ -101,17 +101,17 @@ describe('RustySwordStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.CHEVALIER,
-          card: PlayerRole.CHEVALIER,
+          role: PlayerRoleEnum.CHEVALIER,
+          card: PlayerRoleEnum.CHEVALIER,
           statuses: new Set(),
           isDead: true,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
-          statuses: new Set([PlayerStatus.RUSTY_SWORD]),
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
+          statuses: new Set([PlayerStatusEnum.RUSTY_SWORD]),
           isDead: false,
         },
       ];
@@ -122,7 +122,7 @@ describe('RustySwordStatusHandler', () => {
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
-      expect(newPlayers[1].killedBy).toEqual(PlayerRole.CHEVALIER);
+      expect(newPlayers[1].killedBy).toEqual(PlayerRoleEnum.CHEVALIER);
     });
   });
 });

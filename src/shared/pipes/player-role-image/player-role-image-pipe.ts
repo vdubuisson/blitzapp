@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
 import { PlayerRole } from '@/types/player-role';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'playerRoleImage',

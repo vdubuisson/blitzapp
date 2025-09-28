@@ -1,8 +1,8 @@
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 import { VictoryNamePipe } from './victory-name-pipe';
 
 jest.mock('@/texts/victory-names', () => ({
-  VICTORY_NAMES: { [Victory.VILLAGEOIS]: 'Test' },
+  VICTORY_NAMES: { [VictoryEnum.VILLAGEOIS]: 'Test' },
 }));
 
 describe('VictoryNamePipe', () => {
@@ -17,7 +17,7 @@ describe('VictoryNamePipe', () => {
   });
 
   it('should display value for requested enum', () => {
-    const name = pipe.transform(Victory.VILLAGEOIS);
+    const name = pipe.transform(VictoryEnum.VILLAGEOIS);
     expect(name).toEqual('Test');
   });
 });

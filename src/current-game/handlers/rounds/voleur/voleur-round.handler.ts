@@ -1,7 +1,7 @@
 import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
 import { getNotPlayedCards } from '@/utils/cards.utils';
@@ -10,7 +10,7 @@ import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class VoleurRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.VOLEUR, true, false, RoundType.ROLES);
+    super(RoundEnum.VOLEUR, true, false, RoundTypeEnum.ROLES);
   }
 
   override handleAction(
@@ -20,7 +20,7 @@ export class VoleurRoundHandler extends DefaultRoundHandler {
   ): Observable<Player[]> {
     const newPlayers = [...players];
     const voleurIndex = newPlayers.findIndex(
-      (player) => player.card === PlayerRole.VOLEUR,
+      (player) => player.card === PlayerRoleEnum.VOLEUR,
     );
     if (voleurIndex > -1 && selectedRole !== undefined) {
       newPlayers[voleurIndex] = {
@@ -33,7 +33,7 @@ export class VoleurRoundHandler extends DefaultRoundHandler {
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
-    return players.filter((player) => player.role === PlayerRole.VOLEUR);
+    return players.filter((player) => player.role === PlayerRoleEnum.VOLEUR);
   }
 
   protected override getSelectableRoles(
@@ -53,7 +53,9 @@ export class VoleurRoundHandler extends DefaultRoundHandler {
       LOUPS_GAROUS_ROLES.includes(card),
     );
 
-    return mustChange ? notPlayedCards : [...notPlayedCards, PlayerRole.VOLEUR];
+    return mustChange
+      ? notPlayedCards
+      : [...notPlayedCards, PlayerRoleEnum.VOLEUR];
   }
 
   protected override getMaxSelectable(_: Player[]): number {

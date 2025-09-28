@@ -1,12 +1,12 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { SorciereRoleHandler } from './sorciere.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('SorciereRoleHandler', () => {
@@ -40,10 +40,10 @@ describe('SorciereRoleHandler', () => {
       {
         id: 1,
         name: 'Player 1',
-        role: PlayerRole.SORCIERE,
+        role: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
       } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -51,7 +51,7 @@ describe('SorciereRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.SORCIERE);
+    expect(handler.role).toBe(PlayerRoleEnum.SORCIERE);
   });
 
   describe('prepareNewGame', () => {
@@ -66,7 +66,7 @@ describe('SorciereRoleHandler', () => {
       expect(result).toBe(expectedPlayers);
       expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
-        PlayerStatus.HEALTH_POTION,
+        PlayerStatusEnum.HEALTH_POTION,
         [1],
       );
     });
@@ -82,7 +82,7 @@ describe('SorciereRoleHandler', () => {
       expect(result).toBe(expectedPlayers);
       expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
-        PlayerStatus.DEATH_POTION,
+        PlayerStatusEnum.DEATH_POTION,
         [1],
       );
     });
@@ -91,7 +91,7 @@ describe('SorciereRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.SORCIERE_HEALTH,
+        RoundEnum.SORCIERE_HEALTH,
       );
     });
 
@@ -99,7 +99,7 @@ describe('SorciereRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.SORCIERE_KILL,
+        RoundEnum.SORCIERE_KILL,
       );
     });
 
@@ -107,7 +107,7 @@ describe('SorciereRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.HEALTH_POTION,
+        PlayerStatusEnum.HEALTH_POTION,
       );
     });
 
@@ -115,7 +115,7 @@ describe('SorciereRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.DEATH_POTION,
+        PlayerStatusEnum.DEATH_POTION,
       );
     });
   });
@@ -128,7 +128,7 @@ describe('SorciereRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.SORCIERE_HEALTH,
+        RoundEnum.SORCIERE_HEALTH,
       );
     });
 
@@ -139,7 +139,7 @@ describe('SorciereRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.SORCIERE_KILL,
+        RoundEnum.SORCIERE_KILL,
       );
     });
   });

@@ -9,12 +9,12 @@ import { VictoryHandlersStore } from './victory-handlers-store';
 import { Storage } from '@/storage/storage';
 import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 
 describe('VictoryHandlersStore without storage', () => {
   let service: VictoryHandlersStore;
-  const mockState = new Set([Victory.VILLAGEOIS, Victory.LOUP_GAROU]);
-  const mockStored = [Victory.VILLAGEOIS, Victory.LOUP_GAROU];
+  const mockState = new Set([VictoryEnum.VILLAGEOIS, VictoryEnum.LOUP_GAROU]);
+  const mockStored = [VictoryEnum.VILLAGEOIS, VictoryEnum.LOUP_GAROU];
 
   ngMocks.faster();
 
@@ -66,8 +66,8 @@ describe('VictoryHandlersStore without storage', () => {
 describe('RoundHandlersStore with storage init', () => {
   let service: VictoryHandlersStore;
 
-  const mockState = new Set([Victory.VILLAGEOIS, Victory.LOUP_GAROU]);
-  const mockStored = [Victory.VILLAGEOIS, Victory.LOUP_GAROU];
+  const mockState = new Set([VictoryEnum.VILLAGEOIS, VictoryEnum.LOUP_GAROU]);
+  const mockStored = [VictoryEnum.VILLAGEOIS, VictoryEnum.LOUP_GAROU];
 
   ngMocks.faster();
 

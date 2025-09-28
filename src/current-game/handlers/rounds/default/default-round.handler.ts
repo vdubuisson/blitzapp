@@ -1,10 +1,10 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
+import { RoundType, RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
+import { PlayerRole } from '@/shared/types/player-role';
 import { RoundConfig } from '@/shared/types/round-config';
-import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
+import { Round } from '@/types/round';
 import { Observable, of } from 'rxjs';
 
 export class DefaultRoundHandler implements RoundHandler {
@@ -12,7 +12,7 @@ export class DefaultRoundHandler implements RoundHandler {
     private readonly roundRole: Round,
     public readonly isOnlyOnce: boolean,
     public readonly isDuringDay: boolean,
-    public readonly type: RoundType = RoundType.DEFAULT,
+    public readonly type: RoundType = RoundTypeEnum.DEFAULT,
   ) {}
 
   handleAction(

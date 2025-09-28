@@ -1,8 +1,8 @@
-import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import * as statusUtils from '@/utils/status.utils';
@@ -41,13 +41,13 @@ describe('RenardRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return players without change if no selected player', async () => {
@@ -55,24 +55,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -89,24 +89,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -122,24 +122,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -155,24 +155,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -189,24 +189,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -215,7 +215,7 @@ describe('RenardRoundHandler', () => {
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.FOX_SUCCESS,
+      AnnouncementTypesEnum.FOX_SUCCESS,
     );
   });
 
@@ -224,24 +224,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -249,8 +249,8 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
-      role: PlayerRole.LOUP_GAROU,
-      card: PlayerRole.LOUP_GAROU,
+      role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
@@ -266,24 +266,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -291,8 +291,8 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
-      role: PlayerRole.LOUP_GAROU,
-      card: PlayerRole.LOUP_GAROU,
+      role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
@@ -300,7 +300,7 @@ describe('RenardRoundHandler', () => {
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.FOX_SUCCESS,
+      AnnouncementTypesEnum.FOX_SUCCESS,
     );
   });
 
@@ -309,24 +309,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -334,16 +334,16 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
     jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
       id: 0,
       name: 'player0',
-      role: PlayerRole.LOUP_GAROU,
-      card: PlayerRole.LOUP_GAROU,
+      role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
@@ -359,24 +359,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -384,16 +384,16 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
     jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
       id: 0,
       name: 'player0',
-      role: PlayerRole.LOUP_GAROU,
-      card: PlayerRole.LOUP_GAROU,
+      role: PlayerRoleEnum.LOUP_GAROU,
+      card: PlayerRoleEnum.LOUP_GAROU,
       statuses: new Set(),
       isDead: false,
     });
@@ -402,7 +402,7 @@ describe('RenardRoundHandler', () => {
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypes.FOX_SUCCESS,
+      AnnouncementTypesEnum.FOX_SUCCESS,
     );
   });
 
@@ -411,24 +411,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.RENARD,
-        card: PlayerRole.RENARD,
+        role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -436,16 +436,16 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
     jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
       id: 0,
       name: 'player0',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -460,7 +460,7 @@ describe('RenardRoundHandler', () => {
     expect(newPlayers[1]).toBe(expectedPlayer);
     expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
       newPlayers[1],
-      PlayerStatus.NO_POWER,
+      PlayerStatusEnum.NO_POWER,
     );
   });
 
@@ -469,24 +469,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.RENARD,
-        card: PlayerRole.RENARD,
+        role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -494,16 +494,16 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
       id: 2,
       name: 'player2',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
     jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
       id: 0,
       name: 'player0',
-      role: PlayerRole.VILLAGEOIS,
-      card: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
+      card: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
       isDead: false,
     });
@@ -511,7 +511,9 @@ describe('RenardRoundHandler', () => {
     jest.spyOn(announcer, 'announce');
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
-    expect(announcer.announce).toHaveBeenCalledWith(AnnouncementTypes.FOX_FAIL);
+    expect(announcer.announce).toHaveBeenCalledWith(
+      AnnouncementTypesEnum.FOX_FAIL,
+    );
   });
 
   it('should return alive players as selectable players', () => {
@@ -519,24 +521,24 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -550,7 +552,7 @@ describe('RenardRoundHandler', () => {
   it('should return RENARD as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.RENARD);
+    expect(roundConfig.round).toEqual(RoundEnum.RENARD);
   });
 
   it('should return 0 as maxSelectable players if NO_POWER', () => {
@@ -558,9 +560,9 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.RENARD,
-        card: PlayerRole.RENARD,
-        statuses: new Set([PlayerStatus.NO_POWER]),
+        role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
+        statuses: new Set([PlayerStatusEnum.NO_POWER]),
         isDead: false,
       },
     ];
@@ -574,8 +576,8 @@ describe('RenardRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.RENARD,
-        card: PlayerRole.RENARD,
+        role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },

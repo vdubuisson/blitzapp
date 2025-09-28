@@ -9,7 +9,7 @@ import { RoleHandlersManager } from './role-handlers-manager';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { signal } from '@angular/core';
 import { Player } from '@/shared/types/player';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { VillageoisRoleHandler } from '@/game-handlers/roles/villageois/villageois.role-handler';
 import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
 import { RoundHandlersManager } from '../rounds/round-handlers-manager';
@@ -42,7 +42,7 @@ describe('RoleHandlersManager', () => {
 
   it('should clear handlers', () => {
     service['roleHandlers'].set(
-      PlayerRole.VILLAGEOIS,
+      PlayerRoleEnum.VILLAGEOIS,
       {} as unknown as RoleHandler,
     );
     expect(service['roleHandlers'].size).toBe(1);
@@ -54,14 +54,14 @@ describe('RoleHandlersManager', () => {
 
   it('should initialize VILLAGEOIS handler if role present', () => {
     const players: Player[] = [
-      { id: 1, role: PlayerRole.VILLAGEOIS } as Player,
+      { id: 1, role: PlayerRoleEnum.VILLAGEOIS } as Player,
     ];
 
     service.initHandlers(players);
 
-    expect(service['roleHandlers'].get(PlayerRole.VILLAGEOIS)).toBeInstanceOf(
-      VillageoisRoleHandler,
-    );
+    expect(
+      service['roleHandlers'].get(PlayerRoleEnum.VILLAGEOIS),
+    ).toBeInstanceOf(VillageoisRoleHandler);
   });
 
   it('should not initialize VILLAGEOIS handler if role not present', () => {
@@ -69,14 +69,14 @@ describe('RoleHandlersManager', () => {
 
     service.initHandlers(players);
 
-    expect(service['roleHandlers'].has(PlayerRole.VILLAGEOIS)).toBe(false);
+    expect(service['roleHandlers'].has(PlayerRoleEnum.VILLAGEOIS)).toBe(false);
   });
 
   it('should return VILLAGEOIS handler', () => {
     const roleHandler = {} as RoleHandler;
-    service['roleHandlers'].set(PlayerRole.VILLAGEOIS, roleHandler);
+    service['roleHandlers'].set(PlayerRoleEnum.VILLAGEOIS, roleHandler);
 
-    const testHandler = service.getHandler(PlayerRole.VILLAGEOIS);
+    const testHandler = service.getHandler(PlayerRoleEnum.VILLAGEOIS);
     expect(testHandler).toBe(roleHandler);
   });
 

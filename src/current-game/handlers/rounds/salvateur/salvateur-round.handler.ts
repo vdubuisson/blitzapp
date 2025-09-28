@@ -1,6 +1,6 @@
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
@@ -11,7 +11,7 @@ import {
 
 export class SalvateurRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.SALVATEUR, false, false, RoundType.PLAYERS);
+    super(RoundEnum.SALVATEUR, false, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -22,13 +22,13 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
       map((newPlayers) => {
         const oldProtectedIndex = newPlayers.findIndex(
           (player) =>
-            player.statuses.has(PlayerStatus.PROTECTED) &&
+            player.statuses.has(PlayerStatusEnum.PROTECTED) &&
             !selectedPlayerIds.includes(player.id),
         );
         if (oldProtectedIndex > -1) {
           newPlayers[oldProtectedIndex] = removeStatusFromPlayer(
             newPlayers[oldProtectedIndex],
-            PlayerStatus.PROTECTED,
+            PlayerStatusEnum.PROTECTED,
           );
         }
         return newPlayers;
@@ -39,7 +39,7 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return players.filter(
       (player) =>
-        !player.isDead && !player.statuses.has(PlayerStatus.PROTECTED),
+        !player.isDead && !player.statuses.has(PlayerStatusEnum.PROTECTED),
     );
   }
 
@@ -52,6 +52,6 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return addStatusToPlayer(player, PlayerStatus.PROTECTED);
+    return addStatusToPlayer(player, PlayerStatusEnum.PROTECTED);
   }
 }

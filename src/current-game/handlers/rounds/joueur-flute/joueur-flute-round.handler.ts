@@ -1,22 +1,22 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class JoueurFluteRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.JOUEUR_FLUTE, false, false, RoundType.PLAYERS);
+    super(RoundEnum.JOUEUR_FLUTE, false, false, RoundTypeEnum.PLAYERS);
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return players.filter(
       (player) =>
-        player.role !== PlayerRole.JOUEUR_FLUTE &&
+        player.role !== PlayerRoleEnum.JOUEUR_FLUTE &&
         !player.isDead &&
-        !player.statuses.has(PlayerStatus.CHARMED),
+        !player.statuses.has(PlayerStatusEnum.CHARMED),
     );
   }
 
@@ -25,6 +25,6 @@ export class JoueurFluteRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return addStatusToPlayer(player, PlayerStatus.CHARMED);
+    return addStatusToPlayer(player, PlayerStatusEnum.CHARMED);
   }
 }

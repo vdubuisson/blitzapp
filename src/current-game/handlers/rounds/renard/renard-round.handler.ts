@@ -1,8 +1,8 @@
-import { AnnouncementTypes } from '@/current-game/announcements/announcement-types';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { Announcer } from '@/current-game/announcements/announcer';
 import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
@@ -16,7 +16,7 @@ export class RenardRoundHandler extends DefaultRoundHandler {
   private readonly announcer = inject(Announcer);
 
   constructor() {
-    super(Round.RENARD, false, false, RoundType.PLAYERS);
+    super(RoundEnum.RENARD, false, false, RoundTypeEnum.PLAYERS);
   }
 
   override handleAction(
@@ -27,16 +27,16 @@ export class RenardRoundHandler extends DefaultRoundHandler {
 
     if (selectedPlayers.length > 0) {
       if (this.isFoxActionSuccess(players, selectedPlayers[0])) {
-        this.announcer.announce(AnnouncementTypes.FOX_SUCCESS);
+        this.announcer.announce(AnnouncementTypesEnum.FOX_SUCCESS);
       } else {
-        this.announcer.announce(AnnouncementTypes.FOX_FAIL);
+        this.announcer.announce(AnnouncementTypesEnum.FOX_FAIL);
         const renardIndex = newPlayers.findIndex(
-          (player) => player.role === PlayerRole.RENARD,
+          (player) => player.role === PlayerRoleEnum.RENARD,
         );
         if (renardIndex > -1) {
           newPlayers[renardIndex] = addStatusToPlayer(
             newPlayers[renardIndex],
-            PlayerStatus.NO_POWER,
+            PlayerStatusEnum.NO_POWER,
           );
         }
       }
@@ -51,8 +51,8 @@ export class RenardRoundHandler extends DefaultRoundHandler {
 
   protected override getMaxSelectable(players: Player[]): number {
     return players
-      .find((player) => player.role === PlayerRole.RENARD)
-      ?.statuses.has(PlayerStatus.NO_POWER)
+      .find((player) => player.role === PlayerRoleEnum.RENARD)
+      ?.statuses.has(PlayerStatusEnum.NO_POWER)
       ? 0
       : 1;
   }

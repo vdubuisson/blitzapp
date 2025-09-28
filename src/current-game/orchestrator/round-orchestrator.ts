@@ -1,5 +1,5 @@
 import { ROUNDS_ORDER } from '@/config/rounds-order';
-import { Round } from '@/types/round';
+import { Round, RoundEnum } from '@/types/round';
 import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
 import { DeathHandler } from '@/current-game/death/death-handler';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
@@ -76,8 +76,8 @@ export class RoundOrchestrator {
       throw new Error('No next round found');
     }
 
-    if (nextRound === Round.LOUP_BLANC && this.dayCount() % 2 !== 0) {
-      return this.getNextRound(Round.LOUP_BLANC);
+    if (nextRound === RoundEnum.LOUP_BLANC && this.dayCount() % 2 !== 0) {
+      return this.getNextRound(RoundEnum.LOUP_BLANC);
     }
 
     return nextRound;
@@ -107,10 +107,10 @@ export class RoundOrchestrator {
    * Sets the villageois round to be first in the sorted rounds.
    */
   setVillageoisFirst(): void {
-    const sectaireIndex = this.sortedRounds.indexOf(Round.SECTAIRE);
-    const villageoisIndex = this.sortedRounds.indexOf(Round.VILLAGEOIS);
+    const sectaireIndex = this.sortedRounds.indexOf(RoundEnum.SECTAIRE);
+    const villageoisIndex = this.sortedRounds.indexOf(RoundEnum.VILLAGEOIS);
     this.sortedRounds.splice(villageoisIndex, 1);
-    this.sortedRounds.splice(sectaireIndex + 1, 0, Round.VILLAGEOIS);
+    this.sortedRounds.splice(sectaireIndex + 1, 0, RoundEnum.VILLAGEOIS);
   }
 
   resetRoundsOrder(): void {

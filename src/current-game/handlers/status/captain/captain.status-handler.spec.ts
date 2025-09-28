@@ -1,10 +1,10 @@
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CaptainStatusHandler } from './captain.status-handler';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import * as statusUtils from '@/utils/status.utils';
@@ -16,7 +16,7 @@ describe('CaptainStatusHandler', () => {
 
   beforeAll(() => {
     afterDeathRoundQueue = MockService(AfterDeathRoundQueueStore, {
-      state: signal<Round[]>([Round.VILLAGEOIS]),
+      state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
     });
 
     TestBed.configureTestingModule({
@@ -40,17 +40,17 @@ describe('CaptainStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.CAPTAIN]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.CAPTAIN]),
           isDead: true,
         },
       ];
@@ -64,7 +64,7 @@ describe('CaptainStatusHandler', () => {
       expect(newPlayers).not.toBe(mockPlayers);
       expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
         mockPlayers,
-        PlayerStatus.CAPTAIN,
+        PlayerStatusEnum.CAPTAIN,
         [1],
       );
     });
@@ -74,17 +74,17 @@ describe('CaptainStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.VILLAGEOIS,
-          card: PlayerRole.VILLAGEOIS,
-          statuses: new Set([PlayerStatus.CAPTAIN]),
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set([PlayerStatusEnum.CAPTAIN]),
           isDead: true,
         },
       ];
@@ -92,9 +92,9 @@ describe('CaptainStatusHandler', () => {
 
       handler.handleDeath(mockPlayers, mockPlayers[1]);
 
-      expect(afterDeathRoundQueue.state().includes(Round.CAPITAINE)).toEqual(
-        true,
-      );
+      expect(
+        afterDeathRoundQueue.state().includes(RoundEnum.CAPITAINE),
+      ).toEqual(true);
     });
 
     it('should not add CAPITAINE round to after-death rounds if it was IDIOT role', () => {
@@ -102,17 +102,17 @@ describe('CaptainStatusHandler', () => {
         {
           id: 0,
           name: 'player0',
-          role: PlayerRole.LOUP_GAROU,
-          card: PlayerRole.LOUP_GAROU,
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.LOUP_GAROU,
           statuses: new Set(),
           isDead: false,
         },
         {
           id: 1,
           name: 'player1',
-          role: PlayerRole.IDIOT,
-          card: PlayerRole.IDIOT,
-          statuses: new Set([PlayerStatus.CAPTAIN]),
+          role: PlayerRoleEnum.IDIOT,
+          card: PlayerRoleEnum.IDIOT,
+          statuses: new Set([PlayerStatusEnum.CAPTAIN]),
           isDead: true,
         },
       ];
@@ -120,16 +120,16 @@ describe('CaptainStatusHandler', () => {
 
       handler.handleDeath(mockPlayers, mockPlayers[1]);
 
-      expect(afterDeathRoundQueue.state().includes(Round.CAPITAINE)).toEqual(
-        false,
-      );
+      expect(
+        afterDeathRoundQueue.state().includes(RoundEnum.CAPITAINE),
+      ).toEqual(false);
     });
   });
 
   describe('triggerAction', () => {
     it('should return players unchanged', () => {
       const mockPlayers: Player[] = [
-        { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
+        { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       ];
       const result = handler.triggerAction(mockPlayers);
       expect(result).toBe(mockPlayers);

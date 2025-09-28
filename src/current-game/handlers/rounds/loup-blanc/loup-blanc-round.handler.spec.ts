@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { firstValueFrom } from 'rxjs';
 import { LoupBlancRoundHandler } from './loup-blanc-round.handler';
@@ -27,13 +27,13 @@ describe('LoupBlancRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should kill selected player', async () => {
@@ -41,16 +41,16 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_BLANC,
-        card: PlayerRole.LOUP_BLANC,
+        role: PlayerRoleEnum.LOUP_BLANC,
+        card: PlayerRoleEnum.LOUP_BLANC,
         statuses: new Set(),
         isDead: false,
       },
@@ -68,16 +68,16 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_BLANC,
-        card: PlayerRole.LOUP_BLANC,
+        role: PlayerRoleEnum.LOUP_BLANC,
+        card: PlayerRoleEnum.LOUP_BLANC,
         statuses: new Set(),
         isDead: false,
       },
@@ -87,7 +87,7 @@ describe('LoupBlancRoundHandler', () => {
       roundHandler.handleAction(players, [0]),
     );
     expect(newPlayers[0]).not.toBe(players[0]);
-    expect(newPlayers[0].killedBy).toEqual(PlayerRole.LOUP_BLANC);
+    expect(newPlayers[0].killedBy).toEqual(PlayerRoleEnum.LOUP_BLANC);
   });
 
   it('should return alive players as selectable', () => {
@@ -95,8 +95,8 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -112,8 +112,8 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -129,8 +129,8 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.GRAND_MECHANT_LOUP,
-        card: PlayerRole.GRAND_MECHANT_LOUP,
+        role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
+        card: PlayerRoleEnum.GRAND_MECHANT_LOUP,
         statuses: new Set(),
         isDead: false,
       },
@@ -146,8 +146,8 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: true,
       },
@@ -163,8 +163,8 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.LOUP_BLANC,
-        card: PlayerRole.LOUP_BLANC,
+        role: PlayerRoleEnum.LOUP_BLANC,
+        card: PlayerRoleEnum.LOUP_BLANC,
         statuses: new Set(),
         isDead: false,
       },
@@ -180,8 +180,8 @@ describe('LoupBlancRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -195,7 +195,7 @@ describe('LoupBlancRoundHandler', () => {
   it('should return LOUP_BLANC as role round', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.LOUP_BLANC);
+    expect(roundConfig.round).toEqual(RoundEnum.LOUP_BLANC);
   });
 
   it('should return 1 as maxSelectable players', () => {

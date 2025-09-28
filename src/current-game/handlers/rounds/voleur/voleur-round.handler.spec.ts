@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
 import { firstValueFrom } from 'rxjs';
@@ -33,7 +33,7 @@ describe('VoleurRoundHandler', () => {
   });
 
   it('should be ROLES type', () => {
-    expect(roundHandler.type).toEqual(RoundType.ROLES);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.ROLES);
   });
 
   it('should return ROLES type', () => {
@@ -44,7 +44,7 @@ describe('VoleurRoundHandler', () => {
       playersNumber: 0,
     });
 
-    expect(roundConfig.type).toEqual(RoundType.ROLES);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.ROLES);
   });
 
   it('should set selected role to VOLEUR', async () => {
@@ -52,26 +52,26 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
     const newPlayers = await firstValueFrom(
-      roundHandler.handleAction(players, [], PlayerRole.CUPIDON),
+      roundHandler.handleAction(players, [], PlayerRoleEnum.CUPIDON),
     );
-    expect(newPlayers[0].role).toBe(PlayerRole.CUPIDON);
-    expect(newPlayers[0].card).toBe(PlayerRole.CUPIDON);
+    expect(newPlayers[0].role).toBe(PlayerRoleEnum.CUPIDON);
+    expect(newPlayers[0].card).toBe(PlayerRoleEnum.CUPIDON);
   });
 
   it('should return not played roles as selectable roles', () => {
@@ -79,10 +79,10 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 0,
       selectedRoles: new Set([
-        PlayerRole.VOYANTE,
-        PlayerRole.CORBEAU,
-        PlayerRole.JOUEUR_FLUTE,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.VOYANTE,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.JOUEUR_FLUTE,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -90,16 +90,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -107,12 +107,12 @@ describe('VoleurRoundHandler', () => {
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.VOYANTE)).toBe(
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOYANTE)).toBe(
       true,
     );
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.JOUEUR_FLUTE)).toBe(
-      true,
-    );
+    expect(
+      roundConfig.selectableRoles?.includes(PlayerRoleEnum.JOUEUR_FLUTE),
+    ).toBe(true);
   });
 
   it('should not return played roles as selectable roles', () => {
@@ -120,10 +120,10 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 0,
       selectedRoles: new Set([
-        PlayerRole.VOYANTE,
-        PlayerRole.CORBEAU,
-        PlayerRole.JOUEUR_FLUTE,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.VOYANTE,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.JOUEUR_FLUTE,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -131,16 +131,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -148,7 +148,7 @@ describe('VoleurRoundHandler', () => {
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.CORBEAU)).toBe(
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.CORBEAU)).toBe(
       false,
     );
   });
@@ -158,10 +158,10 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 0,
       selectedRoles: new Set([
-        PlayerRole.VOYANTE,
-        PlayerRole.CORBEAU,
-        PlayerRole.JOUEUR_FLUTE,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.VOYANTE,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.JOUEUR_FLUTE,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -169,16 +169,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -186,7 +186,9 @@ describe('VoleurRoundHandler', () => {
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.VOLEUR)).toBe(true);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(
+      true,
+    );
   });
 
   it('should not return VOLEUR as selectable roles if only loup-garou', () => {
@@ -194,9 +196,9 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 1,
       selectedRoles: new Set([
-        PlayerRole.LOUP_BLANC,
-        PlayerRole.CORBEAU,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.LOUP_BLANC,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -204,16 +206,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -221,7 +223,7 @@ describe('VoleurRoundHandler', () => {
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.VOLEUR)).toBe(
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(
       false,
     );
   });
@@ -231,9 +233,9 @@ describe('VoleurRoundHandler', () => {
       villageois: 1,
       loupGarou: 0,
       selectedRoles: new Set([
-        PlayerRole.VOYANTE,
-        PlayerRole.CORBEAU,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.VOYANTE,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -241,16 +243,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -260,7 +262,7 @@ describe('VoleurRoundHandler', () => {
 
     expect(
       roundConfig.selectableRoles?.filter(
-        (role) => role === PlayerRole.VILLAGEOIS,
+        (role) => role === PlayerRoleEnum.VILLAGEOIS,
       ).length,
     ).toBe(1);
   });
@@ -270,9 +272,9 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 1,
       selectedRoles: new Set([
-        PlayerRole.VOYANTE,
-        PlayerRole.CORBEAU,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.VOYANTE,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -280,16 +282,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -299,7 +301,7 @@ describe('VoleurRoundHandler', () => {
 
     expect(
       roundConfig.selectableRoles?.filter(
-        (role) => role === PlayerRole.LOUP_GAROU,
+        (role) => role === PlayerRoleEnum.LOUP_GAROU,
       ).length,
     ).toBe(1);
   });
@@ -309,9 +311,9 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 0,
       selectedRoles: new Set([
-        PlayerRole.SOEUR,
-        PlayerRole.CORBEAU,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.SOEUR,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 2,
     };
@@ -319,16 +321,16 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -336,7 +338,9 @@ describe('VoleurRoundHandler', () => {
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.SOEUR)).toBe(true);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.SOEUR)).toBe(
+      true,
+    );
   });
 
   it('should return missing FRERE as selectable roles', () => {
@@ -344,9 +348,9 @@ describe('VoleurRoundHandler', () => {
       villageois: 0,
       loupGarou: 0,
       selectedRoles: new Set([
-        PlayerRole.FRERE,
-        PlayerRole.CORBEAU,
-        PlayerRole.VOLEUR,
+        PlayerRoleEnum.FRERE,
+        PlayerRoleEnum.CORBEAU,
+        PlayerRoleEnum.VOLEUR,
       ]),
       playersNumber: 3,
     };
@@ -354,24 +358,24 @@ describe('VoleurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOLEUR,
-        card: PlayerRole.VOLEUR,
+        role: PlayerRoleEnum.VOLEUR,
+        card: PlayerRoleEnum.VOLEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.FRERE,
-        card: PlayerRole.FRERE,
+        role: PlayerRoleEnum.FRERE,
+        card: PlayerRoleEnum.FRERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -379,7 +383,9 @@ describe('VoleurRoundHandler', () => {
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
-    expect(roundConfig.selectableRoles?.includes(PlayerRole.FRERE)).toBe(true);
+    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.FRERE)).toBe(
+      true,
+    );
   });
 
   it('should return VOLEUR as round role', () => {
@@ -390,7 +396,7 @@ describe('VoleurRoundHandler', () => {
       playersNumber: 0,
     });
 
-    expect(roundConfig.round).toEqual(Round.VOLEUR);
+    expect(roundConfig.round).toEqual(RoundEnum.VOLEUR);
   });
 
   it('should return 1 as maxSelectable players', () => {

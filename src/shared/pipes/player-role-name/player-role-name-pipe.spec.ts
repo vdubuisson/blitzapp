@@ -1,8 +1,8 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerRoleNamePipe } from './player-role-name-pipe';
 
 jest.mock('@/texts/role-names', () => ({
-  ROLE_NAMES: { [PlayerRole.VILLAGEOIS]: 'Test' },
+  ROLE_NAMES: { [PlayerRoleEnum.VILLAGEOIS]: 'Test' },
 }));
 
 describe('PlayerRoleNamePipe', () => {
@@ -17,7 +17,7 @@ describe('PlayerRoleNamePipe', () => {
   });
 
   it('should display value for requested role', () => {
-    const name = pipe.transform(PlayerRole.VILLAGEOIS);
+    const name = pipe.transform(PlayerRoleEnum.VILLAGEOIS);
     expect(name).toEqual('Test');
   });
 });

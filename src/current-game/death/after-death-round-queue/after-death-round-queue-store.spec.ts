@@ -9,11 +9,11 @@ import { AfterDeathRoundQueueStore } from './after-death-round-queue-store';
 import { Storage } from '@/storage/storage';
 import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 
 describe('AfterDeathRoundQueueStore without storage', () => {
   let service: AfterDeathRoundQueueStore;
-  const mockState = [Round.CHASSEUR];
+  const mockState = [RoundEnum.CHASSEUR];
 
   ngMocks.faster();
 
@@ -66,7 +66,7 @@ describe('AfterDeathRoundQueueStore without storage', () => {
 describe('AfterDeathRoundQueueStore with storage init', () => {
   let service: AfterDeathRoundQueueStore;
 
-  const mockState = [Round.CHASSEUR];
+  const mockState = [RoundEnum.CHASSEUR];
 
   ngMocks.faster();
 

@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { ModalManager } from '@/layout/modal/modal-manager';
 import { TestBed } from '@angular/core/testing';
@@ -40,13 +40,13 @@ describe('VoyanteRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return players without change', async () => {
@@ -54,16 +54,16 @@ describe('VoyanteRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -80,16 +80,16 @@ describe('VoyanteRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.CHIEN_LOUP,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.CHIEN_LOUP,
         statuses: new Set(),
         isDead: false,
       },
@@ -97,7 +97,7 @@ describe('VoyanteRoundHandler', () => {
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(modalManager.showPlayerCard).toHaveBeenCalledWith(
-      PlayerRole.CHIEN_LOUP,
+      PlayerRoleEnum.CHIEN_LOUP,
     );
   });
 
@@ -106,24 +106,24 @@ describe('VoyanteRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.VOYANTE,
-        card: PlayerRole.VOYANTE,
+        role: PlayerRoleEnum.VOYANTE,
+        card: PlayerRoleEnum.VOYANTE,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
@@ -137,7 +137,7 @@ describe('VoyanteRoundHandler', () => {
   it('should return VOYANTE as round role', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.VOYANTE);
+    expect(roundConfig.round).toEqual(RoundEnum.VOYANTE);
   });
 
   it('should return 1 as maxSelectable players', () => {

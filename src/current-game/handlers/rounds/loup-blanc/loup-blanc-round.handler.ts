@@ -1,20 +1,20 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { isLoupGarou } from '@/utils/roles.utils';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class LoupBlancRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.LOUP_BLANC, false, false, RoundType.PLAYERS);
+    super(RoundEnum.LOUP_BLANC, false, false, RoundTypeEnum.PLAYERS);
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
     return players.filter(
       (player) =>
         isLoupGarou(player) &&
-        player.role !== PlayerRole.LOUP_BLANC &&
+        player.role !== PlayerRoleEnum.LOUP_BLANC &&
         !player.isDead,
     );
   }
@@ -27,7 +27,7 @@ export class LoupBlancRoundHandler extends DefaultRoundHandler {
     return {
       ...player,
       isDead: true,
-      killedBy: PlayerRole.LOUP_BLANC,
+      killedBy: PlayerRoleEnum.LOUP_BLANC,
     };
   }
 }

@@ -1,5 +1,5 @@
 import { CardList } from '@/shared/types/card-list';
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import {
   getNotPlayedRoles,
@@ -7,16 +7,16 @@ import {
   isLoupGarou,
   removePowersFromInnocents,
 } from './roles.utils';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
 
 describe('getNotPlayedRoles', () => {
   it('should return not played cards', () => {
     const cardList: CardList = {
       selectedRoles: new Set([
-        PlayerRole.CUPIDON,
-        PlayerRole.VOYANTE,
-        PlayerRole.SOEUR,
+        PlayerRoleEnum.CUPIDON,
+        PlayerRoleEnum.VOYANTE,
+        PlayerRoleEnum.SOEUR,
       ]),
       loupGarou: 1,
       villageois: 1,
@@ -27,53 +27,56 @@ describe('getNotPlayedRoles', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.SOEUR,
-        card: PlayerRole.SOEUR,
+        role: PlayerRoleEnum.SOEUR,
+        card: PlayerRoleEnum.SOEUR,
         statuses: new Set(),
         isDead: false,
       },
     ];
 
     const notPlayedRoles = getNotPlayedRoles(players, cardList);
-    expect(notPlayedRoles).toEqual([PlayerRole.CUPIDON, PlayerRole.VOYANTE]);
+    expect(notPlayedRoles).toEqual([
+      PlayerRoleEnum.CUPIDON,
+      PlayerRoleEnum.VOYANTE,
+    ]);
   });
 });
 
 describe('isLoupGarou', () => {
   it('should return true if player has loup-garou role', () => {
     const result = isLoupGarou({
-      role: PlayerRole.GRAND_MECHANT_LOUP,
+      role: PlayerRoleEnum.GRAND_MECHANT_LOUP,
     } as Player);
     expect(result).toEqual(true);
   });
 
   it('should return false if player has INFECTED status', () => {
     const result = isLoupGarou({
-      role: PlayerRole.VILLAGEOIS,
-      statuses: new Set([PlayerStatus.INFECTED]),
+      role: PlayerRoleEnum.VILLAGEOIS,
+      statuses: new Set([PlayerStatusEnum.INFECTED]),
     } as Player);
     expect(result).toEqual(true);
   });
 
   it('should return false if player has not INFECTED status', () => {
     const result = isLoupGarou({
-      role: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.VILLAGEOIS,
       statuses: new Set(),
     } as Player);
     expect(result).toEqual(false);
@@ -83,32 +86,32 @@ describe('isLoupGarou', () => {
 describe('isKilledByInnocents', () => {
   it('should return true if player is killed by CHASSEUR', () => {
     const result = isKilledByInnocents({
-      role: PlayerRole.ANCIEN,
-      killedBy: PlayerRole.CHASSEUR,
+      role: PlayerRoleEnum.ANCIEN,
+      killedBy: PlayerRoleEnum.CHASSEUR,
     } as Player);
     expect(result).toEqual(true);
   });
 
   it('should return true if player is killed by SORCIERE', () => {
     const result = isKilledByInnocents({
-      role: PlayerRole.ANCIEN,
-      killedBy: PlayerRole.SORCIERE,
+      role: PlayerRoleEnum.ANCIEN,
+      killedBy: PlayerRoleEnum.SORCIERE,
     } as Player);
     expect(result).toEqual(true);
   });
 
   it('should return true if player is killed by VILLAGEOIS', () => {
     const result = isKilledByInnocents({
-      role: PlayerRole.ANCIEN,
-      killedBy: PlayerRole.VILLAGEOIS,
+      role: PlayerRoleEnum.ANCIEN,
+      killedBy: PlayerRoleEnum.VILLAGEOIS,
     } as Player);
     expect(result).toEqual(true);
   });
 
   it('should return false if player is killed by LOUP_GAROU', () => {
     const result = isKilledByInnocents({
-      role: PlayerRole.ANCIEN,
-      killedBy: PlayerRole.LOUP_GAROU,
+      role: PlayerRoleEnum.ANCIEN,
+      killedBy: PlayerRoleEnum.LOUP_GAROU,
     } as Player);
     expect(result).toEqual(false);
   });
@@ -120,11 +123,11 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([
-          PlayerStatus.HEALTH_POTION,
-          PlayerStatus.DEATH_POTION,
+          PlayerStatusEnum.HEALTH_POTION,
+          PlayerStatusEnum.DEATH_POTION,
         ]),
         isDead: false,
       },
@@ -139,7 +142,7 @@ describe('removePowersFromInnocents', () => {
     expect(newPlayers[0]).toBe(expectedPlayer);
     expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
       mockPlayers[0],
-      PlayerStatus.HEALTH_POTION,
+      PlayerStatusEnum.HEALTH_POTION,
     );
   });
 
@@ -148,11 +151,11 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set([
-          PlayerStatus.HEALTH_POTION,
-          PlayerStatus.DEATH_POTION,
+          PlayerStatusEnum.HEALTH_POTION,
+          PlayerStatusEnum.DEATH_POTION,
         ]),
         isDead: false,
       },
@@ -169,7 +172,7 @@ describe('removePowersFromInnocents', () => {
     expect(newPlayers[0]).toBe(secondReturn);
     expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
       firstReturn,
-      PlayerStatus.DEATH_POTION,
+      PlayerStatusEnum.DEATH_POTION,
     );
   });
 
@@ -178,8 +181,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.CHASSEUR,
-        card: PlayerRole.CHASSEUR,
+        role: PlayerRoleEnum.CHASSEUR,
+        card: PlayerRoleEnum.CHASSEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -187,7 +190,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -196,8 +199,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.CUPIDON,
-        card: PlayerRole.CUPIDON,
+        role: PlayerRoleEnum.CUPIDON,
+        card: PlayerRoleEnum.CUPIDON,
         statuses: new Set(),
         isDead: false,
       },
@@ -205,7 +208,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -214,8 +217,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.PETITE_FILLE,
-        card: PlayerRole.PETITE_FILLE,
+        role: PlayerRoleEnum.PETITE_FILLE,
+        card: PlayerRoleEnum.PETITE_FILLE,
         statuses: new Set(),
         isDead: false,
       },
@@ -223,7 +226,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -232,8 +235,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SORCIERE,
-        card: PlayerRole.SORCIERE,
+        role: PlayerRoleEnum.SORCIERE,
+        card: PlayerRoleEnum.SORCIERE,
         statuses: new Set(),
         isDead: false,
       },
@@ -241,7 +244,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -250,8 +253,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VOYANTE,
-        card: PlayerRole.VOYANTE,
+        role: PlayerRoleEnum.VOYANTE,
+        card: PlayerRoleEnum.VOYANTE,
         statuses: new Set(),
         isDead: false,
       },
@@ -259,7 +262,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -268,8 +271,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.CORBEAU,
-        card: PlayerRole.CORBEAU,
+        role: PlayerRoleEnum.CORBEAU,
+        card: PlayerRoleEnum.CORBEAU,
         statuses: new Set(),
         isDead: false,
       },
@@ -277,7 +280,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -286,8 +289,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.SALVATEUR,
-        card: PlayerRole.SALVATEUR,
+        role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -295,7 +298,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -304,8 +307,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.MONTREUR_OURS,
-        card: PlayerRole.MONTREUR_OURS,
+        role: PlayerRoleEnum.MONTREUR_OURS,
+        card: PlayerRoleEnum.MONTREUR_OURS,
         statuses: new Set(),
         isDead: false,
       },
@@ -313,7 +316,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 
@@ -322,8 +325,8 @@ describe('removePowersFromInnocents', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.RENARD,
-        card: PlayerRole.RENARD,
+        role: PlayerRoleEnum.RENARD,
+        card: PlayerRoleEnum.RENARD,
         statuses: new Set(),
         isDead: false,
       },
@@ -331,7 +334,7 @@ describe('removePowersFromInnocents', () => {
 
     const newPlayers = removePowersFromInnocents(mockPlayers);
 
-    expect(newPlayers[0].role).toEqual(PlayerRole.VILLAGEOIS);
+    expect(newPlayers[0].role).toEqual(PlayerRoleEnum.VILLAGEOIS);
     expect(newPlayers[0]).not.toBe(mockPlayers[0]);
   });
 });

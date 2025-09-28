@@ -1,5 +1,5 @@
-import { PlayerStatus } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
+import { PlayerStatus } from '@/types/player-status';
 
 export const addStatusToPlayer = (
   player: Player,

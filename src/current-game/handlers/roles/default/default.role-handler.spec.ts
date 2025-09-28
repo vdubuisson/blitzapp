@@ -1,8 +1,8 @@
 import { RoleMetadata } from '@/config/role-metadata';
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { Round } from '@/types/round';
-import { Victory } from '@/types/victory';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
+import { VictoryEnum } from '@/types/victory';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
@@ -19,7 +19,7 @@ describe('DefaultRoleHandler', () => {
 
   let players: Player[];
   let testRounds: Round[];
-  let testStatuses: PlayerStatus[];
+  let testStatuses: PlayerStatusEnum[];
   let testVictories: Victory[];
 
   ngMocks.faster();
@@ -36,13 +36,13 @@ describe('DefaultRoleHandler', () => {
       createVictoryHandler: jest.fn(),
     });
 
-    testRounds = [Round.LOUP_GAROU, Round.VOYANTE];
+    testRounds = [RoundEnum.LOUP_GAROU, RoundEnum.VOYANTE];
     testStatuses = [
-      PlayerStatus.WOLF_TARGET,
-      PlayerStatus.DEVOURED,
-      PlayerStatus.NO_POWER,
+      PlayerStatusEnum.WOLF_TARGET,
+      PlayerStatusEnum.DEVOURED,
+      PlayerStatusEnum.NO_POWER,
     ];
-    testVictories = [Victory.VILLAGEOIS];
+    testVictories = [VictoryEnum.VILLAGEOIS];
 
     TestBed.configureTestingModule({
       providers: [
@@ -54,7 +54,7 @@ describe('DefaultRoleHandler', () => {
 
     TestBed.runInInjectionContext(
       () =>
-        (handler = new DefaultRoleHandler(PlayerRole.VILLAGEOIS, {
+        (handler = new DefaultRoleHandler(PlayerRoleEnum.VILLAGEOIS, {
           rounds: testRounds,
           statuses: testStatuses,
           victories: testVictories,
@@ -62,8 +62,8 @@ describe('DefaultRoleHandler', () => {
     );
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -71,7 +71,7 @@ describe('DefaultRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.VILLAGEOIS);
+    expect(handler.role).toBe(PlayerRoleEnum.VILLAGEOIS);
   });
 
   describe('prepareNewGame', () => {

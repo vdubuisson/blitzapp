@@ -1,14 +1,14 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { JoueurFluteRoleHandler } from './joueur-flute.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
-import { Victory } from '@/types/victory';
+import { VictoryEnum } from '@/types/victory';
 
 describe('JoueurFluteRoleHandler', () => {
   let handler: JoueurFluteRoleHandler;
@@ -47,8 +47,8 @@ describe('JoueurFluteRoleHandler', () => {
     );
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -56,7 +56,7 @@ describe('JoueurFluteRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.JOUEUR_FLUTE);
+    expect(handler.role).toBe(PlayerRoleEnum.JOUEUR_FLUTE);
   });
 
   describe('prepareNewGame', () => {
@@ -69,7 +69,7 @@ describe('JoueurFluteRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.JOUEUR_FLUTE,
+        RoundEnum.JOUEUR_FLUTE,
       );
     });
 
@@ -77,7 +77,7 @@ describe('JoueurFluteRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.CHARMED,
+        RoundEnum.CHARMED,
       );
     });
 
@@ -85,7 +85,7 @@ describe('JoueurFluteRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.CHARMED,
+        PlayerStatusEnum.CHARMED,
       );
     });
 
@@ -93,7 +93,7 @@ describe('JoueurFluteRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
-        Victory.JOUEUR_FLUTE,
+        VictoryEnum.JOUEUR_FLUTE,
       );
     });
   });
@@ -106,7 +106,7 @@ describe('JoueurFluteRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.JOUEUR_FLUTE,
+        RoundEnum.JOUEUR_FLUTE,
       );
     });
 
@@ -116,7 +116,7 @@ describe('JoueurFluteRoleHandler', () => {
       handler.handleDeath(players, deadPlayer);
 
       expect(victoryHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Victory.JOUEUR_FLUTE,
+        VictoryEnum.JOUEUR_FLUTE,
       );
     });
   });

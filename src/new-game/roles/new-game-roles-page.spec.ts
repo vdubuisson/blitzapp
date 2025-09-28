@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { CardList } from '@/shared/types/card-list';
 import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
 import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
@@ -68,7 +68,7 @@ describe('NewGameRolesPage', () => {
 
   it('should get roles from service', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -99,7 +99,7 @@ describe('NewGameRolesPage', () => {
 
   it('should init playersCount', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -114,16 +114,16 @@ describe('NewGameRolesPage', () => {
   it('should add role on check', () => {
     createComponent();
 
-    expect(page['selectedRoles']().has(PlayerRole.CHASSEUR)).toBeFalsy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
 
-    page['onRoleCheckChange'](PlayerRole.CHASSEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
-    expect(page['selectedRoles']().has(PlayerRole.CHASSEUR)).toBeTruthy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
   });
 
   it('should increment playersCount by 1 on simple role check', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -134,14 +134,14 @@ describe('NewGameRolesPage', () => {
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](PlayerRole.CHASSEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 1);
   });
 
   it('should increment playersCount by 2 on SOEUR role check', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -152,14 +152,14 @@ describe('NewGameRolesPage', () => {
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](PlayerRole.SOEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
   });
 
   it('should increment playersCount by 3 on FRERE role check', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -170,7 +170,7 @@ describe('NewGameRolesPage', () => {
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](PlayerRole.FRERE);
+    page['onRoleCheckChange'](PlayerRoleEnum.FRERE);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber + 3);
   });
@@ -178,18 +178,18 @@ describe('NewGameRolesPage', () => {
   it('should delete role on uncheck', () => {
     createComponent();
 
-    page['rolesSelection'].setSelection(PlayerRole.CHASSEUR);
+    page['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
 
-    expect(page['selectedRoles']().has(PlayerRole.CHASSEUR)).toBeTruthy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
 
-    page['onRoleCheckChange'](PlayerRole.CHASSEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
-    expect(page['selectedRoles']().has(PlayerRole.CHASSEUR)).toBeFalsy();
+    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
   });
 
   it('should decrement playersCount by 1 on simple role uncheck', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -200,14 +200,14 @@ describe('NewGameRolesPage', () => {
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](PlayerRole.SORCIERE);
+    page['onRoleCheckChange'](PlayerRoleEnum.SORCIERE);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 1);
   });
 
   it('should decrement playersCount by 2 on SOEUR role uncheck', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SOEUR]),
+      selectedRoles: new Set([PlayerRoleEnum.SOEUR]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 4,
@@ -218,14 +218,14 @@ describe('NewGameRolesPage', () => {
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](PlayerRole.SOEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
   });
 
   it('should decrement playersCount by 3 on FRERE role uncheck', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.FRERE]),
+      selectedRoles: new Set([PlayerRoleEnum.FRERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 5,
@@ -236,7 +236,7 @@ describe('NewGameRolesPage', () => {
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber);
 
-    page['onRoleCheckChange'](PlayerRole.FRERE);
+    page['onRoleCheckChange'](PlayerRoleEnum.FRERE);
 
     expect(page['playersCount']()).toEqual(mockCards.playersNumber - 3);
   });
@@ -244,7 +244,7 @@ describe('NewGameRolesPage', () => {
   it('should clear selected roles on deselect', () => {
     createComponent();
 
-    page['rolesSelection'].setSelection(PlayerRole.CHASSEUR);
+    page['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
 
     expect(page['selectedRoles']().size).toEqual(1);
 
@@ -255,7 +255,7 @@ describe('NewGameRolesPage', () => {
 
   it('should reset form on deselect', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -279,7 +279,7 @@ describe('NewGameRolesPage', () => {
 
   it('should reset playersCount on deselect', async () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -308,7 +308,10 @@ describe('NewGameRolesPage', () => {
 
     createComponent();
 
-    const selectedRoles = new Set([PlayerRole.CHASSEUR, PlayerRole.CUPIDON]);
+    const selectedRoles = new Set([
+      PlayerRoleEnum.CHASSEUR,
+      PlayerRoleEnum.CUPIDON,
+    ]);
 
     page['rolesSelection'].setSelection(...selectedRoles);
 
@@ -340,7 +343,7 @@ describe('NewGameRolesPage', () => {
 
   it('should increment playersCount on villageois form increase', async () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -360,7 +363,7 @@ describe('NewGameRolesPage', () => {
 
   it('should increment playersCount on loupGarou form increase', async () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 3,
@@ -380,7 +383,7 @@ describe('NewGameRolesPage', () => {
 
   it('should decrement playersCount on villageois form decrease', async () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 3,
       loupGarou: 1,
       playersNumber: 5,
@@ -400,7 +403,7 @@ describe('NewGameRolesPage', () => {
 
   it('should decrement playersCount on loupGarou form decrease', async () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.SORCIERE]),
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
       villageois: 1,
       loupGarou: 3,
       playersNumber: 5,
@@ -429,7 +432,7 @@ describe('NewGameRolesPage', () => {
 
     createComponent();
 
-    page['onRoleCheckChange'](PlayerRole.VOLEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(
       mockCards.villageois + 2,
@@ -438,7 +441,7 @@ describe('NewGameRolesPage', () => {
 
   it('should decrement villageois count by 2 on VOLEUR uncheck', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.VOLEUR]),
+      selectedRoles: new Set([PlayerRoleEnum.VOLEUR]),
       villageois: 3,
       loupGarou: 1,
       playersNumber: 3,
@@ -447,7 +450,7 @@ describe('NewGameRolesPage', () => {
 
     createComponent();
 
-    page['onRoleCheckChange'](PlayerRole.VOLEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(
       mockCards.villageois - 2,
@@ -456,7 +459,7 @@ describe('NewGameRolesPage', () => {
 
   it('should decrement villageois count to 0 on VOLEUR uncheck if less than 2', () => {
     const mockCards = {
-      selectedRoles: new Set([PlayerRole.VOLEUR]),
+      selectedRoles: new Set([PlayerRoleEnum.VOLEUR]),
       villageois: 1,
       loupGarou: 1,
       playersNumber: 2,
@@ -465,7 +468,7 @@ describe('NewGameRolesPage', () => {
 
     createComponent();
 
-    page['onRoleCheckChange'](PlayerRole.VOLEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     expect(page['roleCountForm'].get('villageois')?.value).toEqual(0);
   });
@@ -481,7 +484,7 @@ describe('NewGameRolesPage', () => {
 
     createComponent();
 
-    page['onRoleCheckChange'](PlayerRole.VOLEUR);
+    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
     await fixture.whenStable();
 

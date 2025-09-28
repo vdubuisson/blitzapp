@@ -1,4 +1,4 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { AngeVictoryHandler } from './ange-victory.handler';
 
@@ -14,8 +14,8 @@ describe('AngeVictoryHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANGE,
-        card: PlayerRole.ANGE,
+        role: PlayerRoleEnum.ANGE,
+        card: PlayerRoleEnum.ANGE,
         statuses: new Set(),
         isDead: true,
       },
@@ -29,8 +29,8 @@ describe('AngeVictoryHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANGE,
-        card: PlayerRole.ANGE,
+        role: PlayerRoleEnum.ANGE,
+        card: PlayerRoleEnum.ANGE,
         statuses: new Set(),
         isDead: false,
       },
@@ -44,8 +44,8 @@ describe('AngeVictoryHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.ANGE,
-        card: PlayerRole.ANGE,
+        role: PlayerRoleEnum.ANGE,
+        card: PlayerRoleEnum.ANGE,
         statuses: new Set(),
         isDead: true,
       },

@@ -1,6 +1,6 @@
 import { ROLE_STATUSES } from '@/config/role-statuses';
 import { STATUS_HANDLERS } from '@/config/status-handlers';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatus, PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import {
@@ -39,7 +39,7 @@ export class StatusHandlersManager {
    * @param players - Players present in the game.
    */
   initHandlers(players: Player[]): void {
-    this.createStatusHandler(PlayerStatus.CAPTAIN);
+    this.createStatusHandler(PlayerStatusEnum.CAPTAIN);
 
     players.forEach((player) => {
       ROLE_STATUSES[player.role]?.forEach((status) =>

@@ -1,12 +1,12 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { EnfantSauvageRoleHandler } from './enfant-sauvage.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerStatusEnum } from '@/types/player-status';
 
 describe('EnfantSauvageRoleHandler', () => {
   let handler: EnfantSauvageRoleHandler;
@@ -38,8 +38,8 @@ describe('EnfantSauvageRoleHandler', () => {
     );
 
     players = [
-      { id: 1, name: 'Player 1', role: PlayerRole.VILLAGEOIS } as Player,
-      { id: 2, name: 'Player 2', role: PlayerRole.LOUP_GAROU } as Player,
+      { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
+      { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
   });
 
@@ -47,7 +47,7 @@ describe('EnfantSauvageRoleHandler', () => {
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
-    expect(handler.role).toBe(PlayerRole.ENFANT_SAUVAGE);
+    expect(handler.role).toBe(PlayerRoleEnum.ENFANT_SAUVAGE);
   });
 
   describe('prepareNewGame', () => {
@@ -60,7 +60,7 @@ describe('EnfantSauvageRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
-        Round.ENFANT_SAUVAGE,
+        RoundEnum.ENFANT_SAUVAGE,
       );
     });
 
@@ -68,7 +68,7 @@ describe('EnfantSauvageRoleHandler', () => {
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
-        PlayerStatus.CHILD_MODEL,
+        PlayerStatusEnum.CHILD_MODEL,
       );
     });
   });
@@ -81,7 +81,7 @@ describe('EnfantSauvageRoleHandler', () => {
 
       expect(result).toBe(players);
       expect(roundHandlersManager.removeHandler).toHaveBeenCalledWith(
-        Round.ENFANT_SAUVAGE,
+        RoundEnum.ENFANT_SAUVAGE,
       );
     });
   });

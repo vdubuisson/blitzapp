@@ -1,7 +1,7 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import * as statusUtils from '@/utils/status.utils';
 import { firstValueFrom } from 'rxjs';
@@ -29,13 +29,13 @@ describe('SalvateurRoundHandler', () => {
   });
 
   it('should be PLAYERS type', () => {
-    expect(roundHandler.type).toEqual(RoundType.PLAYERS);
+    expect(roundHandler.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should return PLAYERS type', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.type).toEqual(RoundType.PLAYERS);
+    expect(roundConfig.type).toEqual(RoundTypeEnum.PLAYERS);
   });
 
   it('should move PROTECTED status to selected player', async () => {
@@ -43,24 +43,24 @@ describe('SalvateurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.PROTECTED]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.PROTECTED]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SALVATEUR,
-        card: PlayerRole.SALVATEUR,
+        role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 2,
         name: 'player2',
-        role: PlayerRole.LOUP_GAROU,
-        card: PlayerRole.LOUP_GAROU,
+        role: PlayerRoleEnum.LOUP_GAROU,
+        card: PlayerRoleEnum.LOUP_GAROU,
         statuses: new Set(),
         isDead: false,
       },
@@ -81,12 +81,12 @@ describe('SalvateurRoundHandler', () => {
     expect(newPlayers[0]).toBe(expectedRemovedPlayer);
     expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[0],
-      PlayerStatus.PROTECTED,
+      PlayerStatusEnum.PROTECTED,
     );
     expect(newPlayers[2]).toBe(expectedAddedPlayer);
     expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
       players[2],
-      PlayerStatus.PROTECTED,
+      PlayerStatusEnum.PROTECTED,
     );
   });
 
@@ -95,16 +95,16 @@ describe('SalvateurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SALVATEUR,
-        card: PlayerRole.SALVATEUR,
+        role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -120,16 +120,16 @@ describe('SalvateurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
         statuses: new Set(),
         isDead: true,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SALVATEUR,
-        card: PlayerRole.SALVATEUR,
+        role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -145,16 +145,16 @@ describe('SalvateurRoundHandler', () => {
       {
         id: 0,
         name: 'player0',
-        role: PlayerRole.VILLAGEOIS,
-        card: PlayerRole.VILLAGEOIS,
-        statuses: new Set([PlayerStatus.PROTECTED]),
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set([PlayerStatusEnum.PROTECTED]),
         isDead: false,
       },
       {
         id: 1,
         name: 'player1',
-        role: PlayerRole.SALVATEUR,
-        card: PlayerRole.SALVATEUR,
+        role: PlayerRoleEnum.SALVATEUR,
+        card: PlayerRoleEnum.SALVATEUR,
         statuses: new Set(),
         isDead: false,
       },
@@ -168,7 +168,7 @@ describe('SalvateurRoundHandler', () => {
   it('should return SALVATEUR as role round', () => {
     const roundConfig = roundHandler.getRoundConfig([]);
 
-    expect(roundConfig.round).toEqual(Round.SALVATEUR);
+    expect(roundConfig.round).toEqual(RoundEnum.SALVATEUR);
   });
 
   it('should return 1 as maxSelectable players', () => {

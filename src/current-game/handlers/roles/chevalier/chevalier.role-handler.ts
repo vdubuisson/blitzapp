@@ -1,5 +1,5 @@
-import { PlayerRole } from '@/types/player-role';
-import { PlayerStatus } from '@/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { findLeftNeighbor } from '@/utils/neighbor.utils';
 import { DefaultRoleHandler } from '../default/default.role-handler';
@@ -8,22 +8,25 @@ import { addStatusToPlayersById } from '@/utils/status.utils';
 
 export class ChevalierRoleHandler extends DefaultRoleHandler {
   constructor() {
-    super(PlayerRole.CHEVALIER, ROLE_METADATA_CONFIG[PlayerRole.CHEVALIER]!);
+    super(
+      PlayerRoleEnum.CHEVALIER,
+      ROLE_METADATA_CONFIG[PlayerRoleEnum.CHEVALIER]!,
+    );
   }
 
   override handleDeath(players: Player[], deadPlayer: Player): Player[] {
     let playerToAddStatusId: number | undefined;
-    if (deadPlayer.killedBy === PlayerRole.GRAND_MECHANT_LOUP) {
+    if (deadPlayer.killedBy === PlayerRoleEnum.GRAND_MECHANT_LOUP) {
       playerToAddStatusId = players.find(
-        (player) => player.role === PlayerRole.GRAND_MECHANT_LOUP,
+        (player) => player.role === PlayerRoleEnum.GRAND_MECHANT_LOUP,
       )?.id;
-    } else if (deadPlayer.killedBy === PlayerRole.LOUP_GAROU) {
+    } else if (deadPlayer.killedBy === PlayerRoleEnum.LOUP_GAROU) {
       const chevalierIndex = players.indexOf(deadPlayer);
       playerToAddStatusId = findLeftNeighbor(players, chevalierIndex, true)?.id;
     }
 
     if (playerToAddStatusId !== undefined) {
-      return addStatusToPlayersById(players, PlayerStatus.RUSTY_SWORD, [
+      return addStatusToPlayersById(players, PlayerStatusEnum.RUSTY_SWORD, [
         playerToAddStatusId,
       ]);
     }
@@ -34,11 +37,11 @@ export class ChevalierRoleHandler extends DefaultRoleHandler {
   override cleanStatusesAfterDay(players: Player[]): Player[] {
     if (
       players.some(
-        (player) => player.role === PlayerRole.CHEVALIER && player.isDead,
+        (player) => player.role === PlayerRoleEnum.CHEVALIER && player.isDead,
       )
     ) {
       return this.statusHandlersManager
-        .getHandler(PlayerStatus.RUSTY_SWORD)
+        .getHandler(PlayerStatusEnum.RUSTY_SWORD)
         .triggerAction(players);
     }
     return players;

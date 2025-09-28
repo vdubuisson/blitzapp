@@ -1,6 +1,6 @@
-import { PlayerRole } from '@/types/player-role';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { DefaultRoleHandler } from '../default/default.role-handler';
-import { Round } from '@/types/round';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { inject } from '@angular/core';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
@@ -11,11 +11,14 @@ export class ChasseurRoleHandler extends DefaultRoleHandler {
     .state;
 
   constructor() {
-    super(PlayerRole.CHASSEUR, ROLE_METADATA_CONFIG[PlayerRole.CHASSEUR]!);
+    super(
+      PlayerRoleEnum.CHASSEUR,
+      ROLE_METADATA_CONFIG[PlayerRoleEnum.CHASSEUR]!,
+    );
   }
 
   override handleDeath(players: Player[], _: Player): Player[] {
-    this.afterDeathRoundQueue.update((queue) => [Round.CHASSEUR, ...queue]);
+    this.afterDeathRoundQueue.update((queue) => [RoundEnum.CHASSEUR, ...queue]);
     return players;
   }
 }

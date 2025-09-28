@@ -1,12 +1,12 @@
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
 import { ROLE_ROUNDS } from '@/config/role-rounds';
 import { ROUND_HANDLERS } from '@/config/round-handlers';
-import { PlayerRole } from '@/types/player-role';
-import { Round } from '@/types/round';
+import { DefaultRoundHandlersStore } from '@/game-handlers/rounds/default-round-handlers-store';
 import { DefaultRoundHandler } from '@/game-handlers/rounds/default/default-round.handler';
 import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
-import { DefaultRoundHandlersStore } from '@/game-handlers/rounds/default-round-handlers-store';
 import { RoundHandlersStore } from '@/game-handlers/rounds/round-handlers-store';
+import { PlayerRole } from '@/types/player-role';
+import { Round, RoundEnum } from '@/types/round';
 import {
   inject,
   Injectable,
@@ -39,9 +39,9 @@ export class RoundHandlersManager {
    * Initializes the round handlers always required for a game.
    */
   initRequiredHandlers(): void {
-    this.createRoundHandler(Round.VILLAGEOIS);
-    this.createRoundHandler(Round.LOUP_GAROU);
-    this.createRoundHandler(Round.CAPITAINE);
+    this.createRoundHandler(RoundEnum.VILLAGEOIS);
+    this.createRoundHandler(RoundEnum.LOUP_GAROU);
+    this.createRoundHandler(RoundEnum.CAPITAINE);
   }
 
   /**

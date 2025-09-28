@@ -1,13 +1,13 @@
-import { PlayerRole } from '@/types/player-role';
-import { RoundType } from '@/game-handlers/rounds/round-type';
-import { Round } from '@/types/round';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class ChienLoupRoundHandler extends DefaultRoundHandler {
   constructor() {
-    super(Round.CHIEN_LOUP, true, false, RoundType.ROLES);
+    super(RoundEnum.CHIEN_LOUP, true, false, RoundTypeEnum.ROLES);
   }
 
   override handleAction(
@@ -18,7 +18,7 @@ export class ChienLoupRoundHandler extends DefaultRoundHandler {
     const newPlayers = [...players];
 
     const chienLoupIndex = newPlayers.findIndex(
-      (player) => player.role === PlayerRole.CHIEN_LOUP,
+      (player) => player.role === PlayerRoleEnum.CHIEN_LOUP,
     );
     if (chienLoupIndex > -1 && selectedRole !== undefined) {
       const newChienLoup = {
@@ -32,11 +32,13 @@ export class ChienLoupRoundHandler extends DefaultRoundHandler {
   }
 
   protected override getSelectablePlayers(players: Player[]): Player[] {
-    return players.filter((player) => player.role === PlayerRole.CHIEN_LOUP);
+    return players.filter(
+      (player) => player.role === PlayerRoleEnum.CHIEN_LOUP,
+    );
   }
 
   protected override getSelectableRoles(): PlayerRole[] {
-    return [PlayerRole.VILLAGEOIS, PlayerRole.LOUP_GAROU];
+    return [PlayerRoleEnum.VILLAGEOIS, PlayerRoleEnum.LOUP_GAROU];
   }
 
   protected override getMaxSelectable(_: Player[]): number {

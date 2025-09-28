@@ -1,6 +1,6 @@
 import { VICTORIES_PRIORITY } from '@/config/victories-priority';
 import { VICTORY_HANDLERS } from '@/config/victory-handlers';
-import { Victory } from '@/types/victory';
+import { Victory, VictoryEnum } from '@/types/victory';
 import { Player } from '@/shared/types/player';
 import { VictoryHandlersStore } from '@/game-handlers/victories/victory-handlers-store';
 import { inject, Injectable } from '@angular/core';
@@ -28,8 +28,8 @@ export class VictoryHandlersManager {
    * @param roles - Player roles present in the game.
    */
   initRequiredHandlers(): void {
-    this.createVictoryHandler(Victory.NONE);
-    this.createVictoryHandler(Victory.VILLAGEOIS);
+    this.createVictoryHandler(VictoryEnum.NONE);
+    this.createVictoryHandler(VictoryEnum.VILLAGEOIS);
   }
 
   /**
@@ -53,10 +53,10 @@ export class VictoryHandlersManager {
     isFirstDayOrNight: boolean,
   ): Victory | undefined {
     let resultVictory: Victory | undefined;
-    for (const victoryEnum of this.victoryPriorities) {
-      const victoryHandler = this.victoryHandlers.get(victoryEnum);
+    for (const victory of this.victoryPriorities) {
+      const victoryHandler = this.victoryHandlers.get(victory);
       if (victoryHandler?.isVictorious(players, isFirstDayOrNight)) {
-        resultVictory = victoryEnum;
+        resultVictory = victory;
         break;
       }
     }
