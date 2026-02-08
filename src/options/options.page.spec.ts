@@ -1,36 +1,30 @@
+import { ModalManager } from '@/layout/modal/modal-manager';
 import { Storage } from '@/storage/storage';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  byTestId,
+  createComponentFactory,
+  Spectator,
+} from '@ngneat/spectator/jest';
 import { of } from 'rxjs';
 import OptionsPage from './options.page';
 
 describe('OptionsPage', () => {
-  let page: OptionsPage;
-
-  beforeAll(() => MockBuilder(OptionsPage).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(Storage, () => ({
-      clear: jest.fn().mockReturnValue(of(undefined)),
-    }));
+  let spectator: Spectator<OptionsPage>;
+  const createComponent = createComponentFactory({
+    component: OptionsPage,
+    mocks: [Storage, ModalManager],
   });
 
-  beforeAll(() => {
-    page = MockRender(OptionsPage).point.componentInstance;
+  beforeEach(() => {
+    spectator = createComponent();
   });
 
   it('should clear storage', () => {
-    const storage = ngMocks.get(Storage);
+    const storage = spectator.inject(Storage);
+    storage.clear.mockReturnValue(of(undefined));
 
-    page['clear']();
+    spectator.click(byTestId('clear-button'));
 
     expect(storage.clear).toHaveBeenCalled();
   });
-
-  afterAll(MockReset);
 });

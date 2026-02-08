@@ -1,3 +1,4 @@
+import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,7 +18,6 @@ import {
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { filter, map, mergeMap } from 'rxjs';
-import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
 
 @Component({
   selector: 'lgmj-header',

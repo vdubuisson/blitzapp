@@ -1,95 +1,74 @@
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { AfterDeathRoundQueueStore } from './after-death-round-queue-store';
 import { Storage } from '@/storage/storage';
-import { of } from 'rxjs';
-import { TestBed } from '@angular/core/testing';
 import { RoundEnum } from '@/types/round';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
+import { of } from 'rxjs';
+import { AfterDeathRoundQueueStore } from './after-death-round-queue-store';
 
-describe('AfterDeathRoundQueueStore without storage', () => {
-  let service: AfterDeathRoundQueueStore;
-  const mockState = [RoundEnum.CHASSEUR];
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(AfterDeathRoundQueueStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
-          set: jest.fn(),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () =>
-      (service = MockRender(AfterDeathRoundQueueStore).point.componentInstance),
-  );
-
-  it('should init state with default value', () => {
-    expect(service.state()).toEqual([]);
-  });
-
-  it('should store new value to storage', () => {
-    service.state.set(mockState);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
-  });
-
-  it('should store new value to storage with storage key store.afterDeathRoundQueue', () => {
-    service.state.set([]);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.afterDeathRoundQueue',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('AfterDeathRoundQueueStore with storage init', () => {
-  let service: AfterDeathRoundQueueStore;
+describe('AfterDeathRoundQueueStore', () => {
+  let spectator: SpectatorService<AfterDeathRoundQueueStore>;
 
   const mockState = [RoundEnum.CHASSEUR];
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(AfterDeathRoundQueueStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockState),
-        }) as Partial<Storage>,
-    );
+  const createService = createServiceFactory({
+    service: AfterDeathRoundQueueStore,
   });
 
-  beforeAll(
-    () =>
-      (service = MockRender(AfterDeathRoundQueueStore).point.componentInstance),
-  );
+  describe('without storage', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(null)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
 
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
+    it('should init state with default value', () => {
+      expect(spectator.service.state()).toEqual([]);
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set(mockState);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
+    });
+
+    it('should store new value to storage with storage key store.afterDeathRoundQueue', () => {
+      spectator.service.state.set([]);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.afterDeathRoundQueue',
+        expect.anything(),
+      );
+    });
   });
 
-  afterAll(MockReset);
+  describe('with storage init', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(mockState)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
+
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
+  });
 });

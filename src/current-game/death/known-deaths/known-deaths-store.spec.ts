@@ -1,99 +1,77 @@
 import { Storage } from '@/storage/storage';
-import { TestBed } from '@angular/core/testing';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
 import { of } from 'rxjs';
 import { KnownDeathsStore } from './known-deaths-store';
 
-describe('KnownDeathsStore without storage', () => {
-  let service: KnownDeathsStore;
-  const mockState = new Set<number>([1, 2, 3]);
-
-  const mockStateStored = [1, 2, 3];
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(KnownDeathsStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
-          set: jest.fn(),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () => (service = MockRender(KnownDeathsStore).point.componentInstance),
-  );
-
-  it('should init state with default value', () => {
-    expect(service.state()).toEqual(new Set());
-  });
-
-  it('should store new value to storage', () => {
-    service.state.set(mockState);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      expect.anything(),
-      mockStateStored,
-    );
-  });
-
-  it('should store new value to storage with storage key store.knownDeaths', () => {
-    service.state.set(new Set(mockState));
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.knownDeaths',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('KnownDeathsStore with storage init', () => {
-  let service: KnownDeathsStore;
+describe('KnownDeathsStore', () => {
+  let spectator: SpectatorService<KnownDeathsStore>;
 
   const mockState = new Set<number>([1, 2, 3]);
-
   const mockStateStored = [1, 2, 3];
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(KnownDeathsStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockStateStored),
-        }) as Partial<Storage>,
-    );
+  const createService = createServiceFactory({
+    service: KnownDeathsStore,
   });
 
-  beforeAll(
-    () => (service = MockRender(KnownDeathsStore).point.componentInstance),
-  );
+  describe('without storage', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(null)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
 
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
+    it('should init state with default value', () => {
+      expect(spectator.service.state()).toEqual(new Set());
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set(mockState);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        expect.anything(),
+        mockStateStored,
+      );
+    });
+
+    it('should store new value to storage with storage key store.knownDeaths', () => {
+      spectator.service.state.set(new Set(mockState));
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.knownDeaths',
+        expect.anything(),
+      );
+    });
   });
 
-  afterAll(MockReset);
+  describe('with storage init', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(mockStateStored)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
+
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
+  });
 });

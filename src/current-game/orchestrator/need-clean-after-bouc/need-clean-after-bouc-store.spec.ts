@@ -1,94 +1,73 @@
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { NeedCleanAfterBoucStore } from './need-clean-after-bouc-store';
 import { Storage } from '@/storage/storage';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
 import { of } from 'rxjs';
-import { TestBed } from '@angular/core/testing';
+import { NeedCleanAfterBoucStore } from './need-clean-after-bouc-store';
 
-describe('NeedCleanAfterBoucStore without storage', () => {
-  let service: NeedCleanAfterBoucStore;
-  const mockState = true;
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(NeedCleanAfterBoucStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
-          set: jest.fn(),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () =>
-      (service = MockRender(NeedCleanAfterBoucStore).point.componentInstance),
-  );
-
-  it('should init state with default value false', () => {
-    expect(service.state()).toEqual(false);
-  });
-
-  it('should store new value to storage', () => {
-    service.state.set(mockState);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
-  });
-
-  it('should store new value to storage with storage key store.needCleanAfterBouc', () => {
-    service.state.set(false);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.needCleanAfterBouc',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('NeedCleanAfterBoucStore with storage init', () => {
-  let service: NeedCleanAfterBoucStore;
+describe('NeedCleanAfterBoucStore', () => {
+  let spectator: SpectatorService<NeedCleanAfterBoucStore>;
 
   const mockState = true;
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(NeedCleanAfterBoucStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockState),
-        }) as Partial<Storage>,
-    );
+  const createService = createServiceFactory({
+    service: NeedCleanAfterBoucStore,
   });
 
-  beforeAll(
-    () =>
-      (service = MockRender(NeedCleanAfterBoucStore).point.componentInstance),
-  );
+  describe('without storage', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(null)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
 
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
+    it('should init state with default value false', () => {
+      expect(spectator.service.state()).toEqual(false);
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set(mockState);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
+    });
+
+    it('should store new value to storage with storage key store.needCleanAfterBouc', () => {
+      spectator.service.state.set(false);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.needCleanAfterBouc',
+        expect.anything(),
+      );
+    });
   });
 
-  afterAll(MockReset);
+  describe('with storage init', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(mockState)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
+
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
+  });
 });

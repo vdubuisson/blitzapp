@@ -1,26 +1,30 @@
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { Announcer } from '@/current-game/announcements/announcer';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { TestBed } from '@angular/core/testing';
-import { MockService } from 'ng-mocks';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 import { firstValueFrom } from 'rxjs';
 import { VillageoisRoundHandler } from './villageois-round.handler';
-import { Announcer } from '@/current-game/announcements/announcer';
 
 describe('VillageoisRoundHandler', () => {
   let roundHandler: VillageoisRoundHandler;
-  let announcer: Announcer;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    announcer = MockService(Announcer);
-    TestBed.configureTestingModule({
-      providers: [{ provide: Announcer, useValue: announcer }],
-    });
-    TestBed.runInInjectionContext(
-      () => (roundHandler = new VillageoisRoundHandler()),
+  const createContext = createInjectionContextFactory({
+    mocks: [Announcer],
+  });
+
+  beforeEach(() => {
+    spectator = createContext();
+
+    roundHandler = spectator.runInInjectionContext(
+      () => new VillageoisRoundHandler(),
     );
   });
 
@@ -225,7 +229,7 @@ describe('VillageoisRoundHandler', () => {
       },
     ];
 
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, [0]));
     expect(announcer.announce).toHaveBeenCalledWith(

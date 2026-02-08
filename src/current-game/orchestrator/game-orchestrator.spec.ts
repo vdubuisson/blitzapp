@@ -1,45 +1,45 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { PlayerStatusEnum } from '@/types/player-status';
+import { DeathHandler } from '@/current-game/death/death-handler';
+import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
+import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
-import { VictoryEnum } from '@/types/victory';
 import { Player } from '@/shared/types/player';
 import { RoundConfig } from '@/shared/types/round-config';
-import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
-import { DeathHandler } from '@/current-game/death/death-handler';
-import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
+import { VictoryEnum } from '@/types/victory';
 import { Router } from '@angular/router';
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
 import { Observable, of } from 'rxjs';
 
-import { CardList } from '@/shared/types/card-list';
-import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
-import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { CurrentRoundConfigStore } from '@/current-game/orchestrator/current-round-config/current-round-config-store';
 import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
-import { signal } from '@angular/core';
+import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
 import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
+import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
+import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
+import { CardList } from '@/shared/types/card-list';
+import { signal, WritableSignal } from '@angular/core';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+  SpyObject,
+} from '@ngneat/spectator/jest';
+import { DayCountStore } from './day-count/day-count-store';
 import { GameOrchestrator } from './game-orchestrator';
 import { RoundOrchestrator } from './round-orchestrator';
-import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
-import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
+
+import * as rolesUtils from '@/utils/roles.utils';
 
 class MockRoleHandler implements RoleHandler {
   role = PlayerRoleEnum.VILLAGEOIS;
 
-  prepareNewGame = jest.fn().mockImplementation((players: Player[]) => players);
-  handleDeath = jest.fn().mockImplementation((players: Player[]) => players);
-  cleanStatusesAfterDay = jest
-    .fn()
-    .mockImplementation((players: Player[]) => players);
+  prepareNewGame = jest.fn((players: Player[]) => players);
+  handleDeath = jest.fn((players: Player[]) => players);
+  cleanStatusesAfterDay = jest.fn((players: Player[]) => players);
 }
 
 class MockRoundHandler implements RoundHandler {
@@ -57,166 +57,79 @@ class MockRoundHandler implements RoundHandler {
 }
 
 class MockStatusHandler implements StatusHandler {
-  handleDeath(players: Player[]): Player[] {
+  handleDeath = jest.fn((players: Player[]): Player[] => {
     return players;
-  }
+  });
 
-  triggerAction(players: Player[]): Player[] {
+  triggerAction = jest.fn((players: Player[]): Player[] => {
     return players;
-  }
+  });
 }
 
-describe('GameOrchestrator on victory', () => {
-  let service: GameOrchestrator;
-  let mockCurrentRoundConfig: RoundConfig;
+describe('GameOrchestrator', () => {
+  let spectator: SpectatorService<GameOrchestrator>;
 
-  ngMocks.faster();
+  let roundHandlersManager: SpyObject<RoundHandlersManager>;
+  let victoryHandlersManager: SpyObject<VictoryHandlersManager>;
+  let roundOrchestrator: SpyObject<RoundOrchestrator>;
+  let deathHandler: SpyObject<DeathHandler>;
+  let statusHandlersManager: SpyObject<StatusHandlersManager>;
+  let roleHandlersManager: SpyObject<RoleHandlersManager>;
 
-  beforeAll(() =>
-    MockBuilder(GameOrchestrator)
-      .mock(Router)
-      .mock(RoundHandlersManager)
-      .mock(VictoryHandlersManager)
-      .mock(RoundOrchestrator)
-      .mock(DeathHandler)
-      .mock(StatusHandlersManager)
-      .mock(MockRoundHandler)
-      .mock(CurrentPlayersStore)
-      .mock(CurrentRoundConfigStore)
-      .mock(CardChoiceStore)
-      .mock(NeedCleanAfterBoucStore),
-  );
+  let currentPlayersState: WritableSignal<Player[]>;
+  let currentRoundConfigState: WritableSignal<RoundConfig | null>;
+  let dayCountState: WritableSignal<number>;
+  let needCleanAfterBoucState: WritableSignal<boolean>;
+  let cardChoiceState: WritableSignal<CardList>;
 
-  beforeAll(() => {
-    mockCurrentRoundConfig = {
-      round: RoundEnum.CAPITAINE,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
+  let mockPlayers: Player[];
 
-    MockInstance(RoundHandlersManager, () => ({
-      clearHandlers: jest.fn(),
-      getHandler(round) {
-        switch (round) {
-          case RoundEnum.CAPITAINE:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VILLAGEOIS:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      },
-    }));
-
-    MockInstance(StatusHandlersManager, () => ({
-      clearHandlers: jest.fn(),
-      getHandler: () => new MockStatusHandler(),
-    }));
-
-    MockInstance(DeathHandler, () => ({
-      reset: jest.fn(),
-      handleNewDeaths: () => [],
-    }));
-
-    MockInstance(RoundOrchestrator, () => ({
-      resetRounds: jest.fn(),
-      getNextRound: () => RoundEnum.VILLAGEOIS,
-    }));
-
-    MockInstance(VictoryHandlersManager, () => ({
-      clearHandlers: jest.fn(),
-      getVictory: () => VictoryEnum.LOUP_GAROU,
-    }));
-
-    MockInstance(CurrentPlayersStore, 'state', signal([]));
-    MockInstance(CurrentRoundConfigStore, 'state', signal(null));
-    MockInstance(CardChoiceStore, 'state', signal({} as CardList));
-    MockInstance(NeedCleanAfterBoucStore, 'state', signal(false));
+  const createService = createServiceFactory({
+    service: GameOrchestrator,
+    mocks: [
+      Router,
+      RoundHandlersManager,
+      VictoryHandlersManager,
+      RoundOrchestrator,
+      DeathHandler,
+      StatusHandlersManager,
+      RoleHandlersManager,
+    ],
   });
 
   beforeEach(() => {
-    service = MockRender(GameOrchestrator).point.componentInstance;
-    service['roundConfig'].set(mockCurrentRoundConfig);
-  });
+    currentPlayersState = signal([]);
+    currentRoundConfigState = signal(null);
+    dayCountState = signal(1);
+    needCleanAfterBoucState = signal(false);
+    cardChoiceState = signal({
+      selectedRoles: new Set([PlayerRoleEnum.SORCIERE, PlayerRoleEnum.VOLEUR]),
+      loupGarou: 1,
+      villageois: 1,
+      playersNumber: 3,
+    });
 
-  it('should reset rounds on victory', () => {
-    const roundOrchestrator = ngMocks.get(RoundOrchestrator);
+    spectator = createService({
+      providers: [
+        mockProvider(CurrentPlayersStore, { state: currentPlayersState }),
+        mockProvider(CurrentRoundConfigStore, {
+          state: currentRoundConfigState,
+        }),
+        mockProvider(DayCountStore, { state: dayCountState }),
+        mockProvider(NeedCleanAfterBoucStore, {
+          state: needCleanAfterBoucState,
+        }),
+        mockProvider(CardChoiceStore, { state: cardChoiceState }),
+      ],
+    });
 
-    service.submitRoundAction([]);
+    roundHandlersManager = spectator.inject(RoundHandlersManager);
+    victoryHandlersManager = spectator.inject(VictoryHandlersManager);
+    roundOrchestrator = spectator.inject(RoundOrchestrator);
+    deathHandler = spectator.inject(DeathHandler);
+    statusHandlersManager = spectator.inject(StatusHandlersManager);
+    roleHandlersManager = spectator.inject(RoleHandlersManager);
 
-    expect(roundOrchestrator.resetRounds).toHaveBeenCalled();
-  });
-
-  it('should reset deaths on victory', () => {
-    const deathHandler = ngMocks.get(DeathHandler);
-
-    service.submitRoundAction([]);
-
-    expect(deathHandler.reset).toHaveBeenCalled();
-  });
-
-  it('should clear round handlers on victory', () => {
-    const roundHandlersManager = ngMocks.get(RoundHandlersManager);
-
-    service.submitRoundAction([]);
-
-    expect(roundHandlersManager.clearHandlers).toHaveBeenCalled();
-  });
-
-  it('should clear victory handlers on victory', () => {
-    const victoryHandlersManager = ngMocks.get(VictoryHandlersManager);
-
-    service.submitRoundAction([]);
-
-    expect(victoryHandlersManager.clearHandlers).toHaveBeenCalled();
-  });
-
-  afterAll(MockReset);
-});
-
-// TODO: Fix tests
-
-describe.skip('GameOrchestrator', () => {
-  let service: GameOrchestrator;
-  let router: Router;
-  let roleHandlersManager: RoleHandlersManager;
-  let roundHandlersManager: RoundHandlersManager;
-  let victoryHandlersManager: VictoryHandlersManager;
-  let roundOrchestrator: RoundOrchestrator;
-  let deathHandler: DeathHandler;
-
-  let mockPlayers: Player[];
-  let mockCardList: CardList;
-  let mockRoleHandler: MockRoleHandler;
-  let mockRoundHandler: MockRoundHandler;
-
-  ngMocks.faster();
-
-  beforeAll(() =>
-    MockBuilder(GameOrchestrator)
-      .mock(Router)
-      .mock(RoleHandlersManager)
-      .mock(RoundHandlersManager)
-      .mock(VictoryHandlersManager)
-      .mock(RoundOrchestrator)
-      .mock(DeathHandler)
-      .mock(StatusHandlersManager)
-      .mock(MockRoundHandler)
-      .mock(CurrentPlayersStore)
-      .mock(CurrentRoundConfigStore)
-      .mock(CardChoiceStore)
-      .mock(NeedCleanAfterBoucStore),
-  );
-
-  beforeAll(() => {
     mockPlayers = [
       {
         id: 0,
@@ -243,1093 +156,1140 @@ describe.skip('GameOrchestrator', () => {
         isDead: false,
       },
     ];
-    mockCardList = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE, PlayerRoleEnum.VOLEUR]),
-      loupGarou: 1,
-      villageois: 1,
-      playersNumber: 3,
-    };
-    mockRoundHandler = new MockRoundHandler();
-    mockRoleHandler = new MockRoleHandler();
-
-    MockInstance(RoleHandlersManager, () => ({
-      clearHandlers: jest.fn(),
-      getHandler: () => mockRoleHandler,
-    }));
-
-    MockInstance(RoundHandlersManager, () => ({
-      getHandler: () => mockRoundHandler,
-      initRequiredHandlers: jest.fn(),
-      clearHandlers: jest.fn(),
-      removeHandlersByRoles: jest.fn(),
-      initAsDefaultHandlers: jest.fn(),
-    }));
-
-    MockInstance(StatusHandlersManager, () => ({
-      clearHandlers: jest.fn(),
-      getHandler: () => new MockStatusHandler(),
-    }));
-
-    MockInstance(VictoryHandlersManager, () => ({
-      initRequiredHandlers: jest.fn(),
-      clearHandlers: jest.fn(),
-      getVictory: jest.fn(),
-      removeHandler: jest.fn(),
-    }));
-
-    MockInstance(Router, () => ({
-      navigate: jest.fn(),
-    }));
-
-    MockInstance(RoundOrchestrator, () => ({
-      getFirstRound: jest.fn(),
-    }));
-
-    MockInstance(DeathHandler, () => ({
-      announceDeaths: jest.fn(),
-    }));
-
-    MockInstance(CurrentPlayersStore, 'state', signal([]));
-    MockInstance(CurrentRoundConfigStore, 'state', signal(null));
-    MockInstance(CardChoiceStore, 'state', signal(mockCardList));
-    MockInstance(NeedCleanAfterBoucStore, 'state', signal(false));
   });
-
-  beforeEach(() => {
-    ngMocks.get(CurrentPlayersStore).state.set([]);
-    ngMocks.get(CurrentRoundConfigStore).state.set(null);
-
-    service = MockRender(GameOrchestrator).point.componentInstance;
-    router = ngMocks.get(Router);
-    roundHandlersManager = ngMocks.get(RoundHandlersManager);
-    victoryHandlersManager = ngMocks.get(VictoryHandlersManager);
-    roundOrchestrator = ngMocks.get(RoundOrchestrator);
-    deathHandler = ngMocks.get(DeathHandler);
-  });
-
-  afterAll(MockReset);
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
 
-  it('should init round handlers on game creation', () => {
-    service.createGame(mockPlayers);
+  describe('on victory', () => {
+    beforeEach(() => {
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = true;
+      mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
 
-    expect(roundHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.VILLAGEOIS,
-      PlayerRoleEnum.LOUP_GAROU,
-      PlayerRoleEnum.SORCIERE,
-    ]);
-  });
-
-  it('should init victory handlers on game creation', () => {
-    service.createGame(mockPlayers);
-
-    expect(victoryHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.VILLAGEOIS,
-      PlayerRoleEnum.LOUP_GAROU,
-      PlayerRoleEnum.SORCIERE,
-    ]);
-  });
-
-  it('should set players on game creation', () => {
-    service.createGame(mockPlayers);
-
-    expect(service['players']()).toEqual(mockPlayers);
-  });
-
-  it('should set day count to 1 on game creation if no Ange', () => {
-    service['dayCount'].set(2);
-
-    service.createGame(mockPlayers);
-
-    expect(service['dayCount']()).toEqual(1);
-  });
-
-  it('should set day count to 0 on game creation if Ange', () => {
-    service['dayCount'].set(2);
-
-    const newMockPlayers: Player[] = [
-      ...mockPlayers,
-      {
-        id: 3,
-        name: 'player3',
-        role: PlayerRoleEnum.ANGE,
-        card: PlayerRoleEnum.ANGE,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    service.createGame(newMockPlayers);
-
-    expect(service['dayCount']()).toEqual(0);
-  });
-
-  it('should navigate to /game on game creation', () => {
-    service.createGame(mockPlayers);
-
-    expect(router.navigate).toHaveBeenCalledWith(['current-game']);
-  });
-
-  it('should set first round on game creation using RoundOrchestrator', () => {
-    const mockRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    mockRoundHandler.getRoundConfig = () => mockRoundConfig;
-    jest
-      .spyOn(roundOrchestrator, 'getFirstRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-
-    service.createGame(mockPlayers);
-
-    expect(service['roundConfig']()).toEqual(mockRoundConfig);
-  });
-
-  it('should add HEALTH_POTION status to player with role SORCIERE on game creation', () => {
-    service.createGame(mockPlayers);
-
-    expect(
-      service['players']()[2].statuses.has(PlayerStatusEnum.HEALTH_POTION),
-    ).toEqual(true);
-  });
-
-  it('should add DEATH_POTION status to player with role SORCIERE on game creation', () => {
-    service.createGame(mockPlayers);
-
-    expect(
-      service['players']()[2].statuses.has(PlayerStatusEnum.DEATH_POTION),
-    ).toEqual(true);
-  });
-
-  it('should update players with handler action on submit', () => {
-    mockRoundHandler.handleAction = () => of(mockPlayers);
-    const mockRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    service['roundConfig'].set(mockRoundConfig);
-
-    expect(service['players']()).toEqual([]);
-
-    service.submitRoundAction([]);
-
-    expect(service['players']()).toEqual(mockPlayers);
-  });
-
-  it('should set next round on submit', () => {
-    mockRoundHandler.handleAction = () => of(mockPlayers);
-    const mockRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockNextRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_HEALTH,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    service['roundConfig'].set(mockRoundConfig);
-    mockRoundHandler.getRoundConfig = () => mockNextRoundConfig;
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
-
-    expect(service['roundConfig']()).toEqual(mockRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(service['roundConfig']()).toEqual(mockNextRoundConfig);
-  });
-
-  it('should skip LOUP_BLANC next round on odd day', () => {
-    mockRoundHandler.handleAction = () => of(mockPlayers);
-    const mockRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockSorciereHealthRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_HEALTH,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockLoupBlancRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_BLANC,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockSorciereHealthHandler = new MockRoundHandler();
-    const mockLoupBlancHandler = new MockRoundHandler();
-    mockSorciereHealthHandler.getRoundConfig = () =>
-      mockSorciereHealthRoundConfig;
-    mockLoupBlancHandler.getRoundConfig = () => mockLoupBlancRoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_HEALTH:
-            return mockSorciereHealthHandler;
-          case RoundEnum.LOUP_BLANC:
-            return mockLoupBlancHandler;
-          default:
-            return new MockRoundHandler();
-        }
+      currentRoundConfigState.set({
+        round: RoundEnum.CAPITAINE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 1,
+        isDuringDay: false,
+        type: RoundTypeEnum.DEFAULT,
       });
 
-    service['roundConfig'].set(mockRoundConfig);
-    service['dayCount'].set(1);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.CAPITAINE:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VILLAGEOIS:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
 
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValueOnce(RoundEnum.LOUP_BLANC)
-      .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
+      jest
+        .spyOn(victoryHandlersManager, 'getVictory')
+        .mockReturnValue(VictoryEnum.LOUP_GAROU);
+      jest
+        .spyOn(roundOrchestrator, 'getNextRound')
+        .mockReturnValue(RoundEnum.VILLAGEOIS);
+      jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
+    });
 
-    expect(service['roundConfig']()).toEqual(mockRoundConfig);
+    it('should reset rounds on victory', () => {
+      spectator.service.submitRoundAction([]);
 
-    service.submitRoundAction([]);
+      expect(roundOrchestrator.resetRounds).toHaveBeenCalled();
+    });
 
-    expect(service['roundConfig']()).toEqual(mockSorciereHealthRoundConfig);
-  });
+    it('should reset deaths on victory', () => {
+      spectator.service.submitRoundAction([]);
 
-  it('should not skip LOUP_BLANC next round on even day', () => {
-    mockRoundHandler.handleAction = () => of(mockPlayers);
-    const mockRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0, 2],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockSorciereHealthRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_HEALTH,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockLoupBlancRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_BLANC,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockSorciereHealthHandler = new MockRoundHandler();
-    const mockLoupBlancHandler = new MockRoundHandler();
-    mockSorciereHealthHandler.getRoundConfig = () =>
-      mockSorciereHealthRoundConfig;
-    mockLoupBlancHandler.getRoundConfig = () => mockLoupBlancRoundConfig;
+      expect(deathHandler.reset).toHaveBeenCalled();
+    });
 
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_HEALTH:
-            return mockSorciereHealthHandler;
-          case RoundEnum.LOUP_BLANC:
-            return mockLoupBlancHandler;
-          default:
-            return new MockRoundHandler();
-        }
+    it('should clear round handlers on victory', () => {
+      spectator.service.submitRoundAction([]);
+
+      expect(roundHandlersManager.clearHandlers).toHaveBeenCalled();
+    });
+
+    it('should clear victory handlers on victory', () => {
+      spectator.service.submitRoundAction([]);
+
+      expect(victoryHandlersManager.clearHandlers).toHaveBeenCalled();
+    });
+
+    it('should reset round config on victory', () => {
+      spectator.service.submitRoundAction([]);
+
+      expect(currentRoundConfigState()).toBeNull();
+    });
+
+    it('should navigate to victory screen on victory', () => {
+      const router = spectator.inject(Router);
+      spectator.service.submitRoundAction([]);
+      expect(router.navigate).toHaveBeenCalledWith(['victory'], {
+        queryParams: { victory: VictoryEnum.LOUP_GAROU },
       });
-
-    service['roundConfig'].set(mockRoundConfig);
-    service['dayCount'].set(2);
-
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValueOnce(RoundEnum.LOUP_BLANC)
-      .mockReturnValueOnce(RoundEnum.SORCIERE_HEALTH);
-
-    expect(service['roundConfig']()).toEqual(mockRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(service['roundConfig']()).toEqual(mockLoupBlancRoundConfig);
-  });
-
-  // it('should handle deaths and use after-death round after submit if next round is during day', () => {
-  //   jest.spyOn(roundHandler, 'handleAction').mockReturnValue(of(mockPlayers));
-  //   jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockPlayers);
-  //   const getHandlerSpy = jest.spyOn(roundHandlersManager, 'getHandler');
-  //   const getNextRoundSpy = jest.spyOn(
-  //     roundOrchestrator,
-  //     'getNextRound',
-  //   );
-  //
-  //   const mockCurrentRound: Round = {
-  //     role: RoundEnum.SORCIERE_KILL,
-  //     selectablePlayers: [0],
-  //     maxSelectable: 1,
-  //     minSelectable: 0,
-  //     isDuringDay: false,
-  //     type: RoundTypeEnumEnum.DEFAULT,
-  //   };
-  //
-  //   const mockSorciereKillHandler = new MockRoundHandler();
-  //   mockSorciereKillHandler.isDuringDay = false;
-  //   when(getHandlerSpy)
-  //     .calledWith(RoundEnum.SORCIERE_KILL)
-  //     .mockReturnValue(mockSorciereKillHandler);
-  //
-  //   const mockVillageoisHandler = new MockRoundHandler();
-  //   mockVillageoisHandler.isDuringDay = true;
-  //   when(getHandlerSpy)
-  //     .calledWith(RoundEnum.VILLAGEOIS)
-  //     .mockReturnValue(mockVillageoisHandler);
-  //
-  //   const mockChasseurHandler = new MockRoundHandler();
-  //   mockChasseurHandler.isDuringDay = true;
-  //   const mockChasseurRound: Round = {
-  //     role: RoundEnum.CHASSEUR,
-  //     selectablePlayers: [0],
-  //     maxSelectable: 1,
-  //     minSelectable: 1,
-  //     isDuringDay: false,
-  //     type: RoundTypeEnumEnum.DEFAULT,
-  //   };
-  //   mockChasseurHandler.getRoundConfig = () => mockChasseurRound;
-  //   when(getHandlerSpy)
-  //     .calledWith(RoundEnum.CHASSEUR)
-  //     .mockReturnValue(mockChasseurHandler);
-  //
-  //   getNextRoundSpy
-  //     .mockReturnValueOnce(RoundEnum.VILLAGEOIS)
-  //     .mockReturnValueOnce(RoundEnum.CHASSEUR);
-  //
-  //   service['roundConfig'].set(mockCurrentRound);
-  //
-  //   service.submitRoundAction([]);
-  //
-  //   expect(service['roundConfig']()).toEqual(mockChasseurRound);
-  // });
-
-  it('should handle deaths and continue round after submit if next round is during day and no after-death rounds', () => {
-    mockRoundHandler.handleAction = () => of(mockPlayers);
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockPlayers);
-
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_KILL,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-
-    const mockSorciereKillHandler = new MockRoundHandler();
-    mockSorciereKillHandler.isDuringDay = false;
-
-    const mockVillageoisHandler = new MockRoundHandler();
-    mockVillageoisHandler.isDuringDay = true;
-    const mockVillageoisRoundConfig: RoundConfig = {
-      round: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    mockVillageoisHandler.getRoundConfig = () => mockVillageoisRoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_KILL:
-            return mockSorciereKillHandler;
-          case RoundEnum.VILLAGEOIS:
-            return mockVillageoisHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValueOnce(RoundEnum.VILLAGEOIS)
-      .mockReturnValueOnce(RoundEnum.VILLAGEOIS);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(service['roundConfig']()).toEqual(mockVillageoisRoundConfig);
-  });
-
-  it('should not check victory during night', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.LOUP_GAROU,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.LOUP_GAROU:
-            return mockCurrentRoundHandler;
-          case RoundEnum.SORCIERE_HEALTH:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(victoryHandlersManager.getVictory).not.toHaveBeenCalled();
-  });
-
-  it('should check victory after night', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_KILL,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_KILL:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VILLAGEOIS:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VILLAGEOIS);
-    jest
-      .spyOn(victoryHandlersManager, 'getVictory')
-      .mockReturnValue(VictoryEnum.LOUP_GAROU);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(router.navigate).toHaveBeenCalledWith(['victory'], {
-      queryParams: { victory: VictoryEnum.LOUP_GAROU },
     });
   });
 
-  it('should check victory during day', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.CAPITAINE,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
+  describe('on game creation', () => {
+    beforeEach(() => {
+      jest.spyOn(roleHandlersManager, 'getHandlers').mockReturnValue([]);
+    });
 
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.CAPITAINE:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VILLAGEOIS:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VILLAGEOIS);
-    jest
-      .spyOn(victoryHandlersManager, 'getVictory')
-      .mockReturnValue(VictoryEnum.LOUP_GAROU);
+    it('should init round handlers on game creation', () => {
+      spectator.service.createGame([]);
 
-    service['roundConfig'].set(mockCurrentRoundConfig);
+      expect(roundHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(roundHandlersManager.initRequiredHandlers).toHaveBeenCalled();
+    });
 
-    service.submitRoundAction([]);
+    it('should init victory handlers on game creation', () => {
+      spectator.service.createGame([]);
 
-    expect(router.navigate).toHaveBeenCalledWith(['victory'], {
-      queryParams: { victory: VictoryEnum.LOUP_GAROU },
+      expect(victoryHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(victoryHandlersManager.initRequiredHandlers).toHaveBeenCalled();
+    });
+
+    it('should init not played roles as default handlers on game creation', () => {
+      const notPlayedRoles: PlayerRole[] = [
+        PlayerRoleEnum.VOLEUR,
+        PlayerRoleEnum.CHASSEUR,
+      ];
+      jest
+        .spyOn(rolesUtils, 'getNotPlayedRoles')
+        .mockReturnValue(notPlayedRoles);
+
+      spectator.service.createGame([]);
+
+      expect(roundHandlersManager.initAsDefaultHandlers).toHaveBeenCalledWith(
+        notPlayedRoles,
+      );
+    });
+
+    it('should init role handlers on game creation', () => {
+      spectator.service.createGame(mockPlayers);
+
+      expect(roleHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(roleHandlersManager.initHandlers).toHaveBeenCalledWith(
+        mockPlayers,
+      );
+    });
+
+    it('should init status handlers on game creation', () => {
+      spectator.service.createGame(mockPlayers);
+
+      expect(statusHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(statusHandlersManager.initHandlers).toHaveBeenCalledWith(
+        mockPlayers,
+      );
+    });
+
+    it('should reset rounds order on game creation', () => {
+      spectator.service.createGame(mockPlayers);
+
+      expect(roundOrchestrator.resetRoundsOrder).toHaveBeenCalled();
+    });
+
+    it('should call prepareNewGame of each role handler on game creation', () => {
+      const mockRoleHandler = new MockRoleHandler();
+      jest
+        .spyOn(roleHandlersManager, 'getHandlers')
+        .mockReturnValue([mockRoleHandler]);
+
+      spectator.service.createGame(mockPlayers);
+
+      expect(mockRoleHandler.prepareNewGame).toHaveBeenCalledWith(mockPlayers);
+    });
+
+    it('should set players on game creation', () => {
+      spectator.service.createGame(mockPlayers);
+
+      expect(currentPlayersState()).toEqual(mockPlayers);
+    });
+
+    it('should set day count to 1 on game creation if no Ange', () => {
+      dayCountState.set(2);
+
+      spectator.service.createGame(mockPlayers);
+
+      expect(dayCountState()).toEqual(1);
+    });
+
+    it('should set day count to 0 on game creation if Ange', () => {
+      dayCountState.set(2);
+      const newMockPlayers: Player[] = [
+        ...mockPlayers,
+        {
+          id: 3,
+          name: 'player3',
+          role: PlayerRoleEnum.ANGE,
+          card: PlayerRoleEnum.ANGE,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+
+      spectator.service.createGame(newMockPlayers);
+
+      expect(dayCountState()).toEqual(0);
+    });
+
+    it('should navigate to /current-game on game creation', () => {
+      const router = spectator.inject(Router);
+
+      spectator.service.createGame(mockPlayers);
+
+      expect(router.navigate).toHaveBeenCalledWith(['current-game']);
+    });
+
+    it('should set first round on game creation using RoundOrchestrator', () => {
+      const mockRoundConfig: RoundConfig = {
+        round: RoundEnum.LOUP_GAROU,
+        selectablePlayers: [0, 2],
+        maxSelectable: 1,
+        minSelectable: 1,
+        isDuringDay: false,
+        type: RoundTypeEnum.DEFAULT,
+      };
+      const mockRoundHandler = new MockRoundHandler();
+      mockRoundHandler.getRoundConfig = () => mockRoundConfig;
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockReturnValue(mockRoundHandler);
+      jest
+        .spyOn(roundOrchestrator, 'getFirstRound')
+        .mockReturnValue(RoundEnum.LOUP_GAROU);
+
+      spectator.service.createGame(mockPlayers);
+
+      expect(currentRoundConfigState()).toEqual(mockRoundConfig);
     });
   });
 
-  it('should not check victory if next round is CHASSEUR', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_KILL,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
+  describe('during game', () => {
+    let mockRoundHandler: MockRoundHandler;
 
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_KILL:
-            return mockCurrentRoundHandler;
-          case RoundEnum.CHASSEUR:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.CHASSEUR);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(victoryHandlersManager.getVictory).not.toHaveBeenCalled();
-  });
-
-  it('should announce deaths after night if no victory', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_KILL,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_KILL:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VILLAGEOIS:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VILLAGEOIS);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(deathHandler.announceDeaths).toHaveBeenCalled();
-  });
-
-  it('should announce deaths during day if no victory', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.CAPITAINE,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 1,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.CAPITAINE:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VILLAGEOIS:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VILLAGEOIS);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(deathHandler.announceDeaths).toHaveBeenCalled();
-  });
-
-  it('should not announce deaths if next round is CHASSEUR', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.SORCIERE_KILL,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = true;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.SORCIERE_KILL:
-            return mockCurrentRoundHandler;
-          case RoundEnum.CHASSEUR:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.CHASSEUR);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(deathHandler.announceDeaths).not.toHaveBeenCalled();
-  });
-
-  it('should clean statuses after day', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: true,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VILLAGEOIS:
-            return mockCurrentRoundHandler;
-          case RoundEnum.LOUP_GAROU:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(mockRoleHandler.cleanStatusesAfterDay).toHaveBeenCalled();
-  });
-
-  it('should increment day count after day', () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: true,
-      type: RoundTypeEnum.DEFAULT,
-    };
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VILLAGEOIS:
-            return mockCurrentRoundHandler;
-          case RoundEnum.LOUP_GAROU:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-
-    service.submitRoundAction([]);
-
-    expect(service['dayCount']()).toEqual(2);
-  });
-
-  it('should clear and reinit handlers after VOLEUR round', async () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.VOLEUR,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.ROLES,
-    };
-    const mockNewPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.SORCIERE,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.CUPIDON,
-        card: PlayerRoleEnum.CUPIDON,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VOLEUR:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VOYANTE:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VOYANTE);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-    ngMocks.get(CardChoiceStore).state.set(mockCardList);
-
-    service.submitRoundAction([]);
-
-    expect(roundHandlersManager.clearHandlers).toHaveBeenCalled();
-    expect(victoryHandlersManager.clearHandlers).toHaveBeenCalled();
-    expect(roundHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.SORCIERE,
-      PlayerRoleEnum.CUPIDON,
-    ]);
-    expect(victoryHandlersManager.initRequiredHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.SORCIERE,
-      PlayerRoleEnum.CUPIDON,
-    ]);
-  });
-
-  it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has become LOUP_GAROU after PERE_LOUPS round', async () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.PERE_LOUPS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.PLAYERS,
-    };
-    const mockNewPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.LOUP_GAROU,
-        card: PlayerRoleEnum.JOUEUR_FLUTE,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.PERE_LOUPS,
-        card: PlayerRoleEnum.PERE_LOUPS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.PERE_LOUPS:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VOYANTE:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VOYANTE);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-    ngMocks.get(CardChoiceStore).state.set({
-      ...mockCardList,
-      selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.JOUEUR_FLUTE]),
+    beforeEach(() => {
+      mockRoundHandler = new MockRoundHandler();
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockReturnValue(mockRoundHandler);
+      jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockPlayers);
     });
 
-    service.submitRoundAction([]);
+    it('should update players with handler action on submit', () => {
+      jest
+        .spyOn(mockRoundHandler, 'handleAction')
+        .mockReturnValue(of(mockPlayers));
+      const mockRoundConfig: RoundConfig = {
+        round: RoundEnum.LOUP_GAROU,
+        selectablePlayers: [0, 2],
+        maxSelectable: 1,
+        minSelectable: 1,
+        isDuringDay: false,
+        type: RoundTypeEnum.DEFAULT,
+      };
+      currentRoundConfigState.set(mockRoundConfig);
 
-    expect(roundHandlersManager.removeHandlersByRoles).toHaveBeenCalledWith([
-      PlayerRoleEnum.JOUEUR_FLUTE,
-    ]);
-    expect(victoryHandlersManager.removeHandler).toHaveBeenCalledWith(
-      VictoryEnum.JOUEUR_FLUTE,
-    );
-  });
+      expect(currentPlayersState()).toEqual([]);
 
-  it('should not remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has not become LOUP_GAROU after PERE_LOUPS round', async () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.PERE_LOUPS,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: false,
-      type: RoundTypeEnum.PLAYERS,
-    };
-    const mockNewPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.JOUEUR_FLUTE,
-        card: PlayerRoleEnum.JOUEUR_FLUTE,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.PERE_LOUPS,
-        card: PlayerRoleEnum.PERE_LOUPS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = false;
-    mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
+      spectator.service.submitRoundAction([]);
 
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.PERE_LOUPS:
-            return mockCurrentRoundHandler;
-          case RoundEnum.VOYANTE:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
-      });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.VOYANTE);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
-
-    service['roundConfig'].set(mockCurrentRoundConfig);
-    ngMocks.get(CardChoiceStore).state.set({
-      ...mockCardList,
-      selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.JOUEUR_FLUTE]),
+      expect(currentPlayersState()).toEqual(mockPlayers);
     });
 
-    service.submitRoundAction([]);
+    it('should set next round on submit', () => {
+      const mockRoundConfig: RoundConfig = {
+        round: RoundEnum.LOUP_GAROU,
+        selectablePlayers: [0, 2],
+        maxSelectable: 1,
+        minSelectable: 1,
+        isDuringDay: false,
+        type: RoundTypeEnum.DEFAULT,
+      };
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.SORCIERE_HEALTH,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.DEFAULT,
+      };
+      currentRoundConfigState.set(mockRoundConfig);
+      currentPlayersState.set(mockPlayers);
+      jest
+        .spyOn(mockRoundHandler, 'getRoundConfig')
+        .mockReturnValue(mockNextRoundConfig);
+      jest
+        .spyOn(roundOrchestrator, 'getNextRound')
+        .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
 
-    expect(roundHandlersManager.removeHandlersByRoles).not.toHaveBeenCalled();
-    expect(victoryHandlersManager.removeHandler).not.toHaveBeenCalled();
-  });
+      expect(currentRoundConfigState()).toEqual(mockRoundConfig);
 
-  it('should init default round handlers on game creation', () => {
-    service.createGame(mockPlayers);
+      spectator.service.submitRoundAction([]);
 
-    expect(roundHandlersManager.initAsDefaultHandlers).toHaveBeenCalledWith([
-      PlayerRoleEnum.VOLEUR,
-    ]);
-  });
-
-  it('should return game in progress if current round', () => {
-    service['roundConfig'].set({
-      round: RoundEnum.VILLAGEOIS,
-      selectablePlayers: [],
-      maxSelectable: 0,
-      minSelectable: 0,
-      type: RoundTypeEnum.DEFAULT,
-      isDuringDay: true,
+      expect(currentRoundConfigState()).toEqual(mockNextRoundConfig);
     });
 
-    expect(service.isGameInProgress()).toBe(true);
-  });
+    it('should clear and reinit handlers after VOLEUR round', async () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VOLEUR,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.ROLES,
+      };
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.SORCIERE,
+          card: PlayerRoleEnum.VOLEUR,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.CUPIDON,
+          card: PlayerRoleEnum.CUPIDON,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
 
-  it('should return game not in progress if no current round', () => {
-    service['roundConfig'].set(null);
+      currentPlayersState.set(mockNewPlayers);
 
-    expect(service.isGameInProgress()).toBe(false);
-  });
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VOLEUR:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      jest
+        .spyOn(roundOrchestrator, 'getNextRound')
+        .mockReturnValue(RoundEnum.VOYANTE);
 
-  it('should set needCleanAfterBouc to true after BOUC round', async () => {
-    const mockCurrentRoundConfig: RoundConfig = {
-      round: RoundEnum.BOUC,
-      selectablePlayers: [0],
-      maxSelectable: 1,
-      minSelectable: 0,
-      isDuringDay: true,
-      type: RoundTypeEnum.PLAYERS,
-    };
-    const mockNewPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.BOUC,
-        card: PlayerRoleEnum.BOUC,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.VILLAGEOIS,
-        card: PlayerRoleEnum.VILLAGEOIS,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-    const mockCurrentRoundHandler = new MockRoundHandler();
-    mockCurrentRoundHandler.isDuringDay = true;
-    mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
-    const mockNextRoundHandler = new MockRoundHandler();
-    mockNextRoundHandler.isDuringDay = false;
-    mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
-
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.BOUC:
-            return mockCurrentRoundHandler;
-          case RoundEnum.LOUP_GAROU:
-            return mockNextRoundHandler;
-          default:
-            return new MockRoundHandler();
-        }
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      cardChoiceState.set({
+        selectedRoles: new Set([
+          PlayerRoleEnum.SORCIERE,
+          PlayerRoleEnum.VOLEUR,
+        ]),
+        loupGarou: 1,
+        villageois: 1,
+        playersNumber: 3,
       });
-    jest
-      .spyOn(roundOrchestrator, 'getNextRound')
-      .mockReturnValue(RoundEnum.LOUP_GAROU);
-    jest.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(undefined);
+      const notPlayedRoles: PlayerRole[] = [
+        PlayerRoleEnum.VOLEUR,
+        PlayerRoleEnum.CHASSEUR,
+      ];
+      jest
+        .spyOn(rolesUtils, 'getNotPlayedRoles')
+        .mockReturnValue(notPlayedRoles);
+      const mockRoleHandler = new MockRoleHandler();
+      jest
+        .spyOn(roleHandlersManager, 'getHandlers')
+        .mockReturnValue([mockRoleHandler]);
 
-    service['roundConfig'].set(mockCurrentRoundConfig);
-    ngMocks.get(CardChoiceStore).state.set(mockCardList);
+      spectator.service.submitRoundAction([]);
 
-    service.submitRoundAction([]);
+      expect(roundHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(roundHandlersManager.initRequiredHandlers).toHaveBeenCalled();
+      expect(victoryHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(victoryHandlersManager.initRequiredHandlers).toHaveBeenCalled();
+      expect(roundHandlersManager.initAsDefaultHandlers).toHaveBeenCalledWith(
+        notPlayedRoles,
+      );
+      expect(roleHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(roleHandlersManager.initHandlers).toHaveBeenCalledWith(
+        mockNewPlayers,
+      );
+      expect(statusHandlersManager.clearHandlers).toHaveBeenCalled();
+      expect(statusHandlersManager.initHandlers).toHaveBeenCalledWith(
+        mockNewPlayers,
+      );
+      expect(roundOrchestrator.resetRoundsOrder).toHaveBeenCalled();
+      expect(mockRoleHandler.prepareNewGame).toHaveBeenCalledWith(
+        mockNewPlayers,
+      );
+      expect(currentPlayersState()).toEqual(mockNewPlayers);
+    });
 
-    expect(service['needCleanAfterBouc']()).toEqual(true);
+    it('should remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has become LOUP_GAROU after PERE_LOUPS round', async () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.PERE_LOUPS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.LOUP_GAROU,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
+
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.PERE_LOUPS:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      jest
+        .spyOn(roundOrchestrator, 'getNextRound')
+        .mockReturnValue(RoundEnum.VOYANTE);
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      cardChoiceState.set({
+        selectedRoles: new Set<PlayerRole>([PlayerRoleEnum.JOUEUR_FLUTE]),
+        loupGarou: 1,
+        villageois: 1,
+        playersNumber: 3,
+      });
+
+      spectator.service.submitRoundAction([]);
+
+      expect(roundHandlersManager.removeHandlersByRoles).toHaveBeenCalledWith([
+        PlayerRoleEnum.JOUEUR_FLUTE,
+      ]);
+      expect(victoryHandlersManager.removeHandler).toHaveBeenCalledWith(
+        VictoryEnum.JOUEUR_FLUTE,
+      );
+    });
+
+    it('should not remove JOUEUR_FLUTE handlers if JOUEUR_FLUTE has not become LOUP_GAROU after PERE_LOUPS round', async () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.PERE_LOUPS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.JOUEUR_FLUTE,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      mockCurrentRoundHandler.handleAction = () => of(mockNewPlayers);
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
+
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.PERE_LOUPS:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      jest
+        .spyOn(roundOrchestrator, 'getNextRound')
+        .mockReturnValue(RoundEnum.VOYANTE);
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      cardChoiceState.set({
+        selectedRoles: new Set<PlayerRole>([PlayerRoleEnum.JOUEUR_FLUTE]),
+        loupGarou: 1,
+        villageois: 1,
+        playersNumber: 3,
+      });
+
+      spectator.service.submitRoundAction([]);
+
+      expect(roundHandlersManager.removeHandlersByRoles).not.toHaveBeenCalled();
+      expect(victoryHandlersManager.removeHandler).not.toHaveBeenCalled();
+    });
+
+    it('should handle daytime deaths if current round is during day', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockReturnValue(mockCurrentRoundHandler);
+
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.JOUEUR_FLUTE,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      jest
+        .spyOn(deathHandler, 'handleNewDeaths')
+        .mockReturnValue(mockNewPlayers);
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(deathHandler.handleNewDeaths).toHaveBeenCalledWith(mockPlayers);
+      expect(currentPlayersState()).toEqual(mockNewPlayers);
+    });
+
+    it('should check victory if no next round', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+
+      jest.spyOn(roundOrchestrator, 'getNextRound').mockImplementation(() => {
+        throw new Error('No next round');
+      });
+      jest
+        .spyOn(victoryHandlersManager, 'getVictory')
+        .mockReturnValue(VictoryEnum.NONE);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(victoryHandlersManager.getVictory).toHaveBeenCalled();
+    });
+
+    it('should trigger WOLF_TARGET status after LOUP_GAROU round', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.LOUP_GAROU,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.JOUEUR_FLUTE,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = true;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      const mockStatusHandler = new MockStatusHandler();
+      jest
+        .spyOn(mockStatusHandler, 'triggerAction')
+        .mockReturnValue(mockNewPlayers);
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.LOUP_GAROU:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VILLAGEOIS:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      jest
+        .spyOn(statusHandlersManager, 'getHandler')
+        .mockReturnValue(mockStatusHandler);
+
+      mockPlayers[0].statuses.add(PlayerStatusEnum.WOLF_TARGET);
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(mockStatusHandler.triggerAction).toHaveBeenCalledWith(mockPlayers);
+      expect(statusHandlersManager.getHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.WOLF_TARGET,
+      );
+    });
+
+    it('should trigger INFECTED status after LOUP_GAROU round', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.LOUP_GAROU,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.JOUEUR_FLUTE,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = true;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      const mockStatusHandler = new MockStatusHandler();
+      jest
+        .spyOn(mockStatusHandler, 'triggerAction')
+        .mockReturnValue(mockNewPlayers);
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.LOUP_GAROU:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VILLAGEOIS:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      jest
+        .spyOn(statusHandlersManager, 'getHandler')
+        .mockReturnValue(mockStatusHandler);
+
+      mockPlayers[0].statuses.add(PlayerStatusEnum.INFECTED);
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(mockStatusHandler.triggerAction).toHaveBeenCalledWith(mockPlayers);
+      expect(statusHandlersManager.getHandler).toHaveBeenCalledWith(
+        PlayerStatusEnum.INFECTED,
+      );
+    });
+
+    it('should handle new deaths after night', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.JOUEUR_FLUTE,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = true;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VOYANTE:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VILLAGEOIS:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      deathHandler.handleNewDeaths.mockReturnValue(mockNewPlayers);
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(deathHandler.handleNewDeaths).toHaveBeenCalledWith(mockPlayers);
+      expect(currentPlayersState()).toEqual(mockNewPlayers);
+      expect(roundOrchestrator.getNextRound).toHaveBeenCalledTimes(2);
+    });
+
+    it('should announce deaths if next round is during day', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = true;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VOYANTE:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VILLAGEOIS:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      deathHandler.handleNewDeaths.mockReturnValue([]);
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(deathHandler.announceDeaths).toHaveBeenCalled();
+    });
+
+    it('should announce deaths if current round is during day', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VILLAGEOIS:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(deathHandler.announceDeaths).toHaveBeenCalled();
+    });
+
+    it('should not announce deaths if next round is CHASSEUR', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = false;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.CHASSEUR,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = true;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.CHASSEUR);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VOYANTE:
+              return mockCurrentRoundHandler;
+            case RoundEnum.CHASSEUR:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      deathHandler.handleNewDeaths.mockReturnValue([]);
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(deathHandler.announceDeaths).not.toHaveBeenCalled();
+    });
+
+    it('should clean statuses after day', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+      const mockNewPlayers: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.JOUEUR_FLUTE,
+          card: PlayerRoleEnum.JOUEUR_FLUTE,
+          statuses: new Set(),
+          isDead: false,
+        },
+        {
+          id: 1,
+          name: 'player1',
+          role: PlayerRoleEnum.PERE_LOUPS,
+          card: PlayerRoleEnum.PERE_LOUPS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      const mockRoleHandler = new MockRoleHandler();
+      mockRoleHandler.cleanStatusesAfterDay.mockReturnValue(mockNewPlayers);
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VILLAGEOIS:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      roleHandlersManager.getHandler.mockReturnValue(mockRoleHandler);
+
+      currentPlayersState.set(mockPlayers);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(mockRoleHandler.cleanStatusesAfterDay).toHaveBeenCalledWith(
+        mockPlayers,
+      );
+      expect(currentPlayersState()).toEqual(mockNewPlayers);
+    });
+
+    it('should increment day count after day', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.VILLAGEOIS,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.VILLAGEOIS:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      currentPlayersState.set([]);
+      deathHandler.handleNewDeaths.mockReturnValue([]);
+
+      expect(dayCountState()).toEqual(1);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(dayCountState()).toEqual(2);
+    });
+
+    it('should set needCleanAfterBouc on BOUC round', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.BOUC,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.BOUC:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      currentPlayersState.set([]);
+      deathHandler.handleNewDeaths.mockReturnValue([]);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(needCleanAfterBoucState()).toBe(true);
+    });
+
+    it('should set next round', () => {
+      const mockCurrentRoundConfig: RoundConfig = {
+        round: RoundEnum.BOUC,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: true,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockCurrentRoundHandler = new MockRoundHandler();
+      mockCurrentRoundHandler.isDuringDay = true;
+      const mockNextRoundConfig: RoundConfig = {
+        round: RoundEnum.VOYANTE,
+        selectablePlayers: [0],
+        maxSelectable: 1,
+        minSelectable: 0,
+        isDuringDay: false,
+        type: RoundTypeEnum.PLAYERS,
+      };
+      const mockNextRoundHandler = new MockRoundHandler();
+      mockNextRoundHandler.isDuringDay = false;
+      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
+
+      currentRoundConfigState.set(mockCurrentRoundConfig);
+      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
+      jest
+        .spyOn(roundHandlersManager, 'getHandler')
+        .mockImplementation((round) => {
+          switch (round) {
+            case RoundEnum.BOUC:
+              return mockCurrentRoundHandler;
+            case RoundEnum.VOYANTE:
+              return mockNextRoundHandler;
+            default:
+              return new MockRoundHandler();
+          }
+        });
+      deathHandler.handleNewDeaths.mockReturnValue([]);
+      currentPlayersState.set([]);
+
+      spectator.service.submitRoundAction([]);
+
+      expect(currentRoundConfigState()).toEqual(mockNextRoundConfig);
+    });
   });
 });

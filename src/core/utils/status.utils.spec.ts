@@ -1,12 +1,12 @@
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatus, PlayerStatusEnum } from '@/types/player-status';
 import {
   addStatusToPlayer,
   addStatusToPlayersById,
   removeStatusFromPlayer,
   removeStatusFromPlayersById,
 } from './status.utils';
-import { PlayerStatusEnum } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { PlayerRoleEnum } from '@/types/player-role';
 
 describe('addStatusToPlayer', () => {
   const basePlayer: Player = {
@@ -14,7 +14,7 @@ describe('addStatusToPlayer', () => {
     name: 'Alice',
     role: PlayerRoleEnum.VILLAGEOIS,
     card: PlayerRoleEnum.VILLAGEOIS,
-    statuses: new Set<PlayerStatusEnum>(),
+    statuses: new Set<PlayerStatus>(),
     isDead: false,
   };
 
@@ -64,7 +64,7 @@ describe('removeStatusFromPlayer', () => {
     name: 'Alice',
     role: PlayerRoleEnum.VILLAGEOIS,
     card: PlayerRoleEnum.VILLAGEOIS,
-    statuses: new Set<PlayerStatusEnum>(),
+    statuses: new Set<PlayerStatus>(),
     isDead: false,
   };
 
@@ -114,7 +114,7 @@ describe('addStatusToPlayersById', () => {
     name: `Player ${id}`,
     role: PlayerRoleEnum.VILLAGEOIS,
     card: PlayerRoleEnum.VILLAGEOIS,
-    statuses: new Set<PlayerStatusEnum>(),
+    statuses: new Set<PlayerStatus>(),
     isDead: false,
   });
 
@@ -182,13 +182,13 @@ describe('addStatusToPlayersById', () => {
 describe('removeStatusFromPlayers', () => {
   const basePlayerWith = (
     id: number,
-    statuses: PlayerStatusEnum[] = [],
+    statuses: PlayerStatus[] = [],
   ): Player => ({
     id,
     name: `Player ${id}`,
     role: PlayerRoleEnum.VILLAGEOIS,
     card: PlayerRoleEnum.VILLAGEOIS,
-    statuses: new Set<PlayerStatusEnum>(statuses),
+    statuses: new Set<PlayerStatus>(statuses),
     isDead: false,
   });
 

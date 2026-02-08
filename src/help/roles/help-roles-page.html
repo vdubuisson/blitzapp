@@ -1,6 +1,6 @@
 <cdk-accordion>
   @for (role of roles; track role) {
-  <lgmj-accordion-item>
+  <lgmj-accordion-item data-testid="accordion-item">
     <ng-container header>
       <img
         [ngSrc]="role | playerRoleImage"

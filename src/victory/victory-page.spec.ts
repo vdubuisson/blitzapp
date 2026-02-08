@@ -1,48 +1,36 @@
 import { NewGameCreator } from '@/new-game/creator/new-game-creator';
+import { RouterLink } from '@angular/router';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  byTestId,
+  createComponentFactory,
+  Spectator,
+} from '@ngneat/spectator/jest';
+import { MockDirective, MockPipe } from 'ng-mocks';
+import { VictoryNamePipe } from './victory-name/victory-name-pipe';
 import VictoryPage from './victory-page';
-import { VictoryEnum } from '@/types/victory';
-import { provideLocationMocks } from '@angular/common/testing';
 
 describe('VictoryPage', () => {
-  let component: VictoryPage;
+  let spectator: Spectator<VictoryPage>;
 
-  ngMocks.faster();
-
-  beforeAll(() =>
-    MockBuilder(VictoryPage)
-      .mock(NewGameCreator)
-      .provide(provideLocationMocks()),
-  );
-
-  beforeAll(() => {
-    MockInstance(NewGameCreator, () => ({
-      replay: jest.fn(),
-    }));
+  const createComponent = createComponentFactory({
+    component: VictoryPage,
+    mocks: [NewGameCreator],
+    imports: [MockDirective(RouterLink), MockPipe(VictoryNamePipe)],
   });
 
-  beforeAll(() => {
-    component = MockRender(VictoryPage, { victory: VictoryEnum.NONE }).point
-      .componentInstance;
+  beforeEach(() => {
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 
-  it('should replay', () => {
-    const newGameCreator = ngMocks.get(NewGameCreator);
+  it('should replay on replay button click', () => {
+    const newGameCreator = spectator.inject(NewGameCreator);
 
-    component['replay']();
+    spectator.click(byTestId('replay-button'));
 
     expect(newGameCreator.replay).toHaveBeenCalled();
   });
-
-  afterAll(MockReset);
 });

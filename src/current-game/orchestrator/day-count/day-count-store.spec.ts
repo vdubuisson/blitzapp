@@ -1,92 +1,73 @@
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { DayCountStore } from './day-count-store';
 import { Storage } from '@/storage/storage';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
 import { of } from 'rxjs';
-import { TestBed } from '@angular/core/testing';
+import { DayCountStore } from './day-count-store';
 
-describe('DayCountStore without storage', () => {
-  let service: DayCountStore;
-  const mockState = 2;
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(DayCountStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
-          set: jest.fn(),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () => (service = MockRender(DayCountStore).point.componentInstance),
-  );
-
-  it('should init state with default value 1', () => {
-    expect(service.state()).toEqual(1);
-  });
-
-  it('should store new value to storage', () => {
-    service.state.set(mockState);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
-  });
-
-  it('should store new value to storage with storage key store.dayCount', () => {
-    service.state.set(3);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.dayCount',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('DayCountStore with storage init', () => {
-  let service: DayCountStore;
+describe('DayCountStore', () => {
+  let spectator: SpectatorService<DayCountStore>;
 
   const mockState = 2;
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(DayCountStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockState),
-        }) as Partial<Storage>,
-    );
+  const createService = createServiceFactory({
+    service: DayCountStore,
   });
 
-  beforeAll(
-    () => (service = MockRender(DayCountStore).point.componentInstance),
-  );
+  describe('without storage', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(null)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
 
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
+    it('should init state with default value 1', () => {
+      expect(spectator.service.state()).toEqual(1);
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set(mockState);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
+    });
+
+    it('should store new value to storage with storage key store.dayCount', () => {
+      spectator.service.state.set(3);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.dayCount',
+        expect.anything(),
+      );
+    });
   });
 
-  afterAll(MockReset);
+  describe('with storage init', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(mockState)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
+
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
+  });
 });

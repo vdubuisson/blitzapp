@@ -1,14 +1,15 @@
 <header>
-  <fa-icon [icon]="menuIcon" size="lg" (click)="openMenu()" />
-  <h1>{{ title() }}</h1>
+  <fa-icon [icon]="menuIcon" size="lg" (click)="openMenu()" data-testid="menu-icon" />
+  <h1 data-testid="title">{{ title() }}</h1>
 </header>
 
-<div class="menu-overlay" [class.hidden]="isMenuHidden()">
+<div class="menu-overlay" [class.hidden]="isMenuHidden()" data-testid="menu">
   <div
     class="backdrop"
     (click)="closeMenu()"
     (keyup.enter)="closeMenu()"
     tabindex="0"
+    data-testid="backdrop"
   ></div>
   <nav>
     <header>
@@ -25,7 +26,7 @@
       </li>
       @if (isGameInProgress()) {
         <li>
-          <a routerLink="/current-game" routerLinkActive="active">Partie en cours</a>
+          <a routerLink="/current-game" routerLinkActive="active" data-testid="current-game-link">Partie en cours</a>
         </li>
       }
       <li>

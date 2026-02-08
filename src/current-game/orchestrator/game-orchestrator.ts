@@ -163,7 +163,7 @@ export class GameOrchestrator {
 
     const nextHandler = this.roundHandlersManager.getHandler(nextRound);
 
-    this.handlerAfterLoupsEvents(nextHandler);
+    this.handleAfterLoupsEvents(nextHandler);
 
     nextRound = this.handleAfterNightDeaths(
       currentHandler,
@@ -234,7 +234,7 @@ export class GameOrchestrator {
 
   private handleAfterNightDeaths(
     currentHandler: RoundHandler | undefined,
-    currentRoundRole: Round,
+    currentRound: Round,
     nextHandler: RoundHandler | undefined,
     nextRound: Round,
   ): Round {
@@ -243,7 +243,7 @@ export class GameOrchestrator {
         this.players(),
       );
       this.setPlayers(playersAfterDeath);
-      return this.roundOrchestrator.getNextRound(currentRoundRole);
+      return this.roundOrchestrator.getNextRound(currentRound);
     }
     return nextRound;
   }
@@ -320,7 +320,7 @@ export class GameOrchestrator {
     }
   }
 
-  private handlerAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
+  private handleAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
     const currentRound = this.roundConfig()?.round;
     const nextRound = nextHandler?.getRoundConfig(
       this.players(),

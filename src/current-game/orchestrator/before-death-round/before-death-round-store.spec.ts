@@ -1,93 +1,74 @@
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { BeforeDeathRoundStore } from './before-death-round-store';
 import { Storage } from '@/storage/storage';
-import { of } from 'rxjs';
-import { TestBed } from '@angular/core/testing';
 import { RoundEnum } from '@/types/round';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
+import { of } from 'rxjs';
+import { BeforeDeathRoundStore } from './before-death-round-store';
 
-describe('BeforeDeathRoundStore without storage', () => {
-  let service: BeforeDeathRoundStore;
-  const mockState = RoundEnum.VILLAGEOIS;
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(BeforeDeathRoundStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
-          set: jest.fn(),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () => (service = MockRender(BeforeDeathRoundStore).point.componentInstance),
-  );
-
-  it('should init state with default value', () => {
-    expect(service.state()).toEqual(null);
-  });
-
-  it('should store new value to storage', () => {
-    service.state.set(mockState);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
-  });
-
-  it('should store new value to storage with storage key store.beforeDeathRound', () => {
-    service.state.set(RoundEnum.LOUP_GAROU);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.beforeDeathRound',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('BeforeDeathRoundStore with storage init', () => {
-  let service: BeforeDeathRoundStore;
+describe('BeforeDeathRoundStore', () => {
+  let spectator: SpectatorService<BeforeDeathRoundStore>;
 
   const mockState = RoundEnum.VILLAGEOIS;
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(BeforeDeathRoundStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockState),
-        }) as Partial<Storage>,
-    );
+  const createService = createServiceFactory({
+    service: BeforeDeathRoundStore,
   });
 
-  beforeAll(
-    () => (service = MockRender(BeforeDeathRoundStore).point.componentInstance),
-  );
+  describe('without storage', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(null)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
 
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
+    it('should init state with default value', () => {
+      expect(spectator.service.state()).toEqual(null);
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set(mockState);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
+    });
+
+    it('should store new value to storage with storage key store.beforeDeathRound', () => {
+      spectator.service.state.set(RoundEnum.LOUP_GAROU);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.beforeDeathRound',
+        expect.anything(),
+      );
+    });
   });
 
-  afterAll(MockReset);
+  describe('with storage init', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: jest.fn().mockReturnValue(of(mockState)),
+            set: jest.fn(),
+          }),
+        ],
+      });
+    });
+
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
+  });
 });

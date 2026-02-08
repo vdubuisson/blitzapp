@@ -1,27 +1,32 @@
-import { PlayerRoleEnum } from '@/types/player-role';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
 import { ModalManager } from '@/layout/modal/modal-manager';
-import { TestBed } from '@angular/core/testing';
-import { MockService } from 'ng-mocks';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
+import {
+  createInjectionContextFactory,
+  mockProvider,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 import { firstValueFrom, of } from 'rxjs';
 import { VoyanteRoundHandler } from './voyante-round.handler';
 
 describe('VoyanteRoundHandler', () => {
   let roundHandler: VoyanteRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  let modalManager: ModalManager;
+  const createContext = createInjectionContextFactory({
+    providers: [
+      mockProvider(ModalManager, {
+        showPlayerCard: jest.fn().mockReturnValue(of(undefined)),
+      }),
+    ],
+  });
 
-  beforeAll(() => {
-    modalManager = MockService(ModalManager);
-    jest.spyOn(modalManager, 'showPlayerCard').mockReturnValue(of(undefined));
-
-    TestBed.configureTestingModule({
-      providers: [{ provide: ModalManager, useValue: modalManager }],
-    });
-    TestBed.runInInjectionContext(
-      () => (roundHandler = new VoyanteRoundHandler()),
+  beforeEach(() => {
+    spectator = createContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new VoyanteRoundHandler(),
     );
   });
 
@@ -94,6 +99,7 @@ describe('VoyanteRoundHandler', () => {
         isDead: false,
       },
     ];
+    const modalManager = spectator.inject(ModalManager);
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(modalManager.showPlayerCard).toHaveBeenCalledWith(

@@ -1,21 +1,19 @@
-import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { CardList, StoredCardList } from '@/shared/types/card-list';
 import { Storage } from '@/storage/storage';
 import { TestBed } from '@angular/core/testing';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
 import { of } from 'rxjs';
 import { CardChoiceStore } from './card-choice-store';
 
-describe('CardChoiceStore without storage', () => {
-  let service: CardChoiceStore;
+describe('CardChoiceStore', () => {
+  let spectator: SpectatorService<CardChoiceStore>;
   const mockState: CardList = {
-    selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.SORCIERE]),
+    selectedRoles: new Set<PlayerRole>([PlayerRoleEnum.SORCIERE]),
     villageois: 4,
     loupGarou: 1,
     playersNumber: 6,
@@ -28,99 +26,71 @@ describe('CardChoiceStore without storage', () => {
     playersNumber: 6,
   };
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(CardChoiceStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
+  describe('without storage', () => {
+    const createService = createServiceFactory({
+      service: CardChoiceStore,
+      providers: [
+        mockProvider(Storage, {
+          get: jest.fn().mockReturnValue(of(null)),
           set: jest.fn(),
-        }) as Partial<Storage>,
-    );
-  });
+        }),
+      ],
+    });
 
-  beforeAll(
-    () => (service = MockRender(CardChoiceStore).point.componentInstance),
-  );
+    beforeEach(() => {
+      spectator = createService();
+    });
 
-  it('should init state with default value', () => {
-    expect(service.state()).toEqual({
-      villageois: 0,
-      loupGarou: 0,
-      playersNumber: 0,
-      selectedRoles: new Set(),
+    it('should init state with default value', () => {
+      expect(spectator.service.state()).toEqual({
+        villageois: 0,
+        loupGarou: 0,
+        playersNumber: 0,
+        selectedRoles: new Set(),
+      });
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set({ ...mockState });
+
+      TestBed.tick();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        expect.anything(),
+        mockStateStored,
+      );
+    });
+
+    it('should store new value to storage with storage key store.cardChoice', () => {
+      spectator.service.state.set({ ...mockState });
+
+      TestBed.tick();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.cardChoice',
+        expect.anything(),
+      );
     });
   });
 
-  it('should store new value to storage', () => {
-    service.state.set({ ...mockState });
+  describe('with storage init', () => {
+    const createService = createServiceFactory({
+      service: CardChoiceStore,
+      providers: [
+        mockProvider(Storage, {
+          get: jest.fn().mockReturnValue(of(mockStateStored)),
+        }),
+      ],
+    });
 
-    TestBed.tick();
+    beforeEach(() => {
+      spectator = createService();
+    });
 
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      expect.anything(),
-      mockStateStored,
-    );
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
   });
-
-  it('should store new value to storage with storage key store.cardChoice', () => {
-    service.state.set({ ...mockState });
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.cardChoice',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('CardChoiceStore with storage init', () => {
-  let service: CardChoiceStore;
-
-  const mockState: CardList = {
-    selectedRoles: new Set<PlayerRoleEnum>([PlayerRoleEnum.SORCIERE]),
-    villageois: 4,
-    loupGarou: 1,
-    playersNumber: 6,
-  };
-
-  const mockStateStored: StoredCardList = {
-    selectedRoles: [PlayerRoleEnum.SORCIERE],
-    villageois: 4,
-    loupGarou: 1,
-    playersNumber: 6,
-  };
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(CardChoiceStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockStateStored),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () => (service = MockRender(CardChoiceStore).point.componentInstance),
-  );
-
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
-  });
-
-  afterAll(MockReset);
 });

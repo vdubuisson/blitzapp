@@ -1,83 +1,55 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { CardList } from '@/shared/types/card-list';
-import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
 import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
-import { signal, WritableSignal } from '@angular/core';
+import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
+import { CardList } from '@/shared/types/card-list';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  MockBuilder,
-  MockedComponentFixture,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from '@ngneat/spectator/jest';
 import NewGameRolesPage from './new-game-roles-page';
+import { signal } from '@angular/core';
 
 describe('NewGameRolesPage', () => {
-  let page: NewGameRolesPage;
-  let fixture: MockedComponentFixture<NewGameRolesPage>;
+  let spectator: Spectator<NewGameRolesPage>;
 
-  let currentChosenCards: WritableSignal<CardList>;
+  const defaultCards: CardList = {
+    selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
+    villageois: 1,
+    loupGarou: 1,
+    playersNumber: 3,
+  };
 
-  function createComponent() {
-    fixture = MockRender(NewGameRolesPage);
-    page = fixture.point.componentInstance;
-  }
+  const createComponent = createComponentFactory({
+    component: NewGameRolesPage,
+    mocks: [Router, ActivatedRoute],
+    providers: [
+      mockProvider(PlayerRoleNamePipe, {
+        transform: jest.fn().mockReturnValue(''),
+      }),
+    ],
+  });
 
-  ngMocks.faster();
-
-  beforeAll(() =>
-    MockBuilder(NewGameRolesPage)
-      .mock(CardChoiceStore)
-      .mock(Router)
-      .mock(PlayerRoleNamePipe)
-      .mock(ActivatedRoute),
-  );
-
-  beforeAll(async () => {
-    currentChosenCards = signal({
-      selectedRoles: new Set([]),
-      villageois: 1,
-      loupGarou: 2,
-      playersNumber: 3,
+  const createComponentWithCards = (cards: CardList = defaultCards) =>
+    createComponent({
+      providers: [
+        mockProvider(CardChoiceStore, {
+          state: signal(cards),
+        }),
+      ],
     });
 
-    MockInstance(CardChoiceStore, () => ({
-      state: currentChosenCards,
-    }));
-
-    MockInstance(Router, () => ({
-      navigate: jest.fn(),
-    }));
-
-    MockInstance(ActivatedRoute, () => ({
-      parent: undefined,
-    }));
-
-    MockInstance(PlayerRoleNamePipe, () => ({
-      transform: () => '',
-    }));
-  });
-
   it('should create page', () => {
-    createComponent();
-
-    expect(page).toBeTruthy();
+    spectator = createComponentWithCards();
+    expect(spectator.component).toBeTruthy();
   });
 
-  it('should get roles from service', () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
-
-    createComponent();
-
-    expect(page['selectedRoles']()).toEqual(mockCards.selectedRoles);
+  it('should get roles from service', async () => {
+    spectator = createComponentWithCards();
+    expect(spectator.component['selectedRoles']()).toEqual(
+      defaultCards.selectedRoles,
+    );
   });
 
   it('should init form with roles', () => {
@@ -87,104 +59,90 @@ describe('NewGameRolesPage', () => {
       loupGarou: 2,
       playersNumber: 3,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
-
-    expect(page['roleCountForm'].value).toEqual({
+    expect(spectator.component['roleCountForm'].value).toEqual({
       loupGarou: mockCards.loupGarou,
       villageois: mockCards.villageois,
     });
   });
 
   it('should init playersCount', () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
-
-    createComponent();
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator = createComponentWithCards();
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber,
+    );
   });
 
   it('should add role on check', () => {
-    createComponent();
+    spectator = createComponentWithCards();
+    expect(
+      spectator.component['selectedRoles']().has(PlayerRoleEnum.CHASSEUR),
+    ).toBeFalsy();
 
-    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
-
-    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
+    expect(
+      spectator.component['selectedRoles']().has(PlayerRoleEnum.CHASSEUR),
+    ).toBeTruthy();
   });
 
   it('should increment playersCount by 1 on simple role check', () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 1);
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber + 1,
+    );
   });
 
   it('should increment playersCount by 2 on SOEUR role check', () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber + 2,
+    );
   });
 
   it('should increment playersCount by 3 on FRERE role check', () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.FRERE);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.FRERE);
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 3);
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber + 3,
+    );
   });
 
   it('should delete role on uncheck', () => {
-    createComponent();
+    spectator = createComponentWithCards();
 
-    page['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
+    spectator.component['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
 
-    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeTruthy();
+    expect(
+      spectator.component['selectedRoles']().has(PlayerRoleEnum.CHASSEUR),
+    ).toBeTruthy();
 
-    page['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.CHASSEUR);
 
-    expect(page['selectedRoles']().has(PlayerRoleEnum.CHASSEUR)).toBeFalsy();
+    expect(
+      spectator.component['selectedRoles']().has(PlayerRoleEnum.CHASSEUR),
+    ).toBeFalsy();
   });
 
   it('should decrement playersCount by 1 on simple role uncheck', () => {
@@ -194,15 +152,17 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 3,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.SORCIERE);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.SORCIERE);
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 1);
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber - 1,
+    );
   });
 
   it('should decrement playersCount by 2 on SOEUR role uncheck', () => {
@@ -212,15 +172,17 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 4,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.SOEUR);
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber - 2,
+    );
   });
 
   it('should decrement playersCount by 3 on FRERE role uncheck', () => {
@@ -230,71 +192,57 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 5,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.FRERE);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.FRERE);
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 3);
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber - 3,
+    );
   });
 
   it('should clear selected roles on deselect', () => {
-    createComponent();
+    spectator = createComponentWithCards();
 
-    page['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
+    spectator.component['rolesSelection'].setSelection(PlayerRoleEnum.CHASSEUR);
 
-    expect(page['selectedRoles']().size).toEqual(1);
+    expect(spectator.component['selectedRoles']().size).toEqual(1);
 
-    page['deselectAll']();
+    spectator.component['deselectAll']();
 
-    expect(page['selectedRoles']().size).toEqual(0);
+    expect(spectator.component['selectedRoles']().size).toEqual(0);
   });
 
   it('should reset form on deselect', () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
-
-    expect(page['roleCountForm'].value).not.toEqual({
+    expect(spectator.component['roleCountForm'].value).not.toEqual({
       villageois: 0,
       loupGarou: 0,
     });
 
-    page['deselectAll']();
+    spectator.component['deselectAll']();
 
-    expect(page['roleCountForm'].value).toEqual({
+    expect(spectator.component['roleCountForm'].value).toEqual({
       villageois: 0,
       loupGarou: 0,
     });
   });
 
   it('should reset playersCount on deselect', async () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
+    expect(spectator.component['playersCount']()).not.toEqual(0);
 
-    expect(page['playersCount']()).not.toEqual(0);
+    spectator.component['deselectAll']();
 
-    page['deselectAll']();
+    await spectator.fixture.whenStable();
 
-    await fixture.whenStable();
-
-    expect(page['playersCount']()).toEqual(0);
+    expect(spectator.component['playersCount']()).toEqual(0);
   });
 
   it('should set roles on validate', () => {
@@ -304,16 +252,14 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 2,
     };
-    currentChosenCards.set(mockCards);
-
-    createComponent();
+    spectator = createComponentWithCards(mockCards);
 
     const selectedRoles = new Set([
       PlayerRoleEnum.CHASSEUR,
       PlayerRoleEnum.CUPIDON,
     ]);
 
-    page['rolesSelection'].setSelection(...selectedRoles);
+    spectator.component['rolesSelection'].setSelection(...selectedRoles);
 
     const expectedCardList: CardList = {
       selectedRoles,
@@ -322,19 +268,19 @@ describe('NewGameRolesPage', () => {
       playersNumber: 4,
     };
 
-    page['validateRoles']();
+    spectator.component['validateRoles']();
 
-    const cardChoiceStore = ngMocks.get(CardChoiceStore);
+    const cardChoiceStore = spectator.inject(CardChoiceStore);
 
     expect(cardChoiceStore.state()).toEqual(expectedCardList);
   });
 
   it('should navigate to /players on validate', () => {
-    createComponent();
+    spectator = createComponentWithCards();
 
-    page['validateRoles']();
+    spectator.component['validateRoles']();
 
-    const router = ngMocks.get(Router);
+    const router = spectator.inject(Router);
 
     expect(router.navigate).toHaveBeenCalledWith(['players'], {
       relativeTo: undefined,
@@ -342,43 +288,39 @@ describe('NewGameRolesPage', () => {
   });
 
   it('should increment playersCount on villageois form increase', async () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['roleCountForm']
+      .get('villageois')
+      ?.setValue(defaultCards.villageois + 2);
 
-    page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois + 2);
+    await spectator.fixture.whenStable();
 
-    await fixture.whenStable();
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber + 2,
+    );
   });
 
   it('should increment playersCount on loupGarou form increase', async () => {
-    const mockCards = {
-      selectedRoles: new Set([PlayerRoleEnum.SORCIERE]),
-      villageois: 1,
-      loupGarou: 1,
-      playersNumber: 3,
-    };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards();
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['roleCountForm']
+      .get('loupGarou')
+      ?.setValue(defaultCards.loupGarou + 2);
 
-    page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou + 2);
+    await spectator.fixture.whenStable();
 
-    await fixture.whenStable();
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber + 2);
+    expect(spectator.component['playersCount']()).toEqual(
+      defaultCards.playersNumber + 2,
+    );
   });
 
   it('should decrement playersCount on villageois form decrease', async () => {
@@ -388,17 +330,21 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 5,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['roleCountForm']
+      .get('villageois')
+      ?.setValue(mockCards.villageois - 2);
 
-    page['roleCountForm'].get('villageois')?.setValue(mockCards.villageois - 2);
+    await spectator.fixture.whenStable();
 
-    await fixture.whenStable();
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber - 2,
+    );
   });
 
   it('should decrement playersCount on loupGarou form decrease', async () => {
@@ -408,17 +354,21 @@ describe('NewGameRolesPage', () => {
       loupGarou: 3,
       playersNumber: 5,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber,
+    );
 
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber);
+    spectator.component['roleCountForm']
+      .get('loupGarou')
+      ?.setValue(mockCards.loupGarou - 2);
 
-    page['roleCountForm'].get('loupGarou')?.setValue(mockCards.loupGarou - 2);
+    await spectator.fixture.whenStable();
 
-    await fixture.whenStable();
-
-    expect(page['playersCount']()).toEqual(mockCards.playersNumber - 2);
+    expect(spectator.component['playersCount']()).toEqual(
+      mockCards.playersNumber - 2,
+    );
   });
 
   it('should increment villageois count by 2 on VOLEUR check', () => {
@@ -428,15 +378,13 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 2,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
-
-    expect(page['roleCountForm'].get('villageois')?.value).toEqual(
-      mockCards.villageois + 2,
-    );
+    expect(
+      spectator.component['roleCountForm'].get('villageois')?.value,
+    ).toEqual(mockCards.villageois + 2);
   });
 
   it('should decrement villageois count by 2 on VOLEUR uncheck', () => {
@@ -446,15 +394,13 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 3,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
-
-    expect(page['roleCountForm'].get('villageois')?.value).toEqual(
-      mockCards.villageois - 2,
-    );
+    expect(
+      spectator.component['roleCountForm'].get('villageois')?.value,
+    ).toEqual(mockCards.villageois - 2);
   });
 
   it('should decrement villageois count to 0 on VOLEUR uncheck if less than 2', () => {
@@ -464,13 +410,13 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 2,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
-
-    expect(page['roleCountForm'].get('villageois')?.value).toEqual(0);
+    expect(
+      spectator.component['roleCountForm'].get('villageois')?.value,
+    ).toEqual(0);
   });
 
   it('should ignore 2 villageois in playersCount when VOLEUR checked', async () => {
@@ -480,16 +426,12 @@ describe('NewGameRolesPage', () => {
       loupGarou: 1,
       playersNumber: 2,
     };
-    currentChosenCards.set(mockCards);
+    spectator = createComponentWithCards(mockCards);
 
-    createComponent();
+    spectator.component['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
 
-    page['onRoleCheckChange'](PlayerRoleEnum.VOLEUR);
+    await spectator.fixture.whenStable();
 
-    await fixture.whenStable();
-
-    expect(page['playersCount']()).toEqual(3);
+    expect(spectator.component['playersCount']()).toEqual(3);
   });
-
-  afterAll(MockReset);
 });

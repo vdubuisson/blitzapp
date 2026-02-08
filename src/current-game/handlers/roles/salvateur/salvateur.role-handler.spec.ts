@@ -1,48 +1,34 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { SalvateurRoleHandler } from './salvateur.role-handler';
 import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 
 describe('SalvateurRoleHandler', () => {
   let handler: SalvateurRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager, StatusHandlersManager],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new SalvateurRoleHandler()));
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new SalvateurRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -56,6 +42,8 @@ describe('SalvateurRoleHandler', () => {
     });
 
     it('should create SALVATEUR round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -64,6 +52,8 @@ describe('SalvateurRoleHandler', () => {
     });
 
     it('should create PROTECTED status handler for each player', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -74,6 +64,7 @@ describe('SalvateurRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove SALVATEUR round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);

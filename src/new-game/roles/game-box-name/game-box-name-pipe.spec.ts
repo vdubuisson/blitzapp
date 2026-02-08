@@ -1,4 +1,5 @@
 import { GameBoxEnum } from '@/config/game-boxes';
+import { createPipeFactory, SpectatorPipe } from '@ngneat/spectator/jest';
 import { GameBoxNamePipe } from './game-box-name-pipe';
 
 jest.mock('@/texts/game-box-names', () => ({
@@ -6,18 +7,24 @@ jest.mock('@/texts/game-box-names', () => ({
 }));
 
 describe('GameBoxNamePipe', () => {
-  let pipe: GameBoxNamePipe;
+  let spectator: SpectatorPipe<GameBoxNamePipe>;
+  const createPipe = createPipeFactory(GameBoxNamePipe);
 
-  beforeEach(() => {
-    pipe = new GameBoxNamePipe();
-  });
-
-  it('create an instance', () => {
-    expect(pipe).toBeTruthy();
+  it('should create an instance', () => {
+    spectator = createPipe(`{{ prop | gameBoxName }}`, {
+      hostProps: {
+        prop: GameBoxEnum.CORE,
+      },
+    });
+    expect(spectator.element).toBeTruthy();
   });
 
   it('should display value for requested enum', () => {
-    const name = pipe.transform(GameBoxEnum.CORE);
-    expect(name).toEqual('Test');
+    spectator = createPipe(`{{ prop | gameBoxName }}`, {
+      hostProps: {
+        prop: GameBoxEnum.CORE,
+      },
+    });
+    expect(spectator.element).toHaveText('Test');
   });
 });

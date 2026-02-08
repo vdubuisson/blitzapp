@@ -1,9 +1,8 @@
-import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
-import { MockReset } from 'ng-mocks';
-import { RustySwordStatusHandler } from './rusty-sword.status-handler';
 import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
+import { RustySwordStatusHandler } from './rusty-sword.status-handler';
 
 describe('RustySwordStatusHandler', () => {
   let handler: RustySwordStatusHandler;
@@ -11,8 +10,6 @@ describe('RustySwordStatusHandler', () => {
   beforeAll(() => {
     handler = new RustySwordStatusHandler();
   });
-
-  afterAll(MockReset);
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();

@@ -1,47 +1,31 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
-import { ChevalierRoleHandler } from './chevalier.role-handler';
-import { TestBed } from '@angular/core/testing';
+import { RustySwordStatusHandler } from '@/game-handlers/status/rusty-sword/rusty-sword.status-handler';
+import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import * as statusUtils from '@/utils/status.utils';
-import { PlayerStatusEnum } from '@/types/player-status';
-import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
-import { RustySwordStatusHandler } from '@/game-handlers/status/rusty-sword/rusty-sword.status-handler';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
+import { ChevalierRoleHandler } from './chevalier.role-handler';
 
 describe('ChevalierRoleHandler', () => {
   let handler: ChevalierRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
-  let rustySwordHandler: RustySwordStatusHandler;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [
+      RoundHandlersManager,
+      StatusHandlersManager,
+      RustySwordStatusHandler,
+    ],
+  });
 
-  beforeAll(() => {
-    rustySwordHandler = MockService(RustySwordStatusHandler, {
-      triggerAction: jest.fn(),
-    });
-
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new ChevalierRoleHandler()));
-
+  beforeEach(() => {
     players = [
       {
         id: 1,
@@ -62,9 +46,10 @@ describe('ChevalierRoleHandler', () => {
         statuses: new Set(),
       } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new ChevalierRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -78,12 +63,16 @@ describe('ChevalierRoleHandler', () => {
     });
 
     it('should create no round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).not.toHaveBeenCalled();
     });
 
     it('should create RUSTY_SWORD status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -162,6 +151,10 @@ describe('ChevalierRoleHandler', () => {
     });
 
     it('should trigger RUSTY_SWORD status if CHEVALIER is dead', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+      const rustySwordHandler = {
+        triggerAction: jest.fn(),
+      } as unknown as RustySwordStatusHandler;
       const testPlayers = [
         {
           id: 1,

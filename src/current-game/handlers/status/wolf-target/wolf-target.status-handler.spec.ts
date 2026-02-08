@@ -1,9 +1,8 @@
-import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
-import { MockReset } from 'ng-mocks';
-import { WolfTargetStatusHandler } from './wolf-target.status-handler';
 import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
+import { WolfTargetStatusHandler } from './wolf-target.status-handler';
 
 describe('WolfTargetStatusHandler', () => {
   let handler: WolfTargetStatusHandler;
@@ -11,8 +10,6 @@ describe('WolfTargetStatusHandler', () => {
   beforeAll(() => {
     handler = new WolfTargetStatusHandler();
   });
-
-  afterAll(MockReset);
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();

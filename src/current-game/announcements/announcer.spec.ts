@@ -1,30 +1,21 @@
-import { Storage } from '@/storage/storage';
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { of } from 'rxjs';
+import { ModalManager } from '@/layout/modal/modal-manager';
+import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
+import { AnnouncementsQueueStore } from './announcements-queue/announcements-queue-store';
 import { Announcer } from './announcer';
 
 describe('Announcer', () => {
-  let service: Announcer;
+  let spectator: SpectatorService<Announcer>;
 
-  ngMocks.faster();
+  const createService = createServiceFactory({
+    service: Announcer,
+    mocks: [ModalManager, AnnouncementsQueueStore],
+  });
 
-  beforeAll(() => MockBuilder(Announcer).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(Storage, 'get', () => of(null));
-
-    service = MockRender(Announcer).point.componentInstance;
+  beforeEach(() => {
+    spectator = createService();
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
-
-  afterAll(MockReset);
 });

@@ -1,213 +1,231 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { RoundEnum } from '@/types/round';
-import { CapitaineRoundHandler } from '@/game-handlers/rounds/capitaine/capitaine-round.handler';
+import { DefaultRoundHandlersStore } from '@/game-handlers/rounds/default-round-handlers-store';
 import { DefaultRoundHandler } from '@/game-handlers/rounds/default/default-round.handler';
-import { LoupGarouRoundHandler } from '@/game-handlers/rounds/loup-garou/loup-garou-round.handler';
+import { RoundHandlersStore } from '@/game-handlers/rounds/round-handlers-store';
 import { VillageoisRoundHandler } from '@/game-handlers/rounds/villageois/villageois-round.handler';
 import { VoyanteRoundHandler } from '@/game-handlers/rounds/voyante/voyante-round.handler';
-import { DefaultRoundHandlersStore } from '@/game-handlers/rounds/default-round-handlers-store';
-import { RoundHandlersStore } from '@/game-handlers/rounds/round-handlers-store';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { Round, RoundEnum } from '@/types/round';
 import { signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
 import { RoundHandlersManager } from './round-handlers-manager';
 
+jest.mock('@/config/round-handlers', () => {
+  class VillageoisRoundHandlerMock {}
+  class LoupGarouRoundHandlerMock {}
+  class CapitaineRoundHandlerMock {}
+  class VoyanteRoundHandlerMock {}
+
+  return {
+    ROUND_HANDLERS: {
+      [RoundEnum.VILLAGEOIS]: VillageoisRoundHandlerMock,
+      [RoundEnum.LOUP_GAROU]: LoupGarouRoundHandlerMock,
+      [RoundEnum.CAPITAINE]: CapitaineRoundHandlerMock,
+      [RoundEnum.VOYANTE]: VoyanteRoundHandlerMock,
+    },
+  };
+});
+
 describe('RoundHandlersManager', () => {
-  ngMocks.faster();
-  let service: RoundHandlersManager;
-  let villageoisRoundHandler: VillageoisRoundHandler;
-  let voyanteRoundHandler: VoyanteRoundHandler;
+  let spectator: SpectatorService<RoundHandlersManager>;
 
-  beforeAll(() =>
-    MockBuilder(RoundHandlersManager)
-      .mock(RoundHandlersStore)
-      .mock(DefaultRoundHandlersStore),
-  );
-
-  beforeAll(() => {
-    MockInstance(RoundHandlersStore, 'state', signal(new Set<Round>()));
-    MockInstance(DefaultRoundHandlersStore, 'state', signal(new Set<Round>()));
-
-    TestBed.runInInjectionContext(() => {
-      villageoisRoundHandler = new VillageoisRoundHandler();
-      voyanteRoundHandler = new VoyanteRoundHandler();
-    });
-  });
-
-  beforeAll(() => {
-    service = MockRender(RoundHandlersManager).point.componentInstance;
+  const createService = createServiceFactory({
+    service: RoundHandlersManager,
+    providers: [
+      mockProvider(RoundHandlersStore, {
+        state: signal(new Set<Round>()),
+      }),
+      mockProvider(DefaultRoundHandlersStore, {
+        state: signal(new Set<Round>()),
+      }),
+    ],
   });
 
   beforeEach(() => {
-    service['roundHandlers'].clear();
+    spectator = createService();
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
 
   describe('initRequiredHandlers', () => {
     it('should init VILLAGEOIS round handler', () => {
-      service.initRequiredHandlers();
+      spectator.service.initRequiredHandlers();
 
-      expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
-        VillageoisRoundHandler,
-      );
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.VILLAGEOIS)
+          ?.constructor.name,
+      ).toEqual('VillageoisRoundHandlerMock');
     });
 
     it('should init CAPITAINE round handler', () => {
-      service.initRequiredHandlers();
+      spectator.service.initRequiredHandlers();
 
-      expect(service['roundHandlers'].get(RoundEnum.CAPITAINE)).toBeInstanceOf(
-        CapitaineRoundHandler,
-      );
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.CAPITAINE)?.constructor
+          .name,
+      ).toEqual('CapitaineRoundHandlerMock');
     });
 
     it('should init LOUP_GAROU round handler for LOUP_GAROU role', () => {
-      service.initRequiredHandlers();
+      spectator.service.initRequiredHandlers();
 
-      expect(service['roundHandlers'].get(RoundEnum.LOUP_GAROU)).toBeInstanceOf(
-        LoupGarouRoundHandler,
-      );
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.LOUP_GAROU)
+          ?.constructor.name,
+      ).toEqual('LoupGarouRoundHandlerMock');
     });
   });
 
   describe('getHandler', () => {
     it('should return configured round handler', () => {
-      service['roundHandlers'].set(
+      const villageoisRoundHandler = {} as VillageoisRoundHandler;
+      spectator.service['roundHandlers'].set(
         RoundEnum.VILLAGEOIS,
         villageoisRoundHandler,
       );
 
-      const testHandler = service.getHandler(RoundEnum.VILLAGEOIS);
+      const testHandler = spectator.service.getHandler(RoundEnum.VILLAGEOIS);
 
-      expect(testHandler).toEqual(villageoisRoundHandler);
+      expect(testHandler).toBe(villageoisRoundHandler);
     });
   });
 
   describe('initAsDefaultHandlers', () => {
     it('should init handler as default', () => {
-      service.initAsDefaultHandlers([PlayerRoleEnum.VOYANTE]);
+      spectator.service.initAsDefaultHandlers([PlayerRoleEnum.VOYANTE]);
 
-      expect(service['roundHandlers'].get(RoundEnum.VOYANTE)).toBeInstanceOf(
-        DefaultRoundHandler,
-      );
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.VOYANTE),
+      ).toBeInstanceOf(DefaultRoundHandler);
     });
   });
 
   describe('removeHandlersByRoles', () => {
     it('should remove handlers for specified roles', () => {
-      service['roundHandlers'].set(RoundEnum.VOYANTE, voyanteRoundHandler);
+      spectator.service['roundHandlers'].set(
+        RoundEnum.VOYANTE,
+        {} as VoyanteRoundHandler,
+      );
 
-      service.removeHandlersByRoles([PlayerRoleEnum.VOYANTE]);
+      spectator.service.removeHandlersByRoles([PlayerRoleEnum.VOYANTE]);
 
-      expect(service['roundHandlers'].get(RoundEnum.VOYANTE)).toBeUndefined();
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.VOYANTE),
+      ).toBeUndefined();
     });
 
     it('should not remove handlers for non-specified roles', () => {
-      service['roundHandlers'].set(
+      spectator.service['roundHandlers'].set(
         RoundEnum.VILLAGEOIS,
-        villageoisRoundHandler,
+        {} as VillageoisRoundHandler,
       );
 
-      service.removeHandlersByRoles([PlayerRoleEnum.VOYANTE]);
+      spectator.service.removeHandlersByRoles([PlayerRoleEnum.VOYANTE]);
 
-      expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
-        VillageoisRoundHandler,
-      );
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.VILLAGEOIS),
+      ).toBeDefined();
     });
   });
 
   describe('clearHandlers', () => {
     it('should clear all round handlers', () => {
-      service['roundHandlers'].set(
+      spectator.service['roundHandlers'].set(
         RoundEnum.VILLAGEOIS,
-        villageoisRoundHandler,
+        {} as VillageoisRoundHandler,
       );
 
-      service.clearHandlers();
+      spectator.service.clearHandlers();
 
-      expect(service['roundHandlers'].size).toEqual(0);
+      expect(spectator.service['roundHandlers'].size).toEqual(0);
     });
 
     it('should clear round handlers state', () => {
-      service['roundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
+      spectator.service['roundHandlersState'].set(
+        new Set([RoundEnum.VILLAGEOIS]),
+      );
 
-      service.clearHandlers();
+      spectator.service.clearHandlers();
 
-      expect(service['roundHandlersState']().size).toEqual(0);
+      expect(spectator.service['roundHandlersState']().size).toEqual(0);
     });
 
     it('should clear default round handlers state', () => {
-      service['defaultRoundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
+      spectator.service['defaultRoundHandlersState'].set(
+        new Set([RoundEnum.VILLAGEOIS]),
+      );
 
-      service.clearHandlers();
+      spectator.service.clearHandlers();
 
-      expect(service['defaultRoundHandlersState']().size).toEqual(0);
+      expect(spectator.service['defaultRoundHandlersState']().size).toEqual(0);
     });
   });
 
   describe('removeHandler', () => {
     it('should remove specific round handler', () => {
-      service['roundHandlers'].set(
+      spectator.service['roundHandlers'].set(
         RoundEnum.VILLAGEOIS,
-        villageoisRoundHandler,
+        {} as VillageoisRoundHandler,
       );
 
-      service.removeHandler(RoundEnum.VILLAGEOIS);
+      spectator.service.removeHandler(RoundEnum.VILLAGEOIS);
 
       expect(
-        service['roundHandlers'].get(RoundEnum.VILLAGEOIS),
+        spectator.service['roundHandlers'].get(RoundEnum.VILLAGEOIS),
       ).toBeUndefined();
     });
 
     it('should update round handlers state after removal', () => {
-      service['roundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
-
-      service.removeHandler(RoundEnum.VILLAGEOIS);
-
-      expect(service['roundHandlersState']().has(RoundEnum.VILLAGEOIS)).toEqual(
-        false,
+      spectator.service['roundHandlersState'].set(
+        new Set([RoundEnum.VILLAGEOIS]),
       );
+
+      spectator.service.removeHandler(RoundEnum.VILLAGEOIS);
+
+      expect(
+        spectator.service['roundHandlersState']().has(RoundEnum.VILLAGEOIS),
+      ).toEqual(false);
     });
 
     it('should update default round handlers state after removal', () => {
-      service['defaultRoundHandlersState'].set(new Set([RoundEnum.VILLAGEOIS]));
+      spectator.service['defaultRoundHandlersState'].set(
+        new Set([RoundEnum.VILLAGEOIS]),
+      );
 
-      service.removeHandler(RoundEnum.VILLAGEOIS);
+      spectator.service.removeHandler(RoundEnum.VILLAGEOIS);
 
       expect(
-        service['defaultRoundHandlersState']().has(RoundEnum.VILLAGEOIS),
+        spectator.service['defaultRoundHandlersState']().has(
+          RoundEnum.VILLAGEOIS,
+        ),
       ).toEqual(false);
     });
   });
 
   describe('createRoundHandler', () => {
     it('should create and add a new round handler', () => {
-      service.createRoundHandler(RoundEnum.VILLAGEOIS);
+      spectator.service.createRoundHandler(RoundEnum.VILLAGEOIS);
 
-      expect(service['roundHandlers'].get(RoundEnum.VILLAGEOIS)).toBeInstanceOf(
-        VillageoisRoundHandler,
-      );
+      expect(
+        spectator.service['roundHandlers'].get(RoundEnum.VILLAGEOIS)
+          ?.constructor.name,
+      ).toEqual('VillageoisRoundHandlerMock');
     });
 
     it('should not create a handler if it already exists', () => {
-      service['roundHandlers'].set(
+      spectator.service['roundHandlers'].set(
         RoundEnum.VILLAGEOIS,
-        villageoisRoundHandler,
+        {} as VillageoisRoundHandler,
       );
 
-      service.createRoundHandler(RoundEnum.VILLAGEOIS);
+      spectator.service.createRoundHandler(RoundEnum.VILLAGEOIS);
 
-      expect(service['roundHandlers'].size).toEqual(1);
+      expect(spectator.service['roundHandlers'].size).toEqual(1);
     });
   });
-
-  afterAll(MockReset);
 });

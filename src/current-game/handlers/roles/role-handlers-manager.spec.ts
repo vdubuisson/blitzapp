@@ -1,55 +1,60 @@
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { RoleHandlersManager } from './role-handlers-manager';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
-import { signal } from '@angular/core';
+import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
-import { VillageoisRoleHandler } from '@/game-handlers/roles/villageois/villageois.role-handler';
-import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
-import { RoundHandlersManager } from '../rounds/round-handlers-manager';
+import { signal } from '@angular/core';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/jest';
+import { RoleHandlersManager } from './role-handlers-manager';
+
+jest.mock('@/config/role-metadata', () => {
+  class RoleHandlerMock {}
+
+  return {
+    ROLE_METADATA_CONFIG: {
+      [PlayerRoleEnum.VILLAGEOIS]: {
+        handler: RoleHandlerMock,
+        rounds: [],
+        statuses: [],
+        victories: [],
+      },
+    },
+  };
+});
 
 describe('RoleHandlersManager', () => {
-  ngMocks.faster();
-  let service: RoleHandlersManager;
+  let spectator: SpectatorService<RoleHandlersManager>;
 
-  beforeAll(() =>
-    MockBuilder(RoleHandlersManager)
-      .mock(RoundHandlersManager)
-      .mock(CurrentPlayersStore),
-  );
-
-  beforeAll(() => {
-    MockInstance(CurrentPlayersStore, 'state', signal<Player[]>([]));
-  });
-
-  beforeAll(() => {
-    service = MockRender(RoleHandlersManager).point.componentInstance;
+  const createService = createServiceFactory({
+    service: RoleHandlersManager,
+    providers: [
+      mockProvider(CurrentPlayersStore, {
+        state: signal<Player[]>([]),
+      }),
+    ],
   });
 
   beforeEach(() => {
-    service['roleHandlers'].clear();
+    spectator = createService();
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
 
   it('should clear handlers', () => {
-    service['roleHandlers'].set(
+    spectator.service['roleHandlers'].set(
       PlayerRoleEnum.VILLAGEOIS,
       {} as unknown as RoleHandler,
     );
-    expect(service['roleHandlers'].size).toBe(1);
+    expect(spectator.service['roleHandlers'].size).toBe(1);
 
-    service.clearHandlers();
+    spectator.service.clearHandlers();
 
-    expect(service['roleHandlers'].size).toBe(0);
+    expect(spectator.service['roleHandlers'].size).toBe(0);
   });
 
   it('should initialize VILLAGEOIS handler if role present', () => {
@@ -57,28 +62,33 @@ describe('RoleHandlersManager', () => {
       { id: 1, role: PlayerRoleEnum.VILLAGEOIS } as Player,
     ];
 
-    service.initHandlers(players);
+    spectator.service.initHandlers(players);
 
-    expect(
-      service['roleHandlers'].get(PlayerRoleEnum.VILLAGEOIS),
-    ).toBeInstanceOf(VillageoisRoleHandler);
+    const handler = spectator.service['roleHandlers'].get(
+      PlayerRoleEnum.VILLAGEOIS,
+    );
+    expect(handler).toBeDefined();
+    expect(handler?.constructor.name).toBe('RoleHandlerMock');
   });
 
   it('should not initialize VILLAGEOIS handler if role not present', () => {
     const players: Player[] = [];
 
-    service.initHandlers(players);
+    spectator.service.initHandlers(players);
 
-    expect(service['roleHandlers'].has(PlayerRoleEnum.VILLAGEOIS)).toBe(false);
+    expect(
+      spectator.service['roleHandlers'].has(PlayerRoleEnum.VILLAGEOIS),
+    ).toBe(false);
   });
 
   it('should return VILLAGEOIS handler', () => {
     const roleHandler = {} as RoleHandler;
-    service['roleHandlers'].set(PlayerRoleEnum.VILLAGEOIS, roleHandler);
+    spectator.service['roleHandlers'].set(
+      PlayerRoleEnum.VILLAGEOIS,
+      roleHandler,
+    );
 
-    const testHandler = service.getHandler(PlayerRoleEnum.VILLAGEOIS);
+    const testHandler = spectator.service.getHandler(PlayerRoleEnum.VILLAGEOIS);
     expect(testHandler).toBe(roleHandler);
   });
-
-  afterAll(MockReset);
 });

@@ -1,52 +1,39 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import {
-  MockBuilder,
-  MockedComponentFixture,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { MockComponent } from 'ng-mocks';
 import { TextModal } from './text-modal';
 
 describe('TextModalComponent', () => {
-  let fixture: MockedComponentFixture<TextModal>;
+  let spectator: Spectator<TextModal>;
+  const createComponent = createComponentFactory({
+    component: TextModal,
+    imports: [MockComponent(FaIconComponent)],
+    mocks: [DialogRef],
+    componentProviders: [{ provide: DIALOG_DATA, useValue: {} }],
+  });
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(TextModal).mock(DialogRef).mock(DIALOG_DATA, {}));
-
-  beforeAll(() => {
-    MockInstance(DialogRef, () => ({
-      close: jest.fn(),
-    }));
-    fixture = MockRender(TextModal);
+  beforeEach(() => {
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    const component = fixture.point.componentInstance;
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 
   it('should dismiss with false on cancel', () => {
-    const component = fixture.point.componentInstance;
+    spectator.component.close(false);
 
-    component.close(false);
-
-    const dialogRef = ngMocks.get(DialogRef);
+    const dialogRef = spectator.inject(DialogRef);
 
     expect(dialogRef.close).toHaveBeenCalledWith(false);
   });
 
   it('should dismiss with true on confirm', () => {
-    const component = fixture.point.componentInstance;
+    spectator.component.close(true);
 
-    component.close(true);
-
-    const dialogRef = ngMocks.get(DialogRef);
+    const dialogRef = spectator.inject(DialogRef);
 
     expect(dialogRef.close).toHaveBeenCalledWith(true);
   });
-
-  afterAll(MockReset);
 });

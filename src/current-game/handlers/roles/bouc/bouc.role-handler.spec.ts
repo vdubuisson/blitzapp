@@ -1,56 +1,39 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { BoucRoleHandler } from './bouc.role-handler';
-import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
+import { RoundEnum, Round } from '@/types/round';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { signal } from '@angular/core';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
 import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 
 describe('BoucRoleHandler', () => {
   let handler: BoucRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
-  let afterDeathRoundQueue: AfterDeathRoundQueueStore;
-  let needCleanAfterBouc: NeedCleanAfterBoucStore;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager, StatusHandlersManager],
+    providers: [
+      {
+        provide: AfterDeathRoundQueueStore,
+        useValue: { state: signal<Round[]>([RoundEnum.VILLAGEOIS]) },
+      },
+      {
+        provide: NeedCleanAfterBoucStore,
+        useValue: { state: signal<boolean>(false) },
+      },
+    ],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    afterDeathRoundQueue = MockService(AfterDeathRoundQueueStore, {
-      state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
-    });
-
-    needCleanAfterBouc = MockService(NeedCleanAfterBoucStore, {
-      state: signal<boolean>(false),
-    });
-
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: AfterDeathRoundQueueStore, useValue: afterDeathRoundQueue },
-        { provide: NeedCleanAfterBoucStore, useValue: needCleanAfterBouc },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new BoucRoleHandler()));
-
+  beforeEach(() => {
     players = [
       {
         id: 1,
@@ -65,9 +48,10 @@ describe('BoucRoleHandler', () => {
         statuses: new Set(),
       } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new BoucRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -81,6 +65,8 @@ describe('BoucRoleHandler', () => {
     });
 
     it('should create BOUC round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -89,6 +75,8 @@ describe('BoucRoleHandler', () => {
     });
 
     it('should create NO_VOTE status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -100,6 +88,7 @@ describe('BoucRoleHandler', () => {
   describe('handleDeath', () => {
     it('should add BOUC round to the afterDeathRoundQueue if killed by no one', () => {
       const deadPlayer = { ...players[0], killedBy: undefined };
+      const afterDeathRoundQueue = spectator.inject(AfterDeathRoundQueueStore);
 
       const result = handler.handleDeath(players, deadPlayer);
 
@@ -111,6 +100,7 @@ describe('BoucRoleHandler', () => {
     });
 
     it('should remove BOUC round handler if killed by someone', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = { ...players[0], killedBy: PlayerRoleEnum.LOUP_GAROU };
 
       const result = handler.handleDeath(players, deadPlayer);
@@ -124,6 +114,7 @@ describe('BoucRoleHandler', () => {
 
   describe('cleanStatusesAfterDay', () => {
     it('should return players unchanged if no need to clean', () => {
+      const needCleanAfterBouc = spectator.inject(NeedCleanAfterBoucStore);
       needCleanAfterBouc.state.set(false);
 
       const mockPlayers: Player[] = [
@@ -149,6 +140,7 @@ describe('BoucRoleHandler', () => {
     });
 
     it('should remove NO_VOTE status from player', () => {
+      const needCleanAfterBouc = spectator.inject(NeedCleanAfterBoucStore);
       needCleanAfterBouc.state.set(true);
 
       const mockPlayers: Player[] = [
@@ -185,12 +177,14 @@ describe('BoucRoleHandler', () => {
     });
 
     it('should set needCleanAfterBouc to false after cleaning', () => {
+      const needCleanAfterBouc = spectator.inject(NeedCleanAfterBoucStore);
       needCleanAfterBouc.state.set(true);
       handler.cleanStatusesAfterDay(players);
       expect(needCleanAfterBouc.state()).toEqual(false);
     });
 
     it('should not remove NO_VOTE status from IDIOT killedBy', () => {
+      const needCleanAfterBouc = spectator.inject(NeedCleanAfterBoucStore);
       needCleanAfterBouc.state.set(true);
 
       const mockPlayers: Player[] = [

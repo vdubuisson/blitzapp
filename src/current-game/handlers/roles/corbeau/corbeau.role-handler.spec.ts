@@ -1,41 +1,26 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { CorbeauRoleHandler } from './corbeau.role-handler';
-import { TestBed } from '@angular/core/testing';
 import { RoundEnum } from '@/types/round';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 
 describe('CorbeauRoleHandler', () => {
   let handler: CorbeauRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager, StatusHandlersManager],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new CorbeauRoleHandler()));
-
+  beforeEach(() => {
     players = [
       {
         id: 1,
@@ -45,9 +30,10 @@ describe('CorbeauRoleHandler', () => {
       } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new CorbeauRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -61,6 +47,8 @@ describe('CorbeauRoleHandler', () => {
     });
 
     it('should create CORBEAU round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -69,6 +57,8 @@ describe('CorbeauRoleHandler', () => {
     });
 
     it('should create RAVEN status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -79,6 +69,7 @@ describe('CorbeauRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove CORBEAU round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);

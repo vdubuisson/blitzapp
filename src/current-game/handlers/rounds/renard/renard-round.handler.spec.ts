@@ -1,28 +1,31 @@
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { Announcer } from '@/current-game/announcements/announcer';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
 import * as neighborUtils from '@/utils/neighbor.utils';
 import * as statusUtils from '@/utils/status.utils';
-import { TestBed } from '@angular/core/testing';
-import { MockService } from 'ng-mocks';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 import { firstValueFrom } from 'rxjs';
 import { RenardRoundHandler } from './renard-round.handler';
-import { Announcer } from '@/current-game/announcements/announcer';
 
 describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
-  let announcer: Announcer;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    announcer = MockService(Announcer);
-    TestBed.configureTestingModule({
-      providers: [{ provide: Announcer, useValue: announcer }],
-    });
-    TestBed.runInInjectionContext(
-      () => (roundHandler = new RenardRoundHandler()),
+  const createContext = createInjectionContextFactory({
+    mocks: [Announcer],
+  });
+
+  beforeEach(() => {
+    spectator = createContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new RenardRoundHandler(),
     );
   });
 
@@ -111,7 +114,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, []));
     expect(announcer.announce).not.toHaveBeenCalled();
@@ -144,7 +147,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, []));
     expect(announcer.announce).not.toHaveBeenCalled();
@@ -211,7 +214,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(
@@ -296,7 +299,7 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(
@@ -398,7 +401,7 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
 
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(
@@ -508,7 +511,7 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
 
-    jest.spyOn(announcer, 'announce');
+    const announcer = spectator.inject(Announcer);
 
     await firstValueFrom(roundHandler.handleAction(players, [1]));
     expect(announcer.announce).toHaveBeenCalledWith(

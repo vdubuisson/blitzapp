@@ -1,9 +1,8 @@
-import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
-import { MockReset } from 'ng-mocks';
-import { InfectedStatusHandler } from './infected.status-handler';
 import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
 import * as statusUtils from '@/utils/status.utils';
+import { InfectedStatusHandler } from './infected.status-handler';
 
 describe('InfectedStatusHandler', () => {
   let handler: InfectedStatusHandler;
@@ -11,8 +10,6 @@ describe('InfectedStatusHandler', () => {
   beforeAll(() => {
     handler = new InfectedStatusHandler();
   });
-
-  afterAll(MockReset);
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();

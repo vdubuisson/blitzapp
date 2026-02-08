@@ -1,41 +1,33 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { MontreurOursRoleHandler } from './montreur-ours.role-handler';
 import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/jest';
 
 describe('MontreurOursRoleHandler', () => {
   let handler: MontreurOursRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(
-      () => (handler = new MontreurOursRoleHandler()),
-    );
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(
+      () => new MontreurOursRoleHandler(),
+    );
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -49,6 +41,8 @@ describe('MontreurOursRoleHandler', () => {
     });
 
     it('should create MONTREUR_OURS round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -59,6 +53,7 @@ describe('MontreurOursRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove MONTREUR_OURS round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);

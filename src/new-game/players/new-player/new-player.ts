@@ -36,7 +36,7 @@ export class NewPlayer {
 
   protected readonly addIcon = faPlus;
 
-  onSubmit() {
+  protected onSubmit() {
     this.newPlayer.emit(this.playerForm.value.name as string);
     this.playerForm.reset();
     this.inputElement()?.nativeElement.focus();

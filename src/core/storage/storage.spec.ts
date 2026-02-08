@@ -1,17 +1,19 @@
 import { Preferences } from '@capacitor/preferences';
+import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
 import { firstValueFrom } from 'rxjs';
 import { Storage } from './storage';
 
 describe('Storage', () => {
-  let service: Storage;
+  let spectator: SpectatorService<Storage>;
+  const createService = createServiceFactory(Storage);
 
   beforeEach(async () => {
-    service = new Storage();
     await Preferences.clear();
+    spectator = createService();
   });
 
   it('should set value to storage', async () => {
-    service.set('mockKey', 'mockValue');
+    spectator.service.set('mockKey', 'mockValue');
 
     const value = JSON.parse(
       (await Preferences.get({ key: 'mockKey' })).value as string,
@@ -23,7 +25,7 @@ describe('Storage', () => {
   it('should remove key from storage', async () => {
     Preferences.set({ key: 'mockKey', value: 'mockValue' });
 
-    service.remove('mockKey');
+    spectator.service.remove('mockKey');
 
     const value = (await Preferences.get({ key: 'mockKey' })).value;
 
@@ -33,7 +35,7 @@ describe('Storage', () => {
   it('should get value from storage', async () => {
     Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
-    const value = await firstValueFrom(service.get('mockKey'));
+    const value = await firstValueFrom(spectator.service.get('mockKey'));
 
     expect(value).toEqual('mockValue');
   });
@@ -41,7 +43,7 @@ describe('Storage', () => {
   it('should clear storage', async () => {
     Preferences.set({ key: 'mockKey', value: JSON.stringify('mockValue') });
 
-    await firstValueFrom(service.clear());
+    await firstValueFrom(spectator.service.clear());
 
     const value = (await Preferences.get({ key: 'mockKey' })).value;
 
