@@ -1,17 +1,29 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { JoueurFluteRoundHandler } from './joueur-flute-round.handler';
 
 describe('JoueurFluteRoundHandler', () => {
   let roundHandler: JoueurFluteRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new JoueurFluteRoundHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new JoueurFluteRoundHandler(),
+    );
   });
 
   it('should not be only once', () => {
@@ -67,22 +79,21 @@ describe('JoueurFluteRoundHandler', () => {
     ];
     const expectedPlayer1 = { ...players[0] };
     const expectedPlayer2 = { ...players[2] };
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockImplementation((player: Player) =>
-        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
-      );
+    const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+    playersStatusUtility.addStatusToPlayer.mockImplementation(
+      (player: Player) => (player.id === 0 ? expectedPlayer1 : expectedPlayer2),
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0, 2]),
     );
     expect(newPlayers[0]).toBe(expectedPlayer1);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[0],
       PlayerStatusEnum.CHARMED,
     );
     expect(newPlayers[2]).toBe(expectedPlayer2);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[2],
       PlayerStatusEnum.CHARMED,
     );

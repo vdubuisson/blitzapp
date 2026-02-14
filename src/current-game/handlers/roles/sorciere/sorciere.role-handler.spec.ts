@@ -1,23 +1,26 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { SorciereRoleHandler } from './sorciere.role-handler';
-import { RoundEnum } from '@/types/round';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import * as statusUtils from '@/utils/status.utils';
+import { RoundEnum } from '@/types/round';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+  SpyObject,
+} from '@ngneat/spectator/vitest';
+import { SorciereRoleHandler } from './sorciere.role-handler';
 
 describe('SorciereRoleHandler', () => {
   let handler: SorciereRoleHandler;
   let spectator: SpectatorInjectionContext;
   let players: Player[];
 
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
   const createContext = createInjectionContextFactory({
-    mocks: [RoundHandlersManager, StatusHandlersManager],
+    mocks: [RoundHandlersManager, StatusHandlersManager, PlayersStatusUtility],
   });
 
   beforeEach(() => {
@@ -33,6 +36,8 @@ describe('SorciereRoleHandler', () => {
 
     spectator = createContext();
     handler = spectator.runInInjectionContext(() => new SorciereRoleHandler());
+
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
   });
 
   it('should create an instance', () => {
@@ -43,14 +48,14 @@ describe('SorciereRoleHandler', () => {
   describe('prepareNewGame', () => {
     it('should add HEALTH_POTION status to SORCIERE', () => {
       const expectedPlayers = [...players];
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayersById')
-        .mockReturnValue(expectedPlayers);
+      playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.prepareNewGame(players);
 
       expect(result).toBe(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
         PlayerStatusEnum.HEALTH_POTION,
         [1],
@@ -59,14 +64,14 @@ describe('SorciereRoleHandler', () => {
 
     it('should add DEATH_POTION status to SORCIERE', () => {
       const expectedPlayers = [...players];
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayersById')
-        .mockReturnValue(expectedPlayers);
+      playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.prepareNewGame(players);
 
       expect(result).toBe(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
         PlayerStatusEnum.DEATH_POTION,
         [1],

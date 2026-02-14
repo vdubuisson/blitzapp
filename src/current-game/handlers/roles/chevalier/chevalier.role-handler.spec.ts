@@ -1,15 +1,16 @@
+import { NeighborFinder } from '@/current-game/players/neighbor-finder';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { RustySwordStatusHandler } from '@/game-handlers/status/rusty-sword/rusty-sword.status-handler';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import * as neighborUtils from '@/utils/neighbor.utils';
-import * as statusUtils from '@/utils/status.utils';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { ChevalierRoleHandler } from './chevalier.role-handler';
 
 describe('ChevalierRoleHandler', () => {
@@ -17,11 +18,15 @@ describe('ChevalierRoleHandler', () => {
   let spectator: SpectatorInjectionContext;
   let players: Player[];
 
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
   const createContext = createInjectionContextFactory({
     mocks: [
       RoundHandlersManager,
       StatusHandlersManager,
       RustySwordStatusHandler,
+      NeighborFinder,
+      PlayersStatusUtility,
     ],
   });
 
@@ -49,6 +54,8 @@ describe('ChevalierRoleHandler', () => {
 
     spectator = createContext();
     handler = spectator.runInInjectionContext(() => new ChevalierRoleHandler());
+
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
   });
 
   it('should create an instance', () => {
@@ -90,14 +97,14 @@ describe('ChevalierRoleHandler', () => {
 
       const expectedPlayers = { ...players };
 
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayersById')
-        .mockReturnValue(expectedPlayers);
+      playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.handleDeath(players, deadPlayer);
 
       expect(result).toEqual(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
         PlayerStatusEnum.RUSTY_SWORD,
         [3],
@@ -106,20 +113,19 @@ describe('ChevalierRoleHandler', () => {
 
     it('should add RUSTY_SWORD status to the left neighbor if killed by LOUP_GAROU', () => {
       const deadPlayer = { ...players[0], killedBy: PlayerRoleEnum.LOUP_GAROU };
-      const leftNeighbor = players[1];
-      jest
-        .spyOn(neighborUtils, 'findLeftNeighbor')
-        .mockReturnValue(leftNeighbor as Player);
+
+      const neighborFinder = spectator.inject(NeighborFinder);
+      neighborFinder.findLeftNeighbor.mockReturnValue(players[1]);
 
       const expectedPlayers = { ...players };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayersById')
-        .mockReturnValue(expectedPlayers);
+      playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.handleDeath(players, deadPlayer);
 
       expect(result).toEqual(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
         PlayerStatusEnum.RUSTY_SWORD,
         [2],
@@ -153,7 +159,7 @@ describe('ChevalierRoleHandler', () => {
     it('should trigger RUSTY_SWORD status if CHEVALIER is dead', () => {
       const statusHandlersManager = spectator.inject(StatusHandlersManager);
       const rustySwordHandler = {
-        triggerAction: jest.fn(),
+        triggerAction: vi.fn(),
       } as unknown as RustySwordStatusHandler;
       const testPlayers = [
         {
@@ -186,12 +192,12 @@ describe('ChevalierRoleHandler', () => {
         } as Player,
       ];
 
-      jest
-        .spyOn(statusHandlersManager, 'getHandler')
-        .mockReturnValue(rustySwordHandler);
-      jest
-        .spyOn(rustySwordHandler, 'triggerAction')
-        .mockReturnValue(expectedPlayers);
+      vi.spyOn(statusHandlersManager, 'getHandler').mockReturnValue(
+        rustySwordHandler,
+      );
+      vi.spyOn(rustySwordHandler, 'triggerAction').mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.cleanStatusesAfterDay(testPlayers);
       expect(result).toEqual(expectedPlayers);

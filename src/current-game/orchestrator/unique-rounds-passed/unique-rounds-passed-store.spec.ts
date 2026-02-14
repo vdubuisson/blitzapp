@@ -4,7 +4,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { of } from 'rxjs';
 import { UniqueRoundsPassedStore } from './unique-rounds-passed-store';
 
@@ -31,8 +31,8 @@ describe('UniqueRoundsPassedStore', () => {
       spectator = createService({
         providers: [
           mockProvider(Storage, {
-            get: jest.fn().mockReturnValue(of(null)),
-            set: jest.fn(),
+            get: vi.fn().mockReturnValue(of(null)),
+            set: vi.fn(),
           }),
         ],
       });
@@ -69,8 +69,8 @@ describe('UniqueRoundsPassedStore', () => {
       spectator = createService({
         providers: [
           mockProvider(Storage, {
-            get: jest.fn().mockReturnValue(of(mockStored)),
-            set: jest.fn(),
+            get: vi.fn().mockReturnValue(of(mockStored)),
+            set: vi.fn(),
           }),
         ],
       });

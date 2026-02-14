@@ -2,7 +2,7 @@ import { PlayerRoleImagePipe } from '@/shared/pipes/player-role-image/player-rol
 import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
 import { MockDirective, MockPipes } from 'ng-mocks';
 import { PlayerRoleModal } from './player-role-modal';
 

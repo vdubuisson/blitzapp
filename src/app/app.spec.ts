@@ -5,7 +5,7 @@ import {
   byTestId,
   createComponentFactory,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockComponents, MockDirective } from 'ng-mocks';
 import { AppComponent } from './app';
 

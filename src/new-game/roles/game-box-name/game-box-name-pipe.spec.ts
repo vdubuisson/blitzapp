@@ -1,10 +1,7 @@
 import { GameBoxEnum } from '@/config/game-boxes';
-import { createPipeFactory, SpectatorPipe } from '@ngneat/spectator/jest';
+import { createPipeFactory, SpectatorPipe } from '@ngneat/spectator/vitest';
 import { GameBoxNamePipe } from './game-box-name-pipe';
-
-jest.mock('@/texts/game-box-names', () => ({
-  GAME_BOX_NAMES: { [GameBoxEnum.CORE]: 'Test' },
-}));
+import { GAME_BOX_NAMES } from '@/texts/game-box-names';
 
 describe('GameBoxNamePipe', () => {
   let spectator: SpectatorPipe<GameBoxNamePipe>;
@@ -25,6 +22,6 @@ describe('GameBoxNamePipe', () => {
         prop: GameBoxEnum.CORE,
       },
     });
-    expect(spectator.element).toHaveText('Test');
+    expect(spectator.element).toHaveText(GAME_BOX_NAMES[GameBoxEnum.CORE]);
   });
 });

@@ -1,9 +1,27 @@
+import {
+  createServiceFactory,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
+import { GameCardsManager } from './game-cards-manager';
 import { CardList } from '@/shared/types/card-list';
-import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
-import { getNotPlayedCards } from './cards.utils';
+import { PlayerRoleEnum } from '@/shared/types/player-role';
 
-describe('getNotPlayedCards', () => {
+describe('GameCardsManager', () => {
+  let spectator: SpectatorService<GameCardsManager>;
+
+  const createService = createServiceFactory({
+    service: GameCardsManager,
+  });
+
+  beforeEach(() => {
+    spectator = createService();
+  });
+
+  it('should be created', () => {
+    expect(spectator.service).toBeTruthy();
+  });
+
   it('should return not played unique role', () => {
     const cardList: CardList = {
       selectedRoles: new Set([PlayerRoleEnum.CUPIDON, PlayerRoleEnum.VOYANTE]),
@@ -22,7 +40,10 @@ describe('getNotPlayedCards', () => {
       },
     ];
 
-    const notPlayedCards = getNotPlayedCards(players, cardList);
+    const notPlayedCards = spectator.service.getNotPlayedCards(
+      players,
+      cardList,
+    );
 
     expect(notPlayedCards.includes(PlayerRoleEnum.VOYANTE)).toBe(true);
   });
@@ -45,10 +66,9 @@ describe('getNotPlayedCards', () => {
       },
     ];
 
-    const notPlayedVillageoisCount = getNotPlayedCards(
-      players,
-      cardList,
-    ).filter((c) => c === PlayerRoleEnum.VILLAGEOIS).length;
+    const notPlayedVillageoisCount = spectator.service
+      .getNotPlayedCards(players, cardList)
+      .filter((c) => c === PlayerRoleEnum.VILLAGEOIS).length;
 
     expect(notPlayedVillageoisCount).toEqual(2);
   });
@@ -71,9 +91,9 @@ describe('getNotPlayedCards', () => {
       },
     ];
 
-    const notPlayedLoupGarouCount = getNotPlayedCards(players, cardList).filter(
-      (c) => c === PlayerRoleEnum.LOUP_GAROU,
-    ).length;
+    const notPlayedLoupGarouCount = spectator.service
+      .getNotPlayedCards(players, cardList)
+      .filter((c) => c === PlayerRoleEnum.LOUP_GAROU).length;
 
     expect(notPlayedLoupGarouCount).toEqual(2);
   });
@@ -96,9 +116,9 @@ describe('getNotPlayedCards', () => {
       },
     ];
 
-    const notPlayedSoeurCount = getNotPlayedCards(players, cardList).filter(
-      (c) => c === PlayerRoleEnum.SOEUR,
-    ).length;
+    const notPlayedSoeurCount = spectator.service
+      .getNotPlayedCards(players, cardList)
+      .filter((c) => c === PlayerRoleEnum.SOEUR).length;
 
     expect(notPlayedSoeurCount).toEqual(2);
   });
@@ -121,9 +141,9 @@ describe('getNotPlayedCards', () => {
       },
     ];
 
-    const notPlayedFrereCount = getNotPlayedCards(players, cardList).filter(
-      (c) => c === PlayerRoleEnum.FRERE,
-    ).length;
+    const notPlayedFrereCount = spectator.service
+      .getNotPlayedCards(players, cardList)
+      .filter((c) => c === PlayerRoleEnum.FRERE).length;
 
     expect(notPlayedFrereCount).toEqual(2);
   });

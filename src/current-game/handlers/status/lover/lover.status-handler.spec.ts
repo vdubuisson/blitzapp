@@ -6,7 +6,7 @@ import { VictoryEnum } from '@/types/victory';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { LoverStatusHandler } from './lover.status-handler';
 
 describe('LoverStatusHandler', () => {

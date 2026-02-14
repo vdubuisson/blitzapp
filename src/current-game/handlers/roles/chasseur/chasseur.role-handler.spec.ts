@@ -8,7 +8,7 @@ import { ChasseurRoleHandler } from './chasseur.role-handler';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('ChasseurRoleHandler', () => {
   let handler: ChasseurRoleHandler;

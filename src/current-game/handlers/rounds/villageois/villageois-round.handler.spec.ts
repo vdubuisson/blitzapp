@@ -8,7 +8,7 @@ import { RoundEnum } from '@/types/round';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { VillageoisRoundHandler } from './villageois-round.handler';
 

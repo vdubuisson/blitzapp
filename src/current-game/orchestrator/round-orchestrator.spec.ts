@@ -14,7 +14,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { Observable } from 'rxjs';
 import { RoundOrchestrator } from './round-orchestrator';
 
@@ -67,11 +67,9 @@ describe('RoundOrchestrator', () => {
 
   it('should return next available round', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) =>
-        round === RoundEnum.LOUP_GAROU ? new MockRoundHandler() : undefined,
-      );
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) =>
+      round === RoundEnum.LOUP_GAROU ? new MockRoundHandler() : undefined,
+    );
 
     const nextRound = spectator.service.getNextRound(RoundEnum.VOYANTE);
 
@@ -80,13 +78,11 @@ describe('RoundOrchestrator', () => {
 
   it('should skip LOUP_BLANC on odd days', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) =>
-        round === RoundEnum.LOUP_BLANC || round === RoundEnum.SORCIERE_HEALTH
-          ? new MockRoundHandler()
-          : undefined,
-      );
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) =>
+      round === RoundEnum.LOUP_BLANC || round === RoundEnum.SORCIERE_HEALTH
+        ? new MockRoundHandler()
+        : undefined,
+    );
 
     const dayCountStore = spectator.inject(DayCountStore);
     dayCountStore.state.set(1);
@@ -98,13 +94,11 @@ describe('RoundOrchestrator', () => {
 
   it('should not skip LOUP_BLANC on even days', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) =>
-        round === RoundEnum.LOUP_BLANC || round === RoundEnum.SORCIERE_HEALTH
-          ? new MockRoundHandler()
-          : undefined,
-      );
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) =>
+      round === RoundEnum.LOUP_BLANC || round === RoundEnum.SORCIERE_HEALTH
+        ? new MockRoundHandler()
+        : undefined,
+    );
 
     const dayCountStore = spectator.inject(DayCountStore);
     dayCountStore.state.set(2);
@@ -116,11 +110,9 @@ describe('RoundOrchestrator', () => {
 
   it('should return next available round when end of rounds', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) =>
-        round === RoundEnum.VOYANTE ? new MockRoundHandler() : undefined,
-      );
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) =>
+      round === RoundEnum.VOYANTE ? new MockRoundHandler() : undefined,
+    );
 
     const nextRound = spectator.service.getNextRound(RoundEnum.VILLAGEOIS);
 
@@ -129,16 +121,14 @@ describe('RoundOrchestrator', () => {
 
   it('should return next after-death round when there is one', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) =>
-        round === RoundEnum.VILLAGEOIS ? new MockRoundHandler() : undefined,
-      );
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) =>
+      round === RoundEnum.VILLAGEOIS ? new MockRoundHandler() : undefined,
+    );
 
     const deathHandler = spectator.inject(DeathHandler);
-    jest
-      .spyOn(deathHandler, 'getNextAfterDeathRound')
-      .mockReturnValue(RoundEnum.CHASSEUR);
+    vi.spyOn(deathHandler, 'getNextAfterDeathRound').mockReturnValue(
+      RoundEnum.CHASSEUR,
+    );
 
     const nextRound = spectator.service.getNextRound(RoundEnum.SORCIERE_KILL);
 
@@ -147,16 +137,14 @@ describe('RoundOrchestrator', () => {
 
   it('should use round before after-death round as current after after-death rounds', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) =>
-        round === RoundEnum.VILLAGEOIS ? new MockRoundHandler() : undefined,
-      );
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) =>
+      round === RoundEnum.VILLAGEOIS ? new MockRoundHandler() : undefined,
+    );
 
     const deathHandler = spectator.inject(DeathHandler);
-    jest
-      .spyOn(deathHandler, 'getNextAfterDeathRound')
-      .mockReturnValueOnce(RoundEnum.CHASSEUR);
+    vi.spyOn(deathHandler, 'getNextAfterDeathRound').mockReturnValueOnce(
+      RoundEnum.CHASSEUR,
+    );
 
     const nextRound1 = spectator.service.getNextRound(RoundEnum.SORCIERE_KILL);
     expect(nextRound1).toEqual(RoundEnum.CHASSEUR);
@@ -166,24 +154,22 @@ describe('RoundOrchestrator', () => {
 
   it('should continue round chain correctly after after-death rounds', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VILLAGEOIS:
-            return new MockRoundHandler();
-          case RoundEnum.LOUP_GAROU:
-            return new MockRoundHandler();
-          default:
-            return undefined;
-        }
-      });
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) => {
+      switch (round) {
+        case RoundEnum.VILLAGEOIS:
+          return new MockRoundHandler();
+        case RoundEnum.LOUP_GAROU:
+          return new MockRoundHandler();
+        default:
+          return undefined;
+      }
+    });
 
     const deathHandler = spectator.inject(DeathHandler);
 
-    jest
-      .spyOn(deathHandler, 'getNextAfterDeathRound')
-      .mockReturnValueOnce(RoundEnum.CHASSEUR);
+    vi.spyOn(deathHandler, 'getNextAfterDeathRound').mockReturnValueOnce(
+      RoundEnum.CHASSEUR,
+    );
 
     const nextRound1 = spectator.service.getNextRound(RoundEnum.SORCIERE_KILL);
     expect(nextRound1).toEqual(RoundEnum.CHASSEUR);
@@ -195,18 +181,16 @@ describe('RoundOrchestrator', () => {
 
   it('should add current round to unique list if onlyOnce', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VOYANTE:
-            return new MockRoundHandler();
-          case RoundEnum.CUPIDON:
-            return new MockRoundHandler(true);
-          default:
-            return undefined;
-        }
-      });
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) => {
+      switch (round) {
+        case RoundEnum.VOYANTE:
+          return new MockRoundHandler();
+        case RoundEnum.CUPIDON:
+          return new MockRoundHandler(true);
+        default:
+          return undefined;
+      }
+    });
 
     spectator.service.getNextRound(RoundEnum.CUPIDON);
 
@@ -217,18 +201,16 @@ describe('RoundOrchestrator', () => {
 
   it('should not add current round to unique list if not onlyOnce', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.AMOUREUX:
-            return new MockRoundHandler();
-          case RoundEnum.CUPIDON:
-            return new MockRoundHandler(true);
-          default:
-            return undefined;
-        }
-      });
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) => {
+      switch (round) {
+        case RoundEnum.AMOUREUX:
+          return new MockRoundHandler();
+        case RoundEnum.CUPIDON:
+          return new MockRoundHandler(true);
+        default:
+          return undefined;
+      }
+    });
 
     spectator.service.getNextRound(RoundEnum.VOYANTE);
 
@@ -239,19 +221,17 @@ describe('RoundOrchestrator', () => {
 
   it('should not return unique round if already passed', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VOYANTE:
-          case RoundEnum.VILLAGEOIS:
-            return new MockRoundHandler();
-          case RoundEnum.CUPIDON:
-            return new MockRoundHandler(true);
-          default:
-            return undefined;
-        }
-      });
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) => {
+      switch (round) {
+        case RoundEnum.VOYANTE:
+        case RoundEnum.VILLAGEOIS:
+          return new MockRoundHandler();
+        case RoundEnum.CUPIDON:
+          return new MockRoundHandler(true);
+        default:
+          return undefined;
+      }
+    });
 
     spectator.service['uniqueRoundsPassed'].set(new Set([RoundEnum.CUPIDON]));
 
@@ -262,16 +242,14 @@ describe('RoundOrchestrator', () => {
 
   it('should return first round with handler', () => {
     const roundHandlersManager = spectator.inject(RoundHandlersManager);
-    jest
-      .spyOn(roundHandlersManager, 'getHandler')
-      .mockImplementation((round) => {
-        switch (round) {
-          case RoundEnum.VOYANTE:
-            return new MockRoundHandler();
-          default:
-            return undefined;
-        }
-      });
+    vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation((round) => {
+      switch (round) {
+        case RoundEnum.VOYANTE:
+          return new MockRoundHandler();
+        default:
+          return undefined;
+      }
+    });
 
     const firstRound = spectator.service.getFirstRound();
 

@@ -1,15 +1,19 @@
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
 import { Announcer } from '@/current-game/announcements/announcer';
+import { NeighborFinder } from '@/current-game/players/neighbor-finder';
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { RoundEnum } from '@/types/round';
-import * as neighborUtils from '@/utils/neighbor.utils';
 import {
   createInjectionContextFactory,
+  mockProvider,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { MontreurOursRoundHandler } from './montreur-ours-round.handler';
 
@@ -17,8 +21,19 @@ describe('MontreurOursRoundHandler', () => {
   let roundHandler: MontreurOursRoundHandler;
   let spectator: SpectatorInjectionContext;
 
+  let neighborFinder: SpyObject<NeighborFinder>;
+
   const createContext = createInjectionContextFactory({
-    mocks: [Announcer],
+    mocks: [Announcer, NeighborFinder],
+    providers: [
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
+    ],
   });
 
   beforeEach(() => {
@@ -27,6 +42,8 @@ describe('MontreurOursRoundHandler', () => {
     roundHandler = spectator.runInInjectionContext(
       () => new MontreurOursRoundHandler(),
     );
+
+    neighborFinder = spectator.inject(NeighborFinder);
   });
 
   it('should not be only once', () => {
@@ -193,7 +210,7 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
     const announcer = spectator.inject(Announcer);
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.LOUP_GAROU,
@@ -236,7 +253,7 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
     const announcer = spectator.inject(Announcer);
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -244,7 +261,7 @@ describe('MontreurOursRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+    neighborFinder.findRightNeighbor.mockReturnValue({
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.LOUP_GAROU,
@@ -287,7 +304,7 @@ describe('MontreurOursRoundHandler', () => {
       },
     ];
     const announcer = spectator.inject(Announcer);
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -295,7 +312,7 @@ describe('MontreurOursRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+    neighborFinder.findRightNeighbor.mockReturnValue({
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,

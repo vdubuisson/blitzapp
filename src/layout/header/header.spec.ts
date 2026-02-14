@@ -11,7 +11,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { of, Subject } from 'rxjs';
 import { Header } from './header';
 

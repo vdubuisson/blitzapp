@@ -2,7 +2,6 @@ import {
   ApplicationConfig,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
-  provideZonelessChangeDetection,
 } from '@angular/core';
 import {
   PreloadAllModules,
@@ -16,7 +15,6 @@ import { APP_ROUTES } from './app-routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZonelessChangeDetection(),
     provideAppInitializer(appInitializer),
     provideRouter(
       APP_ROUTES,

@@ -9,7 +9,7 @@ import { VictoryEnum } from '@/types/victory';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { GrandMechantLoupRoleHandler } from './grand-mechant-loup.role-handler';
 
 describe('GrandMechantLoupRoleHandler', () => {

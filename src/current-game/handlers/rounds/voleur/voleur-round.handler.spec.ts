@@ -1,16 +1,37 @@
-import { PlayerRoleEnum } from '@/types/player-role';
+import { GameCardsManager } from '@/current-game/cards/game-cards-manager';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { VoleurRoundHandler } from './voleur-round.handler';
 
 describe('VoleurRoundHandler', () => {
   let roundHandler: VoleurRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new VoleurRoundHandler();
+  let gameCardsManager: SpyObject<GameCardsManager>;
+
+  const createContext = createInjectionContextFactory({
+    mocks: [GameCardsManager],
+  });
+
+  beforeEach(() => {
+    spectator = createContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new VoleurRoundHandler(),
+    );
+    gameCardsManager = spectator.inject(GameCardsManager);
+    gameCardsManager.getNotPlayedCards.mockReturnValue([
+      PlayerRoleEnum.VILLAGEOIS,
+      PlayerRoleEnum.VILLAGEOIS,
+    ]);
   });
 
   it('should be only once', () => {
@@ -105,6 +126,11 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
+    gameCardsManager.getNotPlayedCards.mockReturnValue([
+      PlayerRoleEnum.VOYANTE,
+      PlayerRoleEnum.JOUEUR_FLUTE,
+    ]);
+
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
     expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOYANTE)).toBe(
@@ -113,43 +139,9 @@ describe('VoleurRoundHandler', () => {
     expect(
       roundConfig.selectableRoles?.includes(PlayerRoleEnum.JOUEUR_FLUTE),
     ).toBe(true);
-  });
-
-  it('should not return played roles as selectable roles', () => {
-    const cardList: CardList = {
-      villageois: 0,
-      loupGarou: 0,
-      selectedRoles: new Set([
-        PlayerRoleEnum.VOYANTE,
-        PlayerRoleEnum.CORBEAU,
-        PlayerRoleEnum.JOUEUR_FLUTE,
-        PlayerRoleEnum.VOLEUR,
-      ]),
-      playersNumber: 2,
-    };
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOLEUR,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.CORBEAU,
-        card: PlayerRoleEnum.CORBEAU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const roundConfig = roundHandler.getRoundConfig(players, cardList);
-
-    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.CORBEAU)).toBe(
-      false,
+    expect(gameCardsManager.getNotPlayedCards).toHaveBeenCalledWith(
+      players,
+      cardList,
     );
   });
 
@@ -183,6 +175,11 @@ describe('VoleurRoundHandler', () => {
         isDead: false,
       },
     ];
+
+    gameCardsManager.getNotPlayedCards.mockReturnValue([
+      PlayerRoleEnum.VOYANTE,
+      PlayerRoleEnum.JOUEUR_FLUTE,
+    ]);
 
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
@@ -221,170 +218,15 @@ describe('VoleurRoundHandler', () => {
       },
     ];
 
+    gameCardsManager.getNotPlayedCards.mockReturnValue([
+      PlayerRoleEnum.LOUP_GAROU,
+      PlayerRoleEnum.LOUP_BLANC,
+    ]);
+
     const roundConfig = roundHandler.getRoundConfig(players, cardList);
 
     expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.VOLEUR)).toBe(
       false,
-    );
-  });
-
-  it('should return missing villlageois as selectable roles', () => {
-    const cardList: CardList = {
-      villageois: 1,
-      loupGarou: 0,
-      selectedRoles: new Set([
-        PlayerRoleEnum.VOYANTE,
-        PlayerRoleEnum.CORBEAU,
-        PlayerRoleEnum.VOLEUR,
-      ]),
-      playersNumber: 2,
-    };
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOLEUR,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.CORBEAU,
-        card: PlayerRoleEnum.CORBEAU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const roundConfig = roundHandler.getRoundConfig(players, cardList);
-
-    expect(
-      roundConfig.selectableRoles?.filter(
-        (role) => role === PlayerRoleEnum.VILLAGEOIS,
-      ).length,
-    ).toBe(1);
-  });
-
-  it('should return missing loupGarou as selectable roles', () => {
-    const cardList: CardList = {
-      villageois: 0,
-      loupGarou: 1,
-      selectedRoles: new Set([
-        PlayerRoleEnum.VOYANTE,
-        PlayerRoleEnum.CORBEAU,
-        PlayerRoleEnum.VOLEUR,
-      ]),
-      playersNumber: 2,
-    };
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOLEUR,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.CORBEAU,
-        card: PlayerRoleEnum.CORBEAU,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const roundConfig = roundHandler.getRoundConfig(players, cardList);
-
-    expect(
-      roundConfig.selectableRoles?.filter(
-        (role) => role === PlayerRoleEnum.LOUP_GAROU,
-      ).length,
-    ).toBe(1);
-  });
-
-  it('should return missing SOEUR as selectable roles', () => {
-    const cardList: CardList = {
-      villageois: 0,
-      loupGarou: 0,
-      selectedRoles: new Set([
-        PlayerRoleEnum.SOEUR,
-        PlayerRoleEnum.CORBEAU,
-        PlayerRoleEnum.VOLEUR,
-      ]),
-      playersNumber: 2,
-    };
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOLEUR,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.SOEUR,
-        card: PlayerRoleEnum.SOEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const roundConfig = roundHandler.getRoundConfig(players, cardList);
-
-    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.SOEUR)).toBe(
-      true,
-    );
-  });
-
-  it('should return missing FRERE as selectable roles', () => {
-    const cardList: CardList = {
-      villageois: 0,
-      loupGarou: 0,
-      selectedRoles: new Set([
-        PlayerRoleEnum.FRERE,
-        PlayerRoleEnum.CORBEAU,
-        PlayerRoleEnum.VOLEUR,
-      ]),
-      playersNumber: 3,
-    };
-    const players: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.VOLEUR,
-        card: PlayerRoleEnum.VOLEUR,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 1,
-        name: 'player1',
-        role: PlayerRoleEnum.FRERE,
-        card: PlayerRoleEnum.FRERE,
-        statuses: new Set(),
-        isDead: false,
-      },
-      {
-        id: 2,
-        name: 'player2',
-        role: PlayerRoleEnum.FRERE,
-        card: PlayerRoleEnum.FRERE,
-        statuses: new Set(),
-        isDead: false,
-      },
-    ];
-
-    const roundConfig = roundHandler.getRoundConfig(players, cardList);
-
-    expect(roundConfig.selectableRoles?.includes(PlayerRoleEnum.FRERE)).toBe(
-      true,
     );
   });
 

@@ -3,7 +3,12 @@ import { VICTORY_HANDLERS } from '@/config/victory-handlers';
 import { Victory, VictoryEnum } from '@/types/victory';
 import { Player } from '@/shared/types/player';
 import { VictoryHandlersStore } from '@/game-handlers/victories/victory-handlers-store';
-import { inject, Injectable } from '@angular/core';
+import {
+  inject,
+  Injectable,
+  Injector,
+  runInInjectionContext,
+} from '@angular/core';
 import { VictoryHandler } from './victory.handler';
 
 @Injectable({
@@ -12,6 +17,7 @@ import { VictoryHandler } from './victory.handler';
 export class VictoryHandlersManager {
   private readonly victoryHandlers = new Map<Victory, VictoryHandler>();
 
+  private readonly injector = inject(Injector);
   private readonly victoryHandlersState = inject(VictoryHandlersStore).state;
 
   private readonly victoryPriorities = VICTORIES_PRIORITY;
@@ -76,8 +82,10 @@ export class VictoryHandlersManager {
       !this.victoryHandlers.has(victory) &&
       VICTORY_HANDLERS[victory] !== undefined
     ) {
-      this.victoryHandlers.set(victory, new VICTORY_HANDLERS[victory]());
-      this.syncState();
+      runInInjectionContext(this.injector, () => {
+        this.victoryHandlers.set(victory, new VICTORY_HANDLERS[victory]());
+        this.syncState();
+      });
     }
   }
 

@@ -1,15 +1,15 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
+import { inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
-import {
-  addStatusToPlayer,
-  removeStatusFromPlayer,
-} from '@/utils/status.utils';
 
 export class SalvateurRoundHandler extends DefaultRoundHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(RoundEnum.SALVATEUR, false, false, RoundTypeEnum.PLAYERS);
   }
@@ -26,10 +26,11 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
             !selectedPlayerIds.includes(player.id),
         );
         if (oldProtectedIndex > -1) {
-          newPlayers[oldProtectedIndex] = removeStatusFromPlayer(
-            newPlayers[oldProtectedIndex],
-            PlayerStatusEnum.PROTECTED,
-          );
+          newPlayers[oldProtectedIndex] =
+            this.playersStatusUtility.removeStatusFromPlayer(
+              newPlayers[oldProtectedIndex],
+              PlayerStatusEnum.PROTECTED,
+            );
         }
         return newPlayers;
       }),
@@ -52,6 +53,9 @@ export class SalvateurRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return addStatusToPlayer(player, PlayerStatusEnum.PROTECTED);
+    return this.playersStatusUtility.addStatusToPlayer(
+      player,
+      PlayerStatusEnum.PROTECTED,
+    );
   }
 }

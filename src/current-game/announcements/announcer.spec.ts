@@ -1,14 +1,20 @@
 import { ModalManager } from '@/layout/modal/modal-manager';
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { AnnouncementsQueueStore } from './announcements-queue/announcements-queue-store';
 import { Announcer } from './announcer';
+import { signal } from '@angular/core';
 
 describe('Announcer', () => {
   let spectator: SpectatorService<Announcer>;
 
   const createService = createServiceFactory({
     service: Announcer,
-    mocks: [ModalManager, AnnouncementsQueueStore],
+    mocks: [ModalManager],
+    providers: [mockProvider(AnnouncementsQueueStore, { state: signal([]) })],
   });
 
   beforeEach(() => {

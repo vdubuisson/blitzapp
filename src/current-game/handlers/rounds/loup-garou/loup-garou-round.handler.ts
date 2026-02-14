@@ -1,13 +1,17 @@
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { isLoupGarou } from '@/utils/roles.utils';
+import { inject } from '@angular/core';
 import { DefaultRoundHandler } from '../default/default-round.handler';
-import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class LoupGarouRoundHandler extends DefaultRoundHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+  private readonly playersRoleUtility = inject(PlayersRoleUtility);
+
   constructor() {
     super(RoundEnum.LOUP_GAROU, false, false, RoundTypeEnum.PLAYERS);
   }
@@ -16,7 +20,10 @@ export class LoupGarouRoundHandler extends DefaultRoundHandler {
     const areAllLoupGarouDead = this.areAllLoupGarouDead(players);
     return areAllLoupGarouDead
       ? []
-      : players.filter((player) => !isLoupGarou(player) && !player.isDead);
+      : players.filter(
+          (player) =>
+            !this.playersRoleUtility.isLoupGarou(player) && !player.isDead,
+        );
   }
 
   protected override getMaxSelectable(_: Player[]): number {
@@ -28,7 +35,7 @@ export class LoupGarouRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    const updatedPlayer = addStatusToPlayer(
+    const updatedPlayer = this.playersStatusUtility.addStatusToPlayer(
       player,
       PlayerStatusEnum.WOLF_TARGET,
     );
@@ -37,6 +44,8 @@ export class LoupGarouRoundHandler extends DefaultRoundHandler {
   }
 
   private areAllLoupGarouDead(players: Player[]): boolean {
-    return players.filter(isLoupGarou).every((player) => player.isDead);
+    return players
+      .filter((player) => this.playersRoleUtility.isLoupGarou(player))
+      .every((player) => player.isDead);
   }
 }

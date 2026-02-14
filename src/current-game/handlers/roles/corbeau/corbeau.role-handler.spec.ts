@@ -1,15 +1,15 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { CorbeauRoleHandler } from './corbeau.role-handler';
-import { RoundEnum } from '@/types/round';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import * as statusUtils from '@/utils/status.utils';
+import { RoundEnum } from '@/types/round';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
+import { CorbeauRoleHandler } from './corbeau.role-handler';
 
 describe('CorbeauRoleHandler', () => {
   let handler: CorbeauRoleHandler;
@@ -17,7 +17,7 @@ describe('CorbeauRoleHandler', () => {
   let players: Player[];
 
   const createContext = createInjectionContextFactory({
-    mocks: [RoundHandlersManager, StatusHandlersManager],
+    mocks: [RoundHandlersManager, StatusHandlersManager, PlayersStatusUtility],
   });
 
   beforeEach(() => {
@@ -94,17 +94,16 @@ describe('CorbeauRoleHandler', () => {
       ];
 
       const expectedPlayers = [...testPlayers];
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayersById')
-        .mockReturnValue(expectedPlayers);
+      const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+      playersStatusUtility.removeStatusFromPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.cleanStatusesAfterDay(testPlayers);
       expect(result).toBe(expectedPlayers);
-      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
-        testPlayers,
-        PlayerStatusEnum.RAVEN,
-        [1],
-      );
+      expect(
+        playersStatusUtility.removeStatusFromPlayersById,
+      ).toHaveBeenCalledWith(testPlayers, PlayerStatusEnum.RAVEN, [1]);
     });
   });
 });

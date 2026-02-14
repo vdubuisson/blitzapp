@@ -8,7 +8,7 @@ import { PlayerStatusEnum } from '@/types/player-status';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('ChienLoupRoleHandler', () => {
   let handler: ChienLoupRoleHandler;

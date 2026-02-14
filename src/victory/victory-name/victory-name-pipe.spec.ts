@@ -1,9 +1,6 @@
+import { VICTORY_NAMES } from '@/texts/victory-names';
 import { VictoryEnum } from '@/types/victory';
 import { VictoryNamePipe } from './victory-name-pipe';
-
-jest.mock('@/texts/victory-names', () => ({
-  VICTORY_NAMES: { [VictoryEnum.VILLAGEOIS]: 'Test' },
-}));
 
 describe('VictoryNamePipe', () => {
   let pipe: VictoryNamePipe;
@@ -18,6 +15,6 @@ describe('VictoryNamePipe', () => {
 
   it('should display value for requested enum', () => {
     const name = pipe.transform(VictoryEnum.VILLAGEOIS);
-    expect(name).toEqual('Test');
+    expect(name).toEqual(VICTORY_NAMES[VictoryEnum.VILLAGEOIS]);
   });
 });

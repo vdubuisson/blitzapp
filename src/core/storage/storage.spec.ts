@@ -1,5 +1,8 @@
 import { Preferences } from '@capacitor/preferences';
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
+import {
+  createServiceFactory,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { Storage } from './storage';
 

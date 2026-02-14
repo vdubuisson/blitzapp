@@ -11,7 +11,7 @@ import { DefaultRoleHandler } from './default.role-handler';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('DefaultRoleHandler', () => {
   let handler: DefaultRoleHandler;

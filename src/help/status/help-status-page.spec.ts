@@ -6,7 +6,7 @@ import {
   byTestId,
   createComponentFactory,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockModule, MockPipes } from 'ng-mocks';
 import HelpStatusPage from './help-status-page';
 

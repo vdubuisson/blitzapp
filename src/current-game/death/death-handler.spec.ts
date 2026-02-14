@@ -1,38 +1,40 @@
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
-import { PlayerRoleEnum } from '@/types/player-role';
-import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { DeathsToAnnounceStore } from '@/current-game/death/deaths-to-announce/deaths-to-announce-store';
 import { KnownDeathsStore } from '@/current-game/death/known-deaths/known-deaths-store';
+import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
+import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
 import { signal } from '@angular/core';
 import {
   createServiceFactory,
-  SpectatorService,
   mockProvider,
-} from '@ngneat/spectator/jest';
-import { DeathHandler } from './death-handler';
-import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
-import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { Announcer } from '../announcements/announcer';
-import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
+import { PlayersRoleUtility } from '../players/players-role-utility';
+import { DeathHandler } from './death-handler';
 
 describe('DeathHandler', () => {
   let spectator: SpectatorService<DeathHandler>;
 
   const mockRoleHandler: RoleHandler = {
-    handleDeath: jest.fn().mockImplementation((players) => players),
+    handleDeath: vi.fn().mockImplementation((players) => players),
   } as unknown as RoleHandler;
 
   const mockStatusHandler: StatusHandler = {
-    handleDeath: jest.fn().mockImplementation((players, _) => players),
-    triggerAction: jest.fn().mockImplementation((players) => players),
+    handleDeath: vi.fn().mockImplementation((players, _) => players),
+    triggerAction: vi.fn().mockImplementation((players) => players),
   } as unknown as StatusHandler;
 
   const mockLoverStatusHandler: StatusHandler = {
-    handleDeath: jest.fn().mockImplementation((players, _) => {
+    handleDeath: vi.fn().mockImplementation((players, _) => {
       const newPlayers = [...players];
       newPlayers.forEach((player) => {
         if (player.statuses.has(PlayerStatusEnum.LOVER)) {
@@ -41,7 +43,7 @@ describe('DeathHandler', () => {
       });
       return newPlayers;
     }),
-    triggerAction: jest.fn().mockImplementation((players) => players),
+    triggerAction: vi.fn().mockImplementation((players) => players),
   } as unknown as StatusHandler;
 
   const createService = createServiceFactory({
@@ -49,15 +51,22 @@ describe('DeathHandler', () => {
     mocks: [Announcer],
     providers: [
       mockProvider(RoleHandlersManager, {
-        getHandler: jest.fn().mockReturnValue(mockRoleHandler),
+        getHandler: vi.fn().mockReturnValue(mockRoleHandler),
       }),
       mockProvider(StatusHandlersManager, {
-        getHandler: jest.fn().mockImplementation((status) => {
+        getHandler: vi.fn().mockImplementation((status) => {
           if (status === PlayerStatusEnum.LOVER) {
             return mockLoverStatusHandler;
           }
           return mockStatusHandler;
         }),
+      }),
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
       }),
     ],
   });
@@ -351,7 +360,7 @@ describe('DeathHandler', () => {
     expect(announcer.announceDeaths).toHaveBeenCalledWith(mockPlayers);
   });
 
-  it('should announce ANCIEN killed by innocents if killed by CHASSEUR', () => {
+  it('should announce ANCIEN killed by innocents if killed by innocents', () => {
     const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
@@ -364,54 +373,9 @@ describe('DeathHandler', () => {
         killedBy: PlayerRoleEnum.CHASSEUR,
       },
     ];
-
-    deathsToAnnounceStore.state.set(mockPlayers);
-
-    spectator.service.announceDeaths();
-
-    const announcer = spectator.inject(Announcer);
-    expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
-    );
-  });
-
-  it('should announce ANCIEN killed by innocents if killed by SORCIERE', () => {
-    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.SORCIERE,
-      },
-    ];
-
-    deathsToAnnounceStore.state.set(mockPlayers);
-
-    spectator.service.announceDeaths();
-
-    const announcer = spectator.inject(Announcer);
-    expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
-    );
-  });
-
-  it('should announce ANCIEN killed by innocents if killed by VILLAGEOIS', () => {
-    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.VILLAGEOIS,
-      },
-    ];
+    spectator
+      .inject(PlayersRoleUtility)
+      .isKilledByInnocents.mockReturnValue(true);
 
     deathsToAnnounceStore.state.set(mockPlayers);
 
@@ -435,6 +399,9 @@ describe('DeathHandler', () => {
         isDead: true,
       },
     ];
+    spectator
+      .inject(PlayersRoleUtility)
+      .isKilledByInnocents.mockReturnValue(false);
 
     deathsToAnnounceStore.state.set(mockPlayers);
 

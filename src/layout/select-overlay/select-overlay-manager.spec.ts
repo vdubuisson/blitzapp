@@ -1,4 +1,7 @@
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
+import {
+  createServiceFactory,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { SelectOverlayManager } from './select-overlay-manager';
 
 describe('SelectOverlayManager', () => {

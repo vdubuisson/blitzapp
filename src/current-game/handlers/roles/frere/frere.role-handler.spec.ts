@@ -6,7 +6,7 @@ import { RoundEnum } from '@/types/round';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('FrereRoleHandler', () => {
   let handler: FrereRoleHandler;

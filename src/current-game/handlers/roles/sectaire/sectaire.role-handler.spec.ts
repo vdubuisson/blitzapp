@@ -10,7 +10,7 @@ import { VictoryEnum } from '@/types/victory';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('SectaireRoleHandler', () => {
   let handler: SectaireRoleHandler;

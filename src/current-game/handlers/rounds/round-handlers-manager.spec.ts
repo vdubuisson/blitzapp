@@ -10,24 +10,8 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { RoundHandlersManager } from './round-handlers-manager';
-
-jest.mock('@/config/round-handlers', () => {
-  class VillageoisRoundHandlerMock {}
-  class LoupGarouRoundHandlerMock {}
-  class CapitaineRoundHandlerMock {}
-  class VoyanteRoundHandlerMock {}
-
-  return {
-    ROUND_HANDLERS: {
-      [RoundEnum.VILLAGEOIS]: VillageoisRoundHandlerMock,
-      [RoundEnum.LOUP_GAROU]: LoupGarouRoundHandlerMock,
-      [RoundEnum.CAPITAINE]: CapitaineRoundHandlerMock,
-      [RoundEnum.VOYANTE]: VoyanteRoundHandlerMock,
-    },
-  };
-});
 
 describe('RoundHandlersManager', () => {
   let spectator: SpectatorService<RoundHandlersManager>;
@@ -59,7 +43,7 @@ describe('RoundHandlersManager', () => {
       expect(
         spectator.service['roundHandlers'].get(RoundEnum.VILLAGEOIS)
           ?.constructor.name,
-      ).toEqual('VillageoisRoundHandlerMock');
+      ).toEqual('VillageoisRoundHandler');
     });
 
     it('should init CAPITAINE round handler', () => {
@@ -68,7 +52,7 @@ describe('RoundHandlersManager', () => {
       expect(
         spectator.service['roundHandlers'].get(RoundEnum.CAPITAINE)?.constructor
           .name,
-      ).toEqual('CapitaineRoundHandlerMock');
+      ).toEqual('CapitaineRoundHandler');
     });
 
     it('should init LOUP_GAROU round handler for LOUP_GAROU role', () => {
@@ -77,7 +61,7 @@ describe('RoundHandlersManager', () => {
       expect(
         spectator.service['roundHandlers'].get(RoundEnum.LOUP_GAROU)
           ?.constructor.name,
-      ).toEqual('LoupGarouRoundHandlerMock');
+      ).toEqual('LoupGarouRoundHandler');
     });
   });
 
@@ -214,7 +198,7 @@ describe('RoundHandlersManager', () => {
       expect(
         spectator.service['roundHandlers'].get(RoundEnum.VILLAGEOIS)
           ?.constructor.name,
-      ).toEqual('VillageoisRoundHandlerMock');
+      ).toEqual('VillageoisRoundHandler');
     });
 
     it('should not create a handler if it already exists', () => {

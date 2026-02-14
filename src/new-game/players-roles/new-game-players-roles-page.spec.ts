@@ -19,7 +19,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockComponent, MockDirective } from 'ng-mocks';
 import NewGamePlayersRolesPage from './new-game-players-roles-page';
 import { RouterLink } from '@angular/router';
@@ -61,8 +61,8 @@ describe('NewGamePlayersRolesPage', () => {
       providers: [
         mockProvider(NewGameCreator, {
           currentPlayers: mockPlayers$.asReadonly(),
-          createGame: jest.fn(),
-          changeRole: jest.fn(),
+          createGame: vi.fn(),
+          changeRole: vi.fn(),
         }),
         mockProvider(CardChoiceStore, {
           state: mockCards,

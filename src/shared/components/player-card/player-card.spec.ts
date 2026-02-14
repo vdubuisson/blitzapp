@@ -7,7 +7,7 @@ import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { NgOptimizedImage } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { mockProvider } from '@ngneat/spectator';
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
 import { MockComponent, MockDirective, MockPipes } from 'ng-mocks';
 import { PlayerCard } from './player-card';
 

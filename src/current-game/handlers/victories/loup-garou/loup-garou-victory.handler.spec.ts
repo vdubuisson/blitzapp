@@ -1,12 +1,36 @@
-import { PlayerRoleEnum } from '@/types/player-role';
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
 import { Player } from '@/shared/types/player';
+import { PlayerStatusEnum } from '@/shared/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
+import {
+  createInjectionContextFactory,
+  mockProvider,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { LoupGarouVictoryHandler } from './loup-garou-victory.handler';
 
 describe('LoupGarouVictoryHandler', () => {
   let victoryHandler: LoupGarouVictoryHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    victoryHandler = new LoupGarouVictoryHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    providers: [
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
+    ],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    victoryHandler = spectator.runInInjectionContext(
+      () => new LoupGarouVictoryHandler(),
+    );
   });
 
   it('should be victorious if only Loup-Garou are alive', () => {

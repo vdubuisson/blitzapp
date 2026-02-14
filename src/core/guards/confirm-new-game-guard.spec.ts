@@ -5,7 +5,7 @@ import {
   createInjectionContextFactory,
   mockProvider,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { confirmNewGameGuard } from './confirm-new-game-guard';
 

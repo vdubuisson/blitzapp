@@ -1,14 +1,17 @@
 import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
-import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { GameCardsManager } from '@/current-game/cards/game-cards-manager';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
-import { getNotPlayedCards } from '@/utils/cards.utils';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
+import { inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
 
 export class VoleurRoundHandler extends DefaultRoundHandler {
+  private readonly gameCardsManager = inject(GameCardsManager);
+
   constructor() {
     super(RoundEnum.VOLEUR, true, false, RoundTypeEnum.ROLES);
   }
@@ -43,7 +46,10 @@ export class VoleurRoundHandler extends DefaultRoundHandler {
     if (cardList === undefined) {
       throw new Error('VoleurRoundHandler need cardList');
     }
-    const notPlayedCards = getNotPlayedCards(players, cardList);
+    const notPlayedCards = this.gameCardsManager.getNotPlayedCards(
+      players,
+      cardList,
+    );
 
     if (notPlayedCards.length !== 2) {
       throw new Error('Incorrect number of cards not played');

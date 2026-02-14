@@ -2,7 +2,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { Subject } from 'rxjs';
 import { SelectOverlay } from './select-overlay';
 import { SelectOverlayContent } from './select-overlay-content';
@@ -21,7 +21,7 @@ describe('SelectOverlayComponent', () => {
       providers: [
         mockProvider(SelectOverlayManager, {
           content: contentSubject.asObservable(),
-          selectValue: jest.fn(),
+          selectValue: vi.fn(),
         }),
       ],
     });

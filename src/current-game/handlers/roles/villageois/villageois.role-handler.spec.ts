@@ -5,7 +5,7 @@ import { VillageoisRoleHandler } from './villageois.role-handler';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('VillageoisRoleHandler', () => {
   let handler: VillageoisRoleHandler;

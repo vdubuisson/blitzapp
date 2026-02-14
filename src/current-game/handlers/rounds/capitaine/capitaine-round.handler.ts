@@ -1,11 +1,14 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
+import { inject } from '@angular/core';
 import { DefaultRoundHandler } from '../default/default-round.handler';
-import { addStatusToPlayer } from '@/utils/status.utils';
 
 export class CapitaineRoundHandler extends DefaultRoundHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(RoundEnum.CAPITAINE, true, true, RoundTypeEnum.PLAYERS);
   }
@@ -23,6 +26,9 @@ export class CapitaineRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    return addStatusToPlayer(player, PlayerStatusEnum.CAPTAIN);
+    return this.playersStatusUtility.addStatusToPlayer(
+      player,
+      PlayerStatusEnum.CAPTAIN,
+    );
   }
 }

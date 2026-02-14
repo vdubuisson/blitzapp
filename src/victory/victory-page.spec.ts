@@ -4,7 +4,7 @@ import {
   byTestId,
   createComponentFactory,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockDirective, MockPipe } from 'ng-mocks';
 import { VictoryNamePipe } from './victory-name/victory-name-pipe';
 import VictoryPage from './victory-page';

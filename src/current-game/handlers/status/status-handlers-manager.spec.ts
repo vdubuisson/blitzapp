@@ -7,7 +7,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { DefaultStatusHandler } from './default/default.status-handler';
 import { StatusHandler } from './status-handler.interface';
 import { StatusHandlersManager } from './status-handlers-manager';
@@ -67,8 +67,8 @@ describe('StatusHandlersManager', () => {
     ).toBe(false);
   });
 
-  it('should return WOLF_TARGET handler', () => {
-    const statusHandler = new WolfTargetStatusHandler();
+  it('should return already initialized handler', () => {
+    const statusHandler = new DefaultStatusHandler();
     spectator.service['statusHandlers'].set(
       PlayerStatusEnum.WOLF_TARGET,
       statusHandler,

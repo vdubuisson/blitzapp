@@ -1,15 +1,15 @@
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { Round, RoundEnum } from '@/types/round';
-import * as statusUtils from '@/utils/status.utils';
 import { signal } from '@angular/core';
 import {
   createInjectionContextFactory,
   mockProvider,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { CaptainStatusHandler } from './captain.status-handler';
 
 describe('CaptainStatusHandler', () => {
@@ -17,6 +17,7 @@ describe('CaptainStatusHandler', () => {
   let spectator: SpectatorInjectionContext;
 
   const createContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
     providers: [
       mockProvider(AfterDeathRoundQueueStore, {
         state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
@@ -55,18 +56,17 @@ describe('CaptainStatusHandler', () => {
         },
       ];
       const expectedPlayers = [...mockPlayers];
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayersById')
-        .mockReturnValue(expectedPlayers);
+      const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+      playersStatusUtility.removeStatusFromPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const newPlayers = handler.handleDeath(mockPlayers, mockPlayers[1]);
 
       expect(newPlayers).not.toBe(mockPlayers);
-      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
-        mockPlayers,
-        PlayerStatusEnum.CAPTAIN,
-        [1],
-      );
+      expect(
+        playersStatusUtility.removeStatusFromPlayersById,
+      ).toHaveBeenCalledWith(mockPlayers, PlayerStatusEnum.CAPTAIN, [1]);
     });
 
     it('should add CAPITAINE round to after-death rounds', () => {

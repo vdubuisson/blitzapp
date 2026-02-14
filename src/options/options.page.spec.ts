@@ -4,7 +4,7 @@ import {
   byTestId,
   createComponentFactory,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { of } from 'rxjs';
 import OptionsPage from './options.page';
 
@@ -20,6 +20,8 @@ describe('OptionsPage', () => {
   });
 
   it('should clear storage', () => {
+    const modalManager = spectator.inject(ModalManager);
+    modalManager.showTextModal.mockReturnValue(of(true));
     const storage = spectator.inject(Storage);
     storage.clear.mockReturnValue(of(undefined));
 

@@ -5,7 +5,7 @@ import { PetiteFilleRoleHandler } from './petite-fille.role-handler';
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('PetiteFilleRoleHandler', () => {
   let handler: PetiteFilleRoleHandler;

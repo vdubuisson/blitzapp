@@ -8,7 +8,7 @@ import { RoundOrchestrator } from '@/current-game/orchestrator/round-orchestrato
 import {
   createInjectionContextFactory,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('AngeRoleHandler', () => {
   let handler: AngeRoleHandler;

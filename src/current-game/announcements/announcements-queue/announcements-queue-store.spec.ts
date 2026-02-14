@@ -3,7 +3,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { of } from 'rxjs';
 import { AnnouncementsQueueStore } from './announcements-queue-store';
 
@@ -26,8 +26,8 @@ describe('AnnouncementsQueueStore', () => {
       spectator = createService({
         providers: [
           mockProvider(Storage, {
-            get: jest.fn().mockReturnValue(of(null)),
-            set: jest.fn(),
+            get: vi.fn().mockReturnValue(of(null)),
+            set: vi.fn(),
           }),
         ],
       });
@@ -64,8 +64,8 @@ describe('AnnouncementsQueueStore', () => {
       spectator = createService({
         providers: [
           mockProvider(Storage, {
-            get: jest.fn().mockReturnValue(of(mockState)),
-            set: jest.fn(),
+            get: vi.fn().mockReturnValue(of(mockState)),
+            set: vi.fn(),
           }),
         ],
       });

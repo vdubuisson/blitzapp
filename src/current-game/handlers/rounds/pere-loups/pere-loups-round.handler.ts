@@ -1,17 +1,16 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
+import { inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
-import {
-  addStatusToPlayer,
-  addStatusToPlayersById,
-  removeStatusFromPlayer,
-} from '@/utils/status.utils';
 
 export class PereLoupsRoundHandler extends DefaultRoundHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(RoundEnum.PERE_LOUPS, false, false, RoundTypeEnum.PLAYERS);
   }
@@ -28,7 +27,7 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
             (player) => player.role === PlayerRoleEnum.PERE_LOUPS,
           )?.id;
           if (pereLoupsId !== undefined) {
-            updatedPlayers = addStatusToPlayersById(
+            updatedPlayers = this.playersStatusUtility.addStatusToPlayersById(
               updatedPlayers,
               PlayerStatusEnum.NO_POWER,
               [pereLoupsId],
@@ -67,11 +66,14 @@ export class PereLoupsRoundHandler extends DefaultRoundHandler {
   }
 
   protected override affectSelectedPlayer(player: Player): Player {
-    let updatedPlayer = removeStatusFromPlayer(
+    let updatedPlayer = this.playersStatusUtility.removeStatusFromPlayer(
       player,
       PlayerStatusEnum.WOLF_TARGET,
     );
-    updatedPlayer = addStatusToPlayer(updatedPlayer, PlayerStatusEnum.INFECTED);
+    updatedPlayer = this.playersStatusUtility.addStatusToPlayer(
+      updatedPlayer,
+      PlayerStatusEnum.INFECTED,
+    );
     updatedPlayer.killedBy = undefined;
     return updatedPlayer;
   }

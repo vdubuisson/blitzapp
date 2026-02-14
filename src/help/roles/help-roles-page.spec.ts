@@ -8,7 +8,7 @@ import {
   byTestId,
   createComponentFactory,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockDirective, MockModule, MockPipes } from 'ng-mocks';
 import HelpRolesPage from './help-roles-page';
 

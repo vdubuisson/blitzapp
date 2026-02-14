@@ -10,7 +10,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 
 describe('NewGameCreator', () => {
   let spectator: SpectatorService<NewGameCreator>;

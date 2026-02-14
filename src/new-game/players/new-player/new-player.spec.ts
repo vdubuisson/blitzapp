@@ -1,5 +1,5 @@
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
 import { MockComponent } from 'ng-mocks';
 import { NewPlayer } from './new-player';
 
@@ -21,8 +21,8 @@ describe('NewPlayer', () => {
   it('should emit name on submit', () => {
     const component = spectator.component;
 
-    jest.spyOn(component['playerForm'], 'reset').mockImplementation(() => {});
-    jest.spyOn(component.newPlayer, 'emit').mockImplementation((val) => val);
+    vi.spyOn(component['playerForm'], 'reset').mockImplementation(() => {});
+    vi.spyOn(component.newPlayer, 'emit').mockImplementation((val) => val);
 
     component['playerForm'].setValue({ name: 'Name' });
     component['onSubmit']();

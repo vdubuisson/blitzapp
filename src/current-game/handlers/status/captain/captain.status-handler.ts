@@ -1,15 +1,16 @@
+import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
-import { removeStatusFromPlayersById } from '@/utils/status.utils';
 import { inject } from '@angular/core';
 import { DefaultStatusHandler } from '../default/default.status-handler';
 
 export class CaptainStatusHandler extends DefaultStatusHandler {
   private readonly afterDeathRoundQueue = inject(AfterDeathRoundQueueStore)
     .state;
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
 
   /**
    * Handles the death of a player with the CAPTAIN status.
@@ -24,9 +25,11 @@ export class CaptainStatusHandler extends DefaultStatusHandler {
         ...queue,
         RoundEnum.CAPITAINE,
       ]);
-      return removeStatusFromPlayersById(players, PlayerStatusEnum.CAPTAIN, [
-        deadPlayer.id,
-      ]);
+      return this.playersStatusUtility.removeStatusFromPlayersById(
+        players,
+        PlayerStatusEnum.CAPTAIN,
+        [deadPlayer.id],
+      );
     }
     return players;
   }

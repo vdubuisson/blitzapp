@@ -22,7 +22,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockComponents, MockDirectives } from 'ng-mocks';
 import NewGamePlayersPage from './new-game-players-page';
 
@@ -49,9 +49,9 @@ describe('NewGamePage', () => {
       providers: [
         mockProvider(NewGameCreator, {
           currentPlayers: mockPlayers$.asReadonly(),
-          addPlayer: jest.fn(),
-          removePlayer: jest.fn(),
-          reorderPlayers: jest.fn(),
+          addPlayer: vi.fn(),
+          removePlayer: vi.fn(),
+          reorderPlayers: vi.fn(),
         }),
         mockProvider(CardChoiceStore, {
           state: mockCardList,

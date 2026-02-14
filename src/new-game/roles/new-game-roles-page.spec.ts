@@ -7,7 +7,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import NewGameRolesPage from './new-game-roles-page';
 import { signal } from '@angular/core';
 
@@ -26,7 +26,7 @@ describe('NewGameRolesPage', () => {
     mocks: [Router, ActivatedRoute],
     providers: [
       mockProvider(PlayerRoleNamePipe, {
-        transform: jest.fn().mockReturnValue(''),
+        transform: vi.fn().mockReturnValue(''),
       }),
     ],
   });

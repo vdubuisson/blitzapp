@@ -12,7 +12,6 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "esModuleInterop": true,
     "resolveJsonModule": true,
     "lib": [
       "ES2023",
@@ -33,7 +32,6 @@
       "@/storage/*": ["src/core/storage/*"],
       "@/texts/*": ["src/texts/*"],
       "@/types/*": ["src/shared/types/*"],
-      "@/utils/*": ["src/core/utils/*"],
       "@/victory/*": ["src/victory/*"]
     }
   },
@@ -41,8 +39,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true,
-    "typeCheckHostBindings": true
+    "strictTemplates": true
   },
   "files": [],
   "references": [

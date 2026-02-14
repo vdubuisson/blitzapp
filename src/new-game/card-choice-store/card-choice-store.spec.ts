@@ -6,7 +6,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { of } from 'rxjs';
 import { CardChoiceStore } from './card-choice-store';
 
@@ -31,8 +31,8 @@ describe('CardChoiceStore', () => {
       service: CardChoiceStore,
       providers: [
         mockProvider(Storage, {
-          get: jest.fn().mockReturnValue(of(null)),
-          set: jest.fn(),
+          get: vi.fn().mockReturnValue(of(null)),
+          set: vi.fn(),
         }),
       ],
     });
@@ -80,7 +80,7 @@ describe('CardChoiceStore', () => {
       service: CardChoiceStore,
       providers: [
         mockProvider(Storage, {
-          get: jest.fn().mockReturnValue(of(mockStateStored)),
+          get: vi.fn().mockReturnValue(of(mockStateStored)),
         }),
       ],
     });

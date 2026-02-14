@@ -1,7 +1,10 @@
 import { PlayerRoleModal } from '@/layout/modal/player-role/player-role-modal';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
-import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
+import {
+  createServiceFactory,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom, of } from 'rxjs';
 import { ModalManager } from './modal-manager';
 

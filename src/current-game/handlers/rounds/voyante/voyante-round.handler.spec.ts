@@ -7,7 +7,7 @@ import {
   createInjectionContextFactory,
   mockProvider,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom, of } from 'rxjs';
 import { VoyanteRoundHandler } from './voyante-round.handler';
 
@@ -18,7 +18,7 @@ describe('VoyanteRoundHandler', () => {
   const createContext = createInjectionContextFactory({
     providers: [
       mockProvider(ModalManager, {
-        showPlayerCard: jest.fn().mockReturnValue(of(undefined)),
+        showPlayerCard: vi.fn().mockReturnValue(of(undefined)),
       }),
     ],
   });

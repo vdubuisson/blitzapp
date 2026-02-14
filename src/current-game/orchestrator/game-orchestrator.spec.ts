@@ -11,6 +11,7 @@ import { VictoryEnum } from '@/types/victory';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { CurrentRoundConfigStore } from '@/current-game/orchestrator/current-round-config/current-round-config-store';
 import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
@@ -27,19 +28,18 @@ import {
   mockProvider,
   SpectatorService,
   SpyObject,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
+import { PlayersRoleUtility } from '../players/players-role-utility';
 import { DayCountStore } from './day-count/day-count-store';
 import { GameOrchestrator } from './game-orchestrator';
 import { RoundOrchestrator } from './round-orchestrator';
 
-import * as rolesUtils from '@/utils/roles.utils';
-
 class MockRoleHandler implements RoleHandler {
   role = PlayerRoleEnum.VILLAGEOIS;
 
-  prepareNewGame = jest.fn((players: Player[]) => players);
-  handleDeath = jest.fn((players: Player[]) => players);
-  cleanStatusesAfterDay = jest.fn((players: Player[]) => players);
+  prepareNewGame = vi.fn((players: Player[]) => players);
+  handleDeath = vi.fn((players: Player[]) => players);
+  cleanStatusesAfterDay = vi.fn((players: Player[]) => players);
 }
 
 class MockRoundHandler implements RoundHandler {
@@ -57,11 +57,11 @@ class MockRoundHandler implements RoundHandler {
 }
 
 class MockStatusHandler implements StatusHandler {
-  handleDeath = jest.fn((players: Player[]): Player[] => {
+  handleDeath = vi.fn((players: Player[]): Player[] => {
     return players;
   });
 
-  triggerAction = jest.fn((players: Player[]): Player[] => {
+  triggerAction = vi.fn((players: Player[]): Player[] => {
     return players;
   });
 }
@@ -75,6 +75,7 @@ describe('GameOrchestrator', () => {
   let deathHandler: SpyObject<DeathHandler>;
   let statusHandlersManager: SpyObject<StatusHandlersManager>;
   let roleHandlersManager: SpyObject<RoleHandlersManager>;
+  let playersRoleUtility: SpyObject<PlayersRoleUtility>;
 
   let currentPlayersState: WritableSignal<Player[]>;
   let currentRoundConfigState: WritableSignal<RoundConfig | null>;
@@ -94,6 +95,15 @@ describe('GameOrchestrator', () => {
       DeathHandler,
       StatusHandlersManager,
       RoleHandlersManager,
+    ],
+    providers: [
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
     ],
   });
 
@@ -129,6 +139,7 @@ describe('GameOrchestrator', () => {
     deathHandler = spectator.inject(DeathHandler);
     statusHandlersManager = spectator.inject(StatusHandlersManager);
     roleHandlersManager = spectator.inject(RoleHandlersManager);
+    playersRoleUtility = spectator.inject(PlayersRoleUtility);
 
     mockPlayers = [
       {
@@ -179,9 +190,8 @@ describe('GameOrchestrator', () => {
         type: RoundTypeEnum.DEFAULT,
       });
 
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.CAPITAINE:
               return mockCurrentRoundHandler;
@@ -190,15 +200,16 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
 
-      jest
-        .spyOn(victoryHandlersManager, 'getVictory')
-        .mockReturnValue(VictoryEnum.LOUP_GAROU);
-      jest
-        .spyOn(roundOrchestrator, 'getNextRound')
-        .mockReturnValue(RoundEnum.VILLAGEOIS);
-      jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
+      vi.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(
+        VictoryEnum.LOUP_GAROU,
+      );
+      vi.spyOn(roundOrchestrator, 'getNextRound').mockReturnValue(
+        RoundEnum.VILLAGEOIS,
+      );
+      vi.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue([]);
     });
 
     it('should reset rounds on victory', () => {
@@ -242,7 +253,7 @@ describe('GameOrchestrator', () => {
 
   describe('on game creation', () => {
     beforeEach(() => {
-      jest.spyOn(roleHandlersManager, 'getHandlers').mockReturnValue([]);
+      vi.spyOn(roleHandlersManager, 'getHandlers').mockReturnValue([]);
     });
 
     it('should init round handlers on game creation', () => {
@@ -264,9 +275,7 @@ describe('GameOrchestrator', () => {
         PlayerRoleEnum.VOLEUR,
         PlayerRoleEnum.CHASSEUR,
       ];
-      jest
-        .spyOn(rolesUtils, 'getNotPlayedRoles')
-        .mockReturnValue(notPlayedRoles);
+      playersRoleUtility.getNotPlayedRoles.mockReturnValue(notPlayedRoles);
 
       spectator.service.createGame([]);
 
@@ -301,9 +310,9 @@ describe('GameOrchestrator', () => {
 
     it('should call prepareNewGame of each role handler on game creation', () => {
       const mockRoleHandler = new MockRoleHandler();
-      jest
-        .spyOn(roleHandlersManager, 'getHandlers')
-        .mockReturnValue([mockRoleHandler]);
+      vi.spyOn(roleHandlersManager, 'getHandlers').mockReturnValue([
+        mockRoleHandler,
+      ]);
 
       spectator.service.createGame(mockPlayers);
 
@@ -362,12 +371,12 @@ describe('GameOrchestrator', () => {
       };
       const mockRoundHandler = new MockRoundHandler();
       mockRoundHandler.getRoundConfig = () => mockRoundConfig;
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockReturnValue(mockRoundHandler);
-      jest
-        .spyOn(roundOrchestrator, 'getFirstRound')
-        .mockReturnValue(RoundEnum.LOUP_GAROU);
+      vi.spyOn(roundHandlersManager, 'getHandler').mockReturnValue(
+        mockRoundHandler,
+      );
+      vi.spyOn(roundOrchestrator, 'getFirstRound').mockReturnValue(
+        RoundEnum.LOUP_GAROU,
+      );
 
       spectator.service.createGame(mockPlayers);
 
@@ -380,16 +389,16 @@ describe('GameOrchestrator', () => {
 
     beforeEach(() => {
       mockRoundHandler = new MockRoundHandler();
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockReturnValue(mockRoundHandler);
-      jest.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockPlayers);
+      vi.spyOn(roundHandlersManager, 'getHandler').mockReturnValue(
+        mockRoundHandler,
+      );
+      vi.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockPlayers);
     });
 
     it('should update players with handler action on submit', () => {
-      jest
-        .spyOn(mockRoundHandler, 'handleAction')
-        .mockReturnValue(of(mockPlayers));
+      vi.spyOn(mockRoundHandler, 'handleAction').mockReturnValue(
+        of(mockPlayers),
+      );
       const mockRoundConfig: RoundConfig = {
         round: RoundEnum.LOUP_GAROU,
         selectablePlayers: [0, 2],
@@ -426,12 +435,12 @@ describe('GameOrchestrator', () => {
       };
       currentRoundConfigState.set(mockRoundConfig);
       currentPlayersState.set(mockPlayers);
-      jest
-        .spyOn(mockRoundHandler, 'getRoundConfig')
-        .mockReturnValue(mockNextRoundConfig);
-      jest
-        .spyOn(roundOrchestrator, 'getNextRound')
-        .mockReturnValue(RoundEnum.SORCIERE_HEALTH);
+      vi.spyOn(mockRoundHandler, 'getRoundConfig').mockReturnValue(
+        mockNextRoundConfig,
+      );
+      vi.spyOn(roundOrchestrator, 'getNextRound').mockReturnValue(
+        RoundEnum.SORCIERE_HEALTH,
+      );
 
       expect(currentRoundConfigState()).toEqual(mockRoundConfig);
 
@@ -475,9 +484,8 @@ describe('GameOrchestrator', () => {
 
       currentPlayersState.set(mockNewPlayers);
 
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VOLEUR:
               return mockCurrentRoundHandler;
@@ -486,10 +494,11 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
-      jest
-        .spyOn(roundOrchestrator, 'getNextRound')
-        .mockReturnValue(RoundEnum.VOYANTE);
+        },
+      );
+      vi.spyOn(roundOrchestrator, 'getNextRound').mockReturnValue(
+        RoundEnum.VOYANTE,
+      );
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       cardChoiceState.set({
@@ -505,13 +514,11 @@ describe('GameOrchestrator', () => {
         PlayerRoleEnum.VOLEUR,
         PlayerRoleEnum.CHASSEUR,
       ];
-      jest
-        .spyOn(rolesUtils, 'getNotPlayedRoles')
-        .mockReturnValue(notPlayedRoles);
+      playersRoleUtility.getNotPlayedRoles.mockReturnValue(notPlayedRoles);
       const mockRoleHandler = new MockRoleHandler();
-      jest
-        .spyOn(roleHandlersManager, 'getHandlers')
-        .mockReturnValue([mockRoleHandler]);
+      vi.spyOn(roleHandlersManager, 'getHandlers').mockReturnValue([
+        mockRoleHandler,
+      ]);
 
       spectator.service.submitRoundAction([]);
 
@@ -571,9 +578,8 @@ describe('GameOrchestrator', () => {
       mockNextRoundHandler.isDuringDay = false;
       mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
 
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.PERE_LOUPS:
               return mockCurrentRoundHandler;
@@ -582,10 +588,11 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
-      jest
-        .spyOn(roundOrchestrator, 'getNextRound')
-        .mockReturnValue(RoundEnum.VOYANTE);
+        },
+      );
+      vi.spyOn(roundOrchestrator, 'getNextRound').mockReturnValue(
+        RoundEnum.VOYANTE,
+      );
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       cardChoiceState.set({
@@ -639,9 +646,8 @@ describe('GameOrchestrator', () => {
       mockNextRoundHandler.isDuringDay = false;
       mockNextRoundHandler.getRoundConfig = () => ({}) as RoundConfig;
 
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.PERE_LOUPS:
               return mockCurrentRoundHandler;
@@ -650,10 +656,11 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
-      jest
-        .spyOn(roundOrchestrator, 'getNextRound')
-        .mockReturnValue(RoundEnum.VOYANTE);
+        },
+      );
+      vi.spyOn(roundOrchestrator, 'getNextRound').mockReturnValue(
+        RoundEnum.VOYANTE,
+      );
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       cardChoiceState.set({
@@ -681,9 +688,9 @@ describe('GameOrchestrator', () => {
       currentRoundConfigState.set(mockCurrentRoundConfig);
       const mockCurrentRoundHandler = new MockRoundHandler();
       mockCurrentRoundHandler.isDuringDay = true;
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockReturnValue(mockCurrentRoundHandler);
+      vi.spyOn(roundHandlersManager, 'getHandler').mockReturnValue(
+        mockCurrentRoundHandler,
+      );
 
       const mockNewPlayers: Player[] = [
         {
@@ -703,9 +710,7 @@ describe('GameOrchestrator', () => {
           isDead: false,
         },
       ];
-      jest
-        .spyOn(deathHandler, 'handleNewDeaths')
-        .mockReturnValue(mockNewPlayers);
+      vi.spyOn(deathHandler, 'handleNewDeaths').mockReturnValue(mockNewPlayers);
       currentPlayersState.set(mockPlayers);
 
       spectator.service.submitRoundAction([]);
@@ -725,12 +730,12 @@ describe('GameOrchestrator', () => {
       };
       currentRoundConfigState.set(mockCurrentRoundConfig);
 
-      jest.spyOn(roundOrchestrator, 'getNextRound').mockImplementation(() => {
+      vi.spyOn(roundOrchestrator, 'getNextRound').mockImplementation(() => {
         throw new Error('No next round');
       });
-      jest
-        .spyOn(victoryHandlersManager, 'getVictory')
-        .mockReturnValue(VictoryEnum.NONE);
+      vi.spyOn(victoryHandlersManager, 'getVictory').mockReturnValue(
+        VictoryEnum.NONE,
+      );
 
       spectator.service.submitRoundAction([]);
 
@@ -779,15 +784,14 @@ describe('GameOrchestrator', () => {
       mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
 
       const mockStatusHandler = new MockStatusHandler();
-      jest
-        .spyOn(mockStatusHandler, 'triggerAction')
-        .mockReturnValue(mockNewPlayers);
+      vi.spyOn(mockStatusHandler, 'triggerAction').mockReturnValue(
+        mockNewPlayers,
+      );
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.LOUP_GAROU:
               return mockCurrentRoundHandler;
@@ -796,10 +800,11 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
-      jest
-        .spyOn(statusHandlersManager, 'getHandler')
-        .mockReturnValue(mockStatusHandler);
+        },
+      );
+      vi.spyOn(statusHandlersManager, 'getHandler').mockReturnValue(
+        mockStatusHandler,
+      );
 
       mockPlayers[0].statuses.add(PlayerStatusEnum.WOLF_TARGET);
       currentPlayersState.set(mockPlayers);
@@ -854,15 +859,14 @@ describe('GameOrchestrator', () => {
       mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
 
       const mockStatusHandler = new MockStatusHandler();
-      jest
-        .spyOn(mockStatusHandler, 'triggerAction')
-        .mockReturnValue(mockNewPlayers);
+      vi.spyOn(mockStatusHandler, 'triggerAction').mockReturnValue(
+        mockNewPlayers,
+      );
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.LOUP_GAROU:
               return mockCurrentRoundHandler;
@@ -871,10 +875,11 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
-      jest
-        .spyOn(statusHandlersManager, 'getHandler')
-        .mockReturnValue(mockStatusHandler);
+        },
+      );
+      vi.spyOn(statusHandlersManager, 'getHandler').mockReturnValue(
+        mockStatusHandler,
+      );
 
       mockPlayers[0].statuses.add(PlayerStatusEnum.INFECTED);
       currentPlayersState.set(mockPlayers);
@@ -930,9 +935,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VOYANTE:
               return mockCurrentRoundHandler;
@@ -941,7 +945,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       deathHandler.handleNewDeaths.mockReturnValue(mockNewPlayers);
       currentPlayersState.set(mockPlayers);
 
@@ -977,9 +982,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VILLAGEOIS);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VOYANTE:
               return mockCurrentRoundHandler;
@@ -988,7 +992,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       deathHandler.handleNewDeaths.mockReturnValue([]);
       currentPlayersState.set(mockPlayers);
 
@@ -1022,9 +1027,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VILLAGEOIS:
               return mockCurrentRoundHandler;
@@ -1033,7 +1037,12 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
+      const mockRoleHandler = new MockRoleHandler();
+      mockRoleHandler.cleanStatusesAfterDay.mockReturnValue(mockPlayers);
+      roleHandlersManager.getHandler.mockReturnValue(mockRoleHandler);
+
       currentPlayersState.set(mockPlayers);
 
       spectator.service.submitRoundAction([]);
@@ -1066,9 +1075,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.CHASSEUR);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VOYANTE:
               return mockCurrentRoundHandler;
@@ -1077,7 +1085,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       deathHandler.handleNewDeaths.mockReturnValue([]);
       currentPlayersState.set(mockPlayers);
 
@@ -1131,9 +1140,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VILLAGEOIS:
               return mockCurrentRoundHandler;
@@ -1142,7 +1150,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       roleHandlersManager.getHandler.mockReturnValue(mockRoleHandler);
 
       currentPlayersState.set(mockPlayers);
@@ -1180,9 +1189,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.VILLAGEOIS:
               return mockCurrentRoundHandler;
@@ -1191,7 +1199,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       currentPlayersState.set([]);
       deathHandler.handleNewDeaths.mockReturnValue([]);
 
@@ -1227,9 +1236,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.BOUC:
               return mockCurrentRoundHandler;
@@ -1238,7 +1246,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       currentPlayersState.set([]);
       deathHandler.handleNewDeaths.mockReturnValue([]);
 
@@ -1272,9 +1281,8 @@ describe('GameOrchestrator', () => {
 
       currentRoundConfigState.set(mockCurrentRoundConfig);
       roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.VOYANTE);
-      jest
-        .spyOn(roundHandlersManager, 'getHandler')
-        .mockImplementation((round) => {
+      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
+        (round) => {
           switch (round) {
             case RoundEnum.BOUC:
               return mockCurrentRoundHandler;
@@ -1283,7 +1291,8 @@ describe('GameOrchestrator', () => {
             default:
               return new MockRoundHandler();
           }
-        });
+        },
+      );
       deathHandler.handleNewDeaths.mockReturnValue([]);
       currentPlayersState.set([]);
 

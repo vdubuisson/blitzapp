@@ -1,16 +1,20 @@
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
 import { Announcer } from '@/current-game/announcements/announcer';
+import { NeighborFinder } from '@/current-game/players/neighbor-finder';
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { RoundEnum } from '@/types/round';
-import * as neighborUtils from '@/utils/neighbor.utils';
-import * as statusUtils from '@/utils/status.utils';
 import {
   createInjectionContextFactory,
+  mockProvider,
   SpectatorInjectionContext,
-} from '@ngneat/spectator/jest';
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { RenardRoundHandler } from './renard-round.handler';
 
@@ -18,8 +22,19 @@ describe('RenardRoundHandler', () => {
   let roundHandler: RenardRoundHandler;
   let spectator: SpectatorInjectionContext;
 
+  let neighborFinder: SpyObject<NeighborFinder>;
+
   const createContext = createInjectionContextFactory({
-    mocks: [Announcer],
+    mocks: [Announcer, NeighborFinder, PlayersStatusUtility],
+    providers: [
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
+    ],
   });
 
   beforeEach(() => {
@@ -27,6 +42,7 @@ describe('RenardRoundHandler', () => {
     roundHandler = spectator.runInInjectionContext(
       () => new RenardRoundHandler(),
     );
+    neighborFinder = spectator.inject(NeighborFinder);
   });
 
   it('should not be only once', () => {
@@ -249,7 +265,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.LOUP_GAROU,
@@ -291,7 +307,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.LOUP_GAROU,
@@ -334,7 +350,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -342,7 +358,7 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+    neighborFinder.findRightNeighbor.mockReturnValue({
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.LOUP_GAROU,
@@ -384,7 +400,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -392,7 +408,7 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+    neighborFinder.findRightNeighbor.mockReturnValue({
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.LOUP_GAROU,
@@ -436,7 +452,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -444,7 +460,7 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+    neighborFinder.findRightNeighbor.mockReturnValue({
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -453,15 +469,14 @@ describe('RenardRoundHandler', () => {
       isDead: false,
     });
     const expectedPlayer = { ...players[1] };
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockReturnValue(expectedPlayer);
+    const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+    playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [1]),
     );
     expect(newPlayers[1]).toBe(expectedPlayer);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       newPlayers[1],
       PlayerStatusEnum.NO_POWER,
     );
@@ -494,7 +509,7 @@ describe('RenardRoundHandler', () => {
         isDead: false,
       },
     ];
-    jest.spyOn(neighborUtils, 'findLeftNeighbor').mockReturnValue({
+    neighborFinder.findLeftNeighbor.mockReturnValue({
       id: 2,
       name: 'player2',
       role: PlayerRoleEnum.VILLAGEOIS,
@@ -502,7 +517,7 @@ describe('RenardRoundHandler', () => {
       statuses: new Set(),
       isDead: false,
     });
-    jest.spyOn(neighborUtils, 'findRightNeighbor').mockReturnValue({
+    neighborFinder.findRightNeighbor.mockReturnValue({
       id: 0,
       name: 'player0',
       role: PlayerRoleEnum.VILLAGEOIS,

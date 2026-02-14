@@ -1,14 +1,26 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { InfectedStatusHandler } from './infected.status-handler';
 
 describe('InfectedStatusHandler', () => {
   let handler: InfectedStatusHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    handler = new InfectedStatusHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    handler = spectator.runInInjectionContext(
+      () => new InfectedStatusHandler(),
+    );
   });
 
   it('should create an instance', () => {
@@ -51,21 +63,20 @@ describe('InfectedStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
+      const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
         PlayerStatusEnum.INJURED,
       );
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
         PlayerStatusEnum.INFECTED,
       );

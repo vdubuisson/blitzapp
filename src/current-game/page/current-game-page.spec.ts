@@ -14,7 +14,7 @@ import {
   createComponentFactory,
   mockProvider,
   Spectator,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { MockPipe } from 'ng-mocks';
 import { GameOrchestrator } from '../orchestrator/game-orchestrator';
 import CurrentGamePage from './current-game-page';

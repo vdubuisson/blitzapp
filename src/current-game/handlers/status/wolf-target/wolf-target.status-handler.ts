@@ -1,13 +1,13 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
-import { DefaultStatusHandler } from '../default/default.status-handler';
-import { PlayerStatusEnum } from '@/types/player-status';
 import { PlayerRoleEnum } from '@/types/player-role';
-import {
-  addStatusToPlayer,
-  removeStatusFromPlayer,
-} from '@/utils/status.utils';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { inject } from '@angular/core';
+import { DefaultStatusHandler } from '../default/default.status-handler';
 
 export class WolfTargetStatusHandler extends DefaultStatusHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   /**
    * Handles the action triggered by the WOLF_TARGET status.
    * If a player is targeted by wolves, they are either devoured or injured,
@@ -19,7 +19,7 @@ export class WolfTargetStatusHandler extends DefaultStatusHandler {
   override triggerAction(players: Player[]): Player[] {
     return players.map((player) => {
       if (player.statuses.has(PlayerStatusEnum.WOLF_TARGET)) {
-        let newPlayer = removeStatusFromPlayer(
+        let newPlayer = this.playersStatusUtility.removeStatusFromPlayer(
           player,
           PlayerStatusEnum.WOLF_TARGET,
         );
@@ -31,9 +31,15 @@ export class WolfTargetStatusHandler extends DefaultStatusHandler {
             player.role === PlayerRoleEnum.ANCIEN &&
             !player.statuses.has(PlayerStatusEnum.INJURED)
           ) {
-            newPlayer = addStatusToPlayer(newPlayer, PlayerStatusEnum.INJURED);
+            newPlayer = this.playersStatusUtility.addStatusToPlayer(
+              newPlayer,
+              PlayerStatusEnum.INJURED,
+            );
           } else {
-            newPlayer = addStatusToPlayer(newPlayer, PlayerStatusEnum.DEVOURED);
+            newPlayer = this.playersStatusUtility.addStatusToPlayer(
+              newPlayer,
+              PlayerStatusEnum.DEVOURED,
+            );
           }
         } else {
           newPlayer.killedBy = undefined;

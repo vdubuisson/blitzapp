@@ -6,7 +6,7 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { NoneVictoryHandler } from './none/none-victory.handler';
 import { VictoryHandlersManager } from './victory-handlers-manager';
 import { VictoryHandler } from './victory.handler';
@@ -52,17 +52,13 @@ describe('VictoryHandlersManager', () => {
 
   it('should return victory based on victorious Handler', () => {
     const mockAmoureuxVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockAmoureuxVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockAmoureuxVictoryHandler, 'isVictorious').mockReturnValue(false);
     const mockLoupGarouVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockLoupGarouVictoryHandler, 'isVictorious')
-      .mockReturnValue(true);
+    vi.spyOn(mockLoupGarouVictoryHandler, 'isVictorious').mockReturnValue(true);
     const mockVillageoisVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockVillageoisVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockVillageoisVictoryHandler, 'isVictorious').mockReturnValue(
+      false,
+    );
 
     spectator.service['victoryHandlers'].clear();
     spectator.service['victoryHandlers'].set(
@@ -85,17 +81,15 @@ describe('VictoryHandlersManager', () => {
 
   it('should return no victory if no victorious handler', () => {
     const mockAmoureuxVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockAmoureuxVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockAmoureuxVictoryHandler, 'isVictorious').mockReturnValue(false);
     const mockLoupGarouVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockLoupGarouVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockLoupGarouVictoryHandler, 'isVictorious').mockReturnValue(
+      false,
+    );
     const mockVillageoisVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockVillageoisVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockVillageoisVictoryHandler, 'isVictorious').mockReturnValue(
+      false,
+    );
 
     spectator.service['victoryHandlers'].clear();
     spectator.service['victoryHandlers'].set(

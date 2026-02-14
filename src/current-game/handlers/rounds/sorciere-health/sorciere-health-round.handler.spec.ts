@@ -1,17 +1,33 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { SorciereHealthRoundHandler } from './sorciere-health-round.handler';
 
 describe('SorciereHealthRoundHandler', () => {
   let roundHandler: SorciereHealthRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new SorciereHealthRoundHandler();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new SorciereHealthRoundHandler(),
+    );
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
   });
 
   it('should not be only once', () => {
@@ -60,17 +76,15 @@ describe('SorciereHealthRoundHandler', () => {
 
     const expectedPlayer1 = { ...players[0] };
     const expectedPlayer2 = { ...players[1] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockImplementation((player) =>
-        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
-      );
+    playersStatusUtility.removeStatusFromPlayer.mockImplementation((player) =>
+      player.id === 0 ? expectedPlayer1 : expectedPlayer2,
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
     expect(newPlayers[0]).toBe(expectedPlayer1);
-    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[0],
       PlayerStatusEnum.DEVOURED,
     );
@@ -99,11 +113,9 @@ describe('SorciereHealthRoundHandler', () => {
 
     const expectedPlayer1 = { ...players[0] };
     const expectedPlayer2 = { ...players[1] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockImplementation((player) =>
-        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
-      );
+    playersStatusUtility.removeStatusFromPlayer.mockImplementation((player) =>
+      player.id === 0 ? expectedPlayer1 : expectedPlayer2,
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
@@ -133,17 +145,15 @@ describe('SorciereHealthRoundHandler', () => {
 
     const expectedPlayer1 = { ...players[0] };
     const expectedPlayer2 = { ...players[1] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockImplementation((player) =>
-        player.id === 0 ? expectedPlayer1 : expectedPlayer2,
-      );
+    playersStatusUtility.removeStatusFromPlayer.mockImplementation((player) =>
+      player.id === 0 ? expectedPlayer1 : expectedPlayer2,
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
     expect(newPlayers[1]).toBe(expectedPlayer2);
-    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[1],
       PlayerStatusEnum.HEALTH_POTION,
     );

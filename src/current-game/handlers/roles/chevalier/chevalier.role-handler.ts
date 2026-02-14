@@ -1,12 +1,16 @@
+import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
+import { NeighborFinder } from '@/current-game/players/neighbor-finder';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { findLeftNeighbor } from '@/utils/neighbor.utils';
+import { inject } from '@angular/core';
 import { DefaultRoleHandler } from '../default/default.role-handler';
-import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
-import { addStatusToPlayersById } from '@/utils/status.utils';
 
 export class ChevalierRoleHandler extends DefaultRoleHandler {
+  private readonly neighborFinder = inject(NeighborFinder);
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(
       PlayerRoleEnum.CHEVALIER,
@@ -22,13 +26,19 @@ export class ChevalierRoleHandler extends DefaultRoleHandler {
       )?.id;
     } else if (deadPlayer.killedBy === PlayerRoleEnum.LOUP_GAROU) {
       const chevalierIndex = players.indexOf(deadPlayer);
-      playerToAddStatusId = findLeftNeighbor(players, chevalierIndex, true)?.id;
+      playerToAddStatusId = this.neighborFinder.findLeftNeighbor(
+        players,
+        chevalierIndex,
+        true,
+      )?.id;
     }
 
     if (playerToAddStatusId !== undefined) {
-      return addStatusToPlayersById(players, PlayerStatusEnum.RUSTY_SWORD, [
-        playerToAddStatusId,
-      ]);
+      return this.playersStatusUtility.addStatusToPlayersById(
+        players,
+        PlayerStatusEnum.RUSTY_SWORD,
+        [playerToAddStatusId],
+      );
     }
 
     return players;

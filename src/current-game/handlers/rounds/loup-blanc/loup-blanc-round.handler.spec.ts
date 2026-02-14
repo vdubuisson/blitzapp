@@ -1,15 +1,39 @@
-import { PlayerRoleEnum } from '@/types/player-role';
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
+import { PlayerStatusEnum } from '@/shared/types/player-status';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
+import {
+  createInjectionContextFactory,
+  mockProvider,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { LoupBlancRoundHandler } from './loup-blanc-round.handler';
 
 describe('LoupBlancRoundHandler', () => {
   let roundHandler: LoupBlancRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new LoupBlancRoundHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    providers: [
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
+    ],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new LoupBlancRoundHandler(),
+    );
   });
 
   it('should not be only once', () => {

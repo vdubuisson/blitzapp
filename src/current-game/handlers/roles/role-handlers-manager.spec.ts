@@ -7,23 +7,8 @@ import {
   createServiceFactory,
   mockProvider,
   SpectatorService,
-} from '@ngneat/spectator/jest';
+} from '@ngneat/spectator/vitest';
 import { RoleHandlersManager } from './role-handlers-manager';
-
-jest.mock('@/config/role-metadata', () => {
-  class RoleHandlerMock {}
-
-  return {
-    ROLE_METADATA_CONFIG: {
-      [PlayerRoleEnum.VILLAGEOIS]: {
-        handler: RoleHandlerMock,
-        rounds: [],
-        statuses: [],
-        victories: [],
-      },
-    },
-  };
-});
 
 describe('RoleHandlersManager', () => {
   let spectator: SpectatorService<RoleHandlersManager>;
@@ -68,7 +53,7 @@ describe('RoleHandlersManager', () => {
       PlayerRoleEnum.VILLAGEOIS,
     );
     expect(handler).toBeDefined();
-    expect(handler?.constructor.name).toBe('RoleHandlerMock');
+    expect(handler?.constructor.name).toBe('VillageoisRoleHandler');
   });
 
   it('should not initialize VILLAGEOIS handler if role not present', () => {

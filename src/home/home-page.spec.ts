@@ -1,5 +1,5 @@
 import { RouterLink } from '@angular/router';
-import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
 import { MockDirective } from 'ng-mocks';
 import HomePage from './home-page';
 

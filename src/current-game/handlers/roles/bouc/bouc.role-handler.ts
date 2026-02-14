@@ -1,18 +1,19 @@
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
-import { PlayerRoleEnum } from '@/types/player-role';
-import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
+import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
 import { inject } from '@angular/core';
 import { DefaultRoleHandler } from '../default/default.role-handler';
-import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
-import { PlayerStatusEnum } from '@/types/player-status';
-import { removeStatusFromPlayersById } from '@/utils/status.utils';
 
 export class BoucRoleHandler extends DefaultRoleHandler {
   private readonly afterDeathRoundQueue = inject(AfterDeathRoundQueueStore)
     .state;
   private readonly needCleanAfterBouc = inject(NeedCleanAfterBoucStore).state;
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
 
   constructor() {
     super(PlayerRoleEnum.BOUC, ROLE_METADATA_CONFIG[PlayerRoleEnum.BOUC]!);
@@ -39,7 +40,7 @@ export class BoucRoleHandler extends DefaultRoleHandler {
 
       this.needCleanAfterBouc.set(false);
 
-      return removeStatusFromPlayersById(
+      return this.playersStatusUtility.removeStatusFromPlayersById(
         players,
         PlayerStatusEnum.NO_VOTE,
         ids,
