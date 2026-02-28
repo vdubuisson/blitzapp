@@ -1,30 +1,90 @@
-import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
-import { Header } from './header';
-import { ActivatedRoute, Router } from '@angular/router';
-import { signal } from '@angular/core';
-import { provideLocationMocks } from '@angular/common/testing';
 import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
+import { signal } from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterEvent,
+} from '@angular/router';
+import {
+  byTestId,
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from '@ngneat/spectator/vitest';
+import { of, Subject } from 'rxjs';
+import { Header } from './header';
 
 describe('Header', () => {
-  MockInstance.scope();
+  let spectator: Spectator<Header>;
 
-  let component: Header;
+  const isGameInProgress = signal(false);
+  const routerEvents = new Subject<RouterEvent>();
 
-  beforeEach(async () =>
-    MockBuilder(Header)
-      .provide(provideLocationMocks())
-      .mock(ActivatedRoute)
-      .keep(Router),
-  );
+  const createComponent = createComponentFactory({
+    component: Header,
+    providers: [
+      mockProvider(ActivatedRoute, { outlet: 'primary', title: of('Test') }),
+      mockProvider(GameOrchestrator, { isGameInProgress }),
+      mockProvider(Router, { events: routerEvents.asObservable() }),
+    ],
+  });
 
   beforeEach(() => {
-    MockInstance(GameOrchestrator, () => ({
-      isGameInProgress: signal(false),
-    }));
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    component = MockRender(Header).point.componentInstance;
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
+  });
+
+  it('should display the title from the route', async () => {
+    routerEvents.next(new NavigationEnd(1, '', ''));
+    await spectator.fixture.whenStable();
+
+    expect(byTestId('title')).toHaveText('Test');
+  });
+
+  it('should open menu on menu icon click', () => {
+    const menu = byTestId('menu');
+    expect(menu).toHaveClass('hidden');
+
+    spectator.click(byTestId('menu-icon'));
+    expect(menu).not.toHaveClass('hidden');
+  });
+
+  it('should close menu on backdrop click', () => {
+    const menu = byTestId('menu');
+
+    spectator.click(byTestId('menu-icon'));
+    expect(menu).not.toHaveClass('hidden');
+
+    spectator.click(byTestId('backdrop'));
+    expect(menu).toHaveClass('hidden');
+  });
+
+  it('should close menu on navigation', async () => {
+    const menu = byTestId('menu');
+
+    spectator.click(byTestId('menu-icon'));
+    expect(menu).not.toHaveClass('hidden');
+
+    routerEvents.next(new NavigationEnd(1, '', ''));
+    await spectator.fixture.whenStable();
+    expect(menu).toHaveClass('hidden');
+  });
+
+  it('should show current game link when game is in progress', () => {
+    isGameInProgress.set(true);
+    spectator.detectChanges();
+
+    expect(byTestId('current-game-link')).toExist();
+  });
+
+  it('should hide current game link when no game is in progress', () => {
+    isGameInProgress.set(false);
+    spectator.detectChanges();
+
+    expect(byTestId('current-game-link')).not.toExist();
   });
 });

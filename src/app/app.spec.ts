@@ -1,13 +1,41 @@
+import { Header } from '@/layout/header/header';
+import { SelectOverlay } from '@/layout/select-overlay/select-overlay';
+import { RouterOutlet } from '@angular/router';
+import {
+  byTestId,
+  createComponentFactory,
+  Spectator,
+} from '@ngneat/spectator/vitest';
+import { MockComponents, MockDirective } from 'ng-mocks';
 import { AppComponent } from './app';
 
 describe('AppComponent', () => {
-  let component: AppComponent;
+  let spectator: Spectator<AppComponent>;
+  const createComponent = createComponentFactory({
+    component: AppComponent,
+    imports: [
+      ...MockComponents(Header, SelectOverlay),
+      MockDirective(RouterOutlet),
+    ],
+  });
 
   beforeEach(() => {
-    component = new AppComponent();
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
+  });
+
+  it('should render header component', () => {
+    expect(byTestId('header')).toExist();
+  });
+
+  it('should render SelectOverlay component', () => {
+    expect(byTestId('select-overlay')).toExist();
+  });
+
+  it('should have a router outlet', () => {
+    expect(byTestId('router-outlet')).toExist();
   });
 });

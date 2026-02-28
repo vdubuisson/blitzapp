@@ -1,17 +1,29 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { SorciereKillRoundHandler } from './sorciere-kill-round.handler';
 
 describe('SorciereKillRoundHandler', () => {
   let roundHandler: SorciereKillRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new SorciereKillRoundHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new SorciereKillRoundHandler(),
+    );
   });
 
   it('should not be only once', () => {
@@ -111,15 +123,14 @@ describe('SorciereKillRoundHandler', () => {
     ];
 
     const expectedPlayer = { ...players[1] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockReturnValue(expectedPlayer);
+    const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+    playersStatusUtility.removeStatusFromPlayer.mockReturnValue(expectedPlayer);
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
     expect(newPlayers[1]).toBe(expectedPlayer);
-    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[1],
       PlayerStatusEnum.DEATH_POTION,
     );

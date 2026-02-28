@@ -1,34 +1,31 @@
-import { FormBuilder } from '@angular/forms';
-import {
-  MockBuilder,
-  MockedComponentFixture,
-  MockRender,
-  ngMocks,
-} from 'ng-mocks';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
+import { MockComponent } from 'ng-mocks';
 import { NewPlayer } from './new-player';
 
 describe('NewPlayer', () => {
-  let fixture: MockedComponentFixture<NewPlayer>;
-
-  ngMocks.faster();
-
-  beforeAll(async () => MockBuilder(NewPlayer).keep(FormBuilder));
-
-  beforeAll(() => (fixture = MockRender(NewPlayer)));
-
-  it('should create', () => {
-    expect(fixture.point.componentInstance).toBeTruthy();
+  let spectator: Spectator<NewPlayer>;
+  const createComponent = createComponentFactory({
+    component: NewPlayer,
+    imports: [MockComponent(FaIconComponent)],
   });
 
-  it('should emit name on submit', async () => {
-    const component = fixture.point.componentInstance;
+  beforeEach(() => {
+    spectator = createComponent();
+  });
 
-    // spy reset to assert it was called
-    jest.spyOn(component['playerForm'], 'reset').mockImplementation(() => {});
-    jest.spyOn(component.newPlayer, 'emit').mockImplementation((val) => val);
+  it('should create', () => {
+    expect(spectator.component).toBeTruthy();
+  });
+
+  it('should emit name on submit', () => {
+    const component = spectator.component;
+
+    vi.spyOn(component['playerForm'], 'reset').mockImplementation(() => {});
+    vi.spyOn(component.newPlayer, 'emit').mockImplementation((val) => val);
 
     component['playerForm'].setValue({ name: 'Name' });
-    component.onSubmit();
+    component['onSubmit']();
 
     expect(component.newPlayer.emit).toHaveBeenCalledWith('Name');
     expect(component['playerForm'].reset).toHaveBeenCalled();

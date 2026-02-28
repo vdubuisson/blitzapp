@@ -1,41 +1,29 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
-import { SorciereRoleHandler } from './sorciere.role-handler';
-import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import * as statusUtils from '@/utils/status.utils';
+import { RoundEnum } from '@/types/round';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
+import { SorciereRoleHandler } from './sorciere.role-handler';
 
 describe('SorciereRoleHandler', () => {
   let handler: SorciereRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager, StatusHandlersManager, PlayersStatusUtility],
+  });
 
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new SorciereRoleHandler()));
-
+  beforeEach(() => {
     players = [
       {
         id: 1,
@@ -45,9 +33,12 @@ describe('SorciereRoleHandler', () => {
       } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new SorciereRoleHandler());
+
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -57,14 +48,14 @@ describe('SorciereRoleHandler', () => {
   describe('prepareNewGame', () => {
     it('should add HEALTH_POTION status to SORCIERE', () => {
       const expectedPlayers = [...players];
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayersById')
-        .mockReturnValue(expectedPlayers);
+      playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.prepareNewGame(players);
 
       expect(result).toBe(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
         PlayerStatusEnum.HEALTH_POTION,
         [1],
@@ -73,14 +64,14 @@ describe('SorciereRoleHandler', () => {
 
     it('should add DEATH_POTION status to SORCIERE', () => {
       const expectedPlayers = [...players];
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayersById')
-        .mockReturnValue(expectedPlayers);
+      playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const result = handler.prepareNewGame(players);
 
       expect(result).toBe(expectedPlayers);
-      expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
         players,
         PlayerStatusEnum.DEATH_POTION,
         [1],
@@ -88,6 +79,8 @@ describe('SorciereRoleHandler', () => {
     });
 
     it('should create SORCIERE_HEALTH round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -96,6 +89,8 @@ describe('SorciereRoleHandler', () => {
     });
 
     it('should create SORCIERE_KILL round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -104,6 +99,8 @@ describe('SorciereRoleHandler', () => {
     });
 
     it('should create HEALTH_POTION status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -112,6 +109,8 @@ describe('SorciereRoleHandler', () => {
     });
 
     it('should create DEATH_POTION status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -122,6 +121,7 @@ describe('SorciereRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove SORCIERE_HEALTH round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);
@@ -133,6 +133,7 @@ describe('SorciereRoleHandler', () => {
     });
 
     it('should remove SORCIERE_KILL round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);

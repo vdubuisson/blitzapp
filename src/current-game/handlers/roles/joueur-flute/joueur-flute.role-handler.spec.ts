@@ -1,58 +1,41 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { JoueurFluteRoleHandler } from './joueur-flute.role-handler';
 import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
 import { VictoryEnum } from '@/types/victory';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 
 describe('JoueurFluteRoleHandler', () => {
   let handler: JoueurFluteRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
-  let victoryHandlersManager: VictoryHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [
+      RoundHandlersManager,
+      StatusHandlersManager,
+      VictoryHandlersManager,
+    ],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    victoryHandlersManager = MockService(VictoryHandlersManager, {
-      createVictoryHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-        { provide: VictoryHandlersManager, useValue: victoryHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(
-      () => (handler = new JoueurFluteRoleHandler()),
-    );
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(
+      () => new JoueurFluteRoleHandler(),
+    );
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -66,6 +49,8 @@ describe('JoueurFluteRoleHandler', () => {
     });
 
     it('should create JOUEUR_FLUTE round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -74,6 +59,8 @@ describe('JoueurFluteRoleHandler', () => {
     });
 
     it('should create CHARMED round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -82,6 +69,8 @@ describe('JoueurFluteRoleHandler', () => {
     });
 
     it('should create CHARMED status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -90,6 +79,8 @@ describe('JoueurFluteRoleHandler', () => {
     });
 
     it('should create JOUEUR_FLUTE victory handler', () => {
+      const victoryHandlersManager = spectator.inject(VictoryHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
@@ -100,6 +91,7 @@ describe('JoueurFluteRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove JOUEUR_FLUTE round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);
@@ -111,6 +103,7 @@ describe('JoueurFluteRoleHandler', () => {
     });
 
     it('should remove JOUEUR_FLUTE victory handler', () => {
+      const victoryHandlersManager = spectator.inject(VictoryHandlersManager);
       const deadPlayer = players[0];
 
       handler.handleDeath(players, deadPlayer);

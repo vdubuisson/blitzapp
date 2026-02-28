@@ -1,47 +1,39 @@
 import { PlayerRoleEnum } from '@/types/player-role';
-import { RoundEnum } from '@/types/round';
+import { RoundEnum, Round } from '@/types/round';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { ChasseurRoleHandler } from './chasseur.role-handler';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 
 describe('ChasseurRoleHandler', () => {
   let handler: ChasseurRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let afterDeathRoundQueue: AfterDeathRoundQueueStore;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager],
+    providers: [
+      {
+        provide: AfterDeathRoundQueueStore,
+        useValue: { state: signal<Round[]>([RoundEnum.VILLAGEOIS]) },
+      },
+    ],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    afterDeathRoundQueue = MockService(AfterDeathRoundQueueStore, {
-      state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: AfterDeathRoundQueueStore, useValue: afterDeathRoundQueue },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new ChasseurRoleHandler()));
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new ChasseurRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -55,6 +47,8 @@ describe('ChasseurRoleHandler', () => {
     });
 
     it('should create CHASSEUR round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -67,6 +61,7 @@ describe('ChasseurRoleHandler', () => {
   describe('handleDeath', () => {
     it('should add CHASSEUR round at the start of afterDeathRoundQueue', () => {
       const deadPlayer = players[0];
+      const afterDeathRoundQueue = spectator.inject(AfterDeathRoundQueueStore);
 
       handler.handleDeath(players, deadPlayer);
 

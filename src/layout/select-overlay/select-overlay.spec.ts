@@ -1,47 +1,42 @@
-import { SelectOverlayManager } from './select-overlay-manager';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from '@ngneat/spectator/vitest';
 import { Subject } from 'rxjs';
-import { SelectOverlayContent } from './select-overlay-content';
 import { SelectOverlay } from './select-overlay';
+import { SelectOverlayContent } from './select-overlay-content';
+import { SelectOverlayManager } from './select-overlay-manager';
 
 describe('SelectOverlayComponent', () => {
-  let component: SelectOverlay;
+  let spectator: Spectator<SelectOverlay>;
   let contentSubject: Subject<SelectOverlayContent>;
-
-  ngMocks.faster();
-
-  beforeAll(async () => {
-    return MockBuilder(SelectOverlay).mock(SelectOverlayManager);
+  const createComponent = createComponentFactory({
+    component: SelectOverlay,
   });
 
-  beforeAll(async () => {
-    contentSubject = new Subject();
-    MockInstance(SelectOverlayManager, () => ({
-      content: contentSubject.asObservable(),
-      selectValue: jest.fn(),
-    }));
-  });
-
-  beforeAll(() => {
-    component = MockRender(SelectOverlay).point.componentInstance;
+  beforeEach(() => {
+    contentSubject = new Subject<SelectOverlayContent>();
+    spectator = createComponent({
+      providers: [
+        mockProvider(SelectOverlayManager, {
+          content: contentSubject.asObservable(),
+          selectValue: vi.fn(),
+        }),
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 
   it('should initialize with isHidden set to true', () => {
-    expect(component['isHidden']()).toBe(true);
+    expect(spectator.component['isHidden']()).toBe(true);
   });
 
   it('should initialize with content set to undefined', () => {
-    expect(component['content']()).toBeUndefined();
+    expect(spectator.component['content']()).toBeUndefined();
   });
 
   it('should update isHidden when content changes', async () => {
@@ -51,7 +46,7 @@ describe('SelectOverlayComponent', () => {
     };
     contentSubject.next(newContent);
 
-    expect(component['isHidden']()).toBe(false);
+    expect(spectator.component['isHidden']()).toBe(false);
   });
 
   it('should update content when content changes', () => {
@@ -60,15 +55,13 @@ describe('SelectOverlayComponent', () => {
       options: [{ value: 'value', label: 'label' }],
     };
     contentSubject.next(newContent);
-    expect(component['content']()).toEqual(newContent);
+    expect(spectator.component['content']()).toEqual(newContent);
   });
 
   it('should call selectOverlayManager.selectValue when selectOption is called', () => {
-    const service = ngMocks.get(SelectOverlayManager);
+    const service = spectator.inject(SelectOverlayManager);
     const value = 'selected value';
-    component['selectOption'](value);
+    spectator.component['selectOption'](value);
     expect(service.selectValue).toHaveBeenCalledWith(value);
   });
-
-  afterAll(MockReset);
 });

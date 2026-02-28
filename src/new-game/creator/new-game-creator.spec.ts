@@ -2,48 +2,37 @@ import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { Player } from '@/shared/types/player';
 import { Router } from '@angular/router';
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { signal, WritableSignal } from '@angular/core';
 import { NewGameCreator } from './new-game-creator';
 import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 
 describe('NewGameCreator', () => {
-  let service: NewGameCreator;
+  let spectator: SpectatorService<NewGameCreator>;
   let currentPlayers: WritableSignal<Player[]>;
 
-  ngMocks.faster();
+  const createService = createServiceFactory({
+    service: NewGameCreator,
+    mocks: [GameOrchestrator, Router],
+  });
 
-  beforeAll(() =>
-    MockBuilder(NewGameCreator)
-      .mock(GameOrchestrator)
-      .mock(Router)
-      .mock(CurrentPlayersStore),
-  );
-
-  beforeAll(() => {
+  beforeEach(() => {
     currentPlayers = signal([]);
-    MockInstance(GameOrchestrator, () => ({
-      createGame: jest.fn(),
-    }));
-    MockInstance(CurrentPlayersStore, 'state', currentPlayers);
-    MockInstance(Router, () => ({
-      navigate: jest.fn(),
-    }));
+    spectator = createService({
+      providers: [
+        mockProvider(CurrentPlayersStore, {
+          state: currentPlayers,
+        }),
+      ],
+    });
   });
 
-  beforeAll(() => {
-    service = MockRender(NewGameCreator).point.componentInstance;
-  });
-
-  it('should return players', async () => {
+  it('should return players', () => {
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -63,17 +52,17 @@ describe('NewGameCreator', () => {
       },
     ];
 
-    service['players'].set(mockPlayers);
+    spectator.service['players'].set(mockPlayers);
 
-    expect(service.currentPlayers()).toEqual(mockPlayers);
+    expect(spectator.service.currentPlayers()).toEqual(mockPlayers);
   });
 
   it('should add player', () => {
-    service['players'].set([]);
+    spectator.service['players'].set([]);
 
-    service.addPlayer('player0');
+    spectator.service.addPlayer('player0');
 
-    expect(service['players']()).toEqual([
+    expect(spectator.service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -104,11 +93,11 @@ describe('NewGameCreator', () => {
         isDead: false,
       },
     ];
-    service['players'].set(mockPlayers);
+    spectator.service['players'].set(mockPlayers);
 
-    service.removePlayer(1);
+    spectator.service.removePlayer(1);
 
-    expect(service['players']()).toEqual([
+    expect(spectator.service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -155,11 +144,11 @@ describe('NewGameCreator', () => {
         isDead: false,
       },
     ];
-    service['players'].set(mockPlayers);
+    spectator.service['players'].set(mockPlayers);
 
-    service.reorderPlayers(0, 2);
+    spectator.service.reorderPlayers(0, 2);
 
-    expect(service['players']()).toEqual([
+    expect(spectator.service['players']()).toEqual([
       {
         id: 0,
         name: 'player1',
@@ -217,9 +206,9 @@ describe('NewGameCreator', () => {
 
     currentPlayers.set(mockPlayers);
 
-    service.replay();
+    spectator.service.replay();
 
-    expect(service['players']()).toEqual([
+    expect(spectator.service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -240,9 +229,9 @@ describe('NewGameCreator', () => {
   });
 
   it('should navigate to /roles-choice on replay', () => {
-    const router = ngMocks.get(Router);
+    const router = spectator.inject(Router);
 
-    service.replay();
+    spectator.service.replay();
 
     expect(router.navigate).toHaveBeenCalledWith(['roles-choice']);
   });
@@ -266,11 +255,11 @@ describe('NewGameCreator', () => {
         isDead: false,
       },
     ];
-    service['players'].set(mockPlayers);
+    spectator.service['players'].set(mockPlayers);
 
-    service.changeRole(0, PlayerRoleEnum.SORCIERE);
+    spectator.service.changeRole(0, PlayerRoleEnum.SORCIERE);
 
-    expect(service['players']()).toEqual([
+    expect(spectator.service['players']()).toEqual([
       {
         id: 0,
         name: 'player0',
@@ -310,11 +299,11 @@ describe('NewGameCreator', () => {
       },
     ];
 
-    service['players'].set(mockPlayers);
+    spectator.service['players'].set(mockPlayers);
 
-    service.createGame();
+    spectator.service.createGame();
 
-    const gameOrchestrator = ngMocks.get(GameOrchestrator);
+    const gameOrchestrator = spectator.inject(GameOrchestrator);
     expect(gameOrchestrator.createGame).toHaveBeenCalledWith(mockPlayers);
   });
 
@@ -338,12 +327,10 @@ describe('NewGameCreator', () => {
       },
     ];
 
-    service['players'].set(mockPlayers);
+    spectator.service['players'].set(mockPlayers);
 
-    service.createGame();
+    spectator.service.createGame();
 
-    expect(service['players']()).toEqual([]);
+    expect(spectator.service['players']()).toEqual([]);
   });
-
-  afterAll(MockReset);
 });

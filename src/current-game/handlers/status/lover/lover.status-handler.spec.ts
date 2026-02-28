@@ -1,33 +1,27 @@
+import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { LoverStatusHandler } from './lover.status-handler';
-import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
-import { TestBed } from '@angular/core/testing';
 import { VictoryEnum } from '@/types/victory';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
+import { LoverStatusHandler } from './lover.status-handler';
 
 describe('LoverStatusHandler', () => {
   let handler: LoverStatusHandler;
-  let victoryHandlersManager: VictoryHandlersManager;
+  let spectator: SpectatorInjectionContext;
 
-  ngMocks.faster();
-
-  beforeAll(() => {
-    victoryHandlersManager = MockService(VictoryHandlersManager, {
-      removeHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: VictoryHandlersManager, useValue: victoryHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new LoverStatusHandler()));
+  const createContext = createInjectionContextFactory({
+    mocks: [VictoryHandlersManager],
   });
 
-  afterAll(MockReset);
+  beforeEach(() => {
+    spectator = createContext();
+
+    handler = spectator.runInInjectionContext(() => new LoverStatusHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -79,6 +73,7 @@ describe('LoverStatusHandler', () => {
           isDead: false,
         },
       ];
+      const victoryHandlersManager = spectator.inject(VictoryHandlersManager);
 
       handler.handleDeath(mockPlayers, mockPlayers[0]);
 

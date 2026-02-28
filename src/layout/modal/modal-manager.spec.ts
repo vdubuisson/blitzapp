@@ -2,47 +2,38 @@ import { PlayerRoleModal } from '@/layout/modal/player-role/player-role-modal';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+  createServiceFactory,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
+import { firstValueFrom, of } from 'rxjs';
 import { ModalManager } from './modal-manager';
 
 describe('ModalManager', () => {
-  let service: ModalManager;
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(ModalManager).mock(Dialog));
-
-  beforeAll(() => {
-    MockInstance(Dialog, () => ({
-      open: jest.fn().mockImplementation(
-        () =>
-          ({
-            closed: new BehaviorSubject<void>(undefined).asObservable(),
-          }) as DialogRef,
-      ),
-    }));
+  let spectator: SpectatorService<ModalManager>;
+  const createService = createServiceFactory({
+    service: ModalManager,
+    mocks: [Dialog],
   });
 
-  beforeAll(() => (service = MockRender(ModalManager).point.componentInstance));
+  beforeEach(() => {
+    spectator = createService();
+  });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
 
   it('should create PlayerCardModalComponent on showPlayerCard', async () => {
-    const dialog = ngMocks.get(Dialog);
+    const dialog = spectator.inject(Dialog);
+    dialog.open.mockReturnValue({
+      closed: of(undefined),
+    } as DialogRef);
 
-    await firstValueFrom(service.showPlayerCard(PlayerRoleEnum.VILLAGEOIS));
+    await firstValueFrom(
+      spectator.service.showPlayerCard(PlayerRoleEnum.VILLAGEOIS),
+    );
     expect(dialog.open).toHaveBeenCalledWith(PlayerRoleModal, {
       data: PlayerRoleEnum.VILLAGEOIS,
     });
   });
-
-  afterAll(MockReset);
 });

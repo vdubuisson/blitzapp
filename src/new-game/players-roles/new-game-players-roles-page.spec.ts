@@ -1,16 +1,11 @@
-import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { NewGameCreator } from '@/new-game/creator/new-game-creator';
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-
 import { PlayerCard } from '@/shared/components/player-card/player-card';
-import { PlayerDisplayModeEnum } from '@/shared/components/player-card/player-display-mode';
+import {
+  PlayerDisplayMode,
+  PlayerDisplayModeEnum,
+} from '@/shared/components/player-card/player-display-mode';
 import { CardList } from '@/shared/types/card-list';
 import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
 import {
@@ -20,7 +15,14 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import {
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from '@ngneat/spectator/vitest';
+import { MockComponent, MockDirective } from 'ng-mocks';
 import NewGamePlayersRolesPage from './new-game-players-roles-page';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'lgmj-player-card',
@@ -29,29 +31,24 @@ import NewGamePlayersRolesPage from './new-game-players-roles-page';
 })
 export class PlayerStubComponent {
   readonly player = input.required<Player>();
-  readonly displayMode = input<PlayerDisplayModeEnum>(
+  readonly displayMode = input<PlayerDisplayMode>(
     PlayerDisplayModeEnum.DEFAULT,
   );
-  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
-  readonly roleChange = output<PlayerRoleEnum>();
+  readonly selectableRoles = input<PlayerRole[]>([]);
+  readonly roleChange = output<PlayerRole>();
 }
 
 describe('NewGamePlayersRolesPage', () => {
-  let component: NewGamePlayersRolesPage;
-
+  let spectator: Spectator<NewGamePlayersRolesPage>;
   let mockPlayers$: WritableSignal<Player[]>;
   let mockCards: WritableSignal<CardList>;
 
-  ngMocks.faster();
+  const createComponent = createComponentFactory({
+    component: NewGamePlayersRolesPage,
+    imports: [MockComponent(PlayerCard), MockDirective(RouterLink)],
+  });
 
-  beforeAll(async () =>
-    MockBuilder(NewGamePlayersRolesPage)
-      .replace(PlayerCard, PlayerStubComponent)
-      .mock(NewGameCreator)
-      .mock(CardChoiceStore),
-  );
-
-  beforeAll(() => {
+  beforeEach(() => {
     mockPlayers$ = signal([]);
     mockCards = signal({
       selectedRoles: new Set(),
@@ -60,19 +57,18 @@ describe('NewGamePlayersRolesPage', () => {
       playersNumber: 0,
     });
 
-    MockInstance(NewGameCreator, () => ({
-      currentPlayers: mockPlayers$.asReadonly(),
-      createGame: jest.fn(),
-      changeRole: jest.fn(),
-    }));
-
-    MockInstance(CardChoiceStore, () => ({
-      state: mockCards,
-    }));
-  });
-
-  beforeAll(() => {
-    component = MockRender(NewGamePlayersRolesPage).point.componentInstance;
+    spectator = createComponent({
+      providers: [
+        mockProvider(NewGameCreator, {
+          currentPlayers: mockPlayers$.asReadonly(),
+          createGame: vi.fn(),
+          changeRole: vi.fn(),
+        }),
+        mockProvider(CardChoiceStore, {
+          state: mockCards,
+        }),
+      ],
+    });
   });
 
   it('should get players from NewGameCreator', () => {
@@ -96,21 +92,21 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['players']()).toEqual(mockPlayers);
+    expect(spectator.component['players']()).toEqual(mockPlayers);
   });
 
   it('should create game', () => {
-    const newGameCreator = ngMocks.get(NewGameCreator);
+    const newGameCreator = spectator.inject(NewGameCreator);
 
-    component['createGame']();
+    spectator.component['createGame']();
 
     expect(newGameCreator.createGame).toHaveBeenCalled();
   });
 
   it('should change role', () => {
-    const newGameCreator = ngMocks.get(NewGameCreator);
+    const newGameCreator = spectator.inject(NewGameCreator);
 
-    component['changeRole'](0, PlayerRoleEnum.SORCIERE);
+    spectator.component['changeRole'](0, PlayerRoleEnum.SORCIERE);
 
     expect(newGameCreator.changeRole).toHaveBeenCalledWith(
       0,
@@ -119,7 +115,7 @@ describe('NewGamePlayersRolesPage', () => {
   });
 
   it('should affect last role to players without role if only 1 available', () => {
-    const newGameCreator = ngMocks.get(NewGameCreator);
+    const newGameCreator = spectator.inject(NewGameCreator);
 
     mockCards.set({
       villageois: 3,
@@ -155,7 +151,7 @@ describe('NewGamePlayersRolesPage', () => {
       },
     ]);
 
-    component['changeRole'](0, PlayerRoleEnum.VILLAGEOIS);
+    spectator.component['changeRole'](0, PlayerRoleEnum.VILLAGEOIS);
 
     expect(newGameCreator.changeRole).toHaveBeenCalledWith(
       1,
@@ -180,7 +176,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(false);
+    expect(spectator.component['canCreate']()).toEqual(false);
   });
 
   it('should not be able to create if there is only 1 SOEUR', () => {
@@ -196,7 +192,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(false);
+    expect(spectator.component['canCreate']()).toEqual(false);
   });
 
   it('should not be able to create if there is more than 2 SOEUR', () => {
@@ -228,7 +224,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(false);
+    expect(spectator.component['canCreate']()).toEqual(false);
   });
 
   it('should be able to create if there is 2 SOEUR', () => {
@@ -252,7 +248,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(true);
+    expect(spectator.component['canCreate']()).toEqual(true);
   });
 
   it('should not be able to create if there is less than 3 FRERE', () => {
@@ -276,7 +272,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(false);
+    expect(spectator.component['canCreate']()).toEqual(false);
   });
 
   it('should not be able to create if there is more than 3 FRERE', () => {
@@ -316,7 +312,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(false);
+    expect(spectator.component['canCreate']()).toEqual(false);
   });
 
   it('should be able to create if there is 3 FRERE', () => {
@@ -348,7 +344,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(true);
+    expect(spectator.component['canCreate']()).toEqual(true);
   });
 
   it('should be able to create if there is no NOT_SELECTED role', () => {
@@ -364,7 +360,7 @@ describe('NewGamePlayersRolesPage', () => {
     ];
     mockPlayers$.set(mockPlayers);
 
-    expect(component['canCreate']()).toEqual(true);
+    expect(spectator.component['canCreate']()).toEqual(true);
   });
 
   it('should not have already used unique role as available', () => {
@@ -387,7 +383,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.CUPIDON),
+      spectator.component['availableRoles']().includes(PlayerRoleEnum.CUPIDON),
     ).toEqual(false);
   });
 
@@ -411,7 +407,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
+      spectator.component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
     ).toEqual(true);
   });
 
@@ -443,7 +439,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
+      spectator.component['availableRoles']().includes(PlayerRoleEnum.SOEUR),
     ).toEqual(false);
   });
 
@@ -475,7 +471,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.FRERE),
+      spectator.component['availableRoles']().includes(PlayerRoleEnum.FRERE),
     ).toEqual(true);
   });
 
@@ -515,7 +511,7 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.FRERE),
+      spectator.component['availableRoles']().includes(PlayerRoleEnum.FRERE),
     ).toEqual(false);
   });
 
@@ -539,7 +535,9 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.VILLAGEOIS),
+      spectator.component['availableRoles']().includes(
+        PlayerRoleEnum.VILLAGEOIS,
+      ),
     ).toEqual(true);
   });
 
@@ -571,7 +569,9 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.VILLAGEOIS),
+      spectator.component['availableRoles']().includes(
+        PlayerRoleEnum.VILLAGEOIS,
+      ),
     ).toEqual(false);
   });
 
@@ -595,7 +595,9 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
+      spectator.component['availableRoles']().includes(
+        PlayerRoleEnum.LOUP_GAROU,
+      ),
     ).toEqual(true);
   });
 
@@ -627,9 +629,9 @@ describe('NewGamePlayersRolesPage', () => {
     mockPlayers$.set(mockPlayers);
 
     expect(
-      component['availableRoles']().includes(PlayerRoleEnum.LOUP_GAROU),
+      spectator.component['availableRoles']().includes(
+        PlayerRoleEnum.LOUP_GAROU,
+      ),
     ).toEqual(false);
   });
-
-  afterAll(MockReset);
 });

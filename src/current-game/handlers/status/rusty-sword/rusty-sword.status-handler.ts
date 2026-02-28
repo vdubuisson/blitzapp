@@ -1,10 +1,13 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
-import { DefaultStatusHandler } from '../default/default.status-handler';
-import { PlayerStatusEnum } from '@/types/player-status';
 import { PlayerRoleEnum } from '@/types/player-role';
-import { removeStatusFromPlayer } from '@/utils/status.utils';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { inject } from '@angular/core';
+import { DefaultStatusHandler } from '../default/default.status-handler';
 
 export class RustySwordStatusHandler extends DefaultStatusHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   /**
    * Triggers the action for the "Rusty sword" status.
    *
@@ -17,10 +20,11 @@ export class RustySwordStatusHandler extends DefaultStatusHandler {
     );
     if (playerWithSwordIndex > -1) {
       const newPlayers = [...players];
-      newPlayers[playerWithSwordIndex] = removeStatusFromPlayer(
-        newPlayers[playerWithSwordIndex],
-        PlayerStatusEnum.RUSTY_SWORD,
-      );
+      newPlayers[playerWithSwordIndex] =
+        this.playersStatusUtility.removeStatusFromPlayer(
+          newPlayers[playerWithSwordIndex],
+          PlayerStatusEnum.RUSTY_SWORD,
+        );
       newPlayers[playerWithSwordIndex].isDead = true;
       newPlayers[playerWithSwordIndex].killedBy = PlayerRoleEnum.CHEVALIER;
       return newPlayers;

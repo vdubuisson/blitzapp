@@ -1,44 +1,36 @@
+import { PlayerRoleImagePipe } from '@/shared/pipes/player-role-image/player-role-image-pipe';
+import { PlayerRoleNamePipe } from '@/shared/pipes/player-role-name/player-role-name-pipe';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import {
-  MockBuilder,
-  MockedComponentFixture,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
+import { NgOptimizedImage, UpperCasePipe } from '@angular/common';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
+import { MockDirective, MockPipes } from 'ng-mocks';
 import { PlayerRoleModal } from './player-role-modal';
 
 describe('PlayerRoleModal', () => {
-  let fixture: MockedComponentFixture<PlayerRoleModal>;
+  let spectator: Spectator<PlayerRoleModal>;
+  const createComponent = createComponentFactory({
+    component: PlayerRoleModal,
+    imports: [
+      MockDirective(NgOptimizedImage),
+      ...MockPipes(UpperCasePipe, PlayerRoleImagePipe, PlayerRoleNamePipe),
+    ],
+    mocks: [DialogRef],
+    componentProviders: [{ provide: DIALOG_DATA, useValue: {} }],
+  });
 
-  ngMocks.faster();
-
-  beforeAll(() =>
-    MockBuilder(PlayerRoleModal).mock(DialogRef).mock(DIALOG_DATA),
-  );
-
-  beforeAll(() => {
-    MockInstance(DialogRef, () => ({
-      close: jest.fn(),
-    }));
-    fixture = MockRender(PlayerRoleModal);
+  beforeEach(() => {
+    spectator = createComponent();
   });
 
   it('should create', () => {
-    const component = fixture.point.componentInstance;
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 
   it('should dismiss on continue', () => {
-    const component = fixture.point.componentInstance;
+    spectator.component.continue();
 
-    component.continue();
-
-    const dialogRef = ngMocks.get(DialogRef);
+    const dialogRef = spectator.inject(DialogRef);
 
     expect(dialogRef.close).toHaveBeenCalled();
   });
-
-  afterAll(MockReset);
 });

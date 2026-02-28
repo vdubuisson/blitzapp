@@ -78,9 +78,6 @@
           },
           "defaultConfiguration": "development"
         },
-        "extract-i18n": {
-          "builder": "@angular/build:extract-i18n"
-        },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
@@ -88,6 +85,12 @@
               "src/**/*.ts",
               "src/**/*.html"
             ]
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "runnerConfig": true
           }
         }
       }
@@ -97,6 +100,7 @@
     "schematicCollections": [
       "@angular-eslint/schematics"
     ],
-    "analytics": false
+    "analytics": false,
+    "packageManager": "npm"
   }
 }

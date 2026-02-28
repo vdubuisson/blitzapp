@@ -1,16 +1,20 @@
-import { TestBed } from '@angular/core/testing';
-
+import {
+  createServiceFactory,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { SelectOverlayManager } from './select-overlay-manager';
 
 describe('SelectOverlayManager', () => {
-  let service: SelectOverlayManager;
+  let spectator: SpectatorService<SelectOverlayManager>;
+  const createService = createServiceFactory({
+    service: SelectOverlayManager,
+  });
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(SelectOverlayManager);
+    spectator = createService();
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
 });

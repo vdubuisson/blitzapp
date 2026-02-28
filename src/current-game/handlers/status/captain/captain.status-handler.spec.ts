@@ -1,34 +1,35 @@
-import { PlayerStatusEnum } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
-import { CaptainStatusHandler } from './captain.status-handler';
-import { PlayerRoleEnum } from '@/types/player-role';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
-import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { Round, RoundEnum } from '@/types/round';
 import { signal } from '@angular/core';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  mockProvider,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
+import { CaptainStatusHandler } from './captain.status-handler';
 
 describe('CaptainStatusHandler', () => {
   let handler: CaptainStatusHandler;
-  let afterDeathRoundQueue: AfterDeathRoundQueueStore;
-  ngMocks.faster();
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    afterDeathRoundQueue = MockService(AfterDeathRoundQueueStore, {
-      state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: AfterDeathRoundQueueStore, useValue: afterDeathRoundQueue },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new CaptainStatusHandler()));
+  const createContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+    providers: [
+      mockProvider(AfterDeathRoundQueueStore, {
+        state: signal<Round[]>([RoundEnum.VILLAGEOIS]),
+      }),
+    ],
   });
 
-  afterAll(MockReset);
+  beforeEach(() => {
+    spectator = createContext();
+
+    handler = spectator.runInInjectionContext(() => new CaptainStatusHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -55,18 +56,17 @@ describe('CaptainStatusHandler', () => {
         },
       ];
       const expectedPlayers = [...mockPlayers];
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayersById')
-        .mockReturnValue(expectedPlayers);
+      const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+      playersStatusUtility.removeStatusFromPlayersById.mockReturnValue(
+        expectedPlayers,
+      );
 
       const newPlayers = handler.handleDeath(mockPlayers, mockPlayers[1]);
 
       expect(newPlayers).not.toBe(mockPlayers);
-      expect(statusUtils.removeStatusFromPlayersById).toHaveBeenCalledWith(
-        mockPlayers,
-        PlayerStatusEnum.CAPTAIN,
-        [1],
-      );
+      expect(
+        playersStatusUtility.removeStatusFromPlayersById,
+      ).toHaveBeenCalledWith(mockPlayers, PlayerStatusEnum.CAPTAIN, [1]);
     });
 
     it('should add CAPITAINE round to after-death rounds', () => {
@@ -88,6 +88,7 @@ describe('CaptainStatusHandler', () => {
           isDead: true,
         },
       ];
+      const afterDeathRoundQueue = spectator.inject(AfterDeathRoundQueueStore);
       afterDeathRoundQueue.state.set([]);
 
       handler.handleDeath(mockPlayers, mockPlayers[1]);
@@ -116,6 +117,7 @@ describe('CaptainStatusHandler', () => {
           isDead: true,
         },
       ];
+      const afterDeathRoundQueue = spectator.inject(AfterDeathRoundQueueStore);
       afterDeathRoundQueue.state.set([]);
 
       handler.handleDeath(mockPlayers, mockPlayers[1]);

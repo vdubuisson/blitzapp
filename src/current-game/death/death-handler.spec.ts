@@ -1,138 +1,129 @@
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
-import { PlayerRoleEnum } from '@/types/player-role';
-import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { DefaultRoleHandler } from '@/game-handlers/roles/default/default.role-handler';
-import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
 import { AfterDeathRoundQueueStore } from '@/current-game/death/after-death-round-queue/after-death-round-queue-store';
 import { DeathsToAnnounceStore } from '@/current-game/death/deaths-to-announce/deaths-to-announce-store';
 import { KnownDeathsStore } from '@/current-game/death/known-deaths/known-deaths-store';
+import { RoleHandler } from '@/game-handlers/roles/role-handler.interface';
+import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
 import { signal } from '@angular/core';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { DeathHandler } from './death-handler';
-import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
-import { StatusHandler } from '@/game-handlers/status/status-handler.interface';
-import { DefaultStatusHandler } from '@/game-handlers/status/default/default.status-handler';
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { Announcer } from '../announcements/announcer';
-import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
+import { PlayersRoleUtility } from '../players/players-role-utility';
+import { DeathHandler } from './death-handler';
 
 describe('DeathHandler', () => {
-  let service: DeathHandler;
-  let mockRoleHandler: RoleHandler;
-  let mockStatusHandler: StatusHandler;
-  let mockLoverStatusHandler: StatusHandler;
+  let spectator: SpectatorService<DeathHandler>;
 
-  ngMocks.faster();
+  const mockRoleHandler: RoleHandler = {
+    handleDeath: vi.fn().mockImplementation((players) => players),
+  } as unknown as RoleHandler;
 
-  beforeAll(() =>
-    MockBuilder(DeathHandler)
-      .mock(Announcer)
-      .mock(RoleHandlersManager)
-      .mock(StatusHandlersManager)
-      .mock(KnownDeathsStore)
-      .mock(DeathsToAnnounceStore)
-      .mock(AfterDeathRoundQueueStore),
-  );
+  const mockStatusHandler: StatusHandler = {
+    handleDeath: vi.fn().mockImplementation((players, _) => players),
+    triggerAction: vi.fn().mockImplementation((players) => players),
+  } as unknown as StatusHandler;
 
-  beforeAll(() => {
-    MockInstance(Announcer, () => ({
-      announceDeaths: jest.fn(),
-      announce: jest.fn(),
-    }));
-
-    mockRoleHandler = {
-      handleDeath: jest.fn().mockImplementation((players) => players),
-    } as unknown as DefaultRoleHandler;
-
-    MockInstance(RoleHandlersManager, () => ({
-      getHandler: jest.fn().mockReturnValue(mockRoleHandler),
-    }));
-
-    mockStatusHandler = {
-      handleDeath: jest.fn().mockImplementation((players, _) => players),
-      triggerAction: jest.fn().mockImplementation((players) => players),
-    } as unknown as DefaultStatusHandler;
-
-    mockLoverStatusHandler = {
-      handleDeath: jest.fn().mockImplementation((players, _) => {
-        const newPlayers = [...players];
-        newPlayers.forEach((player) => {
-          if (player.statuses.has(PlayerStatusEnum.LOVER)) {
-            player.isDead = true;
-          }
-        });
-        return newPlayers;
-      }),
-      triggerAction: jest.fn().mockImplementation((players) => players),
-    } as unknown as DefaultStatusHandler;
-
-    MockInstance(StatusHandlersManager, () => ({
-      getHandler: jest.fn().mockImplementation((status) => {
-        if (status === PlayerStatusEnum.LOVER) {
-          return mockLoverStatusHandler;
+  const mockLoverStatusHandler: StatusHandler = {
+    handleDeath: vi.fn().mockImplementation((players, _) => {
+      const newPlayers = [...players];
+      newPlayers.forEach((player) => {
+        if (player.statuses.has(PlayerStatusEnum.LOVER)) {
+          player.isDead = true;
         }
-        return mockStatusHandler;
-      }),
-    }));
+      });
+      return newPlayers;
+    }),
+    triggerAction: vi.fn().mockImplementation((players) => players),
+  } as unknown as StatusHandler;
 
-    MockInstance(
-      KnownDeathsStore,
-      () => ({ state: signal(new Set()) }) as Partial<KnownDeathsStore>,
-    );
-    MockInstance(
-      DeathsToAnnounceStore,
-      () => ({ state: signal([]) }) as Partial<DeathsToAnnounceStore>,
-    );
-    MockInstance(
-      AfterDeathRoundQueueStore,
-      () => ({ state: signal([]) }) as Partial<AfterDeathRoundQueueStore>,
-    );
+  const createService = createServiceFactory({
+    service: DeathHandler,
+    mocks: [Announcer],
+    providers: [
+      mockProvider(RoleHandlersManager, {
+        getHandler: vi.fn().mockReturnValue(mockRoleHandler),
+      }),
+      mockProvider(StatusHandlersManager, {
+        getHandler: vi.fn().mockImplementation((status) => {
+          if (status === PlayerStatusEnum.LOVER) {
+            return mockLoverStatusHandler;
+          }
+          return mockStatusHandler;
+        }),
+      }),
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
+    ],
   });
 
-  beforeEach(
-    () => (service = MockRender(DeathHandler).point.componentInstance),
-  );
+  beforeEach(() => {
+    spectator = createService({
+      providers: [
+        mockProvider(KnownDeathsStore, {
+          state: signal(new Set()),
+        }),
+        mockProvider(DeathsToAnnounceStore, {
+          state: signal([]),
+        }),
+        mockProvider(AfterDeathRoundQueueStore, {
+          state: signal([]),
+        }),
+      ],
+    });
+  });
 
   it('should return next after-death round', () => {
-    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    const afterDeathRoundQueueStore = spectator.inject(
+      AfterDeathRoundQueueStore,
+    );
     afterDeathRoundQueueStore.state.set([
       RoundEnum.CHASSEUR,
       RoundEnum.CAPITAINE,
     ]);
 
-    const nextAfterDeathRound = service.getNextAfterDeathRound();
+    const nextAfterDeathRound = spectator.service.getNextAfterDeathRound();
 
     expect(nextAfterDeathRound).toEqual(RoundEnum.CHASSEUR);
     expect(afterDeathRoundQueueStore.state()).toEqual([RoundEnum.CAPITAINE]);
   });
 
   it('should clear known deaths on reset', () => {
-    const knownDeathsStore = ngMocks.get(KnownDeathsStore);
+    const knownDeathsStore = spectator.inject(KnownDeathsStore);
     knownDeathsStore.state.set(new Set([0, 1]));
 
-    service.reset();
+    spectator.service.reset();
 
     expect(knownDeathsStore.state().size).toEqual(0);
   });
 
   it('should empty afterDeathRoundQueue on reset', () => {
-    const afterDeathRoundQueueStore = ngMocks.get(AfterDeathRoundQueueStore);
+    const afterDeathRoundQueueStore = spectator.inject(
+      AfterDeathRoundQueueStore,
+    );
     afterDeathRoundQueueStore.state.set([RoundEnum.CHASSEUR]);
 
-    service.reset();
+    spectator.service.reset();
 
     expect(afterDeathRoundQueueStore.state().length).toEqual(0);
   });
 
   it('should empty deathsToAnnounce on reset', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     deathsToAnnounceStore.state.set([
       {
         id: 0,
@@ -144,7 +135,7 @@ describe('DeathHandler', () => {
       },
     ]);
 
-    service.reset();
+    spectator.service.reset();
 
     expect(deathsToAnnounceStore.state().length).toEqual(0);
   });
@@ -168,13 +159,13 @@ describe('DeathHandler', () => {
         isDead: false,
       },
     ];
-    service.handleNewDeaths(mockPlayers);
+    spectator.service.handleNewDeaths(mockPlayers);
 
     expect(mockStatusHandler.triggerAction).toHaveBeenCalledWith(mockPlayers);
   });
 
   it('should add dead player id to known deaths', () => {
-    const knownDeathsStore = ngMocks.get(KnownDeathsStore);
+    const knownDeathsStore = spectator.inject(KnownDeathsStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -196,13 +187,13 @@ describe('DeathHandler', () => {
 
     knownDeathsStore.state.set(new Set());
 
-    service.handleNewDeaths(mockPlayers);
+    spectator.service.handleNewDeaths(mockPlayers);
 
     expect(knownDeathsStore.state().has(0)).toEqual(true);
   });
 
   it('should add dead player to deaths to announce', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     deathsToAnnounceStore.state.set([]);
 
     const mockPlayers: Player[] = [
@@ -224,7 +215,7 @@ describe('DeathHandler', () => {
       },
     ];
 
-    service.handleNewDeaths(mockPlayers);
+    spectator.service.handleNewDeaths(mockPlayers);
 
     expect(deathsToAnnounceStore.state()).toEqual([
       {
@@ -266,9 +257,9 @@ describe('DeathHandler', () => {
       },
     ];
 
-    service.handleNewDeaths(mockPlayers);
+    spectator.service.handleNewDeaths(mockPlayers);
 
-    const roleHandlersManager = ngMocks.get(RoleHandlersManager);
+    const roleHandlersManager = spectator.inject(RoleHandlersManager);
     expect(roleHandlersManager.getHandler).toHaveBeenCalledWith(
       PlayerRoleEnum.CHASSEUR,
     );
@@ -301,9 +292,9 @@ describe('DeathHandler', () => {
       },
     ];
 
-    service.handleNewDeaths(mockPlayers);
+    spectator.service.handleNewDeaths(mockPlayers);
 
-    const statusHandlersManager = ngMocks.get(StatusHandlersManager);
+    const statusHandlersManager = spectator.inject(StatusHandlersManager);
     expect(statusHandlersManager.getHandler).toHaveBeenCalledWith(
       PlayerStatusEnum.CAPTAIN,
     );
@@ -336,9 +327,9 @@ describe('DeathHandler', () => {
       },
     ];
 
-    service.handleNewDeaths(mockPlayers);
+    spectator.service.handleNewDeaths(mockPlayers);
 
-    const roleHandlersManager = ngMocks.get(RoleHandlersManager);
+    const roleHandlersManager = spectator.inject(RoleHandlersManager);
     expect(roleHandlersManager.getHandler).toHaveBeenCalledWith(
       PlayerRoleEnum.VOYANTE,
     );
@@ -349,7 +340,7 @@ describe('DeathHandler', () => {
   });
 
   it('should announce deaths if there are some', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -363,14 +354,14 @@ describe('DeathHandler', () => {
 
     deathsToAnnounceStore.state.set(mockPlayers);
 
-    service.announceDeaths();
+    spectator.service.announceDeaths();
 
-    const announcer = ngMocks.get(Announcer);
+    const announcer = spectator.inject(Announcer);
     expect(announcer.announceDeaths).toHaveBeenCalledWith(mockPlayers);
   });
 
-  it('should announce ANCIEN killed by innocents if killed by CHASSEUR', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+  it('should announce ANCIEN killed by innocents if killed by innocents', () => {
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -382,67 +373,22 @@ describe('DeathHandler', () => {
         killedBy: PlayerRoleEnum.CHASSEUR,
       },
     ];
+    spectator
+      .inject(PlayersRoleUtility)
+      .isKilledByInnocents.mockReturnValue(true);
 
     deathsToAnnounceStore.state.set(mockPlayers);
 
-    service.announceDeaths();
+    spectator.service.announceDeaths();
 
-    const announcer = ngMocks.get(Announcer);
-    expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
-    );
-  });
-
-  it('should announce ANCIEN killed by innocents if killed by SORCIERE', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.SORCIERE,
-      },
-    ];
-
-    deathsToAnnounceStore.state.set(mockPlayers);
-
-    service.announceDeaths();
-
-    const announcer = ngMocks.get(Announcer);
-    expect(announcer.announce).toHaveBeenCalledWith(
-      AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
-    );
-  });
-
-  it('should announce ANCIEN killed by innocents if killed by VILLAGEOIS', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
-    const mockPlayers: Player[] = [
-      {
-        id: 0,
-        name: 'player0',
-        role: PlayerRoleEnum.ANCIEN,
-        card: PlayerRoleEnum.ANCIEN,
-        statuses: new Set(),
-        isDead: true,
-        killedBy: PlayerRoleEnum.VILLAGEOIS,
-      },
-    ];
-
-    deathsToAnnounceStore.state.set(mockPlayers);
-
-    service.announceDeaths();
-
-    const announcer = ngMocks.get(Announcer);
+    const announcer = spectator.inject(Announcer);
     expect(announcer.announce).toHaveBeenCalledWith(
       AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
     );
   });
 
   it('should not announce ANCIEN killed by innocents if not killed by innocent', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -453,17 +399,20 @@ describe('DeathHandler', () => {
         isDead: true,
       },
     ];
+    spectator
+      .inject(PlayersRoleUtility)
+      .isKilledByInnocents.mockReturnValue(false);
 
     deathsToAnnounceStore.state.set(mockPlayers);
 
-    service.announceDeaths();
+    spectator.service.announceDeaths();
 
-    const announcer = ngMocks.get(Announcer);
+    const announcer = spectator.inject(Announcer);
     expect(announcer.announce).not.toHaveBeenCalled();
   });
 
   it('should announce player killed by CHEVALIER if present', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     const mockPlayers: Player[] = [
       {
         id: 0,
@@ -478,9 +427,9 @@ describe('DeathHandler', () => {
 
     deathsToAnnounceStore.state.set(mockPlayers);
 
-    service.announceDeaths();
+    spectator.service.announceDeaths();
 
-    const announcer = ngMocks.get(Announcer);
+    const announcer = spectator.inject(Announcer);
     expect(announcer.announce).toHaveBeenCalledWith(
       AnnouncementTypesEnum.WOLF_KILLED_BY_CHEVALIER,
       { playerName: 'player0' },
@@ -488,17 +437,17 @@ describe('DeathHandler', () => {
   });
 
   it('should not announce deaths if there are none', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     deathsToAnnounceStore.state.set([]);
 
-    service.announceDeaths();
+    spectator.service.announceDeaths();
 
-    const announcer = ngMocks.get(Announcer);
+    const announcer = spectator.inject(Announcer);
     expect(announcer.announceDeaths).not.toHaveBeenCalled();
   });
 
   it('should clear deaths to announce after announce', () => {
-    const deathsToAnnounceStore = ngMocks.get(DeathsToAnnounceStore);
+    const deathsToAnnounceStore = spectator.inject(DeathsToAnnounceStore);
     deathsToAnnounceStore.state.set([
       {
         id: 0,
@@ -510,10 +459,8 @@ describe('DeathHandler', () => {
       },
     ]);
 
-    service.announceDeaths();
+    spectator.service.announceDeaths();
 
     expect(deathsToAnnounceStore.state().length).toEqual(0);
   });
-
-  afterAll(MockReset);
 });

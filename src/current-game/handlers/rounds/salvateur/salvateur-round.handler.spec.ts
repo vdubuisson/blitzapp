@@ -1,17 +1,29 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { SalvateurRoundHandler } from './salvateur-round.handler';
 
 describe('SalvateurRoundHandler', () => {
   let roundHandler: SalvateurRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new SalvateurRoundHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new SalvateurRoundHandler(),
+    );
   });
 
   it('should not be only once', () => {
@@ -68,23 +80,22 @@ describe('SalvateurRoundHandler', () => {
 
     const expectedAddedPlayer = { ...players[2] };
     const expectedRemovedPlayer = { ...players[0] };
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockReturnValue(expectedAddedPlayer);
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockReturnValue(expectedRemovedPlayer);
+    const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+    playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedAddedPlayer);
+    playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+      expectedRemovedPlayer,
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [2]),
     );
     expect(newPlayers[0]).toBe(expectedRemovedPlayer);
-    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[0],
       PlayerStatusEnum.PROTECTED,
     );
     expect(newPlayers[2]).toBe(expectedAddedPlayer);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[2],
       PlayerStatusEnum.PROTECTED,
     );

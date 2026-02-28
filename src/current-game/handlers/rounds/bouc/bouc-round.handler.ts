@@ -1,12 +1,15 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
 import { Player } from '@/shared/types/player';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { RoundEnum } from '@/types/round';
+import { inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
-import { addStatusToPlayersById } from '@/utils/status.utils';
 
 export class BoucRoundHandler extends DefaultRoundHandler {
+  private readonly playerStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(RoundEnum.BOUC, true, true, RoundTypeEnum.PLAYERS);
   }
@@ -22,7 +25,7 @@ export class BoucRoundHandler extends DefaultRoundHandler {
           : acc,
       [],
     );
-    const newPlayers = addStatusToPlayersById(
+    const newPlayers = this.playerStatusUtility.addStatusToPlayersById(
       players,
       PlayerStatusEnum.NO_VOTE,
       notSelectedPlayersIds,

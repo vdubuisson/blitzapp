@@ -1,56 +1,33 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { AngeRoleHandler } from './ange.role-handler';
-import { TestBed } from '@angular/core/testing';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
 import { VictoryEnum } from '@/types/victory';
 import { RoundOrchestrator } from '@/current-game/orchestrator/round-orchestrator';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 
 describe('AngeRoleHandler', () => {
   let handler: AngeRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let victoryHandlersManager: VictoryHandlersManager;
-  let roundOrchestrator: RoundOrchestrator;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager, VictoryHandlersManager, RoundOrchestrator],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    victoryHandlersManager = MockService(VictoryHandlersManager, {
-      createVictoryHandler: jest.fn(),
-    });
-
-    roundOrchestrator = MockService(RoundOrchestrator, {
-      setVillageoisFirst: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: VictoryHandlersManager, useValue: victoryHandlersManager },
-        {
-          provide: RoundOrchestrator,
-          useValue: roundOrchestrator,
-        },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new AngeRoleHandler()));
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new AngeRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -64,12 +41,16 @@ describe('AngeRoleHandler', () => {
     });
 
     it('should create no round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).not.toHaveBeenCalled();
     });
 
     it('should create a victory handler for ANGE', () => {
+      const victoryHandlersManager = spectator.inject(VictoryHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
@@ -78,6 +59,8 @@ describe('AngeRoleHandler', () => {
     });
 
     it('should set villageois round first', () => {
+      const roundOrchestrator = spectator.inject(RoundOrchestrator);
+
       handler.prepareNewGame(players);
 
       expect(roundOrchestrator.setVillageoisFirst).toHaveBeenCalled();
@@ -86,6 +69,7 @@ describe('AngeRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove no round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);

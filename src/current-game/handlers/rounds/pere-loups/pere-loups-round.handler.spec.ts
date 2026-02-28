@@ -1,17 +1,33 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { PereLoupsRoundHandler } from './pere-loups-round.handler';
 
 describe('PereLoupsRoundHandler', () => {
   let roundHandler: PereLoupsRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new PereLoupsRoundHandler();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new PereLoupsRoundHandler(),
+    );
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
   });
 
   it('should not be only once', () => {
@@ -58,18 +74,15 @@ describe('PereLoupsRoundHandler', () => {
       },
     ];
     const expectedPlayer = { ...players[0] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockReturnValue(expectedPlayer);
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockReturnValue(expectedPlayer);
+    playersStatusUtility.addStatusToPlayersById.mockReturnValue(players);
+    playersStatusUtility.removeStatusFromPlayer.mockReturnValue(expectedPlayer);
+    playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0]).toBe(expectedPlayer);
-    expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+    expect(newPlayers[0]).toEqual(expectedPlayer);
+    expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
       players[0],
       PlayerStatusEnum.WOLF_TARGET,
     );
@@ -95,18 +108,15 @@ describe('PereLoupsRoundHandler', () => {
       },
     ];
     const expectedPlayer = { ...players[0] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockReturnValue(expectedPlayer);
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockReturnValue(expectedPlayer);
+    playersStatusUtility.addStatusToPlayersById.mockReturnValue(players);
+    playersStatusUtility.removeStatusFromPlayer.mockReturnValue(expectedPlayer);
+    playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0]).toBe(expectedPlayer);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(newPlayers[0]).toEqual(expectedPlayer);
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[0],
       PlayerStatusEnum.INFECTED,
     );
@@ -133,14 +143,15 @@ describe('PereLoupsRoundHandler', () => {
     ];
 
     const expectedPlayers = [...players];
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayersById')
-      .mockReturnValue(expectedPlayers);
+    playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+      expectedPlayers,
+    );
+    playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayers[0]);
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0]).not.toBe(players[0]);
+    expect(newPlayers[0]).not.toEqual(players[0]);
     expect(newPlayers[0].role).toEqual(PlayerRoleEnum.LOUP_GAROU);
   });
 
@@ -165,17 +176,16 @@ describe('PereLoupsRoundHandler', () => {
       },
     ];
     const expectedPlayer = { ...players[0] };
-    jest
-      .spyOn(statusUtils, 'removeStatusFromPlayer')
-      .mockReturnValue(expectedPlayer);
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockReturnValue(expectedPlayer);
+    playersStatusUtility.addStatusToPlayersById.mockImplementation(
+      (players) => players,
+    );
+    playersStatusUtility.removeStatusFromPlayer.mockReturnValue(expectedPlayer);
+    playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
-    expect(newPlayers[0]).not.toBe(players[0]);
+    expect(newPlayers[0]).not.toEqual(players[0]);
     expect(newPlayers[0].killedBy).toBeUndefined();
   });
 
@@ -199,15 +209,21 @@ describe('PereLoupsRoundHandler', () => {
       },
     ];
     const expectedPlayers = [...players];
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayersById')
-      .mockReturnValue(expectedPlayers);
+    playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+      expectedPlayers,
+    );
+    playersStatusUtility.addStatusToPlayer.mockImplementation(
+      (player) => player,
+    );
+    playersStatusUtility.removeStatusFromPlayer.mockImplementation(
+      (player) => player,
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0]),
     );
     expect(newPlayers).toBe(expectedPlayers);
-    expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
       expectedPlayers,
       PlayerStatusEnum.NO_POWER,
       [1],

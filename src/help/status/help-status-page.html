@@ -1,6 +1,6 @@
 <cdk-accordion>
   @for (status of statuses; track status) {
-  <lgmj-accordion-item>
+  <lgmj-accordion-item data-testid="accordion-item">
     <ng-container header>
       <span class="status-icon">{{ status | playerStatusIcon }}</span>
       <span class="status-name">{{ status | playerStatusName }}</span>

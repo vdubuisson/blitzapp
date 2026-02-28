@@ -1,56 +1,50 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { Player } from '@/shared/types/player';
-import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
-import { AncienRoleHandler } from './ancien.role-handler';
-import { TestBed } from '@angular/core/testing';
-import * as rolesUtils from '@/utils/roles.utils';
 import { INNOCENTS_POWER_REMOVAL_ROLES } from '@/config/innocents-power-removal-roles';
+import { LOUPS_GAROUS_ROLES } from '@/config/loups-garous-roles';
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
+import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
+import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
+import {
+  createInjectionContextFactory,
+  mockProvider,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
+import { AncienRoleHandler } from './ancien.role-handler';
 
 describe('AncienRoleHandler', () => {
   let handler: AncienRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
-  let isKilledByInnocents: jest.SpyInstance;
-  let removePowersFromInnocents: jest.SpyInstance;
+  let spectator: SpectatorInjectionContext;
+
+  let playersRoleUtility: SpyObject<PlayersRoleUtility>;
+
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager, StatusHandlersManager],
+    providers: [
+      mockProvider(PlayersRoleUtility, {
+        isLoupGarou: vi.fn(
+          (player) =>
+            LOUPS_GAROUS_ROLES.includes(player.role) ||
+            player.statuses.has(PlayerStatusEnum.INFECTED),
+        ),
+      }),
+    ],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-      removeHandlersByRoles: jest.fn(),
-    });
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    isKilledByInnocents = jest.spyOn(rolesUtils, 'isKilledByInnocents');
-    removePowersFromInnocents = jest.spyOn(
-      rolesUtils,
-      'removePowersFromInnocents',
-    );
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new AncienRoleHandler()));
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new AncienRoleHandler());
+    playersRoleUtility = spectator.inject(PlayersRoleUtility);
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -64,12 +58,16 @@ describe('AncienRoleHandler', () => {
     });
 
     it('should create no round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).not.toHaveBeenCalled();
     });
 
     it('should create INJURED status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -81,19 +79,22 @@ describe('AncienRoleHandler', () => {
   describe('handleDeath', () => {
     it('should call removePowersFromInnocents if killed by innocents', () => {
       const deadPlayer = players[0];
-      isKilledByInnocents.mockReturnValue(true);
-      removePowersFromInnocents.mockReturnValue(players);
+      playersRoleUtility.isKilledByInnocents.mockReturnValue(true);
+      playersRoleUtility.removePowersFromInnocents.mockReturnValue(players);
 
       const result = handler.handleDeath(players, deadPlayer);
 
       expect(result).toBe(players);
-      expect(removePowersFromInnocents).toHaveBeenCalledWith(players);
+      expect(playersRoleUtility.removePowersFromInnocents).toHaveBeenCalledWith(
+        players,
+      );
     });
 
     it('should remove handlers of innocents if killed by innocents', () => {
       const deadPlayer = players[0];
-      isKilledByInnocents.mockReturnValue(true);
-      removePowersFromInnocents.mockReturnValue(players);
+      playersRoleUtility.isKilledByInnocents.mockReturnValue(true);
+      playersRoleUtility.removePowersFromInnocents.mockReturnValue(players);
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
 
       const result = handler.handleDeath(players, deadPlayer);
 
@@ -105,17 +106,20 @@ describe('AncienRoleHandler', () => {
 
     it('should return players unchanged if not killed by innocents', () => {
       const deadPlayer = players[0];
-      isKilledByInnocents.mockReturnValue(false);
+      playersRoleUtility.isKilledByInnocents.mockReturnValue(false);
 
       const result = handler.handleDeath(players, deadPlayer);
 
       expect(result).toBe(players);
-      expect(removePowersFromInnocents).not.toHaveBeenCalled();
+      expect(
+        playersRoleUtility.removePowersFromInnocents,
+      ).not.toHaveBeenCalled();
     });
 
     it('should not remove handlers of innocents if not killed by innocents', () => {
       const deadPlayer = players[0];
-      isKilledByInnocents.mockReturnValue(false);
+      playersRoleUtility.isKilledByInnocents.mockReturnValue(false);
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
 
       const result = handler.handleDeath(players, deadPlayer);
 

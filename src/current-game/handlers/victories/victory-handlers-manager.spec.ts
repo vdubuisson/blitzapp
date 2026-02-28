@@ -1,16 +1,14 @@
-import { VictoryEnum } from '@/types/victory';
-import { Player } from '@/shared/types/player';
 import { VictoryHandlersStore } from '@/game-handlers/victories/victory-handlers-store';
+import { Player } from '@/shared/types/player';
+import { Victory, VictoryEnum } from '@/types/victory';
 import { signal } from '@angular/core';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { VictoryHandlersManager } from './victory-handlers-manager';
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { NoneVictoryHandler } from './none/none-victory.handler';
+import { VictoryHandlersManager } from './victory-handlers-manager';
 import { VictoryHandler } from './victory.handler';
 import { VillageoisVictoryHandler } from './villageois/villageois-victory.handler';
 
@@ -21,116 +19,107 @@ class MockVictoryHandler implements VictoryHandler {
 }
 
 describe('VictoryHandlersManager', () => {
-  let service: VictoryHandlersManager;
+  let spectator: SpectatorService<VictoryHandlersManager>;
 
-  ngMocks.faster();
-
-  beforeAll(() =>
-    MockBuilder(VictoryHandlersManager).mock(VictoryHandlersStore),
-  );
-
-  beforeAll(() => {
-    MockInstance(VictoryHandlersStore, 'state', signal(new Set<Victory>()));
+  const createService = createServiceFactory({
+    service: VictoryHandlersManager,
+    providers: [
+      mockProvider(VictoryHandlersStore, {
+        state: signal(new Set<Victory>()),
+      }),
+    ],
   });
 
   beforeEach(() => {
-    service = MockRender(VictoryHandlersManager).point.componentInstance;
+    spectator = createService();
   });
 
   it('should init VILLAGEOIS victory handler', () => {
-    service.initRequiredHandlers();
+    spectator.service.initRequiredHandlers();
 
     expect(
-      service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS),
+      spectator.service['victoryHandlers'].get(VictoryEnum.VILLAGEOIS),
     ).toBeInstanceOf(VillageoisVictoryHandler);
   });
 
   it('should init NONE victory handler', () => {
-    service.initRequiredHandlers();
+    spectator.service.initRequiredHandlers();
 
-    expect(service['victoryHandlers'].get(VictoryEnum.NONE)).toBeInstanceOf(
-      NoneVictoryHandler,
-    );
+    expect(
+      spectator.service['victoryHandlers'].get(VictoryEnum.NONE),
+    ).toBeInstanceOf(NoneVictoryHandler);
   });
 
   it('should return victory based on victorious Handler', () => {
     const mockAmoureuxVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockAmoureuxVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockAmoureuxVictoryHandler, 'isVictorious').mockReturnValue(false);
     const mockLoupGarouVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockLoupGarouVictoryHandler, 'isVictorious')
-      .mockReturnValue(true);
+    vi.spyOn(mockLoupGarouVictoryHandler, 'isVictorious').mockReturnValue(true);
     const mockVillageoisVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockVillageoisVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockVillageoisVictoryHandler, 'isVictorious').mockReturnValue(
+      false,
+    );
 
-    service['victoryHandlers'].clear();
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].clear();
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
       mockAmoureuxVictoryHandler,
     );
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.LOUP_GAROU,
       mockLoupGarouVictoryHandler,
     );
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.VILLAGEOIS,
       mockVillageoisVictoryHandler,
     );
 
-    const victory = service.getVictory([], false);
+    const victory = spectator.service.getVictory([], false);
 
     expect(victory).toEqual(VictoryEnum.LOUP_GAROU);
   });
 
   it('should return no victory if no victorious handler', () => {
     const mockAmoureuxVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockAmoureuxVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockAmoureuxVictoryHandler, 'isVictorious').mockReturnValue(false);
     const mockLoupGarouVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockLoupGarouVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockLoupGarouVictoryHandler, 'isVictorious').mockReturnValue(
+      false,
+    );
     const mockVillageoisVictoryHandler = new MockVictoryHandler();
-    jest
-      .spyOn(mockVillageoisVictoryHandler, 'isVictorious')
-      .mockReturnValue(false);
+    vi.spyOn(mockVillageoisVictoryHandler, 'isVictorious').mockReturnValue(
+      false,
+    );
 
-    service['victoryHandlers'].clear();
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].clear();
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.AMOUREUX,
       mockAmoureuxVictoryHandler,
     );
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.LOUP_GAROU,
       mockLoupGarouVictoryHandler,
     );
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.VILLAGEOIS,
       mockVillageoisVictoryHandler,
     );
 
-    const victory = service.getVictory([], false);
+    const victory = spectator.service.getVictory([], false);
 
     expect(victory).toEqual(undefined);
   });
 
   it('should remove victory handler', () => {
-    service['victoryHandlers'].set(
+    spectator.service['victoryHandlers'].set(
       VictoryEnum.JOUEUR_FLUTE,
       new MockVictoryHandler(),
     );
 
-    service.removeHandler(VictoryEnum.JOUEUR_FLUTE);
+    spectator.service.removeHandler(VictoryEnum.JOUEUR_FLUTE);
 
-    expect(service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE)).toEqual(
-      false,
-    );
+    expect(
+      spectator.service['victoryHandlers'].has(VictoryEnum.JOUEUR_FLUTE),
+    ).toEqual(false);
   });
-
-  afterAll(MockReset);
 });

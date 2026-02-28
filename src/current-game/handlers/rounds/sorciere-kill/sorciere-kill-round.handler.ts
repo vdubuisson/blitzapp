@@ -1,13 +1,16 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
+import { inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { DefaultRoundHandler } from '../default/default-round.handler';
-import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class SorciereKillRoundHandler extends DefaultRoundHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(RoundEnum.SORCIERE_KILL, false, false, RoundTypeEnum.PLAYERS);
   }
@@ -23,10 +26,11 @@ export class SorciereKillRoundHandler extends DefaultRoundHandler {
             (player) => player.role === PlayerRoleEnum.SORCIERE,
           );
           if (sorciereIndex > -1) {
-            newPlayers[sorciereIndex] = removeStatusFromPlayer(
-              newPlayers[sorciereIndex],
-              PlayerStatusEnum.DEATH_POTION,
-            );
+            newPlayers[sorciereIndex] =
+              this.playersStatusUtility.removeStatusFromPlayer(
+                newPlayers[sorciereIndex],
+                PlayerStatusEnum.DEATH_POTION,
+              );
           }
         }
         return newPlayers;

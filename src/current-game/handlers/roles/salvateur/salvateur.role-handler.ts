@@ -1,11 +1,14 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { DefaultRoleHandler } from '../default/default.role-handler';
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { removeStatusFromPlayersById } from '@/utils/status.utils';
+import { inject } from '@angular/core';
+import { DefaultRoleHandler } from '../default/default.role-handler';
 
 export class SalvateurRoleHandler extends DefaultRoleHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(
       PlayerRoleEnum.SALVATEUR,
@@ -24,7 +27,7 @@ export class SalvateurRoleHandler extends DefaultRoleHandler {
       )?.id;
 
       if (protectedPlayerId !== undefined) {
-        return removeStatusFromPlayersById(
+        return this.playersStatusUtility.removeStatusFromPlayersById(
           players,
           PlayerStatusEnum.PROTECTED,
           [protectedPlayerId],

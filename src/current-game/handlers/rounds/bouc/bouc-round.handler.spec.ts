@@ -1,17 +1,29 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { BoucRoundHandler } from './bouc-round.handler';
 
 describe('BoucRoundHandler', () => {
   let roundHandler: BoucRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new BoucRoundHandler();
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new BoucRoundHandler(),
+    );
   });
 
   it('should be only once', () => {
@@ -75,16 +87,17 @@ describe('BoucRoundHandler', () => {
     ];
 
     const expectedPlayers = [...players];
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayersById')
-      .mockReturnValue(expectedPlayers);
+    const playersStatusUtility = spectator.inject(PlayersStatusUtility);
+    playersStatusUtility.addStatusToPlayersById.mockReturnValue(
+      expectedPlayers,
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [2]),
     );
 
     expect(newPlayers).toBe(expectedPlayers);
-    expect(statusUtils.addStatusToPlayersById).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayersById).toHaveBeenCalledWith(
       players,
       PlayerStatusEnum.NO_VOTE,
       [1, 3],

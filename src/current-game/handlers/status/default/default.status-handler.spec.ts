@@ -1,7 +1,6 @@
 import { Player } from '@/shared/types/player';
-import { DefaultStatusHandler } from './default.status-handler';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { MockReset } from 'ng-mocks';
+import { DefaultStatusHandler } from './default.status-handler';
 
 describe('DefaultStatusHandler', () => {
   let handler: DefaultStatusHandler;
@@ -18,8 +17,6 @@ describe('DefaultStatusHandler', () => {
       { id: 2, name: 'Player 2' } as Player,
     ];
   });
-
-  afterAll(MockReset);
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();

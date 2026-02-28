@@ -1,55 +1,39 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { LoupGarouRoleHandler } from './loup-garou.role-handler';
 import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
 import { StatusHandlersManager } from '@/game-handlers/status/status-handlers-manager';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
 import { VictoryEnum } from '@/types/victory';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 
 describe('LoupGarouRoleHandler', () => {
   let handler: LoupGarouRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
-  let statusHandlersManager: StatusHandlersManager;
-  let victoryHandlersManager: VictoryHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [
+      RoundHandlersManager,
+      StatusHandlersManager,
+      VictoryHandlersManager,
+    ],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    statusHandlersManager = MockService(StatusHandlersManager, {
-      createStatusHandler: jest.fn(),
-    });
-
-    victoryHandlersManager = MockService(VictoryHandlersManager, {
-      createVictoryHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-        { provide: StatusHandlersManager, useValue: statusHandlersManager },
-        { provide: VictoryHandlersManager, useValue: victoryHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new LoupGarouRoleHandler()));
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new LoupGarouRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -63,12 +47,16 @@ describe('LoupGarouRoleHandler', () => {
     });
 
     it('should create no round handlers', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).not.toHaveBeenCalled();
     });
 
     it('should create WOLF_TARGET status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -77,6 +65,8 @@ describe('LoupGarouRoleHandler', () => {
     });
 
     it('should create DEVOURED status handler', () => {
+      const statusHandlersManager = spectator.inject(StatusHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(statusHandlersManager.createStatusHandler).toHaveBeenCalledWith(
@@ -85,6 +75,8 @@ describe('LoupGarouRoleHandler', () => {
     });
 
     it('should create LOUP_GAROU victory handler', () => {
+      const victoryHandlersManager = spectator.inject(VictoryHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(victoryHandlersManager.createVictoryHandler).toHaveBeenCalledWith(
@@ -95,6 +87,7 @@ describe('LoupGarouRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove GRAND_MECHANT_LOUP round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const deadPlayer = players[0];
 
       const result = handler.handleDeath(players, deadPlayer);

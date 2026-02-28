@@ -1,18 +1,31 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
-import { MockReset } from 'ng-mocks';
-import { RustySwordStatusHandler } from './rusty-sword.status-handler';
 import { PlayerRoleEnum } from '@/types/player-role';
-import * as statusUtils from '@/utils/status.utils';
+import { PlayerStatusEnum } from '@/types/player-status';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
+import { RustySwordStatusHandler } from './rusty-sword.status-handler';
 
 describe('RustySwordStatusHandler', () => {
   let handler: RustySwordStatusHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    handler = new RustySwordStatusHandler();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
   });
 
-  afterAll(MockReset);
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    handler = spectator.runInInjectionContext(
+      () => new RustySwordStatusHandler(),
+    );
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -54,14 +67,14 @@ describe('RustySwordStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
         PlayerStatusEnum.RUSTY_SWORD,
       );
@@ -87,9 +100,9 @@ describe('RustySwordStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
@@ -116,9 +129,9 @@ describe('RustySwordStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 

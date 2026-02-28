@@ -1,17 +1,33 @@
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import * as statusUtils from '@/utils/status.utils';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
 import { firstValueFrom } from 'rxjs';
 import { SectaireRoundHandler } from './sectaire-round.handler';
 
 describe('SectaireRoundHandler', () => {
   let roundHandler: SectaireRoundHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    roundHandler = new SectaireRoundHandler();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    roundHandler = spectator.runInInjectionContext(
+      () => new SectaireRoundHandler(),
+    );
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
   });
 
   it('should be only once', () => {
@@ -74,12 +90,12 @@ describe('SectaireRoundHandler', () => {
       },
     ];
 
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockImplementation((player, status) => ({
+    playersStatusUtility.addStatusToPlayer.mockImplementation(
+      (player, status) => ({
         ...player,
         statuses: new Set([...(player.statuses || []), status]),
-      }));
+      }),
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0, 2]),
@@ -87,14 +103,14 @@ describe('SectaireRoundHandler', () => {
     expect(newPlayers[0].statuses.has(PlayerStatusEnum.BLUE_TEAM)).toEqual(
       true,
     );
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[0],
       PlayerStatusEnum.BLUE_TEAM,
     );
     expect(newPlayers[2].statuses.has(PlayerStatusEnum.BLUE_TEAM)).toEqual(
       true,
     );
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[2],
       PlayerStatusEnum.BLUE_TEAM,
     );
@@ -136,23 +152,23 @@ describe('SectaireRoundHandler', () => {
       },
     ];
 
-    jest
-      .spyOn(statusUtils, 'addStatusToPlayer')
-      .mockImplementation((player, status) => ({
+    playersStatusUtility.addStatusToPlayer.mockImplementation(
+      (player, status) => ({
         ...player,
         statuses: new Set([...(player.statuses || []), status]),
-      }));
+      }),
+    );
 
     const newPlayers = await firstValueFrom(
       roundHandler.handleAction(players, [0, 2]),
     );
     expect(newPlayers[1].statuses.has(PlayerStatusEnum.RED_TEAM)).toEqual(true);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[1],
       PlayerStatusEnum.RED_TEAM,
     );
     expect(newPlayers[3].statuses.has(PlayerStatusEnum.RED_TEAM)).toEqual(true);
-    expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+    expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
       players[3],
       PlayerStatusEnum.RED_TEAM,
     );

@@ -1,17 +1,14 @@
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { AnnouncementsQueueStore } from './announcements-queue-store';
 import { Storage } from '@/storage/storage';
+import {
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { of } from 'rxjs';
-import { TestBed } from '@angular/core/testing';
+import { AnnouncementsQueueStore } from './announcements-queue-store';
 
-describe('AnnouncementsQueueStore without storage', () => {
-  let service: AnnouncementsQueueStore;
+describe('AnnouncementsQueueStore', () => {
+  let spectator: SpectatorService<AnnouncementsQueueStore>;
   const mockState = [
     {
       header: 'header',
@@ -20,87 +17,62 @@ describe('AnnouncementsQueueStore without storage', () => {
     },
   ];
 
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(AnnouncementsQueueStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(null),
-          set: jest.fn(),
-        }) as Partial<Storage>,
-    );
+  const createService = createServiceFactory({
+    service: AnnouncementsQueueStore,
   });
 
-  beforeAll(
-    () =>
-      (service = MockRender(AnnouncementsQueueStore).point.componentInstance),
-  );
+  describe('without storage', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: vi.fn().mockReturnValue(of(null)),
+            set: vi.fn(),
+          }),
+        ],
+      });
+    });
 
-  it('should init state with default value []', () => {
-    expect(service.state()).toEqual([]);
+    it('should init state with default value []', () => {
+      expect(spectator.service.state()).toEqual([]);
+    });
+
+    it('should store new value to storage', () => {
+      spectator.service.state.set(mockState);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
+    });
+
+    it('should store new value to storage with storage key store.announcementsQueue', () => {
+      spectator.service.state.set([]);
+
+      spectator.flushEffects();
+
+      const storage = spectator.inject(Storage);
+      expect(storage.set).toHaveBeenCalledWith(
+        'store.announcementsQueue',
+        expect.anything(),
+      );
+    });
   });
 
-  it('should store new value to storage', () => {
-    service.state.set(mockState);
+  describe('with storage init', () => {
+    beforeEach(() => {
+      spectator = createService({
+        providers: [
+          mockProvider(Storage, {
+            get: vi.fn().mockReturnValue(of(mockState)),
+            set: vi.fn(),
+          }),
+        ],
+      });
+    });
 
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), mockState);
+    it('should init state with storage value', () => {
+      expect(spectator.service.state()).toEqual(mockState);
+    });
   });
-
-  it('should store new value to storage with storage key store.announcementsQueue', () => {
-    service.state.set([]);
-
-    TestBed.tick();
-
-    const storage = ngMocks.get(Storage);
-    expect(storage.set).toHaveBeenCalledWith(
-      'store.announcementsQueue',
-      expect.anything(),
-    );
-  });
-
-  afterAll(MockReset);
-});
-
-describe('AnnouncementsQueueStore with storage init', () => {
-  let service: AnnouncementsQueueStore;
-
-  const mockState = [
-    {
-      header: 'header',
-      message: 'message',
-      confirmText: 'confirmText',
-    },
-  ];
-
-  ngMocks.faster();
-
-  beforeAll(() => MockBuilder(AnnouncementsQueueStore).mock(Storage));
-
-  beforeAll(() => {
-    MockInstance(
-      Storage,
-      () =>
-        ({
-          get: (_: string) => of(mockState),
-        }) as Partial<Storage>,
-    );
-  });
-
-  beforeAll(
-    () =>
-      (service = MockRender(AnnouncementsQueueStore).point.componentInstance),
-  );
-
-  it('should init state with storage value', () => {
-    expect(service.state()).toEqual(mockState);
-  });
-
-  afterAll(MockReset);
 });

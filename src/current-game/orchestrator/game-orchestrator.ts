@@ -1,21 +1,22 @@
 import { LOUPS_GAROUS_ROUNDS } from '@/config/loups-garous-rounds';
-import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
-import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { Round, RoundEnum } from '@/types/round';
-import { Victory, VictoryEnum } from '@/types/victory';
-import { CardList } from '@/shared/types/card-list';
-import { Player } from '@/shared/types/player';
-import { RoundConfig } from '@/shared/types/round-config';
-import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
-import { DeathHandler } from '@/current-game/death/death-handler';
-import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
+import { DeathHandler } from '@/current-game/death/death-handler';
 import { CurrentRoundConfigStore } from '@/current-game/orchestrator/current-round-config/current-round-config-store';
 import { DayCountStore } from '@/current-game/orchestrator/day-count/day-count-store';
 import { NeedCleanAfterBoucStore } from '@/current-game/orchestrator/need-clean-after-bouc/need-clean-after-bouc-store';
-import { getNotPlayedRoles } from '@/utils/roles.utils';
+import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
+import { RoundHandler } from '@/game-handlers/rounds/round-handler.interface';
+import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
+import { CardChoiceStore } from '@/new-game/card-choice-store/card-choice-store';
+import { CardList } from '@/shared/types/card-list';
+import { Player } from '@/shared/types/player';
+import { RoundConfig } from '@/shared/types/round-config';
+import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { Round, RoundEnum } from '@/types/round';
+import { Victory, VictoryEnum } from '@/types/victory';
 import {
   computed,
   inject,
@@ -25,9 +26,8 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
+import { PlayersRoleUtility } from '../players/players-role-utility';
 import { RoundOrchestrator } from './round-orchestrator';
-import { VictoryHandlersManager } from '@/game-handlers/victories/victory-handlers-manager';
-import { RoleHandlersManager } from '@/game-handlers/roles/role-handlers-manager';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +40,7 @@ export class GameOrchestrator {
   private readonly deathHandler = inject(DeathHandler);
   private readonly statusHandlersManager = inject(StatusHandlersManager);
   private readonly roleHandlersManager = inject(RoleHandlersManager);
+  private readonly playersRoleUtility = inject(PlayersRoleUtility);
 
   private readonly players: WritableSignal<Player[]> =
     inject(CurrentPlayersStore).state;
@@ -117,7 +118,10 @@ export class GameOrchestrator {
 
     this.roundHandlersManager.initRequiredHandlers();
     this.victoryHandlersManager.initRequiredHandlers();
-    const notPlayedRoles = getNotPlayedRoles(players, cardList);
+    const notPlayedRoles = this.playersRoleUtility.getNotPlayedRoles(
+      players,
+      cardList,
+    );
     this.roundHandlersManager.initAsDefaultHandlers(notPlayedRoles);
     this.roleHandlersManager.initHandlers(players);
     this.statusHandlersManager.initHandlers(players);
@@ -163,7 +167,7 @@ export class GameOrchestrator {
 
     const nextHandler = this.roundHandlersManager.getHandler(nextRound);
 
-    this.handlerAfterLoupsEvents(nextHandler);
+    this.handleAfterLoupsEvents(nextHandler);
 
     nextRound = this.handleAfterNightDeaths(
       currentHandler,
@@ -234,7 +238,7 @@ export class GameOrchestrator {
 
   private handleAfterNightDeaths(
     currentHandler: RoundHandler | undefined,
-    currentRoundRole: Round,
+    currentRound: Round,
     nextHandler: RoundHandler | undefined,
     nextRound: Round,
   ): Round {
@@ -243,7 +247,7 @@ export class GameOrchestrator {
         this.players(),
       );
       this.setPlayers(playersAfterDeath);
-      return this.roundOrchestrator.getNextRound(currentRoundRole);
+      return this.roundOrchestrator.getNextRound(currentRound);
     }
     return nextRound;
   }
@@ -320,7 +324,7 @@ export class GameOrchestrator {
     }
   }
 
-  private handlerAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
+  private handleAfterLoupsEvents(nextHandler: RoundHandler | undefined): void {
     const currentRound = this.roundConfig()?.round;
     const nextRound = nextHandler?.getRoundConfig(
       this.players(),

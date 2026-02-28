@@ -1,18 +1,31 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
-import { MockReset } from 'ng-mocks';
-import { WolfTargetStatusHandler } from './wolf-target.status-handler';
 import { PlayerRoleEnum } from '@/types/player-role';
-import * as statusUtils from '@/utils/status.utils';
+import { PlayerStatusEnum } from '@/types/player-status';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
+import { WolfTargetStatusHandler } from './wolf-target.status-handler';
 
 describe('WolfTargetStatusHandler', () => {
   let handler: WolfTargetStatusHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    handler = new WolfTargetStatusHandler();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
   });
 
-  afterAll(MockReset);
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    handler = spectator.runInInjectionContext(
+      () => new WolfTargetStatusHandler(),
+    );
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -54,17 +67,15 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.DEVOURED,
       );
@@ -93,17 +104,15 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).not.toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).not.toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.DEVOURED,
       );
@@ -133,12 +142,10 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
@@ -169,17 +176,15 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.DEVOURED,
       );
@@ -205,21 +210,19 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.INJURED,
       );
-      expect(statusUtils.addStatusToPlayer).not.toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).not.toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.DEVOURED,
       );
@@ -248,17 +251,15 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.addStatusToPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.addStatusToPlayer).toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.DEVOURED,
       );
@@ -284,17 +285,15 @@ describe('WolfTargetStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'addStatusToPlayer')
-        .mockReturnValue(expectedPlayer);
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.addStatusToPlayer.mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
         expectedPlayer,
         PlayerStatusEnum.WOLF_TARGET,
       );

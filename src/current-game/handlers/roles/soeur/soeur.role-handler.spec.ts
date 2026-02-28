@@ -1,39 +1,31 @@
 import { PlayerRoleEnum } from '@/types/player-role';
 import { Player } from '@/shared/types/player';
 import { RoundHandlersManager } from '@/game-handlers/rounds/round-handlers-manager';
-import { MockReset, MockService, ngMocks } from 'ng-mocks';
 import { SoeurRoleHandler } from './soeur.role-handler';
 import { RoundEnum } from '@/types/round';
-import { TestBed } from '@angular/core/testing';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+} from '@ngneat/spectator/vitest';
 
 describe('SoeurRoleHandler', () => {
   let handler: SoeurRoleHandler;
-  let roundHandlersManager: RoundHandlersManager;
+  let spectator: SpectatorInjectionContext;
   let players: Player[];
 
-  ngMocks.faster();
+  const createContext = createInjectionContextFactory({
+    mocks: [RoundHandlersManager],
+  });
 
-  beforeAll(() => {
-    roundHandlersManager = MockService(RoundHandlersManager, {
-      createRoundHandler: jest.fn(),
-      removeHandler: jest.fn(),
-    });
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: RoundHandlersManager, useValue: roundHandlersManager },
-      ],
-    });
-
-    TestBed.runInInjectionContext(() => (handler = new SoeurRoleHandler()));
-
+  beforeEach(() => {
     players = [
       { id: 1, name: 'Player 1', role: PlayerRoleEnum.VILLAGEOIS } as Player,
       { id: 2, name: 'Player 2', role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
-  });
 
-  afterAll(MockReset);
+    spectator = createContext();
+    handler = spectator.runInInjectionContext(() => new SoeurRoleHandler());
+  });
 
   it('should create an instance', () => {
     expect(handler).toBeTruthy();
@@ -47,6 +39,8 @@ describe('SoeurRoleHandler', () => {
     });
 
     it('should create SOEURS round handler', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
+
       handler.prepareNewGame(players);
 
       expect(roundHandlersManager.createRoundHandler).toHaveBeenCalledWith(
@@ -57,6 +51,7 @@ describe('SoeurRoleHandler', () => {
 
   describe('handleDeath', () => {
     it('should remove SOEURS round handler if all SOEUR are dead', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const players: Player[] = [
         {
           id: 1,
@@ -82,6 +77,7 @@ describe('SoeurRoleHandler', () => {
     });
 
     it('should not remove SOEURS round handler if not all SOEUR are dead', () => {
+      const roundHandlersManager = spectator.inject(RoundHandlersManager);
       const players: Player[] = [
         {
           id: 1,

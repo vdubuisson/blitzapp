@@ -1,68 +1,41 @@
-import { PlayerCard } from '@/shared/components/player-card/player-card';
-import { PlayerDisplayModeEnum } from '@/shared/components/player-card/player-display-mode';
-import { PlayerRoleEnum } from '@/types/player-role';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
-import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { RoundConfig } from '@/shared/types/round-config';
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { CurrentRoundConfigStore } from '@/current-game/orchestrator/current-round-config/current-round-config-store';
 import { DayCountStore } from '@/current-game/orchestrator/day-count/day-count-store';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { PlayerCard } from '@/shared/components/player-card/player-card';
+import { PlayerCardMock } from '@/shared/components/player-card/player-card.mock';
+import { PlayerDisplayModeEnum } from '@/shared/components/player-card/player-display-mode';
+import { Player } from '@/shared/types/player';
+import { RoundConfig } from '@/shared/types/round-config';
+import { PlayerRoleEnum } from '@/types/player-role';
+import { RoundEnum } from '@/types/round';
+import { signal, WritableSignal } from '@angular/core';
 import {
-  Component,
-  WritableSignal,
-  input,
-  model,
-  output,
-  signal,
-} from '@angular/core';
-import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import CurrentGamePage from './current-game-page';
+  createComponentFactory,
+  mockProvider,
+  Spectator,
+} from '@ngneat/spectator/vitest';
+import { MockPipe } from 'ng-mocks';
 import { GameOrchestrator } from '../orchestrator/game-orchestrator';
+import CurrentGamePage from './current-game-page';
+import { RoundNamePipe } from './round-name/round-name-pipe';
 
-@Component({
-  selector: 'lgmj-player-card',
-  standalone: true,
-  template: '',
-})
-export class PlayerStubComponent {
-  readonly player = input.required<Player>();
-  readonly displayMode = input<PlayerDisplayModeEnum>(
-    PlayerDisplayModeEnum.DEFAULT,
-  );
-  readonly disabled = input(false);
-  readonly noSelfRole = input<boolean>(false);
-  readonly selectableRoles = input<PlayerRoleEnum[]>([]);
-  readonly checked = model(false);
-  readonly roleChange = output<PlayerRoleEnum>();
-}
+describe('CurrentGamePage', () => {
+  let spectator: Spectator<CurrentGamePage>;
 
-describe('GamePage', () => {
-  let component: CurrentGamePage;
+  const createComponent = createComponentFactory({
+    component: CurrentGamePage,
+    componentImports: [[PlayerCard, PlayerCardMock]],
+    imports: [MockPipe(RoundNamePipe)],
+    mocks: [GameOrchestrator],
+  });
 
   let mockPlayers: Player[];
   let mockRoundConfig: RoundConfig;
   let mockPlayers$: WritableSignal<Player[]>;
   let mockRoundConfig$: WritableSignal<RoundConfig | null>;
 
-  ngMocks.faster();
-
-  beforeAll(async () =>
-    MockBuilder(CurrentGamePage)
-      .replace(PlayerCard, PlayerStubComponent)
-      .mock(GameOrchestrator)
-      .mock(CurrentPlayersStore)
-      .mock(CurrentRoundConfigStore)
-      .mock(DayCountStore),
-  );
-
-  beforeAll(() => {
+  beforeEach(() => {
     mockPlayers = [
       {
         id: 0,
@@ -92,28 +65,31 @@ describe('GamePage', () => {
     };
     mockRoundConfig$ = signal(mockRoundConfig);
 
-    MockInstance(GameOrchestrator, () => ({
-      submitRoundAction: jest.fn(),
-    }));
-    MockInstance(CurrentPlayersStore, 'state', mockPlayers$);
-    MockInstance(CurrentRoundConfigStore, 'state', mockRoundConfig$);
-    MockInstance(DayCountStore, 'state', signal(0));
-  });
-
-  beforeEach(() => {
-    component = MockRender(CurrentGamePage).point.componentInstance;
+    spectator = createComponent({
+      providers: [
+        mockProvider(CurrentPlayersStore, {
+          state: mockPlayers$,
+        }),
+        mockProvider(CurrentRoundConfigStore, {
+          state: mockRoundConfig$,
+        }),
+        mockProvider(DayCountStore, {
+          state: signal(0),
+        }),
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(spectator.component).toBeTruthy();
   });
 
   it('should get players from GameOrchestrator', () => {
-    expect(component['players']()).toEqual(mockPlayers);
+    expect(spectator.component['players']()).toEqual(mockPlayers);
   });
 
   it('should get round from GameOrchestrator', () => {
-    expect(component['roundConfig']()).toEqual(mockRoundConfig);
+    expect(spectator.component['roundConfig']()).toEqual(mockRoundConfig);
   });
 
   it('should set playerDisplayMode as EDIT_ROLE if round type ROLES', () => {
@@ -125,7 +101,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.ROLES,
     });
-    expect(component['playerDisplayMode']()).toEqual(
+    expect(spectator.component['playerDisplayMode']()).toEqual(
       PlayerDisplayModeEnum.EDIT_ROLE,
     );
   });
@@ -139,7 +115,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    expect(component['playerDisplayMode']()).toEqual(
+    expect(spectator.component['playerDisplayMode']()).toEqual(
       PlayerDisplayModeEnum.SELECT_SINGLE,
     );
   });
@@ -153,7 +129,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    expect(component['playerDisplayMode']()).toEqual(
+    expect(spectator.component['playerDisplayMode']()).toEqual(
       PlayerDisplayModeEnum.SELECT_MULTI,
     );
   });
@@ -167,7 +143,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    expect(component['playerDisplayMode']()).toEqual(
+    expect(spectator.component['playerDisplayMode']()).toEqual(
       PlayerDisplayModeEnum.DEFAULT,
     );
   });
@@ -181,8 +157,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.ROLES,
     });
-    component['selectedRole'].set(undefined);
-    expect(component['submitDisabled']()).toEqual(true);
+    spectator.component['selectedRole'].set(undefined);
+    expect(spectator.component['submitDisabled']()).toEqual(true);
   });
 
   it('should have submit disabled if should select one and no selection', () => {
@@ -194,8 +170,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayer'].set(undefined);
-    expect(component['submitDisabled']()).toEqual(true);
+    spectator.component['selectedPlayer'].set(undefined);
+    expect(spectator.component['submitDisabled']()).toEqual(true);
   });
 
   it('should have submit disabled if should select multiple and more selected than max', () => {
@@ -207,8 +183,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['playersMultiSelection'].setSelection(0, 1, 2);
-    expect(component['submitDisabled']()).toEqual(true);
+    spectator.component['playersMultiSelection'].setSelection(0, 1, 2);
+    expect(spectator.component['submitDisabled']()).toEqual(true);
   });
 
   it('should have submit disabled if should select multiple and less selected than min', () => {
@@ -220,8 +196,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['playersMultiSelection'].setSelection(0);
-    expect(component['submitDisabled']()).toEqual(true);
+    spectator.component['playersMultiSelection'].setSelection(0);
+    expect(spectator.component['submitDisabled']()).toEqual(true);
   });
 
   it('should have submit enabled if should select one role and one selected', () => {
@@ -233,8 +209,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.ROLES,
     });
-    component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
-    expect(component['submitDisabled']()).toEqual(false);
+    spectator.component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
+    expect(spectator.component['submitDisabled']()).toEqual(false);
   });
 
   it('should have submit enabled if should select one and one selected', () => {
@@ -246,8 +222,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayer'].set(0);
-    expect(component['submitDisabled']()).toEqual(false);
+    spectator.component['selectedPlayer'].set(0);
+    expect(spectator.component['submitDisabled']()).toEqual(false);
   });
 
   it('should have submit enabled if can select one and none selected', () => {
@@ -259,8 +235,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.ROLES,
     });
-    component['selectedRole'].set(undefined);
-    expect(component['submitDisabled']()).toEqual(false);
+    spectator.component['selectedRole'].set(undefined);
+    expect(spectator.component['submitDisabled']()).toEqual(false);
   });
 
   it('should have submit enabled if can select one and none selected', () => {
@@ -272,8 +248,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['selectedPlayer'].set(undefined);
-    expect(component['submitDisabled']()).toEqual(false);
+    spectator.component['selectedPlayer'].set(undefined);
+    expect(spectator.component['submitDisabled']()).toEqual(false);
   });
 
   it('should have submit enabled if should select multiple and selected in range', () => {
@@ -285,8 +261,8 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['playersMultiSelection'].setSelection(0);
-    expect(component['submitDisabled']()).toEqual(false);
+    spectator.component['playersMultiSelection'].setSelection(0);
+    expect(spectator.component['submitDisabled']()).toEqual(false);
   });
 
   it('should have submit enabled if should select none', () => {
@@ -298,7 +274,7 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    expect(component['submitDisabled']()).toEqual(false);
+    expect(spectator.component['submitDisabled']()).toEqual(false);
   });
 
   it('should select role', () => {
@@ -310,9 +286,11 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.ROLES,
     });
-    component['onRoleSelect'](PlayerRoleEnum.LOUP_GAROU);
+    spectator.component['onRoleSelect'](PlayerRoleEnum.LOUP_GAROU);
 
-    expect(component['selectedRole']()).toEqual(PlayerRoleEnum.LOUP_GAROU);
+    expect(spectator.component['selectedRole']()).toEqual(
+      PlayerRoleEnum.LOUP_GAROU,
+    );
   });
 
   it('should single select player', () => {
@@ -324,9 +302,9 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['onPlayerChecked'](0, true);
+    spectator.component['onPlayerChecked'](0, true);
 
-    expect(component['selectedPlayer']()).toEqual(0);
+    expect(spectator.component['selectedPlayer']()).toEqual(0);
   });
 
   it('should multi select player', () => {
@@ -338,9 +316,9 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['onPlayerChecked'](0, true);
+    spectator.component['onPlayerChecked'](0, true);
 
-    expect(component['selectedPlayers']().has(0)).toEqual(true);
+    expect(spectator.component['selectedPlayers']().has(0)).toEqual(true);
   });
 
   it('should multi unselect player', () => {
@@ -352,19 +330,19 @@ describe('GamePage', () => {
       isDuringDay: false,
       type: RoundTypeEnum.DEFAULT,
     });
-    component['playersMultiSelection'].setSelection(0);
-    component['onPlayerChecked'](0, false);
+    spectator.component['playersMultiSelection'].setSelection(0);
+    spectator.component['onPlayerChecked'](0, false);
 
-    expect(component['selectedPlayers']().has(0)).toEqual(false);
+    expect(spectator.component['selectedPlayers']().has(0)).toEqual(false);
   });
 
   it('should submit selectedRole to GameOrchestrator on submit', () => {
-    component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
+    spectator.component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
 
-    component['onSubmit']();
+    spectator.component['onSubmit']();
 
     const submitRoundActionSpy =
-      ngMocks.get(GameOrchestrator).submitRoundAction;
+      spectator.inject(GameOrchestrator).submitRoundAction;
     expect(submitRoundActionSpy).toHaveBeenCalledWith(
       [],
       PlayerRoleEnum.LOUP_GAROU,
@@ -372,47 +350,47 @@ describe('GamePage', () => {
   });
 
   it('should submit selectedPlayer to GameOrchestrator on submit if SELECT_SINGLE', () => {
-    component['selectedPlayer'].set(0);
+    spectator.component['selectedPlayer'].set(0);
 
-    component['onSubmit']();
+    spectator.component['onSubmit']();
 
     const submitRoundActionSpy =
-      ngMocks.get(GameOrchestrator).submitRoundAction;
+      spectator.inject(GameOrchestrator).submitRoundAction;
     expect(submitRoundActionSpy).toHaveBeenCalledWith([0], undefined);
   });
 
   it('should submit selectedPlayers to GameOrchestrator on submit if SELECT_MULTI', () => {
-    component['playersMultiSelection'].setSelection(0, 1);
+    spectator.component['playersMultiSelection'].setSelection(0, 1);
 
-    component['onSubmit']();
+    spectator.component['onSubmit']();
 
     const submitRoundActionSpy =
-      ngMocks.get(GameOrchestrator).submitRoundAction;
+      spectator.inject(GameOrchestrator).submitRoundAction;
     expect(submitRoundActionSpy).toHaveBeenCalledWith([0, 1], undefined);
   });
 
   it('should reset selectedRole after submit', () => {
-    component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
+    spectator.component['selectedRole'].set(PlayerRoleEnum.LOUP_GAROU);
 
-    component['onSubmit']();
+    spectator.component['onSubmit']();
 
-    expect(component['selectedRole']()).toEqual(undefined);
+    expect(spectator.component['selectedRole']()).toEqual(undefined);
   });
 
   it('should reset selectedPlayer after submit', () => {
-    component['selectedPlayer'].set(0);
+    spectator.component['selectedPlayer'].set(0);
 
-    component['onSubmit']();
+    spectator.component['onSubmit']();
 
-    expect(component['selectedPlayer']()).toEqual(undefined);
+    expect(spectator.component['selectedPlayer']()).toEqual(undefined);
   });
 
   it('should reset selectedPlayers after submit', () => {
-    component['playersMultiSelection'].setSelection(0, 1);
+    spectator.component['playersMultiSelection'].setSelection(0, 1);
 
-    component['onSubmit']();
+    spectator.component['onSubmit']();
 
-    expect(component['selectedPlayers']().size).toEqual(0);
+    expect(spectator.component['selectedPlayers']().size).toEqual(0);
   });
 
   it('should display equality button if VILLAGEOIS round and BOUC alive', () => {
@@ -436,7 +414,7 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
 
-    expect(component['displayEqualityButton']()).toEqual(true);
+    expect(spectator.component['displayEqualityButton']()).toEqual(true);
   });
 
   it('should not display equality button if VILLAGEOIS round and BOUC dead', () => {
@@ -460,7 +438,7 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
 
-    expect(component['displayEqualityButton']()).toEqual(false);
+    expect(spectator.component['displayEqualityButton']()).toEqual(false);
   });
 
   it('should not display equality button if not VILLAGEOIS round and BOUC alive', () => {
@@ -484,7 +462,7 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
 
-    expect(component['displayEqualityButton']()).toEqual(false);
+    expect(spectator.component['displayEqualityButton']()).toEqual(false);
   });
 
   it('should not display equality button if VILLAGEOIS round and no BOUC', () => {
@@ -508,14 +486,14 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
 
-    expect(component['displayEqualityButton']()).toEqual(false);
+    expect(spectator.component['displayEqualityButton']()).toEqual(false);
   });
 
   it('should submit equality on equality', () => {
-    component['onEquality']();
+    spectator.component['onEquality']();
 
     const submitRoundActionSpy =
-      ngMocks.get(GameOrchestrator).submitRoundAction;
+      spectator.inject(GameOrchestrator).submitRoundAction;
     expect(submitRoundActionSpy).toHaveBeenCalledWith([], undefined, true);
   });
 
@@ -529,7 +507,7 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
 
-    expect(component['isBeforeGame']()).toEqual(true);
+    expect(spectator.component['isBeforeGame']()).toEqual(true);
   });
 
   it('should not be beforeGame if round is not SECTAIRE', () => {
@@ -542,8 +520,6 @@ describe('GamePage', () => {
       type: RoundTypeEnum.DEFAULT,
     });
 
-    expect(component['isBeforeGame']()).toEqual(false);
+    expect(spectator.component['isBeforeGame']()).toEqual(false);
   });
-
-  afterAll(MockReset);
 });

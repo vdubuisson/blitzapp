@@ -1,9 +1,6 @@
 import { PlayerStatusEnum } from '@/types/player-status';
 import { PlayerStatusIconPipe } from './player-status-icon-pipe';
-
-jest.mock('./status-icons', () => ({
-  STATUS_ICONS: { [PlayerStatusEnum.WOLF_TARGET]: 'Test' },
-}));
+import { STATUS_ICONS } from './status-icons';
 
 describe('PlayerStatusIconPipe', () => {
   let pipe: PlayerStatusIconPipe;
@@ -18,6 +15,6 @@ describe('PlayerStatusIconPipe', () => {
 
   it('should display value for requested enum', () => {
     const name = pipe.transform(PlayerStatusEnum.WOLF_TARGET);
-    expect(name).toEqual('Test');
+    expect(name).toEqual(STATUS_ICONS[PlayerStatusEnum.WOLF_TARGET]);
   });
 });

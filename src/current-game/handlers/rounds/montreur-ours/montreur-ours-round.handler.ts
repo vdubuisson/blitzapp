@@ -1,18 +1,20 @@
 import { AnnouncementTypesEnum } from '@/current-game/announcements/announcement-types';
+import { Announcer } from '@/current-game/announcements/announcer';
+import { NeighborFinder } from '@/current-game/players/neighbor-finder';
+import { PlayersRoleUtility } from '@/current-game/players/players-role-utility';
+import { DefaultRoundHandler } from '@/game-handlers/rounds/default/default-round.handler';
+import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { RoundTypeEnum } from '@/game-handlers/rounds/round-type';
 import { RoundEnum } from '@/types/round';
-import { Player } from '@/shared/types/player';
-import { DefaultRoundHandler } from '@/game-handlers/rounds/default/default-round.handler';
-import { Announcer } from '@/current-game/announcements/announcer';
-import { findLeftNeighbor, findRightNeighbor } from '@/utils/neighbor.utils';
-import { isLoupGarou } from '@/utils/roles.utils';
 import { inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 export class MontreurOursRoundHandler extends DefaultRoundHandler {
   private readonly announcer = inject(Announcer);
+  private readonly neighborFinder = inject(NeighborFinder);
+  private readonly playersRoleUtility = inject(PlayersRoleUtility);
 
   constructor() {
     super(RoundEnum.MONTREUR_OURS, false, true, RoundTypeEnum.AUTO);
@@ -29,14 +31,20 @@ export class MontreurOursRoundHandler extends DefaultRoundHandler {
         return of([...players]);
       }
 
-      const leftPlayer = findLeftNeighbor(players, montreurOursIndex) as Player;
-      if (isLoupGarou(leftPlayer)) {
+      const leftPlayer = this.neighborFinder.findLeftNeighbor(
+        players,
+        montreurOursIndex,
+      ) as Player;
+      if (this.playersRoleUtility.isLoupGarou(leftPlayer)) {
         this.announcer.announce(AnnouncementTypesEnum.BEAR_GROWL);
         return of([...players]);
       }
 
-      const rightPlayer = findRightNeighbor(players, montreurOursIndex);
-      if (isLoupGarou(rightPlayer)) {
+      const rightPlayer = this.neighborFinder.findRightNeighbor(
+        players,
+        montreurOursIndex,
+      ) as Player;
+      if (this.playersRoleUtility.isLoupGarou(rightPlayer)) {
         this.announcer.announce(AnnouncementTypesEnum.BEAR_GROWL);
       }
     }

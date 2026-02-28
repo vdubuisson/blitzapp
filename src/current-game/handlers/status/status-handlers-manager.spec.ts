@@ -1,52 +1,48 @@
+import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
+import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { Player } from '@/shared/types/player';
-import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { signal } from '@angular/core';
 import {
-  MockBuilder,
-  MockInstance,
-  MockRender,
-  MockReset,
-  ngMocks,
-} from 'ng-mocks';
-import { StatusHandlersManager } from './status-handlers-manager';
-import { StatusHandler } from './status-handler.interface';
-import { WolfTargetStatusHandler } from './wolf-target/wolf-target.status-handler';
+  createServiceFactory,
+  mockProvider,
+  SpectatorService,
+} from '@ngneat/spectator/vitest';
 import { DefaultStatusHandler } from './default/default.status-handler';
+import { StatusHandler } from './status-handler.interface';
+import { StatusHandlersManager } from './status-handlers-manager';
+import { WolfTargetStatusHandler } from './wolf-target/wolf-target.status-handler';
 
 describe('StatusHandlersManager', () => {
-  ngMocks.faster();
-  let service: StatusHandlersManager;
+  let spectator: SpectatorService<StatusHandlersManager>;
 
-  beforeAll(() => MockBuilder(StatusHandlersManager).mock(CurrentPlayersStore));
-
-  beforeAll(() => {
-    MockInstance(CurrentPlayersStore, 'state', signal<Player[]>([]));
-  });
-
-  beforeAll(() => {
-    service = MockRender(StatusHandlersManager).point.componentInstance;
+  const createService = createServiceFactory({
+    service: StatusHandlersManager,
+    providers: [
+      mockProvider(CurrentPlayersStore, {
+        state: signal<Player[]>([]),
+      }),
+    ],
   });
 
   beforeEach(() => {
-    service['statusHandlers'].clear();
+    spectator = createService();
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(spectator.service).toBeTruthy();
   });
 
   it('should clear handlers', () => {
-    service['statusHandlers'].set(
+    spectator.service['statusHandlers'].set(
       PlayerStatusEnum.WOLF_TARGET,
       {} as unknown as StatusHandler,
     );
-    expect(service['statusHandlers'].size).toBe(1);
+    expect(spectator.service['statusHandlers'].size).toBe(1);
 
-    service.clearHandlers();
+    spectator.service.clearHandlers();
 
-    expect(service['statusHandlers'].size).toBe(0);
+    expect(spectator.service['statusHandlers'].size).toBe(0);
   });
 
   it('should initialize WOLF_TARGET handler if role present', () => {
@@ -54,28 +50,33 @@ describe('StatusHandlersManager', () => {
       { id: 1, role: PlayerRoleEnum.LOUP_GAROU } as Player,
     ];
 
-    service.initHandlers(players);
+    spectator.service.initHandlers(players);
 
     expect(
-      service['statusHandlers'].get(PlayerStatusEnum.WOLF_TARGET),
+      spectator.service['statusHandlers'].get(PlayerStatusEnum.WOLF_TARGET),
     ).toBeInstanceOf(WolfTargetStatusHandler);
   });
 
   it('should not initialize WOLF_TARGET handler if role not present', () => {
     const players: Player[] = [];
 
-    service.initHandlers(players);
+    spectator.service.initHandlers(players);
 
-    expect(service['statusHandlers'].has(PlayerStatusEnum.WOLF_TARGET)).toBe(
-      false,
-    );
+    expect(
+      spectator.service['statusHandlers'].has(PlayerStatusEnum.WOLF_TARGET),
+    ).toBe(false);
   });
 
-  it('should return WOLF_TARGET handler', () => {
-    const statusHandler = new WolfTargetStatusHandler();
-    service['statusHandlers'].set(PlayerStatusEnum.WOLF_TARGET, statusHandler);
+  it('should return already initialized handler', () => {
+    const statusHandler = new DefaultStatusHandler();
+    spectator.service['statusHandlers'].set(
+      PlayerStatusEnum.WOLF_TARGET,
+      statusHandler,
+    );
 
-    const testHandler = service.getHandler(PlayerStatusEnum.WOLF_TARGET);
+    const testHandler = spectator.service.getHandler(
+      PlayerStatusEnum.WOLF_TARGET,
+    );
     expect(testHandler).toBe(statusHandler);
   });
 
@@ -84,18 +85,16 @@ describe('StatusHandlersManager', () => {
       { id: 1, role: PlayerRoleEnum.SORCIERE } as Player,
     ];
 
-    service.initHandlers(players);
+    spectator.service.initHandlers(players);
 
-    const healthPotionHandler = service.getHandler(
+    const healthPotionHandler = spectator.service.getHandler(
       PlayerStatusEnum.HEALTH_POTION,
     );
-    const deaththPotionHandler = service.getHandler(
+    const deaththPotionHandler = spectator.service.getHandler(
       PlayerStatusEnum.DEATH_POTION,
     );
 
     expect(healthPotionHandler).toBeInstanceOf(DefaultStatusHandler);
     expect(healthPotionHandler).toBe(deaththPotionHandler);
   });
-
-  afterAll(MockReset);
 });

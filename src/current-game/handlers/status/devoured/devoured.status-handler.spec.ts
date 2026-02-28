@@ -1,14 +1,30 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
-import { DevouredStatusHandler } from './devoured.status-handler';
 import { PlayerRoleEnum } from '@/types/player-role';
-import * as statusUtils from '@/utils/status.utils';
+import { PlayerStatusEnum } from '@/types/player-status';
+import {
+  createInjectionContextFactory,
+  SpectatorInjectionContext,
+  SpyObject,
+} from '@ngneat/spectator/vitest';
+import { DevouredStatusHandler } from './devoured.status-handler';
 
 describe('DevouredStatusHandler', () => {
   let handler: DevouredStatusHandler;
+  let spectator: SpectatorInjectionContext;
 
-  beforeAll(() => {
-    handler = new DevouredStatusHandler();
+  let playersStatusUtility: SpyObject<PlayersStatusUtility>;
+
+  const createInjectionContext = createInjectionContextFactory({
+    mocks: [PlayersStatusUtility],
+  });
+
+  beforeEach(() => {
+    spectator = createInjectionContext();
+    handler = spectator.runInInjectionContext(
+      () => new DevouredStatusHandler(),
+    );
+    playersStatusUtility = spectator.inject(PlayersStatusUtility);
   });
 
   it('should create an instance', () => {
@@ -51,9 +67,9 @@ describe('DevouredStatusHandler', () => {
         },
       ];
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
@@ -82,14 +98,14 @@ describe('DevouredStatusHandler', () => {
       ];
 
       const expectedPlayer = { ...mockPlayers[1] };
-      jest
-        .spyOn(statusUtils, 'removeStatusFromPlayer')
-        .mockReturnValue(expectedPlayer);
+      playersStatusUtility.removeStatusFromPlayer.mockReturnValue(
+        expectedPlayer,
+      );
 
       const newPlayers = handler.triggerAction(mockPlayers);
 
       expect(newPlayers[1]).toBe(expectedPlayer);
-      expect(statusUtils.removeStatusFromPlayer).toHaveBeenCalledWith(
+      expect(playersStatusUtility.removeStatusFromPlayer).toHaveBeenCalledWith(
         mockPlayers[1],
         PlayerStatusEnum.DEVOURED,
       );

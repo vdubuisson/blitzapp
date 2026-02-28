@@ -1,9 +1,6 @@
 import { RoundEnum } from '@/types/round';
 import { RoundNamePipe } from './round-name-pipe';
-
-jest.mock('@/texts/round-names', () => ({
-  ROUND_NAMES: { [RoundEnum.VILLAGEOIS]: 'Test' },
-}));
+import { ROUND_NAMES } from '@/texts/round-names';
 
 describe('RoundNamePipe', () => {
   let pipe: RoundNamePipe;
@@ -18,6 +15,6 @@ describe('RoundNamePipe', () => {
 
   it('should display value for requested round', () => {
     const name = pipe.transform(RoundEnum.VILLAGEOIS);
-    expect(name).toEqual('Test');
+    expect(name).toEqual(ROUND_NAMES[RoundEnum.VILLAGEOIS]);
   });
 });

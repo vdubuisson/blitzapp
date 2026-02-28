@@ -1,11 +1,14 @@
-import { PlayerRoleEnum } from '@/types/player-role';
-import { DefaultRoleHandler } from '../default/default.role-handler';
 import { ROLE_METADATA_CONFIG } from '@/config/role-metadata';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
+import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
-import { removeStatusFromPlayersById } from '@/utils/status.utils';
+import { inject } from '@angular/core';
+import { DefaultRoleHandler } from '../default/default.role-handler';
 
 export class CorbeauRoleHandler extends DefaultRoleHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   constructor() {
     super(
       PlayerRoleEnum.CORBEAU,
@@ -19,9 +22,11 @@ export class CorbeauRoleHandler extends DefaultRoleHandler {
     )?.id;
 
     if (playerWithStatusId !== undefined) {
-      return removeStatusFromPlayersById(players, PlayerStatusEnum.RAVEN, [
-        playerWithStatusId,
-      ]);
+      return this.playersStatusUtility.removeStatusFromPlayersById(
+        players,
+        PlayerStatusEnum.RAVEN,
+        [playerWithStatusId],
+      );
     }
 
     return players;

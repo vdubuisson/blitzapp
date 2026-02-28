@@ -1,9 +1,12 @@
-import { PlayerStatusEnum } from '@/types/player-status';
+import { PlayersStatusUtility } from '@/current-game/players/players-status-utility';
 import { Player } from '@/shared/types/player';
+import { PlayerStatusEnum } from '@/types/player-status';
+import { inject } from '@angular/core';
 import { DefaultStatusHandler } from '../default/default.status-handler';
-import { removeStatusFromPlayer } from '@/utils/status.utils';
 
 export class DevouredStatusHandler extends DefaultStatusHandler {
+  private readonly playersStatusUtility = inject(PlayersStatusUtility);
+
   /**
    * Triggers the action for the "DEVOURED" status.
    *
@@ -13,7 +16,7 @@ export class DevouredStatusHandler extends DefaultStatusHandler {
   override triggerAction(players: Player[]): Player[] {
     return players.map((player) => {
       if (player.statuses.has(PlayerStatusEnum.DEVOURED)) {
-        const newPlayer = removeStatusFromPlayer(
+        const newPlayer = this.playersStatusUtility.removeStatusFromPlayer(
           player,
           PlayerStatusEnum.DEVOURED,
         );

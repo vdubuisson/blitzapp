@@ -1,13 +1,20 @@
+import { RouterLink } from '@angular/router';
+import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
+import { MockDirective } from 'ng-mocks';
 import HomePage from './home-page';
 
 describe('HomePage', () => {
-  let page: HomePage;
+  let spectator: Spectator<HomePage>;
+  const createComponent = createComponentFactory({
+    component: HomePage,
+    imports: [MockDirective(RouterLink)],
+  });
 
   beforeEach(() => {
-    page = new HomePage();
+    spectator = createComponent();
   });
 
   it('should create page', () => {
-    expect(page).toBeTruthy();
+    expect(spectator).toBeTruthy();
   });
 });

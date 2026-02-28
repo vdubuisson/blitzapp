@@ -8,9 +8,9 @@ import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatusEnum } from '@/types/player-status';
 import { Round } from '@/types/round';
-import { isKilledByInnocents } from '@/utils/roles.utils';
 import { inject, Injectable } from '@angular/core';
 import { StatusHandlersManager } from '../handlers/status/status-handlers-manager';
+import { PlayersRoleUtility } from '../players/players-role-utility';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +19,7 @@ export class DeathHandler {
   private readonly announcer = inject(Announcer);
   private readonly roleHandlersManager = inject(RoleHandlersManager);
   private readonly statusHandlersManager = inject(StatusHandlersManager);
+  private readonly playersRoleUtility = inject(PlayersRoleUtility);
 
   private readonly knownDeaths = inject(KnownDeathsStore).state;
   private readonly deathsToAnnounce = inject(DeathsToAnnounceStore).state;
@@ -92,7 +93,7 @@ export class DeathHandler {
       );
       if (
         deadAncienPlayer !== undefined &&
-        isKilledByInnocents(deadAncienPlayer)
+        this.playersRoleUtility.isKilledByInnocents(deadAncienPlayer)
       ) {
         this.announcer.announce(
           AnnouncementTypesEnum.ANCIEN_KILLED_BY_INNOCENTS,
