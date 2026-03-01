@@ -9,6 +9,7 @@
     <ng-content select="[header]" />
     <fa-icon
       class="accordion-item-indicator"
+      [class.no-margin]="noIndicatorMargin()"
       [icon]="expanded ? openedIcon : closedIcon"
     />
   </header>

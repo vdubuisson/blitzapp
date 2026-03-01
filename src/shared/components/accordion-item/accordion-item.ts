@@ -18,4 +18,6 @@ export class AccordionItem extends CdkAccordionItem {
   readonly noInnerPadding = input(false);
 
   readonly headerColor = input<'light' | 'none'>('none');
+
+  readonly noIndicatorMargin = input(false);
 }
