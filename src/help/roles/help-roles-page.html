@@ -1,6 +1,6 @@
 <cdk-accordion>
   @for (role of roles; track role) {
-  <lgmj-accordion-item data-testid="accordion-item">
+  <lgmj-accordion-item [noIndicatorMargin]="true" data-testid="accordion-item">
     <ng-container header>
       <img
         [ngSrc]="role | playerRoleImage"
@@ -10,6 +10,12 @@
         class="role-img"
       />
       <span class="role-name">{{ role | playerRoleName }}</span>
+      <fa-icon
+        class="expand-icon"
+        [icon]="expandIcon"
+        (click)="showRoleCard(role, $event)"
+        data-testid="expand-btn"
+      />
     </ng-container>
     <span class="rule" [innerText]="rules[role]"></span>
   </lgmj-accordion-item>

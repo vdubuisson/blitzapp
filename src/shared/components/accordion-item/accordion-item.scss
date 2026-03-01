@@ -11,6 +11,10 @@ header {
 
   .accordion-item-indicator {
     margin-left: auto;
+
+    &.no-margin {
+      margin-left: 0;
+    }
   }
 }
 
