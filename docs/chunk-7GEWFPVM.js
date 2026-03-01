@@ -1,0 +1,1 @@
+import"./chunk-2NFLSA4Y.js";var t=[{path:"roles",title:"R\xE8gles des r\xF4les",loadComponent:()=>import("./chunk-2D7FPTQP.js")},{path:"status",title:"L\xE9gende des statuts",loadComponent:()=>import("./chunk-WNRGLFU5.js")},{path:"",pathMatch:"full",redirectTo:"roles"}],e=t;export{e as default};
