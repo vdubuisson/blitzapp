@@ -5,9 +5,11 @@
 			"args": [
 				"-y",
 				"@angular/cli",
-				"mcp"
-			],
-			"type": "stdio"
+				"mcp",
+				"-E",
+				"build",
+				"modernize",
+			]
 		},
 		"context7": {
 			"url": "https://mcp.context7.com/mcp",
