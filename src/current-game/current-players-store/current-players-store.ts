@@ -10,7 +10,7 @@ export class CurrentPlayersStore extends AbstractStore<
   StoredPlayer[]
 > {
   constructor() {
-    super('store.currentPlayers', []);
+    super('currentPlayers', []);
   }
 
   protected override convertStateToStored(state: Player[]): StoredPlayer[] {

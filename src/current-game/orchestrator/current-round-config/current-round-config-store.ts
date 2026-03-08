@@ -10,6 +10,6 @@ export class CurrentRoundConfigStore extends AbstractStore<
   RoundConfig | null
 > {
   constructor() {
-    super('store.currentRoundConfig', null);
+    super('currentRoundConfig', null);
   }
 }

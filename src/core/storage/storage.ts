@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
-import { from, map, Observable } from 'rxjs';
+import { from, map, Observable, switchMap } from 'rxjs';
 
 type StorageActionType = 'SET' | 'REMOVE';
 
@@ -46,7 +46,15 @@ export class Storage {
     }
   }
 
-  clear(): Observable<void> {
+  clear(prefix?: string): Observable<void | void[]> {
+    if (prefix) {
+      return from(Preferences.keys()).pipe(
+        map(({ keys }) => keys.filter((key) => key.startsWith(prefix))),
+        switchMap((keys) =>
+          from(Promise.all(keys.map((key) => Preferences.remove({ key })))),
+        ),
+      );
+    }
     return from(Preferences.clear());
   }
 

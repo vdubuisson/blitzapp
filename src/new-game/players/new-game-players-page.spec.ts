@@ -5,17 +5,14 @@ import { NewPlayerMock } from '@/new-game/players/new-player/new-player.mock';
 import { CardList } from '@/shared/types/card-list';
 import { Player } from '@/shared/types/player';
 import { PlayerRoleEnum } from '@/types/player-role';
+import { EMPTY, of, Subject } from 'rxjs';
 import {
   CdkDrag,
   CdkDragDrop,
   CdkDragHandle,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
-import {
-  provideZonelessChangeDetection,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import {
@@ -25,15 +22,20 @@ import {
 } from '@ngneat/spectator/vitest';
 import { MockComponents, MockDirectives } from 'ng-mocks';
 import NewGamePlayersPage from './new-game-players-page';
+import { PlayersGroupStorage } from '@/players-group/players-group-storage';
+import { ModalManager } from '@/layout/modal/modal-manager';
+import { SelectOverlayManager } from '@/layout/select-overlay/select-overlay-manager';
+import { PlayersGroup } from '@/players-group/players-group';
 
-describe('NewGamePage', () => {
+describe('NewGamePlayersPage', () => {
   let spectator: Spectator<NewGamePlayersPage>;
   let mockPlayers$: WritableSignal<Player[]>;
   let mockCardList: WritableSignal<CardList>;
+  let mockPlayersGroups: WritableSignal<PlayersGroup[]>;
 
   const createComponent = createComponentFactory({
     component: NewGamePlayersPage,
-    providers: [provideZonelessChangeDetection()],
+    mocks: [ModalManager, SelectOverlayManager],
     componentImports: [[NewPlayer, NewPlayerMock]],
     imports: [
       ...MockComponents(FaIconComponent),
@@ -44,6 +46,7 @@ describe('NewGamePage', () => {
   beforeEach(() => {
     mockPlayers$ = signal([]);
     mockCardList = signal({ playersNumber: 0 } as CardList);
+    mockPlayersGroups = signal([]);
 
     spectator = createComponent({
       providers: [
@@ -52,9 +55,13 @@ describe('NewGamePage', () => {
           addPlayer: vi.fn(),
           removePlayer: vi.fn(),
           reorderPlayers: vi.fn(),
+          loadPlayersGroup: vi.fn(),
         }),
         mockProvider(CardChoiceStore, {
           state: mockCardList,
+        }),
+        mockProvider(PlayersGroupStorage, {
+          getGroups: () => mockPlayersGroups.asReadonly(),
         }),
       ],
     });
@@ -166,5 +173,117 @@ describe('NewGamePage', () => {
     spectator.component['reorderPlayer'](mockEvent);
 
     expect(newGameCreator.reorderPlayers).toHaveBeenCalledWith(0, 2);
+  });
+
+  describe('openGroupsOverlay', () => {
+    it('should open overlay with mapped groups options', () => {
+      const groups: PlayersGroup[] = [
+        { id: 'group1', name: 'Group 1', playersNames: ['a'] },
+        { id: 'group2', name: 'Group 2', playersNames: ['b'] },
+      ];
+      mockPlayersGroups.set(groups);
+
+      const selectOverlayManager = spectator.inject(SelectOverlayManager);
+      (selectOverlayManager as any).selectedValue = EMPTY;
+
+      spectator.component['openGroupsOverlay']();
+
+      expect(selectOverlayManager.openOverlay).toHaveBeenCalledWith({
+        header: 'Charger un groupe de joueurs',
+        options: [
+          { value: 'group1', label: 'Group 1' },
+          { value: 'group2', label: 'Group 2' },
+        ],
+      });
+    });
+
+    it('should load players group when a group id is selected', () => {
+      const groups: PlayersGroup[] = [
+        { id: 'group1', name: 'Group 1', playersNames: ['a'] },
+      ];
+      mockPlayersGroups.set(groups);
+
+      const selectOverlayManager = spectator.inject(SelectOverlayManager);
+      const subject = new Subject<string | undefined>();
+      (selectOverlayManager as any).selectedValue = subject.asObservable();
+
+      const newGameCreator = spectator.inject(NewGameCreator);
+
+      spectator.component['openGroupsOverlay']();
+      subject.next('group1');
+
+      expect(newGameCreator.loadPlayersGroup).toHaveBeenCalledWith(groups[0]);
+    });
+
+    it('should not load players group when undefined is selected', () => {
+      const groups: PlayersGroup[] = [
+        { id: 'group1', name: 'Group 1', playersNames: ['a'] },
+      ];
+      mockPlayersGroups.set(groups);
+
+      const selectOverlayManager = spectator.inject(SelectOverlayManager);
+      const subject = new Subject<string | undefined>();
+      (selectOverlayManager as any).selectedValue = subject.asObservable();
+
+      const newGameCreator = spectator.inject(NewGameCreator);
+
+      spectator.component['openGroupsOverlay']();
+      subject.next(undefined);
+
+      expect(newGameCreator.loadPlayersGroup).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('openGroupsForm', () => {
+    it('should show text form modal with initial value based on groups count', () => {
+      mockPlayersGroups.set([{ id: 'g1', name: 'Group 1', playersNames: [] }]);
+
+      const modalManager = spectator.inject(ModalManager);
+      modalManager.showTextFormModal.mockReturnValue(EMPTY);
+
+      spectator.component['openGroupsForm']();
+
+      expect(modalManager.showTextFormModal).toHaveBeenCalledWith({
+        header: 'Nom du groupe',
+        initialValue: 'Groupe 2',
+      });
+    });
+
+    it('should add players group with current players names when name is provided', () => {
+      const mockPlayersList: Player[] = [
+        {
+          id: 0,
+          name: 'player0',
+          role: PlayerRoleEnum.VILLAGEOIS,
+          card: PlayerRoleEnum.VILLAGEOIS,
+          statuses: new Set(),
+          isDead: false,
+        },
+      ];
+      mockPlayers$.set(mockPlayersList);
+
+      const modalManager = spectator.inject(ModalManager);
+      modalManager.showTextFormModal.mockReturnValue(of('My Group'));
+
+      const playersGroupStorage = spectator.inject(PlayersGroupStorage);
+
+      spectator.component['openGroupsForm']();
+
+      expect(playersGroupStorage.addGroup).toHaveBeenCalledWith({
+        name: 'My Group',
+        playersNames: ['player0'],
+      });
+    });
+
+    it('should not add players group when form is cancelled', () => {
+      const modalManager = spectator.inject(ModalManager);
+      modalManager.showTextFormModal.mockReturnValue(of(undefined));
+
+      const playersGroupStorage = spectator.inject(PlayersGroupStorage);
+
+      spectator.component['openGroupsForm']();
+
+      expect(playersGroupStorage.addGroup).not.toHaveBeenCalled();
+    });
   });
 });

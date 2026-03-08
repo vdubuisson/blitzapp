@@ -9,6 +9,8 @@ import {
 import { first, Subject } from 'rxjs';
 
 export abstract class AbstractStore<StateType, StoredType> {
+  public static readonly STORAGE_KEY_PREFIX = 'store.';
+
   private readonly storage = inject(Storage);
   private readonly injector = inject(Injector);
 
@@ -35,7 +37,7 @@ export abstract class AbstractStore<StateType, StoredType> {
 
   private initFromStorage(): void {
     this.storage
-      .get<StoredType>(this.storageKey)
+      .get<StoredType>(this.storageKeyWithPrefix)
       .pipe(first())
       .subscribe((state) => {
         if (state !== null && state !== undefined) {
@@ -51,10 +53,14 @@ export abstract class AbstractStore<StateType, StoredType> {
     effect(
       () =>
         this.storage.set(
-          this.storageKey,
+          this.storageKeyWithPrefix,
           this.convertStateToStored(this.state()),
         ),
       { injector: this.injector },
     );
+  }
+
+  private get storageKeyWithPrefix(): string {
+    return `${AbstractStore.STORAGE_KEY_PREFIX}${this.storageKey}`;
   }
 }

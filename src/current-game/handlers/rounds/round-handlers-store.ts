@@ -7,7 +7,7 @@ import { AbstractStore } from '../../../core/storage/abstract-store';
 })
 export class RoundHandlersStore extends AbstractStore<Set<Round>, Round[]> {
   constructor() {
-    super('store.roundHandlers', new Set());
+    super('roundHandlers', new Set());
   }
 
   protected override convertStateToStored(state: Set<Round>): Round[] {

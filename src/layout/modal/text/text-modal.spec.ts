@@ -4,7 +4,7 @@ import { createComponentFactory, Spectator } from '@ngneat/spectator/vitest';
 import { MockComponent } from 'ng-mocks';
 import { TextModal } from './text-modal';
 
-describe('TextModalComponent', () => {
+describe('TextModal', () => {
   let spectator: Spectator<TextModal>;
   const createComponent = createComponentFactory({
     component: TextModal,

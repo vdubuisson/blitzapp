@@ -6,6 +6,6 @@ import { AbstractStore } from '../../../core/storage/abstract-store';
 })
 export class DayCountStore extends AbstractStore<number, number> {
   constructor() {
-    super('store.dayCount', 1);
+    super('dayCount', 1);
   }
 }

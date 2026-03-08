@@ -7,6 +7,7 @@ import {
 } from '@ngneat/spectator/vitest';
 import { of } from 'rxjs';
 import OptionsPage from './options.page';
+import { AbstractStore } from '@/storage/abstract-store';
 
 describe('OptionsPage', () => {
   let spectator: Spectator<OptionsPage>;
@@ -19,7 +20,7 @@ describe('OptionsPage', () => {
     spectator = createComponent();
   });
 
-  it('should clear storage', () => {
+  it('should clear stores', () => {
     const modalManager = spectator.inject(ModalManager);
     modalManager.showTextModal.mockReturnValue(of(true));
     const storage = spectator.inject(Storage);
@@ -27,6 +28,8 @@ describe('OptionsPage', () => {
 
     spectator.click(byTestId('clear-button'));
 
-    expect(storage.clear).toHaveBeenCalled();
+    expect(storage.clear).toHaveBeenCalledWith(
+      AbstractStore.STORAGE_KEY_PREFIX,
+    );
   });
 });

@@ -7,7 +7,7 @@ import { AbstractStore } from '../../core/storage/abstract-store';
 })
 export class CardChoiceStore extends AbstractStore<CardList, StoredCardList> {
   constructor() {
-    super('store.cardChoice', {
+    super('cardChoice', {
       villageois: 0,
       loupGarou: 0,
       playersNumber: 0,

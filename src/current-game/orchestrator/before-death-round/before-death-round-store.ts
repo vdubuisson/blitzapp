@@ -10,6 +10,6 @@ export class BeforeDeathRoundStore extends AbstractStore<
   Round | null
 > {
   constructor() {
-    super('store.beforeDeathRound', null);
+    super('beforeDeathRound', null);
   }
 }

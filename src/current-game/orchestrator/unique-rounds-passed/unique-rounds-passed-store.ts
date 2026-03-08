@@ -10,7 +10,7 @@ export class UniqueRoundsPassedStore extends AbstractStore<
   Round[]
 > {
   constructor() {
-    super('store.uniqueRoundsPassed', new Set());
+    super('uniqueRoundsPassed', new Set());
   }
 
   protected override convertStateToStored(state: Set<Round>): Round[] {

@@ -6,7 +6,7 @@ import { AbstractStore } from '../../../core/storage/abstract-store';
 })
 export class KnownDeathsStore extends AbstractStore<Set<number>, number[]> {
   constructor() {
-    super('store.knownDeaths', new Set());
+    super('knownDeaths', new Set());
   }
 
   protected override convertStateToStored(state: Set<number>): number[] {

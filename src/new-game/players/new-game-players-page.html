@@ -4,6 +4,17 @@
 </div>
 
 <main>
+  @if (playersGroups().length > 0) {
+    <section class="group-buttons">
+      <button
+        (click)="openGroupsOverlay()"
+        class="btn light"
+      >
+        Charger un groupe
+      </button>
+    </section>
+  }
+
   <lgmj-new-player (newPlayer)="addPlayer($event)" />
 
   <div
@@ -33,6 +44,13 @@
     class="btn primary"
   >
     VALIDER ({{ players().length }}/{{ playersCount() }})
+  </button>
+  <button
+    [disabled]="!canValidate()"
+    (click)="openGroupsForm()"
+    class="btn light"
+  >
+    Sauvegarder comme groupe
   </button>
   <button routerLink="../roles" class="btn danger">RETOUR</button>
 </section>

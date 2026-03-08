@@ -333,4 +333,67 @@ describe('NewGameCreator', () => {
 
     expect(spectator.service['players']()).toEqual([]);
   });
+
+  it('should load players from group', () => {
+    spectator.service.loadPlayersGroup({
+      name: 'Group 1',
+      playersNames: ['player0', 'player1', 'player2'],
+    });
+
+    expect(spectator.service['players']()).toEqual([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 1,
+        name: 'player1',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+      {
+        id: 2,
+        name: 'player2',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+  });
+
+  it('should replace existing players when loading a group', () => {
+    spectator.service['players'].set([
+      {
+        id: 0,
+        name: 'existing',
+        role: PlayerRoleEnum.VILLAGEOIS,
+        card: PlayerRoleEnum.VILLAGEOIS,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+
+    spectator.service.loadPlayersGroup({
+      name: 'Group 1',
+      playersNames: ['player0'],
+    });
+
+    expect(spectator.service['players']()).toEqual([
+      {
+        id: 0,
+        name: 'player0',
+        role: PlayerRoleEnum.NOT_SELECTED,
+        card: PlayerRoleEnum.NOT_SELECTED,
+        statuses: new Set(),
+        isDead: false,
+      },
+    ]);
+  });
 });

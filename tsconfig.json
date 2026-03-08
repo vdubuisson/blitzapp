@@ -28,6 +28,7 @@
       "@/layout/*": ["src/layout/*"],
       "@/new-game/*": ["src/new-game/*"],
       "@/options/*": ["src/options/*"],
+      "@/players-group/*": ["src/players-group/*"],
       "@/shared/*": ["src/shared/*"],
       "@/storage/*": ["src/core/storage/*"],
       "@/texts/*": ["src/texts/*"],

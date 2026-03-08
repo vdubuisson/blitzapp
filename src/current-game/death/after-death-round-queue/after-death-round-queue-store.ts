@@ -7,6 +7,6 @@ import { AbstractStore } from '../../../core/storage/abstract-store';
 })
 export class AfterDeathRoundQueueStore extends AbstractStore<Round[], Round[]> {
   constructor() {
-    super('store.afterDeathRoundQueue', []);
+    super('afterDeathRoundQueue', []);
   }
 }

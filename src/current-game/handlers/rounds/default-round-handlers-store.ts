@@ -10,7 +10,7 @@ export class DefaultRoundHandlersStore extends AbstractStore<
   Round[]
 > {
   constructor() {
-    super('store.defaultRoundHandlers', new Set());
+    super('defaultRoundHandlers', new Set());
   }
 
   protected override convertStateToStored(state: Set<Round>): Round[] {

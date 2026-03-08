@@ -10,7 +10,7 @@ export class DeathsToAnnounceStore extends AbstractStore<
   StoredPlayer[]
 > {
   constructor() {
-    super('store.deathsToAnnounce', []);
+    super('deathsToAnnounce', []);
   }
 
   protected override convertStateToStored(state: Player[]): StoredPlayer[] {

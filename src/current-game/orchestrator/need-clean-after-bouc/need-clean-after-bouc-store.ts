@@ -6,6 +6,6 @@ import { AbstractStore } from '../../../core/storage/abstract-store';
 })
 export class NeedCleanAfterBoucStore extends AbstractStore<boolean, boolean> {
   constructor() {
-    super('store.needCleanAfterBouc', false);
+    super('needCleanAfterBouc', false);
   }
 }

@@ -10,6 +10,6 @@ export class AnnouncementsQueueStore extends AbstractStore<
   TextModalData[]
 > {
   constructor() {
-    super('store.announcementsQueue', []);
+    super('announcementsQueue', []);
   }
 }

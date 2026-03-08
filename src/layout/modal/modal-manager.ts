@@ -6,6 +6,8 @@ import { Dialog } from '@angular/cdk/dialog';
 import { ComponentType } from '@angular/cdk/portal';
 import { inject, Injectable } from '@angular/core';
 import { first, map, Observable } from 'rxjs';
+import { TextFormModalData } from './text-form/text-form-modal-data';
+import { TextFormModal } from './text-form/text-form-modal';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,15 @@ export class ModalManager {
     return this.showModal<boolean>(TextModal, data).pipe(
       map((result) => result === true),
     );
+  }
+
+  /**
+   * Opens a modal showing a text input form.
+   * @param data - The data to display in the text form modal.
+   * @returns An observable that emits the value entered by the user if the modal was confirmed, undefined otherwise.
+   */
+  showTextFormModal(data: TextFormModalData): Observable<string | undefined> {
+    return this.showModal<string>(TextFormModal, data);
   }
 
   private showModal<R = unknown>(

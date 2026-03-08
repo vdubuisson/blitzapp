@@ -10,7 +10,7 @@ export class VictoryHandlersStore extends AbstractStore<
   Victory[]
 > {
   constructor() {
-    super('store.victoryHandlers', new Set());
+    super('victoryHandlers', new Set());
   }
 
   protected override convertStateToStored(state: Set<Victory>): Victory[] {

@@ -1,5 +1,6 @@
 import { CurrentPlayersStore } from '@/current-game/current-players-store/current-players-store';
 import { GameOrchestrator } from '@/current-game/orchestrator/game-orchestrator';
+import { PlayersGroup } from '@/players-group/players-group';
 import { Player } from '@/shared/types/player';
 import { PlayerRole, PlayerRoleEnum } from '@/types/player-role';
 import { PlayerStatus } from '@/types/player-status';
@@ -139,6 +140,22 @@ export class NewGameCreator {
   createGame(): void {
     this.gameOrchestrator.createGame(this.players());
     this.players.set([]);
+  }
+
+  /**
+   * Loads a group of players into the current game configuration.
+   * @param group - The group of players to be loaded.
+   */
+  loadPlayersGroup(group: PlayersGroup): void {
+    const newPlayers = group.playersNames.map((name, index) => ({
+      id: index,
+      name,
+      role: PlayerRoleEnum.NOT_SELECTED,
+      card: PlayerRoleEnum.NOT_SELECTED,
+      statuses: new Set<PlayerStatus>(),
+      isDead: false,
+    }));
+    this.players.set(newPlayers);
   }
 
   private reindexPlayers(players: Player[]): Player[] {
