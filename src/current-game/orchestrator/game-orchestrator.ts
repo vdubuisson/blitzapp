@@ -257,12 +257,11 @@ export class GameOrchestrator {
     nextHandler: RoundHandler | undefined,
     nextRound: Round,
   ): boolean {
-    if (
-      (nextHandler?.isDuringDay || currentHandler?.isDuringDay) &&
-      nextRound !== RoundEnum.CHASSEUR
-    ) {
+    if (nextHandler?.isDuringDay || currentHandler?.isDuringDay) {
       this.deathHandler.announceDeaths();
-      return this.checkVictory();
+      if (nextRound !== RoundEnum.CHASSEUR) {
+        return this.checkVictory();
+      }
     }
     return false;
   }

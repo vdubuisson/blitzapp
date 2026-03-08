@@ -1050,51 +1050,6 @@ describe('GameOrchestrator', () => {
       expect(deathHandler.announceDeaths).toHaveBeenCalled();
     });
 
-    it('should not announce deaths if next round is CHASSEUR', () => {
-      const mockCurrentRoundConfig: RoundConfig = {
-        round: RoundEnum.VOYANTE,
-        selectablePlayers: [0],
-        maxSelectable: 1,
-        minSelectable: 0,
-        isDuringDay: false,
-        type: RoundTypeEnum.PLAYERS,
-      };
-      const mockCurrentRoundHandler = new MockRoundHandler();
-      mockCurrentRoundHandler.isDuringDay = false;
-      const mockNextRoundConfig: RoundConfig = {
-        round: RoundEnum.CHASSEUR,
-        selectablePlayers: [0],
-        maxSelectable: 1,
-        minSelectable: 0,
-        isDuringDay: true,
-        type: RoundTypeEnum.PLAYERS,
-      };
-      const mockNextRoundHandler = new MockRoundHandler();
-      mockNextRoundHandler.isDuringDay = true;
-      mockNextRoundHandler.getRoundConfig = () => mockNextRoundConfig;
-
-      currentRoundConfigState.set(mockCurrentRoundConfig);
-      roundOrchestrator.getNextRound.mockReturnValue(RoundEnum.CHASSEUR);
-      vi.spyOn(roundHandlersManager, 'getHandler').mockImplementation(
-        (round) => {
-          switch (round) {
-            case RoundEnum.VOYANTE:
-              return mockCurrentRoundHandler;
-            case RoundEnum.CHASSEUR:
-              return mockNextRoundHandler;
-            default:
-              return new MockRoundHandler();
-          }
-        },
-      );
-      deathHandler.handleNewDeaths.mockReturnValue([]);
-      currentPlayersState.set(mockPlayers);
-
-      spectator.service.submitRoundAction([]);
-
-      expect(deathHandler.announceDeaths).not.toHaveBeenCalled();
-    });
-
     it('should clean statuses after day', () => {
       const mockCurrentRoundConfig: RoundConfig = {
         round: RoundEnum.VILLAGEOIS,
