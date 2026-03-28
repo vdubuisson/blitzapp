@@ -13,7 +13,7 @@
     "prepare": "husky"
   },
   "private": true,
-  "packageManager": "npm@11.6.2",
+  "packageManager": "npm@11.11.0",
   "dependencies": {
     "@angular/animations": "~21.2.0",
     "@angular/cdk": "~21.2.0",
@@ -39,17 +39,18 @@
     "@angular/language-service": "^21.2.0",
     "@capacitor/cli": "^8.0.0",
     "@eslint/compat": "^2.0.0",
+    "@eslint/compat": "^2.0.0",
     "@ngneat/spectator": "^22.0.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@vitest/ui": "^4.0.18",
     "angular-eslint": "^21.3.0",
     "baseline-browser-mapping": "^2.10.0",
-    "eslint": "10.0.0",
+    "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.0",
     "eslint-plugin-prettier": "^5.5.0",
     "eslint-plugin-unused-imports": "^4.2.0",
     "husky": "^9.1.0",
-    "jsdom": "^28.0.0",
+    "jsdom": "^29.0.0",
     "lint-staged": "^16.0.0",
     "ng-mocks": "^14.15.0",
     "prettier": "3.8.1",
@@ -61,15 +62,5 @@
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.48.0",
     "vitest": "^4.0.18"
-  },
-  "overrides": {
-    "ng-mocks": {
-      "@angular/core": "$@angular/core",
-      "@angular/common": "$@angular/common",
-      "@angular/forms": "$@angular/forms",
-      "@angular/router": "$@angular/router",
-      "@angular/platform-browser": "$@angular/platform-browser",
-      "rxjs": "$rxjs"
-    }
   }
 }
